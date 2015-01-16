@@ -3,6 +3,7 @@ rm -rf $WORKSPACE/build
 mkdir -p $WORKSPACE/build
 
 PREFIX="$WORKSPACE/build"
+NPROC=$((`nproc` + 1))
 
 ./bootstrap
 
@@ -25,7 +26,7 @@ esac
 
 ./configure --prefix=$PREFIX $CONF_OPTS
 
-make
+make -j $NPROC
 make install
 make clean
 
