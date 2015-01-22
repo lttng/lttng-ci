@@ -89,9 +89,9 @@ if [ "$conf" = "python_bindings" ]
 then
     # Disabled due to race conditions in tests
     echo "Testsuite disabled. See job configuration for more info."
-    #prove --merge --exec '' - < $WORKSPACE/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
-    #prove --merge --exec '' - < $WORKSPACE/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
-    #prove --merge --exec '' - < $WORKSPACE/tests/with_bindings_regression --archive $WORKSPACE/tap/with_bindings_regression/ || true
+    prove --merge --exec '' - < $WORKSPACE/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+    prove --merge --exec '' - < $WORKSPACE/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
+    prove --merge --exec '' - < $WORKSPACE/tests/with_bindings_regression --archive $WORKSPACE/tap/with_bindings_regression/ || true
 fi
 
 # TAP plugin is having a hard time with .yml files.
