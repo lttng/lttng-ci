@@ -62,7 +62,7 @@ make install
 rm -rf $WORKSPACE/tap
 mkdir -p $WORKSPACE/tap/unit
 
-cd $WORKSPACE/tests
+cd $BUILD_PATH/tests
 
 prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
 
