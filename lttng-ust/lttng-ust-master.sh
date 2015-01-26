@@ -37,11 +37,14 @@ python-agent)
     ;;
 esac
 
-BUILD_PATH=$WORKSPACE
 # Build type
 # oot : out-of-tree build
 # dist: build via make dist
 # *   : normal tree build
+#
+# Make sure to move to the build_path before continuing
+
+BUILD_PATH=$WORKSPACE
 case "$build" in
 	oot)
 		BUILD_PATH=$WORKSPACE/oot
@@ -49,12 +52,25 @@ case "$build" in
 		cd $BUILD_PATH
 		;;
 	dist)
+		BUILD_PATH=/tmp/dist
+
+		# Initial configure and generate tarball
+		./configure
+		make dist
+
+		mkdir -p $BUILD_PATH
+		cp *.tar.* $BUILD_PATH/
+		cd $BUILD_PATH
+
+		# Ignore level 1 of tar
+		tar xvf *.tar.* --strip 1
 		;;
 	*)
+		BUILD_PATH=$WORKSPACE
 		;;
 esac
 
-$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
 make V=1
 make install
 
