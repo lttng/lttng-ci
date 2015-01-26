@@ -27,6 +27,9 @@ java-agent)
     export CLASSPATH="/usr/share/java/log4j-1.2.jar"
     CONF_OPTS="--enable-java-agent-all"
     ;;
+python-agent)
+	echo "Python agent build"
+	CONF_OPTS="--enable-python-agent"
 *)
     echo "Standard build"
     CONF_OPTS=""
