@@ -30,6 +30,7 @@ java-agent)
 python-agent)
 	echo "Python agent build"
 	CONF_OPTS="--enable-python-agent"
+	;;
 *)
     echo "Standard build"
     CONF_OPTS=""
