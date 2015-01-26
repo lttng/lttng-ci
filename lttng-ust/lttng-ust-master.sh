@@ -63,10 +63,11 @@ case "$build" in
 		mkdir -p $BUILD_PATH
 		cp *.tar.* $BUILD_PATH/
 		cd $BUILD_PATH
-		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
 
 		# Ignore level 1 of tar
 		tar xvf *.tar.* --strip 1
+
+		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 	*)
 		BUILD_PATH=$WORKSPACE
