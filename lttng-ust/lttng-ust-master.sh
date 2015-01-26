@@ -54,7 +54,7 @@ case "$build" in
 		;;
 esac
 
-../configure --prefix=$PREFIX $CONF_OPTS
+$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 make V=1
 make install
 
