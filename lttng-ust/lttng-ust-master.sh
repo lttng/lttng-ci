@@ -54,7 +54,7 @@ case "$build" in
 		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 	dist)
-		BUILD_PATH=/tmp/dist
+		BUILD_PATH=`mktemp -d`
 
 		# Initial configure and generate tarball
 		./configure
@@ -98,3 +98,7 @@ make clean
 # Cleanup rpath and libtool .la files
 find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
 find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
+
+if [ $build = "dist" ] then
+	rm -rf $BUILD_PATH
+fi
