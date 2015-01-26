@@ -33,7 +33,24 @@ java-agent)
     ;;
 esac
 
-./configure --prefix=$PREFIX $CONF_OPTS
+BUILD_PATH=$WORKSPACE
+# Build type
+# oot : out-of-tree build
+# dist: build via make dist
+# *   : normal tree build
+case "$build" in
+	oot)
+		BUILD_PATH=$WORKSPACE/oot
+		mkdir -p $BUILD_PATH
+		cd $BUILD_PATH
+		;;
+	dist)
+		;;
+	*)
+		;;
+esac
+
+$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 make V=1
 make install
 
@@ -43,7 +60,7 @@ mkdir -p $WORKSPACE/tap/unit
 
 cd $WORKSPACE/tests
 
-prove --merge --exec '' - < $WORKSPACE/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
 
 # TAP plugin is having a hard time with .yml files.
 rm -f $WORKSPACE/tap/unit/meta.yml
