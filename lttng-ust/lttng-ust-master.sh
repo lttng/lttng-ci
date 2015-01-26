@@ -42,7 +42,8 @@ esac
 # dist: build via make dist
 # *   : normal tree build
 #
-# Make sure to move to the build_path before continuing
+# Make sure to move to the build_path and configure
+# before continuing
 
 BUILD_PATH=$WORKSPACE
 case "$build" in
@@ -50,6 +51,7 @@ case "$build" in
 		BUILD_PATH=$WORKSPACE/oot
 		mkdir -p $BUILD_PATH
 		cd $BUILD_PATH
+		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 	dist)
 		BUILD_PATH=/tmp/dist
@@ -61,16 +63,17 @@ case "$build" in
 		mkdir -p $BUILD_PATH
 		cp *.tar.* $BUILD_PATH/
 		cd $BUILD_PATH
+		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
 
 		# Ignore level 1 of tar
 		tar xvf *.tar.* --strip 1
 		;;
 	*)
 		BUILD_PATH=$WORKSPACE
+		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 esac
 
-$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
 make V=1
 make install
 
