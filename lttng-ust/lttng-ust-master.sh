@@ -48,12 +48,14 @@ esac
 BUILD_PATH=$WORKSPACE
 case "$build" in
 	oot)
+		echo "Out of tree build"
 		BUILD_PATH=$WORKSPACE/oot
 		mkdir -p $BUILD_PATH
 		cd $BUILD_PATH
 		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 	dist)
+		echo "Distribution out of tree build"
 		BUILD_PATH=`mktemp -d`
 
 		# Initial configure and generate tarball
@@ -71,6 +73,7 @@ case "$build" in
 		;;
 	*)
 		BUILD_PATH=$WORKSPACE
+		echo "Standard tree build"
 		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 esac
