@@ -37,7 +37,8 @@ case "$build" in
 		echo "Out of tree build"
 		BUILD_PATH=$WORKSPACE/oot
 		mkdir -p $BUILD_PATH
-		cd $BUILD_PATH$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+		cd $BUILD_PATH
+		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 	dist)
 		echo "Distribution out of tree build"
@@ -52,14 +53,15 @@ case "$build" in
 		cd $BUILD_PATH
 
 		# Ignore level 1 of tar
-		tar xvf *.tar.* --staticrip 1
+		tar xvf *.tar.* --strip 1
 
 		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 	*)
-		echo "Standard tree build"
 		BUILD_PATH=$WORKSPACE
-		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS;;
+		echo "Standard tree build"
+		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+		;;
 esac
 
 make V=1
