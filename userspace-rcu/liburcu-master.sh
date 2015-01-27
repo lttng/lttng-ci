@@ -3,7 +3,6 @@ rm -rf $WORKSPACE/build
 mkdir -p $WORKSPACE/build
 
 PREFIX="$WORKSPACE/build"
-NPROC=$((`nproc` + 1))
 
 ./bootstrap
 
