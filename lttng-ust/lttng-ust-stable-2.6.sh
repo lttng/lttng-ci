@@ -33,7 +33,47 @@ java-agent)
     ;;
 esac
 
-./configure --prefix=$PREFIX $CONF_OPTS
+# Build type
+# oot : out-of-tree build
+# dist: build via make dist
+# *   : normal tree build
+#
+# Make sure to move to the build_path and configure
+# before continuing
+
+BUILD_PATH=$WORKSPACE
+case "$build" in
+	oot)
+		echo "Out of tree build"
+		BUILD_PATH=$WORKSPACE/oot
+		mkdir -p $BUILD_PATH
+		cd $BUILD_PATH
+		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+		;;
+	dist)
+		echo "Distribution out of tree build"
+		BUILD_PATH=`mktemp -d`
+
+		# Initial configure and generate tarball
+		./configure
+		make dist
+
+		mkdir -p $BUILD_PATH
+		cp *.tar.* $BUILD_PATH/
+		cd $BUILD_PATH
+
+		# Ignore level 1 of tar
+		tar xvf *.tar.* --strip 1
+
+		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+		;;
+	*)
+		BUILD_PATH=$WORKSPACE
+		echo "Standard tree build"
+		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+		;;
+esac
+
 make V=1
 make install
 
@@ -41,9 +81,9 @@ make install
 rm -rf $WORKSPACE/tap
 mkdir -p $WORKSPACE/tap/unit
 
-cd $WORKSPACE/tests
+cd $BUILD_PATH/tests
 
-prove --merge --exec '' - < $WORKSPACE/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
 
 # TAP plugin is having a hard time with .yml files.
 rm -f $WORKSPACE/tap/unit/meta.yml
@@ -57,3 +97,8 @@ make clean
 # Cleanup rpath and libtool .la files
 find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
 find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
+
+# Clean temp dir for dist build
+if [ $build = "dist" ]; then
+	rm -rf $BUILD_PATH
+fi

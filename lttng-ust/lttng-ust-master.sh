@@ -102,6 +102,7 @@ make clean
 find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
 find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
 
+# Clean temp dir for dist build
 if [ $build = "dist" ]; then
 	rm -rf $BUILD_PATH
 fi
