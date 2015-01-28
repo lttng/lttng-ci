@@ -64,7 +64,7 @@ case "$build" in
 		;;
 esac
 
-make V=1
+make
 make install
 make clean
 
@@ -72,6 +72,7 @@ make clean
 find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
 find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
 
+# Cleanup temp directory of dist build
 if [ $build = "dist" ]; then
 	rm -rf $BUILD_PATH
 fi
