@@ -53,7 +53,47 @@ no_ust)
     ;;
 esac
 
-./configure --prefix=$PREFIX $CONF_OPTS
+# Build type
+# oot : out-of-tree build
+# dist: build via make dist
+# *   : normal tree build
+#
+# Make sure to move to the build_path and configure
+# before continuing
+
+BUILD_PATH=$WORKSPACE
+case "$build" in
+	oot)
+		echo "Out of tree build"
+		BUILD_PATH=$WORKSPACE/oot
+		mkdir -p $BUILD_PATH
+		cd $BUILD_PATH
+		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+		;;
+	dist)
+		echo "Distribution out of tree build"
+		BUILD_PATH=`mktemp -d`
+
+		# Initial configure and generate tarball
+		./configure
+		make dist
+
+		mkdir -p $BUILD_PATH
+		cp *.tar.* $BUILD_PATH/
+		cd $BUILD_PATH
+
+		# Ignore level 1 of tar
+		tar xvf *.tar.* --strip 1
+
+		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+		;;
+	*)
+		BUILD_PATH=$WORKSPACE
+		echo "Standard tree build"
+		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+		;;
+esac
+
 
 make
 make install
@@ -71,12 +111,12 @@ mkdir -p $WORKSPACE/tap/unit
 mkdir -p $WORKSPACE/tap/fast_regression
 mkdir -p $WORKSPACE/tap/with_bindings_regression
 
-cd $WORKSPACE/tests
+cd $BUILD_PATH/tests
 
 if [ "$conf" = "std" ]
 then
-    prove --merge --exec '' - < $WORKSPACE/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
-    prove --merge --exec '' - < $WORKSPACE/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
+    prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+    prove --merge --exec '' - < $BUILD_PATH/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
 fi
 
 if [ "$conf" = "no_ust" ]
@@ -89,9 +129,9 @@ if [ "$conf" = "python_bindings" ]
 then
     # Disabled due to race conditions in tests
     echo "Testsuite disabled. See job configuration for more info."
-    prove --merge --exec '' - < $WORKSPACE/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
-    prove --merge --exec '' - < $WORKSPACE/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
-    prove --merge --exec '' - < $WORKSPACE/tests/with_bindings_regression --archive $WORKSPACE/tap/with_bindings_regression/ || true
+    prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+    prove --merge --exec '' - < $BUILD_PATH/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
+    prove --merge --exec '' - < $BUILD_PATH/tests/with_bindings_regression --archive $WORKSPACE/tap/with_bindings_regression/ || true
 fi
 
 # TAP plugin is having a hard time with .yml files.
@@ -111,3 +151,8 @@ make clean
 find $WORKSPACE/build/bin -executable -type f -exec chrpath --delete {} \;
 find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
 find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
+
+# Clean temp dir for dist build
+if [ $build = "dist" ]; then
+	rm -rf $BUILD_PATH
+fi
