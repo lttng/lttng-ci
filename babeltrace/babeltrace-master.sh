@@ -67,7 +67,7 @@ case "$build" in
 		;;
 esac
 
-make V=1
+make
 make install
 
 rm -rf $WORKSPACE/tap
