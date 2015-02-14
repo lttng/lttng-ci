@@ -24,7 +24,7 @@ then
     export LDFLAGS="-L$URCU_LIBS"
     export LD_LIBRARY_PATH="$URCU_LIBS:$BABEL_LIBS:$LD_LIBRARY_PATH"
 else
-	CONF_OPTS=$CONF_OPTS" --with-lttng-ust-prefix="$UST_PREFIX
+	CONF_OPTS+=" --with-lttng-ust-prefix="$UST_PREFIX
     export CPPFLAGS="-I$URCU_INCS"
     export LDFLAGS="-L$URCU_LIBS"
     export LD_LIBRARY_PATH="$URCU_LIBS:$BABEL_LIBS:$LD_LIBRARY_PATH"
@@ -43,23 +43,23 @@ python_bindings)
     # We only support bindings built with Python 3
     export PYTHON="python3"
     export PYTHON_CONFIG="/usr/bin/python3-config"
-    CONF_OPTS=$CONF_OPTS" --enable-python-bindings"
+    CONF_OPTS+=" --enable-python-bindings"
     ;;
 no_ust)
     echo "Build without UST support"
-    CONF_OPTS=$CONF_OPTS" --disable-lttng-ust"
+    CONF_OPTS+=" --disable-lttng-ust"
     ;;
 java_jul)
     echo "Build with java-jul UST support"
-    CONF_OPTS=$CONF_OPTS" --enable-java-agent-tests-jul --with-java-classpath=$UST_PREFIX/share/java/\*"
+    CONF_OPTS+=" --enable-java-agent-tests-jul --with-java-classpath=$UST_PREFIX/share/java/\*"
 	;;
 java_log4j)
 	echo "Build with java-log4j UST support"
-	CONF_OPTS=$CONF_OPTS" --enable-java-agent-tests-log4j --with-java-classpath=/usr/share/java/log4j-1.2.jar"
+	CONF_OPTS+=" --enable-java-agent-tests-log4j --with-java-classpath=/usr/share/java/log4j-1.2.jar"
 	;;
 *)
     echo "Standard build"
-    CONF_OPTS=$CONF_OPTS" "
+    CONF_OPTS+=" "
     ;;
 esac
 
