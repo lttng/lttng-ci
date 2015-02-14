@@ -1,3 +1,4 @@
+set -x
 # Create build directory
 rm -rf $WORKSPACE/build
 mkdir -p $WORKSPACE/build
@@ -9,7 +10,7 @@ URCU_LIBS="$WORKSPACE/dependencies/liburcu/build/lib/"
 # lttng-ust
 UST_INCS="$WORKSPACE/dependencies/lttng-ust/build/include/"
 UST_LIBS="$WORKSPACE/dependencies/lttng-ust/build/lib/"
-UST_PREFIX=$WORKSPACE"/dependencies/lttng-ust/build/"
+UST_PREFIX="$WORKSPACE/dependencies/lttng-ust/build/"
 
 # babeltrace
 BABEL_INCS="$WORKSPACE/dependencies/babeltrace/build/include/"
@@ -175,3 +176,4 @@ find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
 if [ $build = "dist" ]; then
 	rm -rf $BUILD_PATH
 fi
+set +x
