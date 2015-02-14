@@ -59,7 +59,7 @@ java_log4j)
 	;;
 *)
     echo "Standard build"
-    CONF_OPTS=""
+    CONF_OPTS=$CONF_OPTS" "
     ;;
 esac
 
@@ -70,9 +70,9 @@ esac
 #
 # Make sure to move to the build_path and configure
 # before continuing
-echo **************************************************
+echo "**************************************************"
 echo $CONF_OPTS
-echo **************************************************
+echo "**************************************************"
 
 BUILD_PATH=$WORKSPACE
 case "$build" in
