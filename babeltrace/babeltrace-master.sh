@@ -76,7 +76,7 @@ mkdir -p $WORKSPACE/tap
 cd $BUILD_PATH/tests
 
 # Run make check tests
-if [[ -e $BUILD_PATH/tests/tests ]]; then
+if [ -e $BUILD_PATH/tests/tests ]; then
 	prove --merge --exec '' - < $BUILD_PATH/tests/tests --archive $WORKSPACE/tap/ || true
 else
 	echo "Missing test plan"
