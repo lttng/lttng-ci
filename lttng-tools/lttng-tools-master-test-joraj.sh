@@ -9,7 +9,7 @@ URCU_LIBS="$WORKSPACE/dependencies/liburcu/build/lib/"
 # lttng-ust
 UST_INCS="$WORKSPACE/dependencies/lttng-ust/build/include/"
 UST_LIBS="$WORKSPACE/dependencies/lttng-ust/build/lib/"
-UST_PREFIX="$WORKSPACE/dependencies/lttng-ust/build/"
+UST_PREFIX=$WORKSPACE"/dependencies/lttng-ust/build/"
 
 # babeltrace
 BABEL_INCS="$WORKSPACE/dependencies/babeltrace/build/include/"
@@ -17,15 +17,14 @@ BABEL_LIBS="$WORKSPACE/dependencies/babeltrace/build/lib/"
 
 PREFIX="$WORKSPACE/build"
 
-CONF_OPT=""
-
+CONF_OPTS=""
 if [ "$conf" = "no_ust" ]
 then
     export CPPFLAGS="-I$URCU_INCS"
     export LDFLAGS="-L$URCU_LIBS"
     export LD_LIBRARY_PATH="$URCU_LIBS:$BABEL_LIBS:$LD_LIBRARY_PATH"
 else
-	CONF_OPTS+=" --with-lttng-ust-prefix=$UST_PREFIX"
+	CONF_OPTS=$CONF_OPTS" --with-lttng-ust-prefix="$UST_PREFIX
     export CPPFLAGS="-I$URCU_INCS"
     export LDFLAGS="-L$URCU_LIBS"
     export LD_LIBRARY_PATH="$URCU_LIBS:$BABEL_LIBS:$LD_LIBRARY_PATH"
@@ -33,7 +32,6 @@ fi
 
 ./bootstrap
 
-CONF_OPTS=""
 case "$conf" in
 # Currently disabled, ust doesn't seem to be built right for static linking.
 #static)
@@ -53,8 +51,11 @@ no_ust)
     ;;
 java_jul)
     echo "Build with java-jul UST support"
-    CONF_OPTS+=" --enable-java-agent-tests-jul --with-java-classpath=$UST_PREFIX/share/java/*"
+    CONF_OPTS=$CONF_OPTS" --enable-java-agent-tests-jul --with-java-classpath=$UST_PREFIX/share/java/\*"
 	;;
+java_log4j)
+	echo "Build with java-log4j UST support"
+	CONF_OPTS=$CONF_OPTS" --enable-java-agent-tests-log4j --with-java-classpath=/usr/share/java/log4j-1.2.jar"
 *)
     echo "Standard build"
     CONF_OPTS=""
