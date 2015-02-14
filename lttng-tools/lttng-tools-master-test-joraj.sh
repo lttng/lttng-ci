@@ -1,3 +1,4 @@
+#!/bin/bash
 set -x
 # Create build directory
 rm -rf $WORKSPACE/build
@@ -25,7 +26,7 @@ then
     export LDFLAGS="-L$URCU_LIBS"
     export LD_LIBRARY_PATH="$URCU_LIBS:$BABEL_LIBS:$LD_LIBRARY_PATH"
 else
-	CONF_OPTS+=" --with-lttng-ust-prefix="$UST_PREFIX
+	CONF_OPTS+=" --with-lttng-ust-prefix=$UST_PREFIX"
     export CPPFLAGS="-I$URCU_INCS"
     export LDFLAGS="-L$URCU_LIBS"
     export LD_LIBRARY_PATH="$URCU_LIBS:$BABEL_LIBS:$LD_LIBRARY_PATH"
