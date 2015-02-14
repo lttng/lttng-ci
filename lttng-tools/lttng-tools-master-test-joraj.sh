@@ -43,11 +43,11 @@ python_bindings)
     # We only support bindings built with Python 3
     export PYTHON="python3"
     export PYTHON_CONFIG="/usr/bin/python3-config"
-    CONF_OPTS="--enable-python-bindings"
+    CONF_OPTS=$CONF_OPTS" --enable-python-bindings"
     ;;
 no_ust)
     echo "Build without UST support"
-    CONF_OPTS="--disable-lttng-ust"
+    CONF_OPTS=$CONF_OPTS" --disable-lttng-ust"
     ;;
 java_jul)
     echo "Build with java-jul UST support"
