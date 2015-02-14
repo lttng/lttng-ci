@@ -56,6 +56,7 @@ java_jul)
 java_log4j)
 	echo "Build with java-log4j UST support"
 	CONF_OPTS=$CONF_OPTS" --enable-java-agent-tests-log4j --with-java-classpath=/usr/share/java/log4j-1.2.jar"
+	;;
 *)
     echo "Standard build"
     CONF_OPTS=""
