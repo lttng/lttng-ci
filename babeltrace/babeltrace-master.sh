@@ -76,7 +76,12 @@ mkdir -p $WORKSPACE/tap
 cd $BUILD_PATH/tests
 
 # Run make check tests
-prove --merge --exec '' - < $BUILD_PATH/tests/tests --archive $WORKSPACE/tap/ || true
+if [[ -e $BUILD_PATH/tests/tests ]]; then
+	prove --merge --exec '' - < $BUILD_PATH/tests/tests --archive $WORKSPACE/tap/ || true
+else
+	echo "Missing test plan"
+	exit 1
+fi
 
 # TAP plugin is having a hard time with .yml files.
 rm -f $WORKSPACE/tap/meta.yml
