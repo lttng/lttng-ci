@@ -70,6 +70,9 @@ esac
 #
 # Make sure to move to the build_path and configure
 # before continuing
+echo **************************************************
+echo $CONF_OPTS
+echo **************************************************
 
 BUILD_PATH=$WORKSPACE
 case "$build" in
@@ -85,7 +88,7 @@ case "$build" in
 		BUILD_PATH=`mktemp -d`
 
 		# Initial configure and generate tarball
-		./configure
+		./configure $CONF_OPTS
 		make dist
 
 		mkdir -p $BUILD_PATH
