@@ -43,7 +43,12 @@ mkdir -p $WORKSPACE/tap/unit
 
 cd $WORKSPACE/tests
 
-prove --merge --exec '' - < $WORKSPACE/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+if [ -e $BUILD_PATH/tests/unit_tests ]; then
+	prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+else
+	echo "Test file:$BUILD_PATH/tests/unit_tests missing"
+	exit 1
+fi
 
 # TAP plugin is having a hard time with .yml files.
 rm -f $WORKSPACE/tap/unit/meta.yml
