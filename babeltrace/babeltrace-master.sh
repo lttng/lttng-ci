@@ -35,6 +35,8 @@ esac
 # before continuing
 
 BUILD_PATH=$WORKSPACE
+TEST_PLAN_PATH=$WORKSPACE
+
 case "$build" in
 	oot)
 		echo "Out of tree build"
@@ -59,9 +61,11 @@ case "$build" in
 		tar xvf *.tar.* --strip 1
 
 		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+
+		# Set test plan to dist tar
+		TEST_PLAN_PATH=$BUILD_PATH
 		;;
 	*)
-		BUILD_PATH=$WORKSPACE
 		echo "Standard tree build"
 		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
@@ -76,8 +80,8 @@ mkdir -p $WORKSPACE/tap
 cd $BUILD_PATH/tests
 
 # Run make check tests
-if [ -e $BUILD_PATH/tests/tests ]; then
-	prove --merge --exec '' - < $BUILD_PATH/tests/tests --archive $WORKSPACE/tap/ || true
+if [ -e $TEST_PLAN_PATH/tests/tests ]; then
+	prove --merge --exec '' - < $TEST_PLAN_PATH/tests/tests --archive $WORKSPACE/tap/ || true
 else
 	echo "Missing test plan"
 	exit 1
