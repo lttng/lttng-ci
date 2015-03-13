@@ -100,6 +100,10 @@ String modulesCheckoutTo = "lttng-modules"
 def linuxGitReference = "/home/jenkins/gitcache/linux-stable.git"
 String process = "git ls-remote -t $linuxURL | cut -c42- | sort -V"
 
+// Chekf if we are on jenkins
+// Useful for outside jenkins devellopment related to groovy only scripting
+def isJenkinsInstance = binding.variables.containsKey('JENKINS_HOME')
+
 // Split the string into sections based on |
 // And pipe the results together
 def out = new StringBuilder()
@@ -115,22 +119,23 @@ result.waitForProcessOutput(out,err)
 
 if ( result.exitValue() == 0 ) {
     def branches = out.readLines().collect {
+		// Scrap special string tag
         it.replaceAll("\\^\\{\\}", '')
     }
 
     branches = branches.unique()
-    List versions = []
 
+    List versions = []
     branches.each { branch ->
 		def stripBranch = branch.replaceAll("rc", '').replaceAll(/refs\/tags\/v/,'')
         KernelVersion kVersion = new KernelVersion(stripBranch, branch)
         versions.add(kVersion)
     }
 
-    // Sort the version
+    // Sort the version via Comparable implementation of KernelVersion
     versions = versions.sort()
 
-    // Find cut of
+    // Find the version cut of
     def cutoffPos = versions.findIndexOf{(it.major >= cutoff.major) && (it.minor >= cutoff.minor) && (it.revision >= cutoff.revision) && (it.build >= cutoff.build) && (it.rc >= cutoff.rc)}
 
     // Get last version and include only last rc
@@ -147,7 +152,10 @@ if ( result.exitValue() == 0 ) {
         lastNoRcPos = versions.size()
     }
 
+	// Actual job creation
     for (int i = cutoffPos; i < versions.size() ; i++) {
+
+		// Only create for valid build
         if ( (i < lastNoRcPos && versions[i].rc == -1) || (i >= lastNoRcPos)) {
             println ("Preparing job for")
             String kernel = versions[i].print()
@@ -155,56 +163,57 @@ if ( result.exitValue() == 0 ) {
             String moduleJobName = "lttng-modules-master-kernel-${kernel}"
             println(jobName)
             println(moduleJobName)
-            if (binding.variables.containsKey('JENKINS_HOME')) {
-                println("Jenkins! YAYYY")
-            }
-            matrixJob("${jobName}") {
-                using("linux-master")
-                scm {
-                    git {
-                        remote {
-                            url("${linuxURL}")
-                        }
-                        branch(versions[i].gitRefs)
-                        shallowClone(true)
-                        relativeTargetDir(linuxCheckoutTo)
-                        reference(linuxGitReference)
-                    }
-                }
-                publishers {
-                    downstream(moduleJobName, 'SUCCESS')
-                }
-            }
-            // Corresponding Module job
-            matrixJob("${moduleJobName}") {
-                using("modules")
-				multiscm {
-                    git {
-                        remote {
-                            name("linux")
-                            url("${linuxURL}")
-                        }
-                        branch(versions[i].gitRefs)
-                        shallowClone(true)
-                        relativeTargetDir(linuxCheckoutTo)
-                        reference(linuxGitReference)
-                    }
-                    git {
-                        remote {
-                            name("lttng-modules")
-                            url(modulesURL)
-                        }
-                        branch("master")
-                        relativeTargetDir(modulesCheckoutTo)
-                    }
-                }
-                steps {
-                    copyArtifacts("${jobName}/arch=\$arch", "linux-artifact/**", '', false, false) {
-                        latestSuccessful(true) // Latest successful build
-                    }
-                    shell(readFileFromWorkspace('lttng-modules/lttng-modules-dsl-master.sh'))
-                }
-            }
-        }
-    }
+
+			// Jenkins only dsl
+			if (isJenkinsInstance) {
+				matrixJob("${jobName}") {
+					using("linux-master")
+						scm {
+							git {
+								remote {
+									url("${linuxURL}")
+								}
+								branch(versions[i].gitRefs)
+									shallowClone(true)
+									relativeTargetDir(linuxCheckoutTo)
+									reference(linuxGitReference)
+							}
+						}
+					publishers {
+						downstream(moduleJobName, 'SUCCESS')
+					}
+				}
+				// Corresponding Module job
+				matrixJob("${moduleJobName}") {
+					using("modules")
+						multiscm {
+							git {
+								remote {
+									name("linux")
+										url("${linuxURL}")
+								}
+								branch(versions[i].gitRefs)
+									shallowClone(true)
+									relativeTargetDir(linuxCheckoutTo)
+									reference(linuxGitReference)
+							}
+							git {
+								remote {
+									name("lttng-modules")
+										url(modulesURL)
+								}
+								branch("master")
+									relativeTargetDir(modulesCheckoutTo)
+							}
+						}
+					steps {
+						copyArtifacts("${jobName}/arch=\$arch", "linux-artifact/**", '', false, false) {
+							latestSuccessful(true) // Latest successful build
+						}
+						shell(readFileFromWorkspace('lttng-modules/lttng-modules-dsl-master.sh'))
+					}
+				}
+			}
+		}
+	}
 }
