@@ -1,5 +1,3 @@
-import groovy.transform.Sortable
-
 enum KernelVersioning {
     MAJOR,MINOR,REVISION,BUILD
 }
