@@ -8,13 +8,15 @@ class KernelVersion implements Comparable<KernelVersion> {
     int revision = -1
     int build = -1
     int rc = -1
+    String gitRefs
 
     // Default Constructor
     KernelVersion() {}
 
     // Parse a version string of format X,Y,Z,W-A
-    KernelVersion(String version) {
-        def tokenVersion
+    KernelVersion(String version, String ref) {
+        gitRefs = ref
+		def tokenVersion
         def token
         if (version.contains('-')) {
             // Release canditate
@@ -74,7 +76,7 @@ class KernelVersion implements Comparable<KernelVersion> {
                 }
             }
             if (rc != -1) {
-                ret += "-" + rc
+                ret += "-rc" + rc
             }
         }
         return ret
@@ -86,7 +88,7 @@ class KernelVersion implements Comparable<KernelVersion> {
     }
 }
 
-def cutoff = [major: 3, minor:19,revision:-1, build:-1, rc:-1]
+def cutoff = [major: 3, minor: 19,revision:-1, build:-1, rc:-1]
 def linuxURL = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 def modulesURL = "git://git.lttng.org/lttng-modules.git"
 
@@ -97,11 +99,6 @@ String modulesCheckoutTo = "lttng-modules"
 
 def linuxGitReference = "/home/jenkins/gitcache/linux-stable.git"
 String process = "git ls-remote -t $linuxURL | cut -c42- | sort -V"
-
-// Check if we run the script on a jenkins instance
-// This is useful for dev and debug locally on groovy feature and not jenkins specific stuff
-def isJenkinsInstance = binding.variables.containsKey('JENKINS_HOME')
-
 
 // Split the string into sections based on |
 // And pipe the results together
@@ -118,14 +115,15 @@ result.waitForProcessOutput(out,err)
 
 if ( result.exitValue() == 0 ) {
     def branches = out.readLines().collect {
-        it.replaceAll("\\^\\{\\}", '').replaceAll("rc", '').replaceAll(/refs\/tags\/v/,'')
+        it.replaceAll("\\^\\{\\}", '')
     }
 
     branches = branches.unique()
     List versions = []
 
     branches.each { branch ->
-        KernelVersion kVersion = new KernelVersion(branch.toString())
+		def stripBranch = branch.replaceAll("rc", '').replaceAll(/refs\/tags\/v/,'')
+        KernelVersion kVersion = new KernelVersion(stripBranch, branch)
         versions.add(kVersion)
     }
 
@@ -134,7 +132,6 @@ if ( result.exitValue() == 0 ) {
 
     // Find cut of
     def cutoffPos = versions.findIndexOf{(it.major >= cutoff.major) && (it.minor >= cutoff.minor) && (it.revision >= cutoff.revision) && (it.build >= cutoff.build) && (it.rc >= cutoff.rc)}
-
 
     // Get last version and include only last rc
     def last
@@ -158,7 +155,9 @@ if ( result.exitValue() == 0 ) {
             String moduleJobName = "lttng-modules-master-kernel-${kernel}"
             println(jobName)
             println(moduleJobName)
-        if (isJenkinsInstance) {
+            if (binding.variables.containsKey('JENKINS_HOME')) {
+                println("Jenkins! YAYYY")
+            }
             matrixJob("${jobName}") {
                 using("linux-master")
                 scm {
@@ -166,7 +165,7 @@ if ( result.exitValue() == 0 ) {
                         remote {
                             url("${linuxURL}")
                         }
-                        branch(tag)
+                        branch(versions[i].gitRefs)
                         shallowClone(true)
                         relativeTargetDir(linuxCheckoutTo)
                         reference(linuxGitReference)
@@ -179,13 +178,13 @@ if ( result.exitValue() == 0 ) {
             // Corresponding Module job
             matrixJob("${moduleJobName}") {
                 using("modules")
-                multiscm {
+				multiscm {
                     git {
                         remote {
                             name("linux")
                             url("${linuxURL}")
                         }
-                        branch(tag)
+                        branch(versions[i].gitRefs)
                         shallowClone(true)
                         relativeTargetDir(linuxCheckoutTo)
                         reference(linuxGitReference)
@@ -207,7 +206,5 @@ if ( result.exitValue() == 0 ) {
                 }
             }
         }
-        }
     }
 }
-
