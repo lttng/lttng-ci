@@ -2,7 +2,7 @@ enum KernelVersioning {
     MAJOR,MINOR,REVISION,BUILD
 }
 
-class KernelVersion implements Comparable<KernelVersion> {
+class BasicVersion implements Comparable<BasicVersion> {
     int major = -1
     int minor = -1
     int revision = -1
@@ -11,10 +11,10 @@ class KernelVersion implements Comparable<KernelVersion> {
     String gitRefs
 
     // Default Constructor
-    KernelVersion() {}
+    BasicVersion() {}
 
-    // Parse a version string of format X,Y,Z,W-A
-    KernelVersion(String version, String ref) {
+    // Parse a version string of format X.Y.Z.W-A
+    BasicVersion(String version, String ref) {
         gitRefs = ref
 		def tokenVersion
         def token
@@ -22,7 +22,7 @@ class KernelVersion implements Comparable<KernelVersion> {
             // Release canditate
             token = version.tokenize('-')
             tokenVersion = token[0]
-            if (token[1].isInteger()) {
+            if (token[1]?.isInteger()) {
                 rc = token[1].toInteger()
             }
         } else {
@@ -33,7 +33,7 @@ class KernelVersion implements Comparable<KernelVersion> {
 
         def tagEnum = KernelVersioning.MAJOR
         tokenVersion.each {
-            if (it.isInteger()) {
+            if (it?.isInteger()) {
                 switch (tagEnum) {
                     case KernelVersioning.MAJOR:
                         major = it.toInteger()
@@ -55,12 +55,11 @@ class KernelVersion implements Comparable<KernelVersion> {
                         println("Unsupported version extension")
                         println("Trying to parse: ${version}")
                         println("Invalid sub version value: ${it}")
-                //TODO: throw exception for jenkins
+                    //TODO: throw exception for jenkins
                 }
             }
         }
     }
-
 
     String print() {
         String ret = ""
@@ -83,12 +82,13 @@ class KernelVersion implements Comparable<KernelVersion> {
     }
 
     @Override
-    int compareTo(KernelVersion kernelVersion) {
+    int compareTo(BasicVersion kernelVersion) {
         return major <=> kernelVersion.major ?: minor <=> kernelVersion.minor ?: revision <=> kernelVersion.revision ?: build <=> kernelVersion.build ?: rc <=> kernelVersion.rc
     }
 }
 
-def cutoff = [major: 3, minor: 19,revision:-1, build:-1, rc:-1]
+def cutoff = new BasicVersion("3.19", "")
+def modulesBranches = ["master","stable-2.5.0","stable-2.6.0"]
 def linuxURL = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 def modulesURL = "git://git.lttng.org/lttng-modules.git"
 
