@@ -196,10 +196,10 @@ if ( result.exitValue() == 0 ) {
                 }
             }
             // Corresponding Module job
-            modulesJob.each {
-                println("\t" + it.key + " " + it.value)
+            modulesJob.each { job ->
+                println("\t" + job.key + " " + job.value)
                 if (isJenkinsInstance) {
-                    matrixJob(it.value) {
+                    matrixJob(job.value) {
                         using("modules")
                         multiscm {
                             git {
@@ -217,7 +217,7 @@ if ( result.exitValue() == 0 ) {
                                     name(modulesPrefix)
                                     url(modulesURL)
                                 }
-                                branch(it.key)
+                                branch(job.key)
                                 relativeTargetDir(modulesCheckoutTo)
                             }
                         }
