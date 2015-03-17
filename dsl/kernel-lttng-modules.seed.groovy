@@ -16,7 +16,7 @@ class BasicVersion implements Comparable<BasicVersion> {
     // Parse a version string of format X.Y.Z.W-A
     BasicVersion(String version, String ref) {
         gitRefs = ref
-		def tokenVersion
+        def tokenVersion
         def token
         if (version.contains('-')) {
             // Release canditate
@@ -55,7 +55,7 @@ class BasicVersion implements Comparable<BasicVersion> {
                         println("Unsupported version extension")
                         println("Trying to parse: ${version}")
                         println("Invalid sub version value: ${it}")
-                    //TODO: throw exception for jenkins
+                //TODO: throw exception for jenkins
                 }
             }
         }
@@ -87,8 +87,10 @@ class BasicVersion implements Comparable<BasicVersion> {
     }
 }
 
-def cutoff = new BasicVersion("3.19", "")
-def modulesBranches = ["master","stable-2.5.0","stable-2.6.0"]
+def kernelTagCutOff = new BasicVersion("3.19", "")
+def modulesBranches = ["master","stable-2.5.0","stable-2.6.0", "stable-2.4.0"]
+
+
 def linuxURL = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 def modulesURL = "git://git.lttng.org/lttng-modules.git"
 
@@ -100,7 +102,7 @@ String modulesCheckoutTo = "lttng-modules"
 def linuxGitReference = "/home/jenkins/gitcache/linux-stable.git"
 String process = "git ls-remote -t $linuxURL | cut -c42- | sort -V"
 
-// Chekf if we are on jenkins
+// Check if we are on jenkins
 // Useful for outside jenkins devellopment related to groovy only scripting
 def isJenkinsInstance = binding.variables.containsKey('JENKINS_HOME')
 
@@ -119,7 +121,7 @@ result.waitForProcessOutput(out,err)
 
 if ( result.exitValue() == 0 ) {
     def branches = out.readLines().collect {
-		// Scrap special string tag
+        // Scrap special string tag
         it.replaceAll("\\^\\{\\}", '')
     }
 
@@ -127,8 +129,8 @@ if ( result.exitValue() == 0 ) {
 
     List versions = []
     branches.each { branch ->
-		def stripBranch = branch.replaceAll("rc", '').replaceAll(/refs\/tags\/v/,'')
-        KernelVersion kVersion = new KernelVersion(stripBranch, branch)
+        def stripBranch = branch.replaceAll("rc", '').replaceAll(/refs\/tags\/v/,'')
+        BasicVersion kVersion = new BasicVersion(stripBranch, branch)
         versions.add(kVersion)
     }
 
@@ -136,7 +138,7 @@ if ( result.exitValue() == 0 ) {
     versions = versions.sort()
 
     // Find the version cut of
-    def cutoffPos = versions.findIndexOf{(it.major >= cutoff.major) && (it.minor >= cutoff.minor) && (it.revision >= cutoff.revision) && (it.build >= cutoff.build) && (it.rc >= cutoff.rc)}
+    def cutoffPos = versions.findIndexOf{(it.major >= kernelTagCutOff.major) && (it.minor >= kernelTagCutOff.minor) && (it.revision >= kernelTagCutOff.revision) && (it.build >= kernelTagCutOff.build) && (it.rc >= kernelTagCutOff.rc)}
 
     // Get last version and include only last rc
     def last
@@ -152,68 +154,82 @@ if ( result.exitValue() == 0 ) {
         lastNoRcPos = versions.size()
     }
 
-	// Actual job creation
+    String modulesPrefix = "lttng-modules"
+    String kernelPrefix = "kernel"
+    String separator = "-"
+    // Actual job creation
     for (int i = cutoffPos; i < versions.size() ; i++) {
 
-		// Only create for valid build
+        // Only create for valid build
         if ( (i < lastNoRcPos && versions[i].rc == -1) || (i >= lastNoRcPos)) {
             println ("Preparing job for")
-            String kernel = versions[i].print()
-            String jobName = "kernel-${kernel}"
-            String moduleJobName = "lttng-modules-master-kernel-${kernel}"
-            println(jobName)
-            println(moduleJobName)
 
-			// Jenkins only dsl
-			if (isJenkinsInstance) {
-				matrixJob("${jobName}") {
-					using("linux-master")
-						scm {
-							git {
-								remote {
-									url("${linuxURL}")
-								}
-								branch(versions[i].gitRefs)
-									shallowClone(true)
-									relativeTargetDir(linuxCheckoutTo)
-									reference(linuxGitReference)
-							}
-						}
-					publishers {
-						downstream(moduleJobName, 'SUCCESS')
-					}
-				}
-				// Corresponding Module job
-				matrixJob("${moduleJobName}") {
-					using("modules")
-						multiscm {
-							git {
-								remote {
-									name("linux")
-										url("${linuxURL}")
-								}
-								branch(versions[i].gitRefs)
-									shallowClone(true)
-									relativeTargetDir(linuxCheckoutTo)
-									reference(linuxGitReference)
-							}
-							git {
-								remote {
-									name("lttng-modules")
-										url(modulesURL)
-								}
-								branch("master")
-									relativeTargetDir(modulesCheckoutTo)
-							}
-						}
-					steps {
-						copyArtifacts("${jobName}/arch=\$arch", "linux-artifact/**", '', false, false) {
-							latestSuccessful(true) // Latest successful build
-						}
-						shell(readFileFromWorkspace('lttng-modules/lttng-modules-dsl-master.sh'))
-					}
-				}
-			}
-		}
-	}
+            String jobName = kernelPrefix + separator + versions[i].print()
+
+            // Generate modules job based on supported modules jobs
+            def modulesJob = [:]
+            modulesBranches.each { branch ->
+                modulesJob[branch] = modulesPrefix + separator + branch + separator + jobName
+            }
+
+            // Jenkins only dsl
+            println(jobName)
+            if (isJenkinsInstance) {
+                matrixJob("${jobName}") {
+                    using("linux-master")
+                    scm {
+                        git {
+                            remote {
+                                url("${linuxURL}")
+                            }
+                            branch(versions[i].gitRefs)
+                            shallowClone(true)
+                            relativeTargetDir(linuxCheckoutTo)
+                            reference(linuxGitReference)
+                        }
+                    }
+                    publishers {
+                        modulesJob.each {
+                            downstream(it.value, 'SUCCESS')
+                        }
+                    }
+                }
+            }
+            // Corresponding Module job
+            modulesJob.each {
+                println("\t" + it.key + " " + it.value)
+                if (isJenkinsInstance) {
+                    matrixJob(it.value) {
+                        using("modules")
+                        multiscm {
+                            git {
+                                remote {
+                                    name(kernelPrefix)
+                                    url("${linuxURL}")
+                                }
+                                branch(versions[i].gitRefs)
+                                shallowClone(true)
+                                relativeTargetDir(linuxCheckoutTo)
+                                reference(linuxGitReference)
+                            }
+                            git {
+                                remote {
+                                    name(modulesPrefix)
+                                    url(modulesURL)
+                                }
+                                branch(it.key)
+                                relativeTargetDir(modulesCheckoutTo)
+                            }
+                        }
+                        steps {
+                            copyArtifacts("${jobName}/arch=\$arch", "linux-artifact/**", '', false, false) {
+                                latestSuccessful(true) // Latest successful build
+                            }
+                            shell(readFileFromWorkspace('lttng-modules/lttng-modules-dsl-master.sh'))
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
