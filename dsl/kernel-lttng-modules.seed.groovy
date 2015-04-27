@@ -87,7 +87,7 @@ class BasicVersion implements Comparable<BasicVersion> {
     }
 }
 
-def kernelTagCutOff = new BasicVersion("3.19", "")
+def kernelTagCutOff = new BasicVersion("4.0", "")
 def modulesBranches = ["master","stable-2.5.0","stable-2.6.0", "stable-2.4.0"]
 
 
@@ -280,7 +280,7 @@ if (fail){
     if (isJenkinsInstance) {
         freeStyleJob("dsl-trigger-kernel") {
             steps {
-                systemGroovyCommand{dslTriggerKernel}
+                systemGroovyCommand(dslTriggerKernel)
             }
         }
 
