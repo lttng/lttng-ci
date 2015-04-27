@@ -244,7 +244,7 @@ import java.util.concurrent.CancellationException
 
 def jobs = hudson.model.Hudson.instance.items
 def fail = false
-def jobStartWith = ${kernelPrefix}
+def jobStartWith = "${kernelPrefix}"
 
 def anotherBuild
 jobs.each { job ->
