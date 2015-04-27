@@ -283,8 +283,5 @@ if (fail){
                 systemGroovyCommand(dslTriggerKernel)
             }
         }
-		// Trigger the kernel build
-		def kernel_trigger_job = hudson.model.Hudson.instance.getItem("dsl-trigger-kernel")
-		kernel_trigger_job.scheduleBuild2(0)
     }
 }
