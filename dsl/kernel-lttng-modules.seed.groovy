@@ -277,11 +277,61 @@ if (fail){
   throw new AbortException("Some job failed")
 }
 """
+	def dslTriggerModule = """\
+import hudson.model.*
+import hudson.AbortException
+import hudson.console.HyperlinkNote
+import java.util.concurrent.CancellationException
+
+
+def jobs = hudson.model.Hudson.instance.items
+def fail = false
+def jobStartWith = "${modulesPrefix + separator}%1$s"
+
+def anotherBuild
+jobs.each { job ->
+  def jobName = job.getName()
+  if (jobName.startsWith(jobStartWith)) {
+    def lastBuild = job.getLastBuild()
+    if (lastBuild == null) {
+      try {
+        def future = job.scheduleBuild2(0, new Cause.UpstreamCause(build))
+        println "\\tWaiting for the completion of " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
+        anotherBuild = future.get()
+      } catch (CancellationException x) {
+        throw new AbortException("\${job.fullDisplayName} aborted.")
+      }
+      println HyperlinkNote.encodeTo('/' + anotherBuild.url, anotherBuild.fullDisplayName) + " completed. Result was " + anotherBuild.result
+
+      build.result = anotherBuild.result
+      if (anotherBuild.result != Result.SUCCESS && anotherBuild.result != Result.UNSTABLE) {
+        // We abort this build right here and now.
+        fail = true
+        println("Build Failed")
+      }
+    } else {
+      println("\\tAlready built")
+    }
+  }
+}
+
+if (fail){
+  throw new AbortException("Some job failed")
+}
+"""
     if (isJenkinsInstance) {
         freeStyleJob("dsl-trigger-kernel") {
             steps {
                 systemGroovyCommand(dslTriggerKernel)
             }
-        }
+		}
+
+		modulesBranches.each { branch ->
+			freeStyleJob("dsl-trigger-module-${branch}") {
+				steps {
+					systemGroovyCommand(snprintf(dslTriggerModule,[branch]))
+				}
+			}
+		}
     }
 }
