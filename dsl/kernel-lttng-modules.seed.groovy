@@ -284,14 +284,14 @@ if (fail){
 		} catch(e){
 			println("Kernel trigger already missing")
 		}
+
         freeStyleJob("dsl-trigger-kernel") {
             steps {
                 systemGroovyCommand(dslTriggerKernel)
             }
         }
-
 		// Trigger the kernel build
-		def kernel_trigger_job = hudson.model.Hudson.instance.getItem("dsl-trigger-kernel")
+		kernel_trigger_job = hudson.model.Hudson.instance.getItem("dsl-trigger-kernel")
 		kernel_trigger_job.scheduleBuild2(0)
     }
 }
