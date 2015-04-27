@@ -286,7 +286,7 @@ import java.util.concurrent.CancellationException
 
 def jobs = hudson.model.Hudson.instance.items
 def fail = false
-def jobStartWith = "${modulesPrefix + separator} %1\$s"
+def jobStartWith = "JOBPREFIX"
 
 def anotherBuild
 jobs.each { job ->
@@ -329,7 +329,7 @@ if (fail){
 		modulesBranches.each { branch ->
 			freeStyleJob("dsl-trigger-module-${branch}") {
 				steps {
-					systemGroovyCommand(snprintf(dslTriggerModule,[branch]))
+					systemGroovyCommand(dslTriggerModule.replaceAll("JOBPREFIX",modulesPrefix + separator + branch + separator))
 				}
 			}
 		}
