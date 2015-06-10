@@ -88,7 +88,7 @@ class BasicVersion implements Comparable<BasicVersion> {
 }
 
 def kernelTagCutOff = new BasicVersion("3.0", "")
-def modulesBranches = ["master","stable-2.5.0","stable-2.6.0", "stable-2.4.0"]
+def modulesBranches = ["master","stable-2.5","stable-2.6", "stable-2.4"]
 
 
 def linuxURL = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
