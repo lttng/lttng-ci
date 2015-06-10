@@ -325,12 +325,18 @@ if (fail){
             steps {
                 systemGroovyCommand(dslTriggerKernel)
             }
+			triggers {
+				cron("H 0 * * *")
+			}
 		}
 
 		modulesBranches.each { branch ->
 			freeStyleJob("dsl-trigger-module-${branch}") {
 				steps {
 					systemGroovyCommand(dslTriggerModule.replaceAll("JOBPREFIX",modulesPrefix + separator + branch + separator))
+				}
+				triggers {
+					scm('@daily')
 				}
 			}
 		}
