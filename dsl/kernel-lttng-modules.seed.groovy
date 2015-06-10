@@ -100,14 +100,15 @@ String recipeCheckoutTo = "recipe"
 String modulesCheckoutTo = "lttng-modules"
 
 def linuxGitReference = "/home/jenkins/gitcache/linux-stable.git"
-String process = "git ls-remote -t $linuxURL | cut -c42- | sort -V"
 
 // Check if we are on jenkins
 // Useful for outside jenkins devellopment related to groovy only scripting
 def isJenkinsInstance = binding.variables.containsKey('JENKINS_HOME')
 
+// Fetch tags and format
 // Split the string into sections based on |
 // And pipe the results together
+String process = "git ls-remote -t $linuxURL | cut -c42- | sort -V"
 def out = new StringBuilder()
 def err = new StringBuilder()
 Process result = process.tokenize( '|' ).inject( null ) { p, c ->
@@ -137,7 +138,7 @@ if ( result.exitValue() == 0 ) {
     // Sort the version via Comparable implementation of KernelVersion
     versions = versions.sort()
 
-    // Find the version cut of
+    // Find the version cutoff
     def cutoffPos = versions.findIndexOf{(it.major >= kernelTagCutOff.major) && (it.minor >= kernelTagCutOff.minor) && (it.revision >= kernelTagCutOff.revision) && (it.build >= kernelTagCutOff.build) && (it.rc >= kernelTagCutOff.rc)}
 
     // Get last version and include only last rc
