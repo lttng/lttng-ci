@@ -141,6 +141,10 @@ if ( result.exitValue() == 0 ) {
     // Find the version cutoff
     def cutoffPos = versions.findIndexOf{(it.major >= kernelTagCutOff.major) && (it.minor >= kernelTagCutOff.minor) && (it.revision >= kernelTagCutOff.revision) && (it.build >= kernelTagCutOff.build) && (it.rc >= kernelTagCutOff.rc)}
 
+	// If error set cutoff on last so no job are created
+	if (cutoffPos == -1) {
+		cutoffPos = versions.size()
+	}
     // Get last version and include only last rc
     def last
     def lastNoRcPos
@@ -158,6 +162,7 @@ if ( result.exitValue() == 0 ) {
     String modulesPrefix = "lttng-modules"
     String kernelPrefix = "dsl-kernel"
     String separator = "-"
+
     // Actual job creation
     for (int i = cutoffPos; i < versions.size() ; i++) {
 
