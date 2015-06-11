@@ -163,6 +163,11 @@ if ( result.exitValue() == 0 ) {
     String kernelPrefix = "dsl-kernel"
     String separator = "-"
 
+
+	println("CutOff index")
+	println(cutoffPos)
+
+
     // Actual job creation
     for (int i = cutoffPos; i < versions.size() ; i++) {
 
