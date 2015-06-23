@@ -3,7 +3,7 @@
 lttng create
 lttng enable-event -a -k
 lttng start
-wait 1
+sleep 1
 lttng stop
 
 count=$(lttng view | wc -l)
