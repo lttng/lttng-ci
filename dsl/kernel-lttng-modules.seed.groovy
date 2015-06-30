@@ -87,7 +87,7 @@ class BasicVersion implements Comparable<BasicVersion> {
     }
 }
 
-def kernelTagCutOff = new BasicVersion("4.1", "")
+def kernelTagCutOff = new BasicVersion("3.9", "")
 def modulesBranches = []
 
 //def modulesBranches = ["master","stable-2.5","stable-2.6", "stable-2.4"]
