@@ -87,7 +87,7 @@ class BasicVersion implements Comparable<BasicVersion> {
     }
 }
 
-def kernelTagCutOff = new BasicVersion("3.0", "")
+def kernelTagCutOff = new BasicVersion("4.1", "")
 def modulesBranches = []
 
 //def modulesBranches = ["master","stable-2.5","stable-2.6", "stable-2.4"]
@@ -266,9 +266,18 @@ jobs.each { job ->
     if (lastBuild == null) {
       try {
         def future = job.scheduleBuild2(0, new Cause.UpstreamCause(build))
-        println "\\tLaunched " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
+        println "\\tWaiting for the completion of " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
+        anotherBuild = future.get()
       } catch (CancellationException x) {
         throw new AbortException("\${job.fullDisplayName} aborted.")
+      }
+      println HyperlinkNote.encodeTo('/' + anotherBuild.url, anotherBuild.fullDisplayName) + " completed. Result was " + anotherBuild.result
+
+      build.result = anotherBuild.result
+      if (anotherBuild.result != Result.SUCCESS && anotherBuild.result != Result.UNSTABLE) {
+        // We abort this build right here and now.
+        fail = true
+        println("Build Failed")
       }
     } else {
       println("\\tAlready built")
