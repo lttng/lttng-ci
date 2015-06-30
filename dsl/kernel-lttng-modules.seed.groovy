@@ -288,7 +288,7 @@ println "Nb of live kernel enabled build node "+ kernelEnabledNode
 def ongoingBuild = []
 
 while (toBuild.size() != 0) {
-	if(ongoingBuild.size() <= (kernelEnabledNodei.intdiv(2))) {
+	if(ongoingBuild.size() <= (kernelEnabledNode.intdiv(2))) {
 		def job = toBuild.pop()
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\\t trigering" + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
