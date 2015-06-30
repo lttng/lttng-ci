@@ -247,7 +247,6 @@ if ( result.exitValue() == 0 ) {
 
     // Trigger generations
     def dslTriggerKernel = """\
-
 import hudson.model.*
 import hudson.AbortException
 import hudson.console.HyperlinkNote
@@ -256,37 +255,50 @@ import java.util.concurrent.CancellationException
 
 def jobs = hudson.model.Hudson.instance.items
 def fail = false
-def jobStartWith = "${kernelPrefix}"
+def jobStartWith = "dsl-kernel-"
+def toBuild = []
+def counter = 0
 
 def anotherBuild
 jobs.each { job ->
-  def jobName = job.getName()
-  if (jobName.startsWith(jobStartWith)) {
-    def lastBuild = job.getLastBuild()
-    if (lastBuild == null) {
-      try {
-        def future = job.scheduleBuild2(0, new Cause.UpstreamCause(build))
-        println "\\tWaiting for the completion of " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
-        anotherBuild = future.get()
-      } catch (CancellationException x) {
-        throw new AbortException("\${job.fullDisplayName} aborted.")
-      }
-      println HyperlinkNote.encodeTo('/' + anotherBuild.url, anotherBuild.fullDisplayName) + " completed. Result was " + anotherBuild.result
+	def jobName = job.getName()
+		if (jobName.startsWith(jobStartWith)) {
+			counter = counter + 1
+			def lastBuild = job.getLastBuild()
+				if (lastBuild == null || lastBuild.result != Result.SUCCESS) {
+					toBuild.push(job)
+				} else {
+					println("\\tAlready built")
+				}
+		}
+}
 
-      build.result = anotherBuild.result
-      if (anotherBuild.result != Result.SUCCESS && anotherBuild.result != Result.UNSTABLE) {
-        // We abort this build right here and now.
-        fail = true
-        println("Build Failed")
-      }
-    } else {
-      println("\\tAlready built")
-    }
-  }
+println "Kernel total "+ counter
+println "Kernel to build "+ toBuild.size()
+
+
+def kernelEnabledNode = 0
+hudson.model.Hudson.instance.nodes.each { node ->
+	if (node.getLabelString().contains("kernel")){
+		kernelEnabledNode++
+	}
+}
+println "Nb of live kernel enabled build node "+ kernelEnabledNode
+
+def ongoingBuild = []
+
+while (toBuild.size() != 0) {
+	if(ongoingBuild.size() <= (kernelEnabledNodei.intdiv(2))) {
+		def job = toBuild.pop()
+		ongoingBuild.push(job.scheduleBuild2(0))
+		println "\\t trigering" + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
+	} else {
+		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
+	}
 }
 
 if (fail){
-  throw new AbortException("Some job failed")
+	throw new AbortException("Some job failed")
 }
 """
 	def dslTriggerModule = """\
