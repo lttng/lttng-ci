@@ -88,7 +88,7 @@ class BasicVersion implements Comparable<BasicVersion> {
 }
 
 def kernelTagCutOff = new BasicVersion("2.6.36", "")
-def modulesBranches = []
+def modulesBranches = ["master"]
 
 //def modulesBranches = ["master","stable-2.5","stable-2.6", "stable-2.4"]
 
