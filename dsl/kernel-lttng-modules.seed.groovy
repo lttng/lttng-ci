@@ -251,8 +251,10 @@ import hudson.model.*
 import hudson.AbortException
 import hudson.console.HyperlinkNote
 import java.util.concurrent.CancellationException
+import java.util.Random
 
 
+Random random = new Random()
 def jobs = hudson.model.Hudson.instance.items
 def fail = false
 def jobStartWith = "dsl-kernel-"
@@ -293,6 +295,7 @@ while (toBuild.size() != 0) {
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\\t trigering" + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
 	} else {
+		wait(random.nextInt(120000)
 		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
 	}
 }
@@ -306,8 +309,10 @@ import hudson.model.*
 import hudson.AbortException
 import hudson.console.HyperlinkNote
 import java.util.concurrent.CancellationException
+import java.util.Random
 
 
+Random random = new Random()
 def jobs = hudson.model.Hudson.instance.items
 def fail = false
 def jobStartWith = "JOBPREFIX"
@@ -338,6 +343,7 @@ while (toBuild.size() != 0) {
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
 	} else {
+		wait(random.nextInt(60000)
 		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
 	}
 }
