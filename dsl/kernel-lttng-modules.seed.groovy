@@ -295,7 +295,7 @@ while (toBuild.size() != 0) {
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\\t trigering" + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
 	} else {
-		wait(random.nextInt(120000)
+		Thread.sleep(random.nextInt(120000))
 		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
 	}
 }
@@ -343,7 +343,7 @@ while (toBuild.size() != 0) {
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
 	} else {
-		wait(random.nextInt(60000)
+		Thread.sleep(random.nextInt(60000))
 		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
 	}
 }
