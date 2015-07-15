@@ -234,7 +234,7 @@ if ( result.exitValue() == 0 ) {
                             }
                         }
                         steps {
-                            copyArtifacts("${jobName}/arch=\$arch", "linux-artifact/**", '', false, false) {
+                            copyArtifacts("${jobName}/arch=\$arch,label=kernel", "linux-artifact/**", '', false, false) {
                                 latestSuccessful(true) // Latest successful build
                             }
                             shell(readFileFromWorkspace('lttng-modules/lttng-modules-dsl-master.sh'))
