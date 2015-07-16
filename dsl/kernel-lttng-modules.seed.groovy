@@ -302,7 +302,7 @@ while (toBuild.size() != 0) {
   }
   if ((ongoingBuild.size() <= kernelEnabledNode.intdiv(2)) && (queuedTask.size() < limitQueue)) {
 		def job = toBuild.pop()
-		//ongoingBuild.push(job.scheduleBuild2(0))
+		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
   } else {
     println "Currently " + ongoingBuild.size() + " build currently on execution. Limit: " + kernelEnabledNode.intdiv(2)
