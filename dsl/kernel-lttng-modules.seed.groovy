@@ -267,7 +267,7 @@ def limitQueue = 4
 def anotherBuild
 jobs.each { job ->
 	def jobName = job.getName()
-		if (jobName.startsWith(jobStartWith)) {
+		if (jobName.startsWith(jobStartWithKernel)) {
 			counter = counter + 1
 			def lastBuild = job.getLastBuild()
 				if (lastBuild == null || lastBuild.result != Result.SUCCESS) {
