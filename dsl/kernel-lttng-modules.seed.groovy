@@ -93,7 +93,7 @@ def modulesBranches = ["master", "stable-2.5", "stable-2.6"]
 //def modulesBranches = ["master","stable-2.5","stable-2.6", "stable-2.4"]
 
 def linuxURL = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
-def modulesURL = "git://git.lttng.org/lttng-modules.git"
+def modulesURL = "https://github.com/lttng/lttng-modules.git"
 
 // Linux specific variable
 String linuxCheckoutTo = "linux-source"
