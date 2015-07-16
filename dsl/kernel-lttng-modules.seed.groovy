@@ -261,6 +261,7 @@ def fail = false
 def jobStartWith = "dsl-kernel-"
 def toBuild = []
 def counter = 0
+def limitQueue = 4
 
 def anotherBuild
 jobs.each { job ->
@@ -289,11 +290,14 @@ hudson.model.Hudson.instance.nodes.each { node ->
 println "Nb of live kernel enabled build node "+ kernelEnabledNode
 
 def ongoingBuild = []
-def q = jenkins.model.Jenkins.getInstance().getQueue()
+def q = jenkins.model.Jenkins.getInstance().getQueue() 
 
 
 while (toBuild.size() != 0) {
-	if(ongoingBuild.size() <= (kernelEnabledNode.intdiv(2))) {
+	// Throttle the build with both the number of current parent task and queued
+	// task.
+	def queuedTask = q.getItems().findAll { it.task.name.startsWith(jobStartWith) }
+	if ((ongoingBuild.size() <= kernelEnabledNode) && (queuedTask.size() < limitQueue)) {
 		def job = toBuild.pop()
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\\t trigering" + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
