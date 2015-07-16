@@ -266,16 +266,16 @@ def limitQueue = 4
 
 def anotherBuild
 jobs.each { job ->
-	def jobName = job.getName()
-		if (jobName.startsWith(jobStartWithKernel)) {
-			counter = counter + 1
-			def lastBuild = job.getLastBuild()
-				if (lastBuild == null || lastBuild.result != Result.SUCCESS) {
-					toBuild.push(job)
-				} else {
-					println("\\tAlready built")
-				}
-		}
+  def jobName = job.getName()
+  if (jobName.startsWith(jobStartWithKernel)) {
+    counter = counter + 1
+    def lastBuild = job.getLastBuild()
+    if (lastBuild == null || lastBuild.result != Result.SUCCESS) {
+      toBuild.push(job)
+    } else {
+      println("\tAlready built")
+    }
+  }
 }
 
 println "Kernel total "+ counter
@@ -284,9 +284,9 @@ println "Kernel to build "+ toBuild.size()
 
 def kernelEnabledNode = 0
 hudson.model.Hudson.instance.nodes.each { node ->
-	if (node.getLabelString().contains("kernel")){
-		kernelEnabledNode++
-	}
+  if (node.getLabelString().contains("kernel")){
+    kernelEnabledNode++
+  }
 }
 println "Nb of live kernel enabled build node "+ kernelEnabledNode
 
@@ -294,27 +294,27 @@ def ongoingBuild = []
 def q = jenkins.model.Jenkins.getInstance().getQueue() 
 
 while (toBuild.size() != 0) {
-	// Throttle the build with both the number of current parent task and queued
-	// task.Look for both kernel and downstream module from previous kernel.
-	def queuedTask = q.getItems().findAll {
-		(it.task.getParent().name.startsWith(jobStartWithKernel)) ||
-		(it.task.getParent().name.startsWith(jobStartWithModule))
-	}
-	if ((ongoingBuild.size() <= kernelEnabledNode.intdiv(2)) && (queuedTask.size() < limitQueue)) {
+  // Throttle the build with both the number of current parent task and queued
+  // task.Look for both kernel and downstream module from previous kernel.
+  def queuedTask = q.getItems().findAll {
+    it.task.getParent().name.startsWith(jobStartWithKernel) ||
+      it.task.getParent().name.startsWith(jobStartWithModule)
+  }
+  if ((ongoingBuild.size() <= kernelEnabledNode.intdiv(2)) && (queuedTask.size() < limitQueue)) {
 		def job = toBuild.pop()
-		ongoingBuild.push(job.scheduleBuild2(0))
-		println "\\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
-	} else {
-		println "Currently " + ongoingBuild.size() + " build currently on execution. Limit: " + kernelEnabledNode.intdiv(2)
-		println "Currently " + queuedTask.findAll{it.task.getParent().name.startsWith(jobStartWithModule)}.size() + " module jobs are queued. Limit: " + limitQueue
-		println "Currently " + queuedTask.findAll{it.task.getParent().name.startsWith(jobStartWithKernel)}.size() + " kernel jobs are queued. Limit: " + limitQueue
-		Thread.sleep(random.nextInt(60000))
-		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
-	}
+		//ongoingBuild.push(job.scheduleBuild2(0))
+		println "\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
+  } else {
+    println "Currently " + ongoingBuild.size() + " build currently on execution. Limit: " + kernelEnabledNode.intdiv(2)
+    println "Currently " + queuedTask.findAll{it.task.getParent().name.startsWith(jobStartWithModule)}.size() + " module jobs are queued. Limit: " + limitQueue
+    println "Currently " + queuedTask.findAll{it.task.getParent().name.startsWith(jobStartWithKernel)}.size() + " kernel jobs are queued. Limit: " + limitQueue
+    Thread.sleep(random.nextInt(60000))
+    ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
+  }
 }
 
 if (fail){
-	throw new AbortException("Some job failed")
+  throw new AbortException("Some job failed")
 }
 """
 	def dslTriggerModule = """\
