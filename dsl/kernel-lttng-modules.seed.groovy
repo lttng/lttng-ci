@@ -248,6 +248,7 @@ if ( result.exitValue() == 0 ) {
     // Trigger generations
     def dslTriggerKernel = """\
 import hudson.model.*
+import jenkins.model.*
 import hudson.AbortException
 import hudson.console.HyperlinkNote
 import java.util.concurrent.CancellationException
@@ -288,7 +289,7 @@ hudson.model.Hudson.instance.nodes.each { node ->
 println "Nb of live kernel enabled build node "+ kernelEnabledNode
 
 def ongoingBuild = []
-def queueInstance = Jenkins.instance.queue
+def q = jenkins.model.Jenkins.getInstance().getQueue()
 
 
 while (toBuild.size() != 0) {
@@ -296,7 +297,7 @@ while (toBuild.size() != 0) {
 		def job = toBuild.pop()
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\\t trigering" + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
-		println "Debug: currenlty queued task" + queueInstance.items.size()
+		println "Debug: currenlty queued task" + q.getItems().size()
 	} else {
 		Thread.sleep(random.nextInt(120000))
 		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
