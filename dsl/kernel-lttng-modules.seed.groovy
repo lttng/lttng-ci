@@ -301,14 +301,15 @@ while (toBuild.size() != 0) {
 		it.task.name.startsWith(jobStartWithModule)
 	}
 
-	if ((ongoingBuild.size() <= kernelEnabledNode) && (queuedTask.size() < limitQueue)) {
+	if ((ongoingBuild.size() <= kernelEnabledNode.intdiv(2)) && (queuedTask.size() < limitQueue)) {
 		def job = toBuild.pop()
 		ongoingBuild.push(job.scheduleBuild2(0))
-		println "Currently " + queuedTask.findAll{it.task.name.startsWith(jobStartWithModule)}.size() + " module jobs are queued"
-		println "Currently " + queuedTask.findAll{it.task.name.startsWith(jobStartWithKernel)}.size() + " kernel jobs are queued"
 		println "\\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
 	} else {
-		Thread.sleep(random.nextInt(120000))
+		println "Currently " + ongoingBuild.size() + " build currently on execution. Limit: " + kernelEnabledNode.intdiv(2)
+		println "Currently " + queuedTask.findAll{it.task.name.startsWith(jobStartWithModule)}.size() + " module jobs are queued. Limit: " + limitQueue
+		println "Currently " + queuedTask.findAll{it.task.name.startsWith(jobStartWithKernel)}.size() + " kernel jobs are queued. Limit: " + limitQueue
+		Thread.sleep(random.nextInt(60000))
 		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
 	}
 }
