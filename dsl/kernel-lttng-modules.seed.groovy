@@ -368,7 +368,6 @@ if (fail){
 
 	dslTriggerKernel = dslTriggerKernel.replaceAll("KERNELPREFIX", kernelPrefix)
 	dslTriggerKernel = dslTriggerKernel.replaceAll("MODULEPREFIX", modulesPrefix)
-	dslTriggerModule = dslTriggerModule.replaceAll("JOBPREFIX",modulesPrefix + separator + branch + separator)
     if (isJenkinsInstance) {
         freeStyleJob("dsl-trigger-kernel") {
             steps {
@@ -380,6 +379,7 @@ if (fail){
 		}
 
 		modulesBranches.each { branch ->
+			dslTriggerModule = dslTriggerModule.replaceAll("JOBPREFIX",modulesPrefix + separator + branch + separator)
 			freeStyleJob("dsl-trigger-module-${branch}") {
 				steps {
 					systemGroovyCommand(dslTriggerModule)
