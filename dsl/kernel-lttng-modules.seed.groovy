@@ -258,7 +258,8 @@ import java.util.Random
 Random random = new Random()
 def jobs = hudson.model.Hudson.instance.items
 def fail = false
-def jobStartWith = "dsl-kernel-"
+def jobStartWithKernel = "KERNELPREFIX"
+def jobStartWithModule = "MODULEPREFIX"
 def toBuild = []
 def counter = 0
 def limitQueue = 4
@@ -292,16 +293,20 @@ println "Nb of live kernel enabled build node "+ kernelEnabledNode
 def ongoingBuild = []
 def q = jenkins.model.Jenkins.getInstance().getQueue() 
 
-
 while (toBuild.size() != 0) {
 	// Throttle the build with both the number of current parent task and queued
-	// task.
-	def queuedTask = q.getItems().findAll { it.task.name.startsWith(jobStartWith) }
+	// task.Look for both kernel and downstream module from previous kernel.
+	def queuedTask = q.getItems().findAll {
+		it.task.name.startsWith(jobStartWithKernel) ||
+		it.task.name.startsWith(jobStartWithModule)
+	}
+
 	if ((ongoingBuild.size() <= kernelEnabledNode) && (queuedTask.size() < limitQueue)) {
 		def job = toBuild.pop()
 		ongoingBuild.push(job.scheduleBuild2(0))
-		println "\\t trigering" + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
-		println "Debug: currenlty queued task" + q.getItems().size()
+		println "Currently " + queuedTask.findAll{it.task.name.startsWith(jobStartWithModule).size() + "module jobs are queued"
+		println "Currently " + queuedTask.findAll{it.task.name.startsWith(jobStartWithKernel).size() + "kernel jobs are queued"
+		println "\\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
 	} else {
 		Thread.sleep(random.nextInt(120000))
 		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
@@ -360,6 +365,10 @@ if (fail){
 	throw new AbortException("Some job failed")
 }
 """
+
+	dslTriggerKernel = dslTriggerKernel.replaceAll("KERNELPREFIX", kernelPrefix)
+	dslTriggerKernel = dslTriggerKernel.replaceAll("MODULEPREFIX", modulesPrefix)
+	dslTriggerModule = dslTriggerModule.replaceAll("JOBPREFIX",modulesPrefix + separator + branch + separator)
     if (isJenkinsInstance) {
         freeStyleJob("dsl-trigger-kernel") {
             steps {
@@ -373,7 +382,7 @@ if (fail){
 		modulesBranches.each { branch ->
 			freeStyleJob("dsl-trigger-module-${branch}") {
 				steps {
-					systemGroovyCommand(dslTriggerModule.replaceAll("JOBPREFIX",modulesPrefix + separator + branch + separator))
+					systemGroovyCommand(dslTriggerModule)
 				}
 				triggers {
 					scm('@daily')
