@@ -331,6 +331,7 @@ def fail = false
 def jobStartWith = "JOBPREFIX"
 def toBuild = []
 def counter = 0
+def limitQueue = 4
 
 def anotherBuild
 jobs.each { job ->
@@ -350,8 +351,17 @@ hudson.model.Hudson.instance.nodes.each { node ->
 }
 
 def ongoingBuild = []
+def q = jenkins.model.Jenkins.getInstance().getQueue()
+
 while (toBuild.size() != 0) {
-	if(ongoingBuild.size() <= (kernelEnabledNode.intdiv(2))) {
+	// Throttle the build with both the number of current parent task and queued
+	// task.Look for both kernel and downstream module from previous kernel.
+	def queuedTask = q.getItems().findAll {
+		it.task.getParent().name.startsWith(jobStartWithKernel) ||
+		  it.task.getParent().name.startsWith(jobStartWithModule)
+	}
+	
+	if ((ongoingBuild.size() <= kernelEnabledNode.intdiv(2)) && (queuedTask.size() < limitQueue)) {
 		def job = toBuild.pop()
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
