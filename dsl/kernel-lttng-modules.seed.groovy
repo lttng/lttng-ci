@@ -293,14 +293,22 @@ println "Nb of live kernel enabled build node "+ kernelEnabledNode
 def ongoingBuild = []
 def q = jenkins.model.Jenkins.getInstance().getQueue() 
 
+def queuedTaskKernel = 0
+def queuedTaskModule = 0
+
 while (toBuild.size() != 0) {
   // Throttle the build with both the number of current parent task and queued
   // task.Look for both kernel and downstream module from previous kernel.
-  def queuedTask = q.getItems().findAll {
-    it.task.getParent().name.startsWith(jobStartWithKernel) ||
-      it.task.getParent().name.startsWith(jobStartWithModule)
-  }
-  if ((ongoingBuild.size() <= kernelEnabledNode.intdiv(2)) && (queuedTask.size() < limitQueue)) {
+  queuedTaskKernel = q.getItems().findAll {
+    it.task.getParent().name.startsWith(jobStartWithKernel)
+  }.size()
+
+  queuedTaskModule = q.getItems().findAll {
+	  it.task.getParent().name.startsWith(jobStartWithModule)
+  }.size()
+
+  it.task.getParent().name.startsWith(jobStartWithModule)
+  if ((ongoingBuild.size() <= kernelEnabledNode.intdiv(2)) && (queuedTaskKernel + queuedTaskModule < limitQueue)) {
 		def job = toBuild.pop()
 		ongoingBuild.push(job.scheduleBuild2(0))
 		println "\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
@@ -328,49 +336,74 @@ import java.util.Random
 Random random = new Random()
 def jobs = hudson.model.Hudson.instance.items
 def fail = false
-def jobStartWith = "JOBPREFIX"
+def modulePrefix = "MODULEPREFIX"
+def branchName = "BRANCHNAME"
+def kernelPrefix = "KERNELPREFIX"
+def nodeLabels=["kernel"]
+def validNodeDivider = 2
+
+def fullModulePrefix = modulesPrefix + branchName
+
 def toBuild = []
 def counter = 0
 def limitQueue = 4
 
-def anotherBuild
 jobs.each { job ->
 	def jobName = job.getName()
-	if (jobName.startsWith(jobStartWith)) {
+	if (jobName.startsWith(fullModulePrefix)) {
 		counter = counter + 1
 		toBuild.push(job)
 	}
 }
 
-// Get valid node
-def kernelEnabledNode = 0
+// Get valid labeled node node
+def validNodeCount = 0
 hudson.model.Hudson.instance.nodes.each { node ->
-	if (node.getLabelString().contains("kernel")){
-		kernelEnabledNode++
+	def valid = true
+	nodeLabels.each { label ->
+		if (!node.getLabelString().contains(nodeLabel)){
+			valid = false
+			break;
+		}
+	}
+	if (valid){
+		validNodeCount++
 	}
 }
 
+// Divide the valid node by validNodeDivider based on user defined label slave descriminant ex arck type
+def finalValidNodeCount = validNodeCount.intdiv(validNodeDivider
+
+// Scheduling
+
 def ongoingBuild = []
 def q = jenkins.model.Jenkins.getInstance().getQueue()
+def queuedTaskKernel = 0
+def queuedTaskModule = 0
+def sleep = 0
 
 while (toBuild.size() != 0) {
 	// Throttle the build with both the number of current parent task and queued
 	// task.Look for both kernel and downstream module from previous kernel.
-	def queuedTask = q.getItems().findAll {
-		it.task.getParent().name.startsWith(jobStartWithKernel) ||
-		  it.task.getParent().name.startsWith(jobStartWithModule)
-	}
-	
-	if ((ongoingBuild.size() <= kernelEnabledNode.intdiv(2)) && (queuedTask.size() < limitQueue)) {
+	queuedTaskKernel = q.getItems().findAll {it.task.getParent().getDisplayName().startsWith(jobStartWithKernel)}.size()
+	queuedTaskModule = q.getItems().findAll {it.task.getParent().getDisplayName().startsWith(jobStartWithModule)}.size()
+	if ((ongoingBuild.size() <= finalValidNodeCount) && (queuedTaskKernel + queuedTaskModule < limitQueue)) {
 		def job = toBuild.pop()
 		ongoingBuild.push(job.scheduleBuild2(0))
-		println "\\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
+		println "\t trigering " + HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)
 	} else {
-		Thread.sleep(random.nextInt(60000))
+        println "Holding trigger"
+        println "Currently " + ongoingBuild.size() + "  build ongoing. Max = " + validNodeCount
+        println "Currently " + queuedTaskKernel + " Kernel build ongoing."
+        println "Currently " + queuedTaskModule + " LTTng-modules build ongoing."
+        println "Limit for combination of both:" + limitQueue
+    
+        sleep = random.nextInt(60000)
+        println "Sleeping for " + sleep.intdiv(1000) + " seconds"
+		Thread.sleep(sleep)
 		ongoingBuild.removeAll{ it.isCancelled() || it.isDone() }
 	}
 }
-
 if (fail){
 	throw new AbortException("Some job failed")
 }
@@ -389,7 +422,8 @@ if (fail){
 		}
 
 		modulesBranches.each { branch ->
-			dslTriggerModule = dslTriggerModule.replaceAll("JOBPREFIX",modulesPrefix + separator + branch + separator)
+			dslTriggerModule = dslTriggerModule.replaceAll("MODULEPREFIX",modulesPrefix + separator + branch + separator)
+			dslTriggerModule = dslTriggerModule.replaceAll("BRANCHNAME",separator + branch + separator)
 			freeStyleJob("dsl-trigger-module-${branch}") {
 				steps {
 					systemGroovyCommand(dslTriggerModule)
