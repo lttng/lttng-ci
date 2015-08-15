@@ -1,0 +1,158 @@
+# {project}_{version}_{jobtype}
+# liburcu_stable-0.8_build
+#
+# jobtypes:
+#   - build
+#   - portbuild
+#   - cppcheck
+#   - coverity
+#   - scan-build
+#   - pylint
+
+- defaults:
+    name: liburcu
+    description: |
+      liburcu is a LGPLv2.1 userspace RCU (read-copy-update) library. This
+      data synchronization library provides read-side access which scales
+      linearly with the number of cores. It does so by allowing multiples
+      copies of a given data structure to live at the same time, and by
+      monitoring the data structure accesses to detect grace periods after
+      which memory reclamation is possible.
+
+      liburcu-cds provides efficient data structures based on RCU and
+      lock-free algorithms. Those structures include hash tables, queues,
+      stacks, and doubly-linked lists.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    logrotate:
+        daysToKeep: -1
+        numToKeep: 2
+        artifactDaysToKeep: -1
+        artifactNumToKeep: -1
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+
+    scm:
+      - git:
+          url: https://github.com/urcu/userspace-rcu.git
+          browser: githubweb
+          browser-url: https://github.com/urcu/userspace-rcu.git
+          branches:
+            - origin/{version}
+
+    triggers:
+      - pollscm: "@hourly"
+
+    properties:
+      - github:
+          url: https://github.com/urcu/userspace-rcu/
+
+
+## Templates
+- job-template:
+    name: liburcu_{version}_build
+    defaults: liburcu
+
+    project-type: matrix
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values:
+          - x86-32
+          - x86-64
+      - axis:
+         type: user-defined
+         name: conf
+         values:
+          - std
+          - static
+          - tls_fallback
+      - axis:
+         type: user-defined
+         name: build
+         values:
+          - std
+          - oot
+          - dist
+
+    builders:
+      - shell:
+         !include-raw-escape scripts/liburcu/build.sh
+
+    # TODO: Scan for open tasks
+    publishers:
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+      - archive:
+          artifacts: 'build/**'
+          allow-empty: false
+          fingerprint: true
+      - trigger:
+          project: lttng-ust-{version}
+          threshold: SUCCESS
+
+- job-template:
+    name: liburcu_{version}_cppcheck
+    defaults: liburcu
+
+    triggers:
+      - pollscm: "@daily"
+
+    builders:
+      - shell: |
+          rm -f liburcu-cppcheck.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> liburcu-cppcheck.xml
+
+    publishers:
+      - archive:
+          artifacts: 'liburcu-cppcheck.xml'
+          allow-empty: false
+          fingerprint: true
+      - cppcheck:
+          pattern: 'liburcu-cppcheck.xml'
+      - email:
+          recipients: 'ci-notification@lists.lttng.org'
+          notify-every-unstable-build: true
+          send-to-individuals: false
+
+- job-template:
+    name: liburcu_{version}_scan-build
+    defaults: liburcu
+    node: 'x86-64'
+
+    triggers:
+      - pollscm: "@daily"
+
+    builders:
+      - shell:
+          !include-raw-escape scripts/liburcu/scan-build.sh
+
+    publishers:
+      - html-publisher:
+          name: 'HTML Report'
+          dir: 'scan-build-archive/'
+          files: 'index.html'
+
+# TODO: liburcu_{version}_coverity
+
+
+## Project
+- project:
+    name: liburcu
+    version:
+      - stable-0.7
+      - stable-0.8
+      - master
+    jobs:
+      - 'liburcu_{version}_build'
+      - 'liburcu_{version}_cppcheck'
+      - 'liburcu_{version}_scan-build'
+
