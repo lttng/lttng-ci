@@ -1,0 +1,8 @@
+[job_builder]
+ignore_cache=True
+keep_descriptions=True
+
+[jenkins]
+user=jenkins
+password=1234567890abcdef1234567890abcdef
+url=https://ci.lttng.org

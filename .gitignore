@@ -1,2 +1,3 @@
 test/
 .venv/
+etc/jenkins_jobs.ini
