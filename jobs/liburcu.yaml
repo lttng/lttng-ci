@@ -148,18 +148,6 @@
 # TODO: liburcu_{version}_coverity
 
 
-- job-group:
-    name: 'liburcu_{version}_build'
-    buildtype: 'build'
-    jobs:
-      - 'liburcu_{version}_{buildtype}'
-
-- job-group:
-    name: 'liburcu_{version}_portbuild'
-    buildtype: 'portbuild'
-    jobs:
-      - 'liburcu_{version}_{buildtype}'
-
 ## Project
 - project:
     name: liburcu
@@ -168,9 +156,11 @@
       - stable-0.8
       - master
     jobs:
-      - 'liburcu_{version}_build':
+      - 'liburcu_{version}_{buildtype}':
+          buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
-      - 'liburcu_{version}_portbuild':
+      - 'liburcu_{version}_{buildtype}':
+          buildtype: portbuild
           arch: !!python/tuple [armhf, powerpc]
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'

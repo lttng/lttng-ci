@@ -192,19 +192,6 @@
           send-to-individuals: false
 
 
-## Job groups
-- job-group:
-    name: 'babeltrace_{version}_build'
-    buildtype: 'build'
-    jobs:
-      - 'babeltrace_{version}_{buildtype}'
-
-- job-group:
-    name: 'babeltrace_{version}_portbuild'
-    buildtype: 'portbuild'
-    jobs:
-      - 'babeltrace_{version}_{buildtype}'
-
 ## Project
 - project:
     name: babeltrace
@@ -212,9 +199,11 @@
       - stable-1.2
       - master
     jobs:
-      - 'babeltrace_{version}_build':
+      - 'babeltrace_{version}_{buildtype}':
+          buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
-      - 'babeltrace_{version}_portbuild':
+      - 'babeltrace_{version}_{buildtype}':
+          buildtype: portbuild
           arch: !!python/tuple [armhf, powerpc]
       - 'babeltrace_{version}_cppcheck'
       - 'babeltrace_{version}_scan-build'
