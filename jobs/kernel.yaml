@@ -1,0 +1,76 @@
+---
+- defaults:
+    name: kernel
+    description: |
+      TODO
+
+    project-type: freestyle
+
+    logrotate:
+        daysToKeep: -1
+        numToKeep: 2
+        artifactDaysToKeep: -1
+        artifactNumToKeep: -1
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+
+    scm:
+      - git:
+          url: git://artifacts.internal.efficios.com/git/linux-stable.git
+          branches:
+            - refs/tags/v{kversion}
+          shallow-clone: true
+          basedir: linux
+
+    triggers:
+      - pollscm: "@yearly"
+
+    properties:
+      - throttle:
+          max-per-node: 0
+          max-total: 0
+          categories:
+            - 'lttng-module-linux'
+
+
+## Templates
+- job-template:
+    name: kernel_{kversion}_{buildtype}
+    defaults: kernel
+
+    project-type: matrix
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+
+    builders:
+      - shell:
+         !include-raw-escape scripts/kernel/build.sh
+
+    publishers:
+      - archive:
+          artifacts: 'build/**'
+          allow-empty: false
+          fingerprint: true
+      - trigger:
+          project: lttng-modules_master_{kversion}_{buildtype}
+          threshold: SUCCESS
+
+
+## Project
+- project:
+    name: kernel
+    kversion:
+      !include jobs/inc/kernel-versions.yaml.inc
+    jobs:
+      - 'kernel_{kversion}_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [x86-32, x86-64]
+      - 'kernel_{kversion}_{buildtype}':
+          buildtype: portbuild
+          arch: !!python/tuple [armhf, powerpc]

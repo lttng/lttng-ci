@@ -1,0 +1,86 @@
+---
+- defaults:
+    name: lttng-modules
+    description: |
+      TODO
+
+    project-type: freestyle
+
+    logrotate:
+        daysToKeep: -1
+        numToKeep: 2
+        artifactDaysToKeep: -1
+        artifactNumToKeep: -1
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+
+    scm:
+      - git:
+          url: git://artifacts.internal.efficios.com/git/linux-stable.git
+          branches:
+            - refs/tags/v{kversion}
+          shallow-clone: true
+          basedir: linux
+      - git:
+          url: git://github.com/lttng/lttng-modules.git
+          branches:
+            - "{mversion}"
+          basedir: lttng-modules
+
+    triggers:
+      - pollscm: "@yearly"
+
+    properties:
+      - throttle:
+          max-per-node: 0
+          max-total: 0
+          categories:
+            - 'lttng-module-linux'
+
+
+## Templates
+- job-template:
+    name: lttng-modules_{mversion}_{kversion}_{buildtype}
+    defaults: lttng-modules
+
+    project-type: matrix
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+
+    builders:
+      - copyartifact:
+          project: kernel_{kversion}_{buildtype}/arch=$arch
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/linux'
+      - shell:
+              !include-raw-escape scripts/lttng-modules/build.sh
+
+    publishers:
+      - archive:
+          artifacts: 'build/**'
+          allow-empty: false
+          fingerprint: true
+
+
+## Project
+- project:
+    name: lttng-modules
+    mversion:
+      !include jobs/inc/lttng-modules-versions.yaml.inc
+    kversion:
+      !include jobs/inc/kernel-versions.yaml.inc
+    jobs:
+      - 'lttng-modules_{mversion}_{kversion}_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [x86-32, x86-64]
+      - 'lttng-modules_{mversion}_{kversion}_{buildtype}':
+          buildtype: portbuild
+          arch: !!python/tuple [armhf, powerpc]
