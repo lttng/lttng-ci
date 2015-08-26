@@ -1,4 +1,4 @@
-#/bin/sh
+#/bin/sh -exu
 
 yum -y install wget
 

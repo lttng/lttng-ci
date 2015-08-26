@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -exu
 #
 # Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #                      Michael Jeanson <mjeanson@efficios.com>
@@ -15,9 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-# Exit with error when using an undefined variable
-set -u
 
 # Use all CPU cores
 NPROC=$(nproc)

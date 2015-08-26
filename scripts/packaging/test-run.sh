@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -exu
 
 lttng create
 lttng enable-event -a -k
