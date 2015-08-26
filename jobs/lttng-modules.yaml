@@ -20,15 +20,6 @@
       - ansicolor
 
     scm:
-      #- git:
-      #    url: git://artifacts.internal.efficios.com/git/linux-stable.git
-      #    branches:
-      #      - refs/tags/v{kversion}
-      #    shallow-clone: true
-      #    skip-tag: true
-      #    fastpoll: true
-      #    basedir: linux
-      #    reference-repo: $HOME/gitcache/linux-stable.git/
       - git:
           url: git://github.com/lttng/lttng-modules.git
           branches:
@@ -37,6 +28,9 @@
           skip-tag: true
           fastpoll: true
           basedir: lttng-modules
+
+    triggers:
+      - pollscm: "@daily"
 
     properties:
       - throttle:
