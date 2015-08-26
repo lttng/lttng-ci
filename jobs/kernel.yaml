@@ -23,10 +23,10 @@
           branches:
             - refs/tags/v{kversion}
           shallow-clone: true
+          skip-tag: true
+          fastpoll: true
           basedir: linux
-
-    triggers:
-      - pollscm: "@yearly"
+          reference-repo: $HOME/gitcache/linux-stable.git/
 
     properties:
       - throttle:

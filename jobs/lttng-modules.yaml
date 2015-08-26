@@ -23,15 +23,15 @@
           branches:
             - refs/tags/v{kversion}
           shallow-clone: true
+          skip-tag: true
+          fastpoll: true
           basedir: linux
+          reference-repo: $HOME/gitcache/linux-stable.git/
       - git:
           url: git://github.com/lttng/lttng-modules.git
           branches:
             - "{mversion}"
           basedir: lttng-modules
-
-    triggers:
-      - pollscm: "@yearly"
 
     properties:
       - throttle:
