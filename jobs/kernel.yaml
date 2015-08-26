@@ -71,6 +71,6 @@
       - 'kernel_{kversion}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
-      - 'kernel_{kversion}_{buildtype}':
-          buildtype: portbuild
-          arch: !!python/tuple [armhf, powerpc]
+      #- 'kernel_{kversion}_{buildtype}':
+      #    buildtype: portbuild
+      #    arch: !!python/tuple [armhf, powerpc]

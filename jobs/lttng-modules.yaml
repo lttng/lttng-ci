@@ -81,6 +81,6 @@
       - 'lttng-modules_{mversion}_{kversion}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
-      - 'lttng-modules_{mversion}_{kversion}_{buildtype}':
-          buildtype: portbuild
-          arch: !!python/tuple [armhf, powerpc]
+      #- 'lttng-modules_{mversion}_{kversion}_{buildtype}':
+      #    buildtype: portbuild
+      #    arch: !!python/tuple [armhf, powerpc]
