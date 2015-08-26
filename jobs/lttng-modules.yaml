@@ -2,7 +2,9 @@
 - defaults:
     name: lttng-modules
     description: |
-      TODO
+      Build lttng-modules against different Linux kernels.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
 
     project-type: freestyle
 
@@ -18,15 +20,15 @@
       - ansicolor
 
     scm:
-      - git:
-          url: git://artifacts.internal.efficios.com/git/linux-stable.git
-          branches:
-            - refs/tags/v{kversion}
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: linux
-          reference-repo: $HOME/gitcache/linux-stable.git/
+      #- git:
+      #    url: git://artifacts.internal.efficios.com/git/linux-stable.git
+      #    branches:
+      #      - refs/tags/v{kversion}
+      #    shallow-clone: true
+      #    skip-tag: true
+      #    fastpoll: true
+      #    basedir: linux
+      #    reference-repo: $HOME/gitcache/linux-stable.git/
       - git:
           url: git://github.com/lttng/lttng-modules.git
           branches:
@@ -37,6 +39,7 @@
       - throttle:
           max-per-node: 0
           max-total: 0
+          option: category
           categories:
             - 'lttng-module-linux'
 
@@ -47,6 +50,7 @@
     defaults: lttng-modules
 
     project-type: matrix
+    node: 'x86_32 || x86_64' # Applies only to matrix flyweight task
     axes:
       - axis:
          type: slave
@@ -60,6 +64,8 @@
           stable: true
           filter: 'build/**'
           target: 'deps/linux'
+      - shell: |
+          git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://artifacts.internal.efficios.com/git/linux-stable.git linux
       - shell:
               !include-raw-escape scripts/lttng-modules/build.sh
 
@@ -68,6 +74,7 @@
           artifacts: 'build/**'
           allow-empty: false
           fingerprint: true
+      - workspace-cleanup
 
 
 ## Project
