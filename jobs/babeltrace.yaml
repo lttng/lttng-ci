@@ -193,8 +193,7 @@
 - project:
     name: babeltrace
     version:
-      - stable-1.2
-      - master
+      !include jobs/inc/babeltrace-versions.yaml.inc
     jobs:
       - 'babeltrace_{version}_{buildtype}':
           buildtype: build

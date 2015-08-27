@@ -1,0 +1,3 @@
+- stable-0.7
+- stable-0.8
+- master

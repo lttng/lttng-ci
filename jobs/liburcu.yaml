@@ -149,9 +149,7 @@
 - project:
     name: liburcu
     version:
-      - stable-0.7
-      - stable-0.8
-      - master
+      !include jobs/inc/liburcu-versions.yaml.inc
     jobs:
       - 'liburcu_{version}_{buildtype}':
           buildtype: build
