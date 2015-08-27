@@ -75,10 +75,7 @@
       - axis:
          type: user-defined
          name: build
-         values:
-          - std
-          - oot
-          - dist
+         values: '{obj:build}'
 
     builders:
       - shell:
@@ -159,9 +156,11 @@
       - 'liburcu_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
       - 'liburcu_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, powerpc]
+          build: !!python/tuple [std]
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
 

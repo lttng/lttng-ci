@@ -62,10 +62,7 @@
       - axis:
          type: user-defined
          name: build
-         values:
-          - std
-          - oot
-          - dist
+         values: '{obj:build}'
 
     builders:
       - shell:
@@ -202,9 +199,11 @@
       - 'babeltrace_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, powerpc]
+          build: !!python/tuple [std]
       - 'babeltrace_{version}_cppcheck'
       - 'babeltrace_{version}_scan-build'
       - 'babeltrace_{version}_pylint'
