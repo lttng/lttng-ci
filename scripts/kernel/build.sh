@@ -45,8 +45,7 @@ sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" "${BUILDDIR}
 
 # Build to out of tree dir
 #make -j$nbrProc O="${BUILDDIR}"
-make O="${BUILDDIR}" prepare
-make -j${NPROC} O="${BUILDDIR}" modules
+make O="${BUILDDIR}" modules_prepare
 
 # Clean up artifact directory to keep only relevant stuff for lttng-modules
 cd "${BUILDDIR}"
