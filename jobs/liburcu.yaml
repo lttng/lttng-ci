@@ -60,6 +60,7 @@
     defaults: liburcu
 
     project-type: matrix
+    node: 'x86-32 || x86-64' # Applies only to matrix flyweight task
     axes:
       - axis:
          type: slave
