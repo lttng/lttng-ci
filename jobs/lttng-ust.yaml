@@ -89,12 +89,12 @@
       - warnings:
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            failed:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
+          #total-thresholds:
+          #  failed:
+          #    total-all: 0
+          #    total-high: 0
+          #    total-normal: 0
+          #    total-low: 0
       - archive:
           artifacts: 'build/**'
           allow-empty: false
