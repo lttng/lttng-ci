@@ -96,7 +96,6 @@
       - archive:
           artifacts: 'build/**'
           allow-empty: false
-          fingerprint: true
       - trigger:
           project: lttng-ust-{version}
           threshold: SUCCESS
@@ -117,7 +116,6 @@
       - archive:
           artifacts: 'liburcu-cppcheck.xml'
           allow-empty: false
-          fingerprint: true
       - cppcheck:
           pattern: 'liburcu-cppcheck.xml'
       - email:

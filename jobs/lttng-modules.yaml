@@ -61,6 +61,7 @@
           stable: true
           filter: 'build/**'
           target: 'deps/linux'
+          do-not-fingerprint: true
       - shell: |
           git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://artifacts.internal.efficios.com/git/linux-stable.git linux
       - shell:
@@ -70,7 +71,6 @@
       - archive:
           artifacts: 'build/**'
           allow-empty: false
-          fingerprint: true
       - workspace-cleanup
 
 

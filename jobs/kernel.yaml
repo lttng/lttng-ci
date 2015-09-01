@@ -62,7 +62,6 @@
       - archive:
           artifacts: 'build/**'
           allow-empty: false
-          fingerprint: true
       - workspace-cleanup
 
 

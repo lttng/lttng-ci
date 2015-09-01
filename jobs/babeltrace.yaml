@@ -86,7 +86,6 @@
       - archive:
           artifacts: 'build/**'
           allow-empty: false
-          fingerprint: true
 
 - job-template:
     name: babeltrace_{version}_cppcheck
@@ -104,7 +103,6 @@
       - archive:
           artifacts: 'babeltrace-cppcheck.xml'
           allow-empty: false
-          fingerprint: true
       - cppcheck:
           pattern: 'babeltrace-cppcheck.xml'
       - email:
@@ -172,7 +170,6 @@
     publishers:
       - archive:
           artifacts: 'pep8.out,pylint.out'
-          fingerprint: true
       - violations:
           pep8:
             pattern: pep8.out
