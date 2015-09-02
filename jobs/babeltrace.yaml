@@ -23,7 +23,8 @@
     wrappers:
       - workspace-cleanup
       - timestamps
-      - ansicolor
+      - ansicolor:
+          colormap: xterm
 
     scm:
       - git:
@@ -34,7 +35,8 @@
             - origin/{version}
 
     triggers:
-      - pollscm: "@hourly"
+      - pollscm:
+          cron: "@hourly"
 
     properties:
       - github:
@@ -92,7 +94,8 @@
     defaults: babeltrace
 
     triggers:
-      - pollscm: "@daily"
+      - pollscm:
+          cron: "@daily"
 
     builders:
       - shell: |
@@ -116,7 +119,8 @@
     node: 'x86-64'
 
     triggers:
-      - pollscm: "@daily"
+      - pollscm:
+          cron: "@daily"
 
     builders:
       - shell:
@@ -128,24 +132,31 @@
           dir: 'scan-build-archive/'
           files: 'index.html'
 
-# TODO: babeltrace_{version}_coverity
-#- job-template:
-#    name: babeltrace_{version}_coverity
-#    defaults: babeltrace
-#    node: 'x86-64'
-#
-#    triggers:
-#      - pollscm: "@daily"
-#
-#    builders:
-#      - shell:
-#          !include-raw-escape scripts/babeltrace/coverity.sh
-#
-#    publishers:
-#      - html-publisher:
-#          name: 'HTML Report'
-#          dir: 'scan-build-archive/'
-#          files: 'index.html'
+- job-template:
+    name: babeltrace_{version}_coverity
+    defaults: babeltrace
+    node: 'x86-64'
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor:
+          colormap: xterm
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: babeltrace_coverity_token
+              username: COVERITY_SCAN_PROJECT_NAME
+              password: COVERITY_SCAN_TOKEN
+    builders:
+      - shell:
+          !include-raw-escape scripts/common/coverity.sh
+
+    publishers:
+      - workspace-cleanup
 
 - job-template:
     name: babeltrace_{version}_pylint
@@ -155,7 +166,8 @@
     scm: []
 
     triggers:
-      - pollscm: "@daily"
+      - pollscm:
+          cron: "@daily"
 
     builders:
        - copyartifact:
@@ -204,4 +216,6 @@
       - 'babeltrace_{version}_cppcheck'
       - 'babeltrace_{version}_scan-build'
       - 'babeltrace_{version}_pylint'
+      - 'babeltrace_{version}_coverity':
+          version: master
 
