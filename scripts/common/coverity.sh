@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Coverity settings
+# The project name and token have to be provided trough env variables
 #COVERITY_SCAN_PROJECT_NAME=""
 #COVERITY_SCAN_TOKEN=""
 COVERITY_SCAN_VERSION=`git describe --always | sed 's|-|.|g'`
@@ -62,7 +63,9 @@ fi
 
 
 # Verify upload is permitted
+set +x
 AUTH_RES=`curl -s --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" $SCAN_URL/api/upload_permitted`
+set -x
 if [ "$AUTH_RES" = "Access denied" ]; then
   echo -e "\033[33;1mCoverity Scan API access denied. Check COVERITY_SCAN_PROJECT_NAME and COVERITY_SCAN_TOKEN.\033[0m"
   exit 1
@@ -82,7 +85,9 @@ fi
 if [ ! -d $TOOL_BASE ]; then
   if [ ! -e $TOOL_ARCHIVE ]; then
     echo -e "\033[33;1mDownloading Coverity Scan Analysis Tool...\033[0m"
+    set +x
     wget -nv -O $TOOL_ARCHIVE $TOOL_URL --post-data "project=$COVERITY_SCAN_PROJECT_NAME&token=$COVERITY_SCAN_TOKEN"
+    set -x
   fi
 
   # Extract Coverity Scan Analysis Tool
@@ -116,6 +121,7 @@ tar czf $RESULTS_ARCHIVE $RESULTS_DIR
 
 # Upload results
 echo -e "\033[33;1mUploading Coverity Scan Analysis results...\033[0m"
+set +x
 response=$(curl \
   --silent --write-out "\n%{http_code}\n" \
   --form project=$COVERITY_SCAN_PROJECT_NAME \
@@ -125,6 +131,7 @@ response=$(curl \
   --form version=$COVERITY_SCAN_VERSION \
   --form description=$COVERITY_SCAN_DESCRIPTION \
   $UPLOAD_URL)
+set -x
 status_code=$(echo "$response" | sed -n '$p')
 if [ "$status_code" != "201" ]; then
   TEXT=$(echo "$response" | sed '$d')

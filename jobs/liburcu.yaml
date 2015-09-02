@@ -36,7 +36,8 @@
     wrappers:
       - workspace-cleanup
       - timestamps
-      - ansicolor
+      - ansicolor:
+          colormap: xterm
 
     scm:
       - git:
@@ -47,7 +48,8 @@
             - origin/{version}
 
     triggers:
-      - pollscm: "@hourly"
+      - pollscm:
+          cron: "@hourly"
 
     properties:
       - github:
@@ -87,7 +89,7 @@
       - warnings:
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
+          #total-thresholds:
             #failed:
             #  total-all: 0
             #  total-high: 0
@@ -102,7 +104,8 @@
     defaults: liburcu
 
     triggers:
-      - pollscm: "@daily"
+      - pollscm:
+          cron: "@daily"
 
     builders:
       - shell: |
@@ -126,7 +129,8 @@
     node: 'x86-64'
 
     triggers:
-      - pollscm: "@daily"
+      - pollscm:
+          cron: "@daily"
 
     builders:
       - shell:
@@ -138,7 +142,32 @@
           dir: 'scan-build-archive/'
           files: 'index.html'
 
-# TODO: liburcu_{version}_coverity
+- job-template:
+    name: liburcu_{version}_coverity
+    defaults: liburcu
+    node: 'x86-64'
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor:
+          colormap: xterm
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: liburcu_coverity_token
+              username: COVERITY_SCAN_PROJECT_NAME
+              password: COVERITY_SCAN_TOKEN
+
+    builders:
+      - shell:
+          !include-raw-escape scripts/common/coverity.sh
+
+    publishers:
+      - workspace-cleanup
 
 
 ## Project
@@ -157,4 +186,6 @@
           build: !!python/tuple [std]
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
+      - 'liburcu_{version}_coverity':
+          version: master
 
