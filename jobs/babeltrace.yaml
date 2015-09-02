@@ -27,9 +27,9 @@
 
     scm:
       - git:
-          url: https://github.com/efficios/babeltrace.git
+          url: git://github.com/efficios/babeltrace.git
           browser: githubweb
-          browser-url: https://github.com/efficios/babeltrace.git
+          browser-url: https://github.com/efficios/babeltrace
           branches:
             - origin/{version}
 
@@ -38,7 +38,7 @@
 
     properties:
       - github:
-          url: https://github.com/efficios/babeltrace/
+          url: https://github.com/efficios/babeltrace
 
 
 ## Templates

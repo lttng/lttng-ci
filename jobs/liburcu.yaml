@@ -40,9 +40,9 @@
 
     scm:
       - git:
-          url: https://github.com/urcu/userspace-rcu.git
+          url: git://github.com/urcu/userspace-rcu.git
           browser: githubweb
-          browser-url: https://github.com/urcu/userspace-rcu.git
+          browser-url: https://github.com/urcu/userspace-rcu
           branches:
             - origin/{version}
 
@@ -51,7 +51,7 @@
 
     properties:
       - github:
-          url: https://github.com/urcu/userspace-rcu/
+          url: https://github.com/urcu/userspace-rcu
 
 
 ## Templates

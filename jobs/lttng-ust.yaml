@@ -23,9 +23,9 @@
 
     scm:
       - git:
-          url: https://github.com/lttng/lttng-ust.git
+          url: git://github.com/lttng/lttng-ust.git
           browser: githubweb
-          browser-url: https://github.com/lttng/lttng-ust.git
+          browser-url: https://github.com/lttng/lttng-ust
           branches:
             - origin/{version}
 
@@ -35,7 +35,7 @@
 
     properties:
       - github:
-          url: https://github.com/lttng/lttng-ust/
+          url: https://github.com/lttng/lttng-ust
 
 
 ## Templates

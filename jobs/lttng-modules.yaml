@@ -22,6 +22,8 @@
     scm:
       - git:
           url: git://github.com/lttng/lttng-modules.git
+          browser: githubweb
+          browser-url: https://github.com/efficios/lttng-modules
           branches:
             - "{mversion}"
           shallow-clone: true
@@ -33,6 +35,8 @@
       - pollscm: "@daily"
 
     properties:
+      - github:
+          url: https://github.com/efficios/lttng-modules
       - throttle:
           max-per-node: 0
           max-total: 0
