@@ -175,7 +175,7 @@
            which-build: last-successful
            stable: true
            filter: 'build/**'
-           target: 'dependencies/babeltrace'
+           target: 'deps/babeltrace'
        - shell:
           !include-raw-escape scripts/babeltrace/pylint.sh
 

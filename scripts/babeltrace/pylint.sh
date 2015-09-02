@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-BABELTRACE_DIR="dependencies/babeltrace/build"
+BABELTRACE_DIR="deps/babeltrace/build"
 BINDINGS_DIR="$BABELTRACE_DIR/lib/python3.4/dist-packages/babeltrace"
 
 PYENV_HOME="$WORKSPACE/.pyenv/"
