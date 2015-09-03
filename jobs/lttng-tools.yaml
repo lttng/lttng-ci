@@ -1,10 +1,6 @@
 - defaults:
-    name: lttng-ust
+    name: lttng-tools
     description: |
-      LTTng-UST, the Linux Trace Toolkit Next Generation Userspace Tracer, is a
-      port of the low-overhead tracing capabilities of the LTTng kernel tracer
-      to user-space. The library "liblttng-ust" enables tracing of
-      applications and libraries.
 
       <p>Job is managed by Jenkins Job Builder.</p>
 
@@ -23,9 +19,9 @@
 
     scm:
       - git:
-          url: git://github.com/lttng/lttng-ust.git
+          url: git://github.com/lttng/lttng-tools.git
           browser: githubweb
-          browser-url: https://github.com/lttng/lttng-ust
+          browser-url: https://github.com/lttng/lttng-tools
           branches:
             - origin/{version}
 
@@ -35,13 +31,13 @@
 
     properties:
       - github:
-          url: https://github.com/lttng/lttng-ust
+          url: https://github.com/lttng/lttng-tools
 
 
 ## Templates
 - job-template:
-    name: lttng-ust_{version}_{buildtype}
-    defaults: lttng-ust
+    name: lttng-tools_{version}_{buildtype}
+    defaults: lttng-tools
 
     project-type: matrix
     node: 'x86-32 || x86-64' # Applies only to matrix flyweight task
@@ -58,8 +54,14 @@
          name: conf
          values:
            - std
-           - java-agent
-           - python-agent
+           - no_ust
+           - python_bindings
+           - java_agents
+      - axis:
+         type: user-defined
+         name: babeltrace_version
+         values:
+           !include jobs/inc/babeltrace-versions.yaml.inc
       - axis:
          type: user-defined
          name: liburcu_version
@@ -67,10 +69,20 @@
            !include jobs/inc/liburcu-versions.yaml.inc
       - axis:
          type: user-defined
+         name: lttng-ust_version
+         values:
+           - {version}
+      - axis:
+         type: user-defined
          name: build
          values: '{obj:build}'
 
     builders:
+      - conditional-step:
+          condition-kind: strings-match
+          condition-string1: $conf
+          condition-string2: static
+          on-evaluation-failure: run
       - copyartifact:
           project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std
           which-build: last-successful
@@ -78,8 +90,22 @@
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
+      - copyartifact:
+          project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=$arch,conf=std,build=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/liburcu'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: lttng-ust_${{lttng-ust_version}}_{buildtype}/arch=$arch,conf=std,build=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/liburcu'
+          do-not-fingerprint: true
       - shell:
-         !include-raw-escape scripts/lttng-ust/build.sh
+         !include-raw-escape scripts/lttng-tools/build.sh
 
     # TODO: Scan for open tasks
     publishers:
@@ -102,8 +128,8 @@
 
 
 - job-template:
-    name: lttng-ust_{version}_cppcheck
-    defaults: lttng-ust
+    name: lttng-tools_{version}_cppcheck
+    defaults: lttng-tools
 
     triggers:
       - pollscm:
@@ -111,23 +137,23 @@
 
     builders:
       - shell: |
-          rm -f lttng-ust-cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> lttng-ust-cppcheck.xml
+          rm -f lttng-tools-cppcheck.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> lttng-tools-cppcheck.xml
 
     publishers:
       - archive:
-          artifacts: 'lttng-ust-cppcheck.xml'
+          artifacts: 'lttng-tools-cppcheck.xml'
           allow-empty: false
       - cppcheck:
-          pattern: 'lttng-ust-cppcheck.xml'
+          pattern: 'lttng-tools-cppcheck.xml'
       - email:
           recipients: 'ci-notification@lists.lttng.org'
           notify-every-unstable-build: true
           send-to-individuals: false
 
 - job-template:
-    name: lttng-ust_{version}_scan-build
-    defaults: lttng-ust
+    name: lttng-tools_{version}_scan-build
+    defaults: lttng-tools
     node: 'x86-64'
 
     triggers:
@@ -136,7 +162,7 @@
 
     builders:
       - shell:
-          !include-raw-escape scripts/lttng-ust/scan-build.sh
+          !include-raw-escape scripts/lttng-tools/scan-build.sh
 
     publishers:
       - html-publisher:
@@ -144,43 +170,29 @@
           dir: 'scan-build-archive/'
           files: 'index.html'
 
-- job-template:
-    name: lttng-ust_{version}_coverity
-    defaults: lttng-ust
-    node: 'x86-64'
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor:
-          colormap: xterm
-      - credentials-binding:
-          - username-password-separated:
-              credential-id: lttng-ust_coverity_token
-              username: COVERITY_SCAN_PROJECT_NAME
-              password: COVERITY_SCAN_TOKEN
-
-    builders:
-      - copyartifact:
-          project: liburcu_master_build/arch=x86-64,conf=std,build=std
-          which-build: last-successful
-          stable: true
-          filter: 'build/**'
-          target: 'deps/liburcu'
-          do-not-fingerprint: true
-      - shell:
-          !include-raw-escape scripts/common/coverity.sh
-
-    publishers:
-      - workspace-cleanup
+# TODO: lttng-tools_{version}_coverity
+#- job-template:
+#    name: lttng-tools_{version}_coverity
+#    defaults: lttng-tools
+#    node: 'x86-64'
+#
+#    triggers:
+#      - pollscm:
+#          cron: "@daily"
+#
+#    builders:
+#      - shell:
+#          !include-raw-escape scripts/lttng-tools/coverity.sh
+#
+#    publishers:
+#      - html-publisher:
+#          name: 'HTML Report'
+#          dir: 'scan-build-archive/'
+#          files: 'index.html'
 
 - job-template:
-    name: lttng-ust_{version}_pylint
-    defaults: lttng-ust
+    name: lttng-tools_{version}_pylint
+    defaults: lttng-tools
     node: 'x86-64'
 
     scm: []
@@ -191,14 +203,14 @@
 
     builders:
        - copyartifact:
-           project: lttng-ust-{version}/arch=x86-64,build=std,conf=python-agent
+           project: lttng-tools-{version}/arch=x86-64,build=std,conf=python-agent
            which-build: last-successful
            stable: true
            filter: 'build/**'
-           target: 'deps/lttng-ust'
+           target: 'deps/lttng-tools'
            do-not-fingerprint: true
        - shell:
-          !include-raw-escape scripts/lttng-ust/pylint.sh
+          !include-raw-escape scripts/lttng-tools/pylint.sh
 
     publishers:
       - archive:
@@ -222,20 +234,18 @@
 
 ## Project
 - project:
-    name: lttng-ust
+    name: lttng-tools
     version:
-      !include jobs/inc/lttng-ust-versions.yaml.inc
+      !include jobs/inc/lttng-tools-versions.yaml.inc
     jobs:
-      - 'lttng-ust_{version}_{buildtype}':
+      - 'lttng-tools_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-      - 'lttng-ust_{version}_{buildtype}':
+      - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, powerpc]
           build: !!python/tuple [std]
-      - 'lttng-ust_{version}_cppcheck'
-      - 'lttng-ust_{version}_scan-build'
-      - 'lttng-ust_{version}_coverity':
-          version: master
+      - 'lttng-tools_{version}_cppcheck'
+      - 'lttng-tools_{version}_scan-build'
 
