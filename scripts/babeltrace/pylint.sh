@@ -27,7 +27,11 @@ fi
 
 # Create virtualenv and install necessary packages
 virtualenv --system-site-packages -p python3 $PYENV_HOME
+
+set +u
 . $PYENV_HOME/bin/activate
+set -u
+
 pip install --quiet pylint
 pip install --quiet pep8
 
