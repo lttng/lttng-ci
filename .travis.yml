@@ -1,5 +1,6 @@
 language: python
 python:
   - "2.7"
-install: "pip install jenkins-job-builder"
+install: 
+  - pip install git+git://github.com/mjeanson/jenkins-job-builder@bug/2000340#egg=jenkins-job-builder
 script: jenkins-jobs test jobs/ -o test/
