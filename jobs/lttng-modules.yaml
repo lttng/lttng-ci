@@ -2,7 +2,8 @@
 - defaults:
     name: lttng-modules
     description: |
-      Build lttng-modules against different Linux kernels.
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
 
       <p>Job is managed by Jenkins Job Builder.</p>
 
@@ -79,13 +80,21 @@
       - workspace-cleanup
 
 - job-template:
-    name: lttng-modules_{version}_coverity
+    name: lttng-modules_{mversion}_coverity
     defaults: lttng-modules
     node: 'x86-64'
 
     triggers:
       - pollscm:
           cron: "@daily"
+
+    scm:
+      - git:
+          url: git://github.com/lttng/lttng-modules.git
+          browser: githubweb
+          browser-url: https://github.com/efficios/lttng-modules
+          branches:
+            - "{mversion}"
 
     wrappers:
       - workspace-cleanup
@@ -105,6 +114,39 @@
     publishers:
       - workspace-cleanup
 
+- job-template:
+    name: lttng-modules_{mversion}_cppcheck
+    defaults: lttng-modules
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    scm:
+      - git:
+          url: git://github.com/lttng/lttng-modules.git
+          browser: githubweb
+          browser-url: https://github.com/efficios/lttng-modules
+          branches:
+            - "{mversion}"
+
+    builders:
+      - shell: |
+          rm -f cppcheck.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> cppcheck.xml
+
+    publishers:
+      - archive:
+          artifacts: 'cppcheck.xml'
+          allow-empty: false
+      - cppcheck:
+          pattern: 'cppcheck.xml'
+      - email:
+          recipients: 'ci-notification@lists.lttng.org'
+          notify-every-unstable-build: true
+          send-to-individuals: false
+
+
 ## Project
 - project:
     name: lttng-modules
@@ -119,5 +161,6 @@
       #- 'lttng-modules_{mversion}_{kversion}_{buildtype}':
       #    buildtype: portbuild
       #    arch: !!python/tuple [armhf, powerpc]
-      - 'lttng-modules_{version}_coverity':
-          version: master
+      - 'lttng-modules_{mversion}_cppcheck'
+      - 'lttng-modules_{mversion}_coverity':
+          mversion: master
