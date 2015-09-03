@@ -98,6 +98,10 @@
       - archive:
           artifacts: 'build/**'
           allow-empty: false
+      - ircbot:
+          matrix-notifier: only-parent
+          channels:
+            - name: '#lttng'
 
 - job-template:
     name: liburcu_{version}_cppcheck
