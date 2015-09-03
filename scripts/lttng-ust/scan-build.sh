@@ -29,7 +29,15 @@ SCAN_BUILD_ARCHIVE="${WORKSPACE}/scan-build-archive"
 rm -rf $WORKSPACE/build
 mkdir -p $WORKSPACE/build
 
+# liburcu
+URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
+URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
+
 export CFLAGS="-O0 -g -DDEBUG"
+export CPPFLAGS="-I$URCU_INCS"
+export LDFLAGS="-L$URCU_LIBS"
+export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
+
 PREFIX="$WORKSPACE/build"
 
 ./bootstrap

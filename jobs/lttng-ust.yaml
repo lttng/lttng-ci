@@ -99,6 +99,10 @@
           artifacts: 'build/**'
           allow-empty: false
       - workspace-cleanup
+      - ircbot:
+          matrix-notifier: only-parent
+          channels:
+            - name: '#lttng'
 
 
 - job-template:
@@ -135,6 +139,13 @@
           cron: "@daily"
 
     builders:
+      - copyartifact:
+          project: liburcu_master_build/arch=x86-64,conf=std,build=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/liburcu'
+          do-not-fingerprint: true
       - shell:
           !include-raw-escape scripts/lttng-ust/scan-build.sh
 
@@ -178,6 +189,7 @@
     publishers:
       - workspace-cleanup
 
+# TODO
 - job-template:
     name: lttng-ust_{version}_pylint
     defaults: lttng-ust
