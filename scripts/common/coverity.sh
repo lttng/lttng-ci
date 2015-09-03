@@ -37,7 +37,7 @@ TOOL_BASE=/tmp/coverity-scan-analysis
 UPLOAD_URL="https://scan.coverity.com/builds"
 SCAN_URL="https://scan.coverity.com"
 
-RESULTS_DIR="$WORKSPACE/cov-int"
+RESULTS_DIR="cov-int"
 
 
 # liburcu dependency
