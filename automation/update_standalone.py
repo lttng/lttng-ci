@@ -19,7 +19,7 @@
 """ This script is used to upgrade the base snapshot of standalone ci slaves """
 
 USERNAME = ''
-PASSWORD = ''
+APIKEY = ''
 JENKINS_URL = 'https://ci.lttng.org'
 
 DISTRO_LIST = ['el', 'sles', 'ubuntu']
@@ -43,7 +43,7 @@ SNAPSHOTXML = """
 import argparse
 import sys
 import libvirt
-#from jenkinsapi.jenkins import Jenkins
+from jenkinsapi.jenkins import Jenkins
 from time import sleep
 import paramiko
 import select
@@ -69,13 +69,25 @@ def main():
 
 
     # Get jenkibs connexion
-    #jenkins = Jenkins(JENKINS_URL, username=USERNAME, password=PASSWORD)
+    jenkins = Jenkins(JENKINS_URL, username=USERNAME, password=APIKEY)
 
     # Get jenkins node
-    #node = jenkins.get_node(instance_name)
+    print("Getting node %s from Jenkins..." % instance_name)
+    node = jenkins.get_node(instance_name)
+
+    if not node:
+        print("Could not get node %s on %s" % (instance_name, JENKINS_URL))
+        sys.exit(1)
+
+    # Check if node is idle
+    if not node.is_idle:
+        print("Node %s is not idle" % instance_name)
+        sys.exit(1)
+
 
     # Set node temporarily offline
-    #node.toggle_temporarily_offline('Down for upgrade to base snapshot')
+    if not node.is_temporarily_offline():
+        node.toggle_temporarily_offline('Down for upgrade to base snapshot')
 
     # Get libvirt connexion
     print("Opening libvirt connexion to %s..." % vmhost_name)
@@ -181,6 +193,10 @@ def main():
     except:
         print("Failed to create new snapshot.")
         sys.exit(1)
+
+    # Set node online in jenkins
+    if node.is_temporarily_offline():
+        node.toggle_temporarily_offline()
 
     # And we're done!
     print("All done!")
