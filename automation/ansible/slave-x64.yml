@@ -1,0 +1,9 @@
+- hosts: slave-x64
+  roles:
+    - common
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools
+    - lttng-modules
+    - tracecompass

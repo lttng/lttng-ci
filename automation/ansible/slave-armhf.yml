@@ -1,0 +1,7 @@
+- hosts: slave-armhf
+  roles:
+    - common
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools

@@ -1,0 +1,6 @@
+---
+- name: Ensure lttng-ust build dependencies are installed.
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: lttng_ust_packages

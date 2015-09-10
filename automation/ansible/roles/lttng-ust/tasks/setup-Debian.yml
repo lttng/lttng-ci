@@ -1,0 +1,7 @@
+---
+- name: Update apt cache.
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: Ensure lttng-ust build dependencies are installed.
+  apt: "name={{ item }} state=installed"
+  with_items: lttng_ust_packages

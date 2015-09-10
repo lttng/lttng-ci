@@ -1,0 +1,19 @@
+---
+__common_packages:
+  - sudo
+  - openjdk-7-jdk
+  - git
+  - vim
+  - tree
+  - htop
+  - build-essential
+  - clang
+  - automake
+  - autoconf
+  - libtool
+  - bison
+  - flex
+  - libtap-harness-archive-perl
+  - jq
+  - cppcheck
+  - python-virtualenv

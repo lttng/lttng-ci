@@ -1,0 +1,12 @@
+---
+__tracecompass_packages:
+  - openjdk-7-jdk
+  - openjdk-8-jdk
+  - metacity
+  - xfonts-100dpi
+  - xfonts-75dpi
+  - xfonts-scalable
+  - xfonts-cyrillic
+  - xvfb
+  - x11-apps
+  - imagemagick

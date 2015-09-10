@@ -1,0 +1,23 @@
+---
+# Include variables and define needed variables.
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Define lttng_modules_packages.
+  set_fact:
+    lttng_modules_packages: "{{ __lttng_modules_packages | list }}"
+  when: lttng_modules_packages is not defined
+
+# Setup/install tasks.
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: checkout repo
+  git: repo=git://artifacts.internal.efficios.com/git/linux-stable.git
+       dest=/home/jenkins/gitcache/linux-stable.git
+       bare=yes
+  sudo: yes
+  sudo_user: jenkins

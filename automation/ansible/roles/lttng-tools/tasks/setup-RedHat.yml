@@ -1,0 +1,6 @@
+---
+- name: Ensure lttng-tools build dependencies are installed.
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: lttng_tools_packages

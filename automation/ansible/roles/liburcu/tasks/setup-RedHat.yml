@@ -1,0 +1,6 @@
+---
+- name: Ensure liburcu build dependencies are installed.
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: liburcu_packages

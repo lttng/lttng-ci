@@ -1,0 +1,7 @@
+- hosts: slave-powerpc
+  roles:
+    - common
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools

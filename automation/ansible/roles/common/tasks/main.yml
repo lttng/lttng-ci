@@ -1,0 +1,40 @@
+---
+# Include variables and define needed variables.
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Define common_packages.
+  set_fact:
+    common_packages: "{{ __common_packages | list }}"
+  when: common_packages is not defined
+
+# Setup/install tasks.
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Create sudoers.d directory.
+  file:
+    path: /etc/sudoers.d
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
+- name: Set includedir in /etc/sudoers.
+  lineinfile:
+    dest: /etc/sudoers
+    line: "#includedir /etc/sudoers.d"
+    state: present
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: Create jenkins sudoers file.
+  copy:
+    dest: "/etc/sudoers.d/jenkins"
+    content: "jenkins ALL=NOPASSWD: ALL"
+    mode: 0440
+    owner: root
+    group: root
+    validate: "/usr/sbin/visudo -cf %s"
