@@ -44,7 +44,7 @@
     defaults: lttng-tools
 
     project-type: matrix
-    node: 'x86-32 || x86-64' # Applies only to matrix flyweight task
+    node: 'master' # Applies only to matrix flyweight task
     execution-strategy:
       combination-filter: |
         (build=="std") || (liburcu_version=="master")
