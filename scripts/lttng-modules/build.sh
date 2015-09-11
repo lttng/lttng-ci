@@ -16,6 +16,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Kernel version compare functions
+verlte() {
+    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | head -n1`" ]
+}
+
+verlt() {
+    [ "$1" = "$2" ] && return 1 || verlte $1 $2
+}
+
+vergte() {
+    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | tail -n1`" ]
+}
+
+vergt() {
+    [ "$1" = "$2" ] && return 1 || vergte $1 $2
+}
+
+
 # Use all CPU cores
 NPROC=$(nproc)
 
@@ -31,13 +49,41 @@ mkdir -p "${BUILDDIR}"
 # Enter source dir
 cd "${SRCDIR}"
 
-# Fix linux Makefile
+# Fix path to linux src in builddir Makefile
 sed -i "s#MAKEARGS := -C .*#MAKEARGS := -C ${LNXSRCDIR}#" "${LNXBINDIR}"/Makefile
 
-# Build modules
-make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)"
+# Get kernel version from source tree
+cd "${LNXBINDIR}"
+KVERSION=$(make kernelversion)
+cd -
 
-# Install modules to build dir
-make INSTALL_MOD_PATH="${BUILDDIR}" -C "${LNXBINDIR}" M="$(pwd)" modules_install
+# kernels 3.10 to 3.10.13 and 3.11 to 3.11.2 introduce a deadlock in the
+# timekeeping subsystem. We want those build to fail.
+if { vergte "$KVERSION" "3.10" && verlte "$KVERSION" "3.10.13"; } || \
+   { vergte "$KVERSION" "3.11" && verlte "$KVERSION" "3.11.2"; }; then
+
+    set +e
+
+    # Build modules
+    make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)"
+
+    # We expect this build to fail, if it doesn't, fail the job.
+    if [ "$?" -eq 0 ]; then
+        exit 1
+    fi
+
+    # We have to publish at least one file or the build will fail
+    echo "This kernel is broken, there is a deadlock in the timekeeping subsystem." > "${BUILDDIR}/BROKEN.txt"
+
+    set -e
+
+else # Regular build
+
+    # Build modules
+    make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)"
+
+    # Install modules to build dir
+    make INSTALL_MOD_PATH="${BUILDDIR}" -C "${LNXBINDIR}" M="$(pwd)" modules_install
+fi
 
 # EOF
