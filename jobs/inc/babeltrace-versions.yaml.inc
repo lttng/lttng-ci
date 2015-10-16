@@ -1,2 +1,3 @@
 - stable-1.2
+- stable-1.3
 - master
