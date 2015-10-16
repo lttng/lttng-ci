@@ -17,3 +17,4 @@ __common_packages:
   - jq
   - cppcheck
   - python-virtualenv
+  - curl

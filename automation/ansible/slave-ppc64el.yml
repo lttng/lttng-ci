@@ -1,0 +1,7 @@
+- hosts: slave-ppc64el
+  roles:
+    - common
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools

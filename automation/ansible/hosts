@@ -15,6 +15,10 @@ ci-slave-armhf-02
 [slave-powerpc]
 ci-slave-powerpc-01
 
+[slave-ppc64el]
+140.211.168.186
+140.211.168.187
+
 [slave-x32]
 ci-slave-x32-02-01
 ci-slave-x32-02-02
@@ -64,3 +68,4 @@ slave-x32
 slave-x64
 slave-armhf
 slave-powerpc
+slave-ppc64el

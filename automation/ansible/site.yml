@@ -2,5 +2,6 @@
 - include: hosts.yml
 - include: slave-armhf.yml
 - include: slave-powerpc.yml
+- include: slave-ppc64el.yml
 - include: slave-x32.yml
 - include: slave-x64.yml
