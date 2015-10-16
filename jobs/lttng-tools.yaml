@@ -56,12 +56,7 @@
       - axis:
          type: user-defined
          name: conf
-         values:
-           - std
-           #- static
-           - no_ust
-           - python_bindings
-           - java_agents
+         values: '{obj:conf}'
       - axis:
          type: user-defined
          name: liburcu_version
@@ -74,6 +69,13 @@
          type: user-defined
          name: build
          values: '{obj:build}'
+
+    properties:
+      - throttle:
+          max-per-node: 1
+          option: 'category'
+          categories:
+            - 'lttng-tools'
 
     builders:
       - conditional-step:
@@ -106,7 +108,7 @@
       - conditional-step:
           condition-kind: regex-match
           label: '$conf'
-          regex: (python_bindings|no_ust)
+          regex: (python-bindings|no-ust)
           on-evaluation-failure: run
           steps:
             - copyartifact:
@@ -133,7 +135,7 @@
       - conditional-step:
           condition-kind: regex-match
           label: '$conf'
-          regex: (java_agents)
+          regex: (java-agent|python-agent)
           on-evaluation-failure: run
           steps:
             - copyartifact:
@@ -151,7 +153,7 @@
                 target: 'deps/babeltrace'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{version}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=java-agent,build=std
+                project: lttng-ust_{version}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
                 which-build: last-successful
                 stable: true
                 filter: 'build/**'
@@ -165,6 +167,7 @@
       - tap:
           results: 'tap/**/*.tap'
           failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
       - warnings:
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
@@ -178,6 +181,11 @@
           artifacts: 'build/**'
           allow-empty: false
       - workspace-cleanup
+      - ircbot:
+          strategy: new-failure-and-fixed
+          matrix-notifier: only-parent
+          channels:
+            - name: '#lttng'
 
 
 - job-template:
@@ -332,13 +340,15 @@
           version: master
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [master]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: master
-          arch: !!python/tuple [armhf, powerpc]
+          arch: !!python/tuple [armhf, powerpc, ppc64el]
           build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [master]
       - 'lttng-tools_{version}_{buildtype}':
@@ -346,6 +356,7 @@
           version: stable-2.7
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [stable-0.8]
           babelversion: !!python/tuple [stable-1.2]
       - 'lttng-tools_{version}_{buildtype}':
@@ -353,6 +364,7 @@
           version: stable-2.7
           arch: !!python/tuple [armhf, powerpc]
           build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [stable-0.8]
           babelversion: !!python/tuple [stable-1.2]
       - 'lttng-tools_{version}_{buildtype}':
@@ -360,6 +372,7 @@
           version: stable-2.6
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, python-bindings]
           urcuversion: !!python/tuple [stable-0.8]
           babelversion: !!python/tuple [stable-1.2]
       - 'lttng-tools_{version}_{buildtype}':
@@ -367,6 +380,7 @@
           version: stable-2.6
           arch: !!python/tuple [armhf, powerpc]
           build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, python-bindings]
           urcuversion: !!python/tuple [stable-0.8]
           babelversion: !!python/tuple [stable-1.2]
       - 'lttng-tools_{version}_cppcheck'

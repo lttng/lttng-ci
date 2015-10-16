@@ -48,7 +48,7 @@
 
     builders:
        - copyartifact:
-           project: babeltrace-master/arch=x86-64,build=std,conf=python_bindings
+           project: babeltrace-master/arch=x86-64,build=std,conf=python-bindings
            which-build: last-successful
            stable: true
            filter: 'build/**'

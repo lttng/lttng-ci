@@ -56,10 +56,7 @@
       - axis:
          type: user-defined
          name: conf
-         values:
-           - std
-           - java-agent
-           - python-agent
+         values: '{obj:conf}'
       - axis:
          type: user-defined
          name: liburcu_version
@@ -86,6 +83,7 @@
       - tap:
           results: 'tap/**/*.tap'
           failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
       - warnings:
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
@@ -100,6 +98,7 @@
           allow-empty: false
       - workspace-cleanup
       - ircbot:
+          strategy: new-failure-and-fixed
           matrix-notifier: only-parent
           channels:
             - name: '#lttng'
@@ -242,10 +241,12 @@
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, java-agent, python-agent]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, powerpc]
+          arch: !!python/tuple [armhf, powerpc, ppc64el]
           build: !!python/tuple [std]
+          conf: !!python/tuple [std, java-agent, python-agent]
       - 'lttng-ust_{version}_cppcheck'
       - 'lttng-ust_{version}_scan-build'
       - 'lttng-ust_{version}_coverity':

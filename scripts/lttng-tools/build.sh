@@ -21,6 +21,12 @@
 rm -rf $WORKSPACE/build
 mkdir -p $WORKSPACE/build
 
+PYTHON2=python2
+PYTHON3=python3
+
+P2_VERSION=$($PYTHON2 -c "import sys;print(sys.version[:3])")
+P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
+
 # liburcu
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
 URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
@@ -28,6 +34,9 @@ URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
 # lttng-ust
 UST_INCS="$WORKSPACE/deps/lttng-ust/build/include/"
 UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
+UST_JAVA="$WORKSPACE/deps/lttng-ust/build/share/java/"
+UST_PYTHON2="$WORKSPACE/deps/lttng-ust/build/lib/python$P2_VERSION/site-packages"
+UST_PYTHON3="$WORKSPACE/deps/lttng-ust/build/lib/python$P3_VERSION/site-packages"
 
 # babeltrace
 BABEL_INCS="$WORKSPACE/deps/babeltrace/build/include/"
@@ -36,7 +45,7 @@ BABEL_BINS="$WORKSPACE/deps/babeltrace/build/bin/"
 
 PREFIX="$WORKSPACE/build"
 
-if [ "$conf" = "no_ust" ]
+if [ "$conf" = "no-ust" ]
 then
     export CPPFLAGS="-I$URCU_INCS"
     export LDFLAGS="-L$URCU_LIBS"
@@ -51,25 +60,41 @@ fi
 
 CONF_OPTS=""
 case "$conf" in
-static)
-    echo "Static build"
-    CONF_OPTS="--enable-static --disable-shared"
-    ;;
-python_bindings)
-    echo "Build with python bindings"
-    # We only support bindings built with Python 3
-    export PYTHON="python3"
-    export PYTHON_CONFIG="/usr/bin/python3-config"
-    CONF_OPTS="--enable-python-bindings"
-    ;;
-no_ust)
-    echo "Build without UST support"
-    CONF_OPTS="--disable-lttng-ust"
-    ;;
-*)
-    echo "Standard build"
-    CONF_OPTS=""
-    ;;
+    static)
+        echo "Static build"
+        CONF_OPTS="--enable-static --disable-shared"
+        ;;
+
+    python-bindings)
+        echo "Build with python bindings"
+        # We only support bindings built with Python 3
+        export PYTHON="python3"
+        export PYTHON_CONFIG="/usr/bin/python3-config"
+        CONF_OPTS="--enable-python-bindings"
+        ;;
+
+    no-ust)
+        echo "Build without UST support"
+        CONF_OPTS="--disable-lttng-ust"
+        ;;
+
+    java-agent)
+        echo "Build with Java Agents"
+        export JAVA_HOME="/usr/lib/jvm/default-java"
+        export CLASSPATH="$UST_JAVA/*:/usr/share/java/*"
+        CONF_OPTS="--enable-test-java-agent-all"
+        ;;
+
+    python-agent)
+        echo "Build with python agents"
+        export PYTHONPATH="$UST_PYTHON2:$UST_PYTHON3"
+        CONF_OPTS="--enable-test-python-agent-all"
+        ;;
+
+    *)
+        echo "Standard build"
+        CONF_OPTS=""
+        ;;
 esac
 
 # Build type
@@ -82,35 +107,37 @@ esac
 
 BUILD_PATH=$WORKSPACE
 case "$build" in
-	oot)
-		echo "Out of tree build"
-		BUILD_PATH=$WORKSPACE/oot
-		mkdir -p $BUILD_PATH
-		cd $BUILD_PATH
-		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
-		;;
-	dist)
-		echo "Distribution out of tree build"
-		BUILD_PATH=`mktemp -d`
+    oot)
+        echo "Out of tree build"
+        BUILD_PATH=$WORKSPACE/oot
+        mkdir -p $BUILD_PATH
+        cd $BUILD_PATH
+        $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        ;;
 
-		# Initial configure and generate tarball
-		./configure
-		make dist
+    dist)
+        echo "Distribution out of tree build"
+        BUILD_PATH=`mktemp -d`
 
-		mkdir -p $BUILD_PATH
-		cp *.tar.* $BUILD_PATH/
-		cd $BUILD_PATH
+        # Initial configure and generate tarball
+        ./configure $CONF_OPTS
+        make dist
 
-		# Ignore level 1 of tar
-		tar xvf *.tar.* --strip 1
+        mkdir -p $BUILD_PATH
+        cp *.tar.* $BUILD_PATH/
+        cd $BUILD_PATH
 
-		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
-		;;
-	*)
-		BUILD_PATH=$WORKSPACE
-		echo "Standard tree build"
-		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
-		;;
+        # Ignore level 1 of tar
+        tar xvf *.tar.* --strip 1
+
+        $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+        ;;
+
+    *)
+        BUILD_PATH=$WORKSPACE
+        echo "Standard tree build"
+        $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        ;;
 esac
 
 
@@ -121,9 +148,11 @@ make install
 # Allow core dumps
 ulimit -c unlimited
 
+# Add 'babeltrace' binary to PATH
 chmod +x $BABEL_BINS/babeltrace
 export PATH="$PATH:$BABEL_BINS"
 
+# Prepare tap output dirs
 rm -rf $WORKSPACE/tap
 mkdir -p $WORKSPACE/tap
 mkdir -p $WORKSPACE/tap/unit
@@ -132,25 +161,19 @@ mkdir -p $WORKSPACE/tap/with_bindings_regression
 
 cd $BUILD_PATH/tests
 
-if [ "$conf" = "std" ]
-then
-    prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
-    prove --merge --exec '' - < $BUILD_PATH/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
-fi
-
-if [ "$conf" = "no_ust" ]
-then
+# Run 'unit_tests' and 'fast_regression' test suites for all configs except 'no-ust'
+if [ "$conf" != "no-ust" ]; then
+    prove --merge -v --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+    prove --merge -v --exec '' - < $BUILD_PATH/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
+else
     # Regression is disabled for now, we need to adjust the testsuite for no ust builds.
-    echo "Testsuite disabled. See job configuration for more info."
+    echo "Testsuite disabled for 'no-ust'. See job configuration for more info."
 fi
 
-if [ "$conf" = "python_bindings" ]
+# Run 'with_bindings_regression' test suite for 'python-bindings' config
+if [ "$conf" = "python-bindings" ]
 then
-    # Disabled due to race conditions in tests
-    echo "Testsuite disabled. See job configuration for more info."
-    prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
-    prove --merge --exec '' - < $BUILD_PATH/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
-    prove --merge --exec '' - < $BUILD_PATH/tests/with_bindings_regression --archive $WORKSPACE/tap/with_bindings_regression/ || true
+    prove --merge -v --exec '' - < $WORKSPACE/tests/with_bindings_regression --archive $WORKSPACE/tap/with_bindings_regression/ || true
 fi
 
 # TAP plugin is having a hard time with .yml files.
@@ -175,3 +198,5 @@ find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
 if [ $build = "dist" ]; then
 	rm -rf $BUILD_PATH
 fi
+
+# EOF

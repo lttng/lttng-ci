@@ -30,7 +30,7 @@ static)
     echo "Static build"
     CONF_OPTS="--enable-static --disable-shared"
     ;;
-python_bindings)  
+python-bindings)  
     echo "Build with python bindings"
     # We only support bindings built with Python 3
     export PYTHON="python3"
