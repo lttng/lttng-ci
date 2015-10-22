@@ -26,6 +26,28 @@ PREFIX="$WORKSPACE/build"
 
 CONF_OPTS=""
 
+case "$arch" in
+solaris10)
+    MAKE=gmake
+    TAR=gtar
+    NPROC=gnproc
+    CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
+    ;;
+solaris11)
+    MAKE=gmake
+    TAR=gtar
+    NPROC=nproc
+    CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
+    export PATH="$PATH:/usr/perl5/bin"
+    ;;
+*)
+    MAKE=make
+    TAR=tar
+    NPROC=nproc
+    CFLAGS=""
+    ;;
+esac
+
 case "$conf" in
 static)
     echo "Static build"
@@ -56,35 +78,37 @@ case "$build" in
 		BUILD_PATH=$WORKSPACE/oot
 		mkdir -p $BUILD_PATH
 		cd $BUILD_PATH
-		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+		MAKE=$MAKE CFLAGS="$CFLAGS" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 	dist)
 		echo "Distribution out of tree build"
 		BUILD_PATH=`mktemp -d`
 
 		# Initial configure and generate tarball
-		./configure
-		make dist
+		MAKE=$MAKE ./configure
+		$MAKE dist
 
 		mkdir -p $BUILD_PATH
 		cp *.tar.* $BUILD_PATH/
 		cd $BUILD_PATH
 
 		# Ignore level 1 of tar
-		tar xvf *.tar.* --strip 1
+		$TAR xvf *.tar.* --strip 1
 
-		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+		MAKE=$MAKE CFLAGS="$CFLAGS" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 	*)
 		BUILD_PATH=$WORKSPACE
 		echo "Standard tree build"
-		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+		MAKE=$MAKE CFLAGS="$CFLAGS" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
 		;;
 esac
 
-make
-make install
-make clean
+$MAKE -j `$NPROC`
+$MAKE install
+$MAKE check
+$MAKE regtest
+$MAKE clean
 
 # Cleanup rpath and libtool .la files
 find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
@@ -92,5 +116,8 @@ find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
 
 # Cleanup temp directory of dist build
 if [ $build = "dist" ]; then
+	cd $WORKSPACE
 	rm -rf $BUILD_PATH
 fi
+
+# EOF

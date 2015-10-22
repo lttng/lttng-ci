@@ -189,6 +189,13 @@
           buildtype: portbuild
           arch: !!python/tuple [armhf, powerpc, ppc64el]
           build: !!python/tuple [std]
+      - 'liburcu_{version}_{buildtype}':
+          buildtype: solarisbuild
+          arch: !!python/tuple [solaris10, solaris11]
+          build: !!python/tuple [std]
+          version:
+            - master
+            - stable-0.9
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
