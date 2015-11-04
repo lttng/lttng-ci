@@ -1,0 +1,7 @@
+- hosts: slave-arm64
+  roles:
+    - common
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools
