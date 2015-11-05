@@ -37,9 +37,4 @@ set +u
 . $PYENV_HOME/bin/activate
 set -u
 
-pip install --quiet pylint
-pip install --quiet pep8
-
-pep8 lttnganalyses | tee pep8.out
-
-pylint -f parseable --ignore="_version.py" lttnganalyses | tee pylint.out
+pip install .

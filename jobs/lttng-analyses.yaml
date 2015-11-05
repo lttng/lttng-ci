@@ -38,6 +38,34 @@
 
 ## Templates
 - job-template:
+    name: lttng-analyses_{version}_build
+    defaults: lttng-analyses
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+
+    builders:
+      - copyartifact:
+          project: babeltrace_master_build/arch=${{arch}},build=std,conf=python-bindings
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/babeltrace'
+      - shell:
+         !include-raw-escape scripts/lttng-analyses/build.sh
+
+#    publishers:
+#      - archive:
+#          artifacts: 'build/**'
+#          allow-empty: false
+
+
+- job-template:
     name: lttng-analyses_{version}_pylint
     defaults: lttng-analyses
     node: 'x86-64'
@@ -82,5 +110,7 @@
     version:
       - master
     jobs:
+      - 'lttng-analyses_{version}_build':
+          arch: !!python/tuple [x86-32, x86-64]
       - 'lttng-analyses_{version}_pylint'
 
