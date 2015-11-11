@@ -187,7 +187,7 @@
           build: !!python/tuple [std, oot, dist]
       - 'liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
       - 'liburcu_{version}_{buildtype}':
           buildtype: solarisbuild
