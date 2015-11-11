@@ -1,4 +1,4 @@
-#!/bin/sh -exu
+#!/bin/bash -exu
 #
 # Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
@@ -15,16 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 # Create build directory
 rm -rf $WORKSPACE/build
 mkdir -p $WORKSPACE/build
 
 PREFIX="$WORKSPACE/build"
 
-./bootstrap
-
-CONF_OPTS=""
-
+# Set platform variables
 case "$arch" in
 solaris10)
     MAKE=gmake
@@ -50,6 +48,8 @@ solaris11)
     ;;
 esac
 
+# Set configure options for each build configuration
+CONF_OPTS=""
 case "$conf" in
 static)
     echo "Static build"
@@ -68,6 +68,11 @@ python-bindings)
     ;;
 esac
 
+
+# Run bootstrap prior to configure
+./bootstrap
+
+
 # Build type
 # oot : out-of-tree build
 # dist: build via make dist
@@ -75,55 +80,63 @@ esac
 #
 # Make sure to move to the build_path and configure
 # before continuing
-
 BUILD_PATH=$WORKSPACE
 TEST_PLAN_PATH=$WORKSPACE
-
 case "$build" in
-	oot)
-		echo "Out of tree build"
-		BUILD_PATH=$WORKSPACE/oot
-		mkdir -p $BUILD_PATH
-		cd $BUILD_PATH
-		MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
-		;;
-	dist)
-		echo "Distribution out of tree build"
-		BUILD_PATH=`mktemp -d`
+    oot)
+        echo "Out of tree build"
+        BUILD_PATH=$WORKSPACE/oot
+        mkdir -p $BUILD_PATH
+        cd $BUILD_PATH
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        ;;
 
-		# Initial configure and generate tarball
-		MAKE=$MAKE BISON="$BISON" YACC="$YACC" ./configure
-		$MAKE dist
+    dist)
+        echo "Distribution out of tree build"
+	BUILD_PATH=`mktemp -d`
 
-		mkdir -p $BUILD_PATH
-		cp *.tar.* $BUILD_PATH/
-		cd $BUILD_PATH
+        # Initial configure and generate tarball
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" ./configure
+        $MAKE dist
 
-		# Ignore level 1 of tar
-		$TAR xvf *.tar.* --strip 1
+        mkdir -p $BUILD_PATH
+        cp *.tar.* $BUILD_PATH/
+        cd $BUILD_PATH
 
-		MAKE=$MAKE BISON="$BISON" YACC="$YACC" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+        # Ignore level 1 of tar
+        $TAR xvf *.tar.* --strip 1
 
-		# Set test plan to dist tar
-		TEST_PLAN_PATH=$BUILD_PATH
-		;;
-	*)
-		echo "Standard tree build"
-		MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
-		;;
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+
+        # Set test plan to dist tar
+        TEST_PLAN_PATH=$BUILD_PATH
+        ;;
+
+*)
+        echo "Standard tree build"
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        ;;
 esac
 
+# BUILD!
 $MAKE -j `$NPROC`
 $MAKE install
+
+# Run tests
 $MAKE check
+
+# Cleanup
 $MAKE clean
 
-# Cleanup rpath and libtool .la files
-#find $WORKSPACE/build/bin -executable -type f -exec chrpath --delete {} \;
+# Cleanup rpath in executables and shared libraries
+find $WORKSPACE/build/bin -type f -perm -0500 -exec chrpath --delete {} \;
 find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
+
+# Remove libtool .la files
 find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
 
-if [ $build = "dist" ]; then
+# Clean temp dir for dist build
+if [ "$build" = "dist" ]; then
     cd $WORKSPACE
     rm -rf $BUILD_PATH
 fi
