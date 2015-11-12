@@ -76,6 +76,8 @@
           option: 'category'
           categories:
             - 'lttng-tools'
+          matrixbuilds: false
+          matrixconfigs: true
 
     builders:
       - conditional-step:
