@@ -1,4 +1,4 @@
-#!/bin/sh -exu
+#!/bin/bash -exu
 #
 # Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
@@ -24,36 +24,57 @@ mkdir -p $WORKSPACE/build
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
 URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
 
+
+PREFIX="$WORKSPACE/build"
+
+# Set platform variables
+case "$arch" in
+*)
+     MAKE=make
+     TAR=tar
+     NPROC=nproc
+     BISON="bison"
+     YACC="$BISON -y"
+     CFLAGS=""
+     ;;
+esac
+
+# Export build flags
 export CPPFLAGS="-I$URCU_INCS"
 export LDFLAGS="-L$URCU_LIBS"
 export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
 
-PREFIX="$WORKSPACE/build"
 
-./bootstrap
-
+# Set configure options for each build configuration
 CONF_OPTS=""
-
 case "$conf" in
-# Unsupported! liblttng-ust can't pull in it's static (.a) dependencies.
-#static)
-#    echo "Static build"
-#    CONF_OPTS="--enable-static --disable-shared"
-#    ;;
+static)
+    # Unsupported! liblttng-ust can't pull in it's static (.a) dependencies.
+    echo "Static build"
+    CONF_OPTS="--enable-static --disable-shared"
+    ;;
+
 java-agent)
     echo "Java agent build"
     export CLASSPATH="/usr/share/java/log4j-1.2.jar"
     CONF_OPTS="--enable-java-agent-all"
     ;;
+
 python-agent)
-	echo "Python agent build"
-	CONF_OPTS="--enable-python-agent"
-	;;
+    echo "Python agent build"
+    CONF_OPTS="--enable-python-agent"
+    ;;
+
 *)
     echo "Standard build"
     CONF_OPTS=""
     ;;
 esac
+
+
+# Run bootstrap prior to configure
+./bootstrap
+
 
 # Build type
 # oot : out-of-tree build
@@ -62,42 +83,44 @@ esac
 #
 # Make sure to move to the build_path and configure
 # before continuing
-
 BUILD_PATH=$WORKSPACE
 case "$build" in
-	oot)
-		echo "Out of tree build"
-		BUILD_PATH=$WORKSPACE/oot
-		mkdir -p $BUILD_PATH
-		cd $BUILD_PATH
-		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
-		;;
-	dist)
-		echo "Distribution out of tree build"
-		BUILD_PATH=`mktemp -d`
+oot)
+    echo "Out of tree build"
+    BUILD_PATH=$WORKSPACE/oot
+    mkdir -p $BUILD_PATH
+    cd $BUILD_PATH
+    $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+    ;;
 
-		# Initial configure and generate tarball
-		./configure
-		make dist
+dist)
+    echo "Distribution out of tree build"
+    BUILD_PATH=`mktemp -d`
 
-		mkdir -p $BUILD_PATH
-		cp *.tar.* $BUILD_PATH/
-		cd $BUILD_PATH
+    # Initial configure and generate tarball
+    ./configure
+    $MAKE dist
 
-		# Ignore level 1 of tar
-		tar xvf *.tar.* --strip 1
+    mkdir -p $BUILD_PATH
+    cp *.tar.* $BUILD_PATH/
+    cd $BUILD_PATH
 
-		$BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
-		;;
-	*)
-		BUILD_PATH=$WORKSPACE
-		echo "Standard tree build"
-		$WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
-		;;
+    # Ignore level 1 of tar
+    $TAR xvf *.tar.* --strip 1
+
+    $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+    ;;
+
+*)
+    BUILD_PATH=$WORKSPACE
+    echo "Standard tree build"
+    $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+    ;;
 esac
 
-make V=1
-make install
+# BUILD!
+$MAKE -j `$NPROC`
+$MAKE install
 
 # Run tests
 rm -rf $WORKSPACE/tap
@@ -114,13 +137,18 @@ rm -f $WORKSPACE/tap/unit/meta.yml
 find $WORKSPACE/tap/unit/ -type f -exec mv {} {}.tap \;
 
 # Cleanup
-make clean
+$MAKE clean
 
-# Cleanup rpath and libtool .la files
+# Cleanup rpath in executables and shared libraries
 find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
+
+# Remove libtool .la files
 find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
 
 # Clean temp dir for dist build
-if [ $build = "dist" ]; then
-	rm -rf $BUILD_PATH
+if [ "$build" = "dist" ]; then
+    cd $WORKSPACE
+    rm -rf $BUILD_PATH
 fi
+
+# EOF
