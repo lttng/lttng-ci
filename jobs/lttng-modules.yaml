@@ -71,7 +71,7 @@
       - shell: |
           git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://artifacts.internal.efficios.com/git/linux-stable.git linux
       - shell:
-              !include-raw-escape scripts/lttng-modules/build.sh
+         !include-raw-escape: scripts/lttng-modules/build.sh
 
     publishers:
       - archive:
@@ -109,7 +109,7 @@
 
     builders:
       - shell:
-          !include-raw-escape scripts/common/coverity.sh
+         !include-raw-escape: scripts/common/coverity.sh
 
     publishers:
       - workspace-cleanup
@@ -151,9 +151,9 @@
 - project:
     name: lttng-modules
     mversion:
-      !include jobs/inc/lttng-modules-versions.yaml.inc
+      !include: jobs/inc/lttng-modules-versions.yaml.inc
     kversion:
-      !include jobs/inc/kernel-versions.yaml.inc
+      !include: jobs/inc/kernel-versions.yaml.inc
     jobs:
       - 'lttng-modules_{mversion}_{kversion}_{buildtype}':
           buildtype: build

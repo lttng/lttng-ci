@@ -162,7 +162,7 @@
                 target: 'deps/lttng-ust'
                 do-not-fingerprint: true
       - shell:
-         !include-raw-escape scripts/lttng-tools/build.sh
+         !include-raw-escape: scripts/lttng-tools/build.sh
 
     # TODO: Scan for open tasks
     publishers:
@@ -239,7 +239,7 @@
           target: 'deps/lttng-ust'
           do-not-fingerprint: true
       - shell:
-          !include-raw-escape scripts/lttng-tools/scan-build.sh
+          !include-raw-escape: scripts/lttng-tools/scan-build.sh
 
     publishers:
       - html-publisher:
@@ -283,7 +283,7 @@
           target: 'deps/lttng-ust'
           do-not-fingerprint: true
       - shell:
-          !include-raw-escape scripts/common/coverity.sh
+          !include-raw-escape: scripts/common/coverity.sh
 
     publishers:
       - workspace-cleanup
@@ -309,7 +309,7 @@
            target: 'deps/lttng-tools'
            do-not-fingerprint: true
        - shell:
-          !include-raw-escape scripts/lttng-tools/pylint.sh
+          !include-raw-escape: scripts/lttng-tools/pylint.sh
 
     publishers:
       - archive:
@@ -335,7 +335,7 @@
 - project:
     name: lttng-tools
     version:
-      !include jobs/inc/lttng-tools-versions.yaml.inc
+      !include: jobs/inc/lttng-tools-versions.yaml.inc
     jobs:
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: build

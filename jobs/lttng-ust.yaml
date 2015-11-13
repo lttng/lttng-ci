@@ -61,7 +61,7 @@
          type: user-defined
          name: liburcu_version
          values:
-           !include jobs/inc/liburcu-versions.yaml.inc
+           !include: jobs/inc/liburcu-versions.yaml.inc
       - axis:
          type: user-defined
          name: build
@@ -76,7 +76,7 @@
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - shell:
-         !include-raw-escape scripts/lttng-ust/build.sh
+         !include-raw-escape: scripts/lttng-ust/build.sh
 
     # TODO: Scan for open tasks
     publishers:
@@ -146,7 +146,7 @@
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - shell:
-          !include-raw-escape scripts/lttng-ust/scan-build.sh
+          !include-raw-escape: scripts/lttng-ust/scan-build.sh
 
     publishers:
       - html-publisher:
@@ -183,7 +183,7 @@
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - shell:
-          !include-raw-escape scripts/common/coverity.sh
+          !include-raw-escape: scripts/common/coverity.sh
 
     publishers:
       - workspace-cleanup
@@ -209,7 +209,7 @@
            target: 'deps/lttng-ust'
            do-not-fingerprint: true
        - shell:
-          !include-raw-escape scripts/lttng-ust/pylint.sh
+          !include-raw-escape: scripts/lttng-ust/pylint.sh
 
     publishers:
       - archive:
@@ -235,7 +235,7 @@
 - project:
     name: lttng-ust
     version:
-      !include jobs/inc/lttng-ust-versions.yaml.inc
+      !include: jobs/inc/lttng-ust-versions.yaml.inc
     jobs:
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build

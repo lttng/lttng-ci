@@ -56,7 +56,7 @@
       - shell: |
           git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://artifacts.internal.efficios.com/git/linux-stable.git linux
       - shell:
-         !include-raw-escape scripts/kernel/build.sh
+         !include-raw-escape: scripts/kernel/build.sh
 
     publishers:
       - archive:
@@ -69,7 +69,7 @@
 - project:
     name: kernel
     kversion:
-      !include jobs/inc/kernel-versions.yaml.inc
+      !include: jobs/inc/kernel-versions.yaml.inc
     jobs:
       - 'kernel_{kversion}_{buildtype}':
           buildtype: build

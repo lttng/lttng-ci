@@ -57,7 +57,7 @@
           filter: 'build/**'
           target: 'deps/babeltrace'
       - shell:
-         !include-raw-escape scripts/lttng-analyses/build.sh
+         !include-raw-escape: scripts/lttng-analyses/build.sh
 
 #    publishers:
 #      - archive:
@@ -82,7 +82,7 @@
            filter: 'build/**'
            target: 'deps/babeltrace'
        - shell:
-          !include-raw-escape scripts/lttng-analyses/pylint.sh
+          !include-raw-escape: scripts/lttng-analyses/pylint.sh
 
     publishers:
       - archive:

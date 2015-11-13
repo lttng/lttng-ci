@@ -82,7 +82,7 @@
 
     builders:
       - shell:
-         !include-raw-escape scripts/liburcu/build.sh
+         !include-raw-escape: scripts/liburcu/build.sh
 
     # TODO: Scan for open tasks
     publishers:
@@ -139,7 +139,7 @@
 
     builders:
       - shell:
-          !include-raw-escape scripts/liburcu/scan-build.sh
+          !include-raw-escape: scripts/liburcu/scan-build.sh
 
     publishers:
       - html-publisher:
@@ -169,7 +169,7 @@
 
     builders:
       - shell:
-          !include-raw-escape scripts/common/coverity.sh
+          !include-raw-escape: scripts/common/coverity.sh
 
     publishers:
       - workspace-cleanup
@@ -179,7 +179,7 @@
 - project:
     name: liburcu
     version:
-      !include jobs/inc/liburcu-versions.yaml.inc
+      !include: jobs/inc/liburcu-versions.yaml.inc
     jobs:
       - 'liburcu_{version}_{buildtype}':
           buildtype: build
