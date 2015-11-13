@@ -15,6 +15,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Version compare functions
+verlte() {
+    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | head -n1`" ]
+}
+
+verlt() {
+    [ "$1" = "$2" ] && return 1 || verlte $1 $2
+}
+
+vergte() {
+    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | tail -n1`" ]
+}
+
+vergt() {
+    [ "$1" = "$2" ] && return 1 || vergte $1 $2
+}
+
 
 # Create build directory
 rm -rf $WORKSPACE/build
@@ -70,6 +87,9 @@ esac
 # Run bootstrap prior to configure
 ./bootstrap
 
+# Get source version from configure script
+eval `grep '^PACKAGE_VERSION=' ./configure`
+
 
 # Build type
 # oot : out-of-tree build
@@ -118,9 +138,10 @@ $MAKE install
 
 # Run tests
 $MAKE check
-#if [ "$version" >=" 0.9" ]; then
+# Only run regtest for 0.9 and up
+if vergte "$PACKAGE_VERSION" "0.9"; then
    $MAKE regtest
-#fi
+fi
 
 # Cleanup
 $MAKE clean
