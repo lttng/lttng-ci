@@ -119,7 +119,7 @@ dist)
 esac
 
 # BUILD!
-$MAKE -j `$NPROC`
+$MAKE -j `$NPROC` V=1
 $MAKE install
 
 # Run tests
