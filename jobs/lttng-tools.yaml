@@ -348,7 +348,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: master
-          arch: !!python/tuple [armhf, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [master]
@@ -364,7 +364,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.7
-          arch: !!python/tuple [armhf, powerpc]
+          arch: !!python/tuple [armhf, arm64, powerpc]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [stable-0.9]
@@ -380,7 +380,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.6
-          arch: !!python/tuple [armhf, powerpc]
+          arch: !!python/tuple [armhf, arm64, powerpc]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, python-bindings]
           urcuversion: !!python/tuple [stable-0.9]
