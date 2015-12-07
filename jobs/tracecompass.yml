@@ -1,0 +1,255 @@
+- defaults:
+    name: tracecompass
+    description: |
+      Nightly build of Trace Compass.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    logrotate:
+        daysToKeep: -1
+        numToKeep: 2
+        artifactDaysToKeep: -1
+        artifactNumToKeep: -1
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+
+    scm:
+      - git:
+          #url: git://github.com/tracecompass/tracecompass.git
+          url: git://github.com/alexmonthy/tracecompass.git
+          browser: githubweb
+          browser-url: https://github.com/tracecompass/tracecompass
+          branches:
+            - origin/{version}
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - github:
+          url: https://github.com/tracecompass/tracecompass
+
+
+## Templates
+- job-template:
+    name: tracecompass_{version}_build
+    defaults: tracecompass
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: wm
+         values: '{obj:wm}'
+      - axis:
+         type: user-defined
+         name: SWT_GTK3
+         values:
+           - "0"
+           - "1"
+      - axis:
+         type: user-defined
+         name: target-platform
+         values: '{obj:target_platform}'
+      - axis:
+         type: user-defined
+         name: java_version
+         values: '{obj:java_version}'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - xvfb:
+          installation-name: xvfb
+          auto-display-name: true
+          parallel-build: false
+          screen: 1024x768x24
+      - timeout:
+          timeout: 120
+          fail: true
+          type: absolute
+      - env-script:
+          script-content:
+            !include-raw-escape: scripts/tracecompass/set-java-home.sh
+
+    builders:
+      - shell:
+          !include-raw-escape: scripts/tracecompass/launch-wm.sh
+      - maven-target:
+          maven-version: "Maven 3.3.3"
+          goals: "-version"
+          private-repository: true
+      - maven-target:
+          maven-version: "Maven 3.3.3"
+          goals: clean install -Pctf-grammar,build-rcp
+          private-repository: true
+          properties:
+            - maven.test.failure.ignore=true
+            - eclipse.p2.mirrors=false
+
+    publishers:
+      - archive:
+          artifacts: 'releng/org.eclipse.tracecompass.releng-site/target/repository/**,rcp/org.eclipse.tracecompass.rcp.product/target/repository/**'
+          allow-empty: false
+          only-if-success: true
+      - junit:
+          results: '**/*.test*/target/surefire-reports/*.xml'
+      - workspace-cleanup
+      - email-ext:
+          recipients: alex@voxpopuli.im
+          matrix-trigger: only-parent
+      - ircbot:
+          strategy: new-failure-and-fixed
+          matrix-notifier: only-parent
+          channels:
+            - name: '#efficios'
+
+
+- job-template:
+    name: tracecompass_{version}_winbuild
+    defaults: tracecompass
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: target-platform
+         values: '{obj:target_platform}'
+
+    scm:
+      - git:
+          #url: git://github.com/tracecompass/tracecompass.git
+          url: git://github.com/alexmonthy/tracecompass.git
+          browser: githubweb
+          browser-url: https://github.com/tracecompass/tracecompass
+          branches:
+            - origin/{version}
+          git-tool: 'jgit' # Use jgit on windows to work around path too long
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - timeout:
+          timeout: 120
+          fail: true
+          type: absolute
+
+    builders:
+      - maven-target:
+          maven-version: "Maven 3.3.3"
+          goals: clean install -Pctf-grammar,build-rcp
+          private-repository: true
+          settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig1447974054868'
+          properties:
+            - maven.test.failure.ignore=true
+            - eclipse.p2.mirrors=false
+
+    publishers:
+      - archive:
+          artifacts: 'releng/org.eclipse.tracecompass.releng-site/target/repository/**,rcp/org.eclipse.tracecompass.rcp.product/target/repository/**'
+          allow-empty: false
+          only-if-success: true
+      - junit:
+          results: '**/*.test*/target/surefire-reports/*.xml'
+      - workspace-cleanup
+      - email-ext:
+          recipients: alex@voxpopuli.im
+          matrix-trigger: only-parent
+      - ircbot:
+          strategy: new-failure-and-fixed
+          matrix-notifier: only-parent
+          channels:
+            - name: '#efficios'
+
+
+- job-template:
+    name: tracecompass_{version}_macosxbuild
+    defaults: tracecompass
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: user-defined
+         name: target-platform
+         values: '{obj:target_platform}'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - timeout:
+          timeout: 120
+          fail: true
+          type: absolute
+
+    builders:
+      - maven-target:
+          maven-version: "Maven 3.3.3"
+          goals: "-version"
+          private-repository: true
+      - maven-target:
+          maven-version: "Maven 3.3.3"
+          goals: clean install -Pctf-grammar,build-rcp
+          private-repository: true
+          properties:
+            - maven.test.failure.ignore=true
+            - eclipse.p2.mirrors=false
+
+    publishers:
+      - archive:
+          artifacts: 'releng/org.eclipse.tracecompass.releng-site/target/repository/**,rcp/org.eclipse.tracecompass.rcp.product/target/repository/**'
+          allow-empty: false
+          only-if-success: true
+      - junit:
+          results: '**/*.test*/target/surefire-reports/*.xml'
+      - workspace-cleanup
+      - email-ext:
+          recipients: alex@voxpopuli.im
+          matrix-trigger: only-parent
+      - ircbot:
+          strategy: new-failure-and-fixed
+          matrix-notifier: only-parent
+          channels:
+            - name: '#efficios'
+
+
+## Project
+- project:
+    name: tracecompass
+    version:
+      - master
+      - tc-next
+    jobs:
+      - 'tracecompass_{version}_build':
+          arch: !!python/tuple [x86-32, x86-64]
+          wm: !!python/tuple [metacity, unity]
+          target_platform: !!python/tuple [tracecompass-e4.5, tracecompass-eStaging]
+          java_version: !!python/tuple [java-8-openjdk]
+
+      - 'tracecompass_{version}_winbuild':
+          arch: !!python/tuple [win64]
+          target_platform: !!python/tuple [tracecompass-e4.5, tracecompass-eStaging]
+
+      - 'tracecompass_{version}_macosxbuild':
+          arch: !!python/tuple [macosx]
+          target_platform: !!python/tuple [tracecompass-e4.5, tracecompass-eStaging]
+
