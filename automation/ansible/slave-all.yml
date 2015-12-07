@@ -1,0 +1,9 @@
+- hosts: all
+  roles:
+    - common
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools
+    - lttng-modules
+    - tracecompass

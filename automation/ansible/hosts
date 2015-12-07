@@ -1,3 +1,5 @@
+localhost ansible_connection=local
+
 [hosts]
 cloud01.internal.efficios.com
 cloud02.internal.efficios.com
