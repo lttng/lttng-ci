@@ -139,11 +139,6 @@ def main():
     if args.kernel_cutoff:
         kernel_cutoff = KernelVersion(args.kernel_cutoff)
 
-    print(kernel_path)
-    print(kernel_git)
-    print(kernel_cutoff)
-    return
-
     # Open or create the local repository
     if os.path.isdir(kernel_path):
         linux_repo = Repo(kernel_path)
