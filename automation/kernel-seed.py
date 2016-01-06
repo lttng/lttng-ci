@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2015 - Michael Jeanson <mjeanson@efficios.com>
+#                      Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,13 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-""" This script is used to  """
+""" This script is used to generate a yaml list of kernel version tag """
 
 import os
 import re
+import yaml
+import argparse
+
 from distutils.version import Version
 from git import Repo
-import yaml
 
 
 class KernelVersion(Version):
@@ -115,27 +118,37 @@ class KernelVersion(Version):
         else:
             assert False, "never get here"
 
-
-
-
-KERNCUTOFF = KernelVersion("2.6.36")
-
-LINUX_GIT = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
-LINUX_PATH = "/home/mjeanson/tmp/toto/"
-
-
-
-
 def main():
     """ Main """
 
     versions = []
+    kernel_cutoff = KernelVersion("2.6.36")
+    kernel_git = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
+    kernel_path = os.getcwd() + "/kernel"
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--kernel-path", help="The location of the kernel.  Default to the currentdir/linux")
+    parser.add_argument("--kernel-git-remote", help="The git url of the kernel. Default to git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git")
+    parser.add_argument("--kernel-cutoff", help="The lower bersion cutoff in X.X.X format. Default to 2.6.36")
+    args = parser.parse_args()
+
+    if args.kernel_path:
+        kernel_path = args.kernel_path
+    if args.kernel_git_remote:
+        kernel_git = args.kernel_git_remote
+    if args.kernel_cutoff:
+        kernel_cutoff = KernelVersion(args.kernel_cutoff)
+
+    print(kernel_path)
+    print(kernel_git)
+    print(kernel_cutoff)
+    return
 
     # Open or create the local repository
-    if os.path.isdir(LINUX_PATH):
-        linux_repo = Repo(LINUX_PATH)
+    if os.path.isdir(kernel_path):
+        linux_repo = Repo(kernel_path)
     else:
-        linux_repo = Repo.clone_from(LINUX_GIT, LINUX_PATH)
+        linux_repo = Repo.clone_from(kernel_git, kernel_path)
 
     # Pull the latest
     linux_repo.remote().pull()
@@ -146,7 +159,7 @@ def main():
             version = KernelVersion(tag.name.lstrip('v'))
 
             # Add only those who are superior to the cutoff version
-            if version >= KERNCUTOFF:
+            if version >= kernel_cutoff:
                 versions.append(version)
         except ValueError:
             #print(tag.name)
