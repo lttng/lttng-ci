@@ -65,7 +65,7 @@ if { vergte "$KVERSION" "3.10" && verlte "$KVERSION" "3.10.13"; } || \
     set +e
 
     # Build modules
-    make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)"
+    make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)" V=1
 
     # We expect this build to fail, if it doesn't, fail the job.
     if [ "$?" -eq 0 ]; then
@@ -80,7 +80,7 @@ if { vergte "$KVERSION" "3.10" && verlte "$KVERSION" "3.10.13"; } || \
 else # Regular build
 
     # Build modules
-    make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)" V=1
+    make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)" V=1 CONFIG_LTTNG=m
 
     # Install modules to build dir
     make INSTALL_MOD_PATH="${BUILDDIR}" -C "${LNXBINDIR}" M="$(pwd)" modules_install
