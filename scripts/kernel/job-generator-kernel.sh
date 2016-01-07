@@ -33,7 +33,7 @@ deactivate
 
 # Prepare JJB python 2 environment
 . $PYTHON_2_ENV/bin/activate
-pip install git+git://github.com/mjeanson/jenkins-job-builder
+pip install git+git://github.com/mjeanson/jenkins-job-builder@ci
 
 cp $WORKSPACE/etc/jenkins_jobs.ini-sample $WORKSPACE/etc/jenkins_jobs.ini
 
