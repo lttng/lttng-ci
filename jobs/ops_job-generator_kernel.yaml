@@ -1,0 +1,50 @@
+- job:
+    name: ops_job-generator_kernel
+    description: |
+      The kernel job generator auto generate from jenkins job builder all the
+      kernel and lttng-modules jobs.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+    logrotate:
+      daysToKeep: -1
+      numToKeep: 2
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor:
+          colormap: xterm
+      - credentials-binding:
+        - username-password-separated:
+            credential-id: 72e4d7dd-6c82-413d-ab79-d89d7e6bc959
+            username: JJB_JENKINS_USER
+            password: JJB_JENKINS_TOKEN
+
+    triggers:
+      - timed: '@daily'
+
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci.git
+          branches:
+            - origin/master
+
+
+    builders:
+      - shell: |
+          git clone --reference $HOME/gitcache/linux-stable.git/ git://artifacts.internal.efficios.com/git/linux-stable.git kernel
+      - shell:
+          !include-raw-escape: scripts/kernel/job-generator-kernel.sh
+      - system-groovy:
+          file: "scripts/kernel/job-trigger-kernel.groovy"
+
+    publishers:
+      - workspace-cleanup
+      - email:
+          recipients: joraj@efficios.com
+
+
