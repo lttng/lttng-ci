@@ -1,5 +1,6 @@
 - job:
     name: ops_job-generator_kernel
+    node: master
     description: |
       The kernel job generator auto generate from jenkins job builder all the
       kernel and lttng-modules jobs.
@@ -14,7 +15,6 @@
       artifactNumToKeep: -1
 
     wrappers:
-      - workspace-cleanup
       - timestamps
       - ansicolor:
           colormap: xterm
@@ -32,18 +32,15 @@
           url: https://github.com/lttng/lttng-ci.git
           branches:
             - origin/master
-
+          wipe-workspace: false
 
     builders:
-      - shell: |
-          git clone --reference $HOME/gitcache/linux-stable.git/ git://artifacts.internal.efficios.com/git/linux-stable.git kernel
       - shell:
           !include-raw-escape: scripts/kernel/job-generator-kernel.sh
       - system-groovy:
           file: "scripts/kernel/job-trigger-kernel.groovy"
 
     publishers:
-      - workspace-cleanup
       - email:
           recipients: joraj@efficios.com
 
