@@ -18,3 +18,4 @@ __common_packages:
   - cppcheck
   - python-virtualenv
   - curl
+  - gettext
