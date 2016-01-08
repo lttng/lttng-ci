@@ -1,5 +1,5 @@
 [job_builder]
-ignore_cache=True
+ignore_cache=False
 keep_descriptions=True
 
 [jenkins]
