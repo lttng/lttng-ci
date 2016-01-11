@@ -44,8 +44,9 @@
 
 
 ## Templates
-- job-template:
-    name: babeltrace_{version}_{buildtype}
+
+- babeltrace_version_buildtype_anchor: &babeltrace_version_buildtype_anchor
+    name: 'babeltrace_version_buildtype_anchor'
     defaults: babeltrace
 
     project-type: matrix
@@ -68,6 +69,9 @@
       - shell:
          !include-raw-escape: scripts/babeltrace/build.sh
 
+- job-template:
+    name: babeltrace_{version}_{buildtype}
+    <<: *babeltrace_version_buildtype_anchor
     # TODO: Scan for open tasks
     publishers:
       - tap:
