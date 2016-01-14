@@ -25,7 +25,7 @@ JENKINS_URL = 'https://ci.lttng.org'
 DISTRO_LIST = ['el', 'sles', 'ubuntu']
 DEFAULT_DISTRO = 'ubuntu'
 DISTRO_COMMAND = {
-    'el': 'yum update -y && yum clean all',
+    'el': 'yum update -y && package-cleanup -y --oldkernels --count=2 && yum clean all',
     'sles': 'zypper --non-interactive refresh && zypper --non-interactive patch --auto-agree-with-licenses --with-interactive',
     'ubuntu': 'apt-get update && apt-get dist-upgrade -V -y && apt-get clean && apt-get --purge autoremove -y',
 }
