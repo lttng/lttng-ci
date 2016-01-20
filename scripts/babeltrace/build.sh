@@ -123,9 +123,11 @@ $MAKE -j `$NPROC` V=1
 $MAKE install
 
 # Run tests
-$MAKE check
+cd ./tests
+# Run make check tests
+prove --merge -v --exec '' - < $WORKSPACE/tests/tests
+cd ..
 
-# Cleanup
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
