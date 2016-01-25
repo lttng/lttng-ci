@@ -34,7 +34,7 @@
 
     triggers:
       - pollscm:
-          cron: "@daily"
+          cron: "@hourly"
 
     properties:
       - github:
@@ -120,7 +120,7 @@
 
     triggers:
       - pollscm:
-          cron: "@hourly"
+          cron: "@daily"
 
     scm:
       - git:
