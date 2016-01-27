@@ -38,7 +38,8 @@
       - shell:
           !include-raw-escape: scripts/kernel/job-generator-kernel.sh
       - system-groovy:
-          file: "scripts/kernel/job-trigger-kernel.groovy"
+          command:
+            !include-raw-escape: scripts/kernel/job-trigger-kernel.groovy
 
     publishers:
       - email:
