@@ -65,7 +65,7 @@ if { vergte "$KVERSION" "3.10" && verlte "$KVERSION" "3.10.13"; } || \
     set +e
 
     # Build modules
-    make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)" V=1
+    make -j${NPROC} -C "${LNXBINDIR}" M="$(pwd)" V=1 CONFIG_LTTNG=m
 
     # We expect this build to fail, if it doesn't, fail the job.
     if [ "$?" -eq 0 ]; then
