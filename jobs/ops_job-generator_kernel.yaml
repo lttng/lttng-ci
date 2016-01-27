@@ -39,7 +39,7 @@
           !include-raw-escape: scripts/kernel/job-generator-kernel.sh
       - system-groovy:
           command:
-            !include-raw-escape: scripts/kernel/job-trigger-kernel.groovy
+            !include-raw: scripts/kernel/job-trigger-kernel.groovy
 
     publishers:
       - email:
