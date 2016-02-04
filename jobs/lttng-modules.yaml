@@ -10,10 +10,7 @@
     project-type: freestyle
 
     logrotate:
-        daysToKeep: -1
         numToKeep: 2
-        artifactDaysToKeep: -1
-        artifactNumToKeep: -1
 
     wrappers:
       - workspace-cleanup
@@ -24,7 +21,7 @@
       - git:
           url: git://github.com/lttng/lttng-modules.git
           browser: githubweb
-          browser-url: https://github.com/efficios/lttng-modules
+          browser-url: https://github.com/lttng/lttng-modules
           branches:
             - "{mversion}"
           shallow-clone: true
@@ -38,13 +35,7 @@
 
     properties:
       - github:
-          url: https://github.com/efficios/lttng-modules
-      - throttle:
-          max-per-node: 0
-          max-total: 0
-          option: category
-          categories:
-            - 'lttng-module-linux'
+          url: https://github.com/lttng/lttng-modules
 
 
 ## Templates
@@ -80,6 +71,132 @@
       - workspace-cleanup
 
 - job-template:
+    name: lttng-modules_{mversion}_build-vanilla
+    defaults: lttng-modules
+
+    node: 'master'
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: '{mversion}'
+          description: 'The lttng-modules branch to build.'
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '4'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: 'v2.6.36'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://artifacts.internal.efficios.com/git/linux-stable.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_VERSION_param-build'
+          description: 'The parametrized job to use for child builds.'
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/lttng-modules/master.groovy
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: lttng-modules_{mversion}_build-{uversion}
+    defaults: lttng-modules
+
+    node: 'master'
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: '{mversion}'
+          description: 'The lttng-modules branch to build.'
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '4'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'uversion'
+          default: '{uversion}'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://artifacts.internal.efficios.com/git/ubuntu-{uversion}.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_VERSION_param-build'
+          description: 'The parametrized job to use for child builds.'
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/lttng-modules/master-ubuntu.groovy
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: lttng-modules_VERSION_param-build
+    defaults: lttng-modules
+    description: |
+      This is a parametrized job used by 'master' jobs to build any combinations
+      of lttng-modules and linux kernel versions.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+          type: slave
+          name: arch
+          values: '{obj:arch}'
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: 'master'
+          description: 'The lttng-modules branch to build.'
+      - string:
+          name: 'kversion'
+          default: ''
+          description: 'The linux kernel git tag to build against.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://artifacts.internal.efficios.com/git/linux-stable.git'
+          description: 'The linux kernel git repository url.'
+
+    concurrent: true
+    logrotate:
+      daysToKeep: -1
+
+    scm:
+      - git:
+          url: git://github.com/lttng/lttng-modules.git
+          browser: githubweb
+          browser-url: https://github.com/lttng/lttng-modules
+          branches:
+            - "${{mversion}}"
+          skip-tag: true
+          basedir: lttng-modules
+
+    builders:
+      - shell: |
+          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" linux
+      - shell:
+          !include-raw-escape: scripts/lttng-modules/param-build.sh
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
     name: lttng-modules_{mversion}_coverity
     defaults: lttng-modules
     node: 'x86-64'
@@ -92,7 +209,7 @@
       - git:
           url: git://github.com/lttng/lttng-modules.git
           browser: githubweb
-          browser-url: https://github.com/efficios/lttng-modules
+          browser-url: https://github.com/lttng/lttng-modules
           branches:
             - "{mversion}"
 
@@ -126,7 +243,7 @@
       - git:
           url: git://github.com/lttng/lttng-modules.git
           browser: githubweb
-          browser-url: https://github.com/efficios/lttng-modules
+          browser-url: https://github.com/lttng/lttng-modules
           branches:
             - "{mversion}"
 
@@ -152,15 +269,14 @@
     name: lttng-modules
     mversion:
       !include: jobs/inc/lttng-modules-versions.yaml.inc
-    kversion:
-      !include: jobs/inc/kernel-versions.yaml.inc
     jobs:
-      - 'lttng-modules_{mversion}_{kversion}_{buildtype}':
-          buildtype: build
+      - 'lttng-modules_{mversion}_build-vanilla'
+      - 'lttng-modules_{mversion}_build-{uversion}':
+          uversion:
+            - trusty
+            - xenial
+      - 'lttng-modules_VERSION_param-build':
           arch: !!python/tuple [x86-32, x86-64]
-      #- 'lttng-modules_{mversion}_{kversion}_{buildtype}':
-      #    buildtype: portbuild
-      #    arch: !!python/tuple [armhf, powerpc]
       - 'lttng-modules_{mversion}_cppcheck'
       - 'lttng-modules_{mversion}_coverity':
           mversion: master
