@@ -73,6 +73,14 @@
 - job-template:
     name: lttng-modules_{mversion}_build-vanilla
     defaults: lttng-modules
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job will build the {mversion} branch against all stable vanilla
+      kernel tags.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
 
     node: 'master'
 
@@ -101,7 +109,7 @@
     builders:
       - system-groovy:
          command:
-           !include-raw-escape: scripts/lttng-modules/master.groovy
+           !include-raw-escape: scripts/lttng-modules/master-vanilla.groovy
 
     publishers:
       - workspace-cleanup
@@ -109,6 +117,14 @@
 - job-template:
     name: lttng-modules_{mversion}_build-{uversion}
     defaults: lttng-modules
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job will build the {mversion} branch against all Ubuntu {uversion}
+      released kernels, including the LTS backport kernels.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
 
     node: 'master'
 
@@ -138,6 +154,50 @@
       - system-groovy:
          command:
            !include-raw-escape: scripts/lttng-modules/master-ubuntu.groovy
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: lttng-modules_{mversion}_build-rt
+    defaults: lttng-modules
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job will build the {mversion} branch against all Linutronix RT
+      kernels.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    node: 'master'
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: '{mversion}'
+          description: 'The lttng-modules branch to build.'
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '4'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: 'v2.6.36-rt0-rebase'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://artifacts.internal.efficios.com/git/linux-rt-devel.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_VERSION_param-build'
+          description: 'The parametrized job to use for child builds.'
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/lttng-modules/master-rt.groovy
 
     publishers:
       - workspace-cleanup
@@ -175,7 +235,7 @@
 
     concurrent: true
     logrotate:
-      daysToKeep: -1
+      daysToKeep: 2
 
     scm:
       - git:
@@ -186,6 +246,8 @@
             - "${{mversion}}"
           skip-tag: true
           basedir: lttng-modules
+
+    triggers:
 
     builders:
       - shell: |
@@ -263,6 +325,32 @@
           notify-every-unstable-build: true
           send-to-individuals: false
 
+- job-template:
+    name: lttng-modules_{mversion}_sloccount
+    defaults: lttng-modules
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job runs the sloccount utility and generates a trend report.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    builders:
+      - shell: |
+          cloc --by-file --xml --out=cloc.xml lttng-modules/
+
+    publishers:
+      - archive:
+          artifacts: 'cloc.xml'
+          allow-empty: false
+      - sloccount:
+          report-files: 'cloc.xml'
+
 
 ## Project
 - project:
@@ -271,6 +359,8 @@
       !include: jobs/inc/lttng-modules-versions.yaml.inc
     jobs:
       - 'lttng-modules_{mversion}_build-vanilla'
+      - 'lttng-modules_{mversion}_build-rt':
+          mversion: master
       - 'lttng-modules_{mversion}_build-{uversion}':
           uversion:
             - trusty
@@ -278,5 +368,7 @@
       - 'lttng-modules_VERSION_param-build':
           arch: !!python/tuple [x86-32, x86-64]
       - 'lttng-modules_{mversion}_cppcheck'
+      - 'lttng-modules_{mversion}_sloccount':
+          mversion: master
       - 'lttng-modules_{mversion}_coverity':
           mversion: master

@@ -16,6 +16,7 @@ __common_packages:
   - libtap-harness-archive-perl
   - jq
   - cppcheck
+  - cloc
   - python-virtualenv
   - curl
   - gettext
