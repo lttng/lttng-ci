@@ -28,13 +28,11 @@ ci-slave-powerpc-01
 ci-slave-32-02
 ci-slave-32-03
 ci-slave-32-04
-ci-slave-32-05
 
 [slave-x64]
 ci-slave-64-02
 ci-slave-64-03
 ci-slave-64-04
-ci-slave-64-05
 
 [slave:children]
 slave-x32
