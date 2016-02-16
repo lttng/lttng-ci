@@ -110,13 +110,6 @@
               total-high: 1
               total-normal: 1
               total-low: 1
-      - ircbot:
-          strategy: new-failure-and-fixed
-          notify-committers: True
-          notify-fixers: True
-          matrix-notifier: only-configurations
-          channels:
-            - name: '#lttng'
 
 - job-template:
     name: babeltrace_{version}_cppcheck
