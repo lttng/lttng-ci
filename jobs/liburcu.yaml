@@ -28,10 +28,7 @@
     project-type: freestyle
 
     logrotate:
-        daysToKeep: -1
         numToKeep: 2
-        artifactDaysToKeep: -1
-        artifactNumToKeep: -1
 
     wrappers:
       - workspace-cleanup
@@ -41,9 +38,9 @@
 
     scm:
       - git:
-          url: git://github.com/urcu/userspace-rcu.git
+          url: git://github.com/{github_user}/{github_name}.git
           browser: githubweb
-          browser-url: https://github.com/urcu/userspace-rcu
+          browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - origin/{version}
 
@@ -53,7 +50,7 @@
 
     properties:
       - github:
-          url: https://github.com/urcu/userspace-rcu
+          url: https://github.com/{github_user}/{github_name}
 
 
 ## Templates
@@ -89,12 +86,12 @@
       - warnings:
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
-          #total-thresholds:
-            #failed:
-            #  total-all: 0
-            #  total-high: 0
-            #  total-normal: 0
-            #  total-low: 0
+          total-thresholds:
+            unstable:
+              total-all: 1
+              total-high: 1
+              total-normal: 1
+              total-low: 1
       - archive:
           artifacts: 'build/**'
           allow-empty: false
@@ -178,6 +175,8 @@
 ## Project
 - project:
     name: liburcu
+    github_user: urcu
+    github_name: userspace-rcu
     version:
       !include: jobs/inc/liburcu-versions.yaml.inc
     jobs:
@@ -193,7 +192,7 @@
           buildtype: solarisbuild
           arch: !!python/tuple [solaris10, solaris11]
           build: !!python/tuple [std]
-          version:
+          version: # Solaris support was introduced in 0.9
             - master
             - stable-0.9
       - 'liburcu_{version}_cppcheck'

@@ -1,5 +1,6 @@
 - job:
     name: ops_job-generator_kernel
+    disabled: true # Currently unused
     node: master
     description: |
       The kernel job generator auto generate from jenkins job builder all the
@@ -9,10 +10,7 @@
 
     project-type: freestyle
     logrotate:
-      daysToKeep: -1
       numToKeep: 2
-      artifactDaysToKeep: -1
-      artifactNumToKeep: -1
 
     wrappers:
       - timestamps

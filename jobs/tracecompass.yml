@@ -8,10 +8,7 @@
     project-type: freestyle
 
     logrotate:
-        daysToKeep: -1
         numToKeep: 2
-        artifactDaysToKeep: -1
-        artifactNumToKeep: -1
 
     wrappers:
       - workspace-cleanup
@@ -20,10 +17,9 @@
 
     scm:
       - git:
-          #url: git://github.com/tracecompass/tracecompass.git
-          url: git://github.com/alexmonthy/tracecompass.git
+          url: git://github.com/{github_user}/{github_name}.git
           browser: githubweb
-          browser-url: https://github.com/tracecompass/tracecompass
+          browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - origin/{version}
 
@@ -33,7 +29,7 @@
 
     properties:
       - github:
-          url: https://github.com/tracecompass/tracecompass
+          url: https://github.com/{github_user}/{github_name}
 
 
 ## Templates
@@ -235,6 +231,8 @@
 ## Project
 - project:
     name: tracecompass
+    github_user: alexmonthy
+    github_name: tracecompass
     version:
       - master
       - tc-next

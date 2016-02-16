@@ -15,10 +15,7 @@
     project-type: freestyle
 
     logrotate:
-        daysToKeep: -1
         numToKeep: 2
-        artifactDaysToKeep: -1
-        artifactNumToKeep: -1
 
     wrappers:
       - workspace-cleanup
@@ -82,11 +79,11 @@
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
           total-thresholds:
-            failed:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
+            unstable:
+              total-all: 1
+              total-high: 1
+              total-normal: 1
+              total-low: 1
       - archive:
           artifacts: 'build/**'
           allow-empty: false
@@ -108,16 +105,15 @@
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
           total-thresholds:
-            failed:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
+            unstable:
+              total-all: 1
+              total-high: 1
+              total-normal: 1
+              total-low: 1
       - ircbot:
           strategy: new-failure-and-fixed
           notify-committers: True
           notify-fixers: True
-
           matrix-notifier: only-configurations
           channels:
             - name: '#lttng'

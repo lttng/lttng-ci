@@ -19,9 +19,9 @@
 
     scm:
       - git:
-          url: git://github.com/lttng/lttng-modules.git
+          url: git://github.com/{github_user}/{github_name}.git
           browser: githubweb
-          browser-url: https://github.com/lttng/lttng-modules
+          browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - "{mversion}"
           shallow-clone: true
@@ -35,7 +35,7 @@
 
     properties:
       - github:
-          url: https://github.com/lttng/lttng-modules
+          url: https://github.com/{github_user}/{github_name}
 
 
 ## Templates
@@ -355,6 +355,8 @@
 ## Project
 - project:
     name: lttng-modules
+    github_user: lttng
+    github_name: lttng-modules
     mversion:
       !include: jobs/inc/lttng-modules-versions.yaml.inc
     jobs:

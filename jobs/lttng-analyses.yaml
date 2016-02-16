@@ -21,9 +21,9 @@
 
     scm:
       - git:
-          url: git://github.com/lttng/lttng-analyses.git
+          url: git://github.com/{github_user}/{github_name}.git
           browser: githubweb
-          browser-url: https://github.com/lttng/lttng-analyses
+          browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - origin/{version}
 
@@ -33,7 +33,7 @@
 
     properties:
       - github:
-          url: https://github.com/lttng/lttng-analyses
+          url: https://github.com/{github_user}/{github_name}
 
 
 ## Templates
@@ -107,6 +107,8 @@
 ## Project
 - project:
     name: lttng-analyses
+    github_user: lttng
+    github_name: lttng-analyses
     version:
       - master
     jobs:

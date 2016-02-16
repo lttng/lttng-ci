@@ -23,9 +23,9 @@
 
     scm:
       - git:
-          url: git://github.com/lttng/lttng-ust.git
+          url: git://github.com/{github_user}/{github_name}.git
           browser: githubweb
-          browser-url: https://github.com/lttng/lttng-ust
+          browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - origin/{version}
 
@@ -35,7 +35,7 @@
 
     properties:
       - github:
-          url: https://github.com/lttng/lttng-ust
+          url: https://github.com/{github_user}/{github_name}
 
 
 ## Templates
@@ -87,12 +87,12 @@
       - warnings:
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
-          #total-thresholds:
-          #  failed:
-          #    total-all: 0
-          #    total-high: 0
-          #    total-normal: 0
-          #    total-low: 0
+          total-thresholds:
+            unstable:
+              total-all: 1
+              total-high: 1
+              total-normal: 1
+              total-low: 1
       - archive:
           artifacts: 'build/**'
           allow-empty: false
@@ -234,6 +234,8 @@
 ## Project
 - project:
     name: lttng-ust
+    github_user: lttng
+    github_name: lttng-ust
     version:
       !include: jobs/inc/lttng-ust-versions.yaml.inc
     jobs:
