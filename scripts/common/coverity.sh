@@ -61,6 +61,10 @@ if [ -d "$WORKSPACE/deps/lttng-ust" ]; then
   export LD_LIBRARY_PATH="$UST_LIBS:${LD_LIBRARY_PATH:-}"
 fi
 
+if [ -d "$WORKSPACE/linux" ]; then
+	export KERNELDIR="$WORKSPACE/linux"
+fi
+
 
 # Verify upload is permitted
 set +x
@@ -110,7 +114,7 @@ fi
 
 # Build
 echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
-cov-build --dir $RESULTS_DIR $COVERITY_SCAN_BUILD_OPTIONS make -j$NPROC
+cov-build --dir $RESULTS_DIR $COVERITY_SCAN_BUILD_OPTIONS make -j$NPROC V=1
 cov-import-scm --dir $RESULTS_DIR --scm git --log $RESULTS_DIR/scm_log.txt
 
 # Tar results
