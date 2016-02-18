@@ -79,7 +79,8 @@
           matrix-builds: false
           matrix-configs: true
     triggers:
-      - timed: '@hourly'
+      - pollscm:
+          cron: "@hourly"
       - reverse:
             jobs: 'lttng-ust_{version}_{buildtype}'
             result: 'success'
