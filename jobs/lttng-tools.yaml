@@ -78,6 +78,11 @@
             - 'lttng-tools'
           matrix-builds: false
           matrix-configs: true
+    triggers:
+      - timed: '@hourly'
+      - reverse:
+            jobs: 'lttng-ust_{version}_{buildtype}'
+            result: 'success'
 
     builders:
       - conditional-step:
