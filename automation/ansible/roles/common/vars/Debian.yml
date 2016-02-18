@@ -20,3 +20,4 @@ __common_packages:
   - python-virtualenv
   - curl
   - gettext
+  - libssl-dev
