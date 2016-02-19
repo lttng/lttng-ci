@@ -1,7 +1,7 @@
 - hosts: all
   roles:
     - common
-    - cross-compiler
+    - cross-compilers
     - babeltrace
     - liburcu
     - lttng-ust
