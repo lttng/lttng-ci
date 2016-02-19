@@ -1,6 +1,7 @@
 - hosts: slave-x32
   roles:
     - common
+    - cross-compiler
     - babeltrace
     - liburcu
     - lttng-ust
