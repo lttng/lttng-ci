@@ -3,4 +3,4 @@
   yum:
     name: "{{ item }}"
     state: installed
-  with_items: cross-compilers_packages
+  with_items: cross_compilers_packages
