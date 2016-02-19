@@ -1,5 +1,5 @@
 ---
-__common_packages:
+__cross-compilers_packages:
   - gcc-aarch64-linux-gnu
   - gcc-powerpc64le-linux-gnu
   - gcc-arm-linux-gnueabihf

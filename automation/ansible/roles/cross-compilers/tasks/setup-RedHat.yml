@@ -1,6 +1,6 @@
 ---
-- name: Ensure common packages are installed.
+- name: Ensure cross-compilers packages are installed.
   yum:
     name: "{{ item }}"
     state: installed
-  with_items: common_packages
+  with_items: cross-compilers_packages

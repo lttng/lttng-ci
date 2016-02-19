@@ -2,6 +2,6 @@
 - name: Update apt cache.
   apt: update_cache=yes cache_valid_time=86400
 
-- name: Ensure common packages are installed.
+- name: Ensure cross-compilers packages are installed.
   apt: "name={{ item }} state=installed"
-  with_items: common_packages
+  with_items: cross-compilers_packages
