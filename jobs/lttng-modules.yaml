@@ -245,13 +245,13 @@
           branches:
             - "${{mversion}}"
           skip-tag: true
-          basedir: lttng-modules
+          basedir: src/lttng-modules
 
     triggers:
 
     builders:
       - shell: |
-          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" linux
+          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
       - shell:
           !include-raw-escape: scripts/lttng-modules/param-build.sh
 
