@@ -1,4 +1,4 @@
-- hosts: slave-x64
+- hosts: slave-amd64
   roles:
     - common
     - cross-compilers

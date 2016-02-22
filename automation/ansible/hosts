@@ -24,19 +24,29 @@ ci-slave-powerpc-01
 140.211.168.186
 140.211.168.187
 
-[slave-x32]
-ci-slave-32-02
-ci-slave-32-03
-ci-slave-32-04
+[slave-i386]
+ci-slave-i386-04-01
+ci-slave-i386-04-02
+ci-slave-i386-04-03
+ci-slave-i386-04-04
+ci-slave-i386-05-01
+ci-slave-i386-05-02
+ci-slave-i386-05-03
+ci-slave-i386-05-04
 
-[slave-x64]
-ci-slave-64-02
-ci-slave-64-03
-ci-slave-64-04
+[slave-amd64]
+ci-slave-amd64-04-01
+ci-slave-amd64-04-02
+ci-slave-amd64-04-03
+ci-slave-amd64-04-04
+ci-slave-amd64-05-01
+ci-slave-amd64-05-02
+ci-slave-amd64-05-03
+ci-slave-amd64-05-04
 
 [slave:children]
-slave-x32
-slave-x64
+slave-i386
+slave-amd64
 slave-armhf
 slave-arm64
 slave-powerpc

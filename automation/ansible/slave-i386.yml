@@ -1,4 +1,4 @@
-- hosts: slave-x32
+- hosts: slave-i386
   roles:
     - common
     - cross-compilers

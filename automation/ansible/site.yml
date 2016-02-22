@@ -4,5 +4,5 @@
 - include: slave-arm64.yml
 - include: slave-powerpc.yml
 - include: slave-ppc64el.yml
-- include: slave-x32.yml
-- include: slave-x64.yml
+- include: slave-i386.yml
+- include: slave-amd64.yml
