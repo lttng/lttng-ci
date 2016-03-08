@@ -238,6 +238,10 @@ if [ "$RUN_TESTS" = "yes" ]; then
 
     cd $BUILD_PATH/tests
 
+    # Force the lttng-sessiond path to /bin/true to prevent the spawing of a
+    # lttng-sessiond --daemonize on "lttng create"
+    export LTTNG_SESSIOND_PATH="/bin/true"
+
     # Run 'unit_tests' and 'fast_regression' test suites for all configs except 'no-ust'
     if [ "$conf" != "no-ust" ]; then
         prove --merge -v --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
