@@ -100,26 +100,32 @@ LTTBUILDKHDRDIR="${WORKSPACE}/build/lttng-modules-khdr"
 case "$arch" in
     "x86-32")
         karch="x86"
+        cross_compile=""
         ;;
 
     "x86-64")
         karch="x86"
+        cross_compile=""
         ;;
 
     "armhf")
         karch="arm"
+        cross_compile="arm-linux-gnueabihf-"
         ;;
 
     "arm64")
         karch="arm64"
+        cross_compile="aarch64-linux-gnu-"
         ;;
 
     "powerpc")
         karch="powerpc"
+        cross_compile="powerpc-linux-gnu-"
         ;;
 
-    "ppc64|ppc64el")
+    "ppc64el")
         karch="powerpc"
+        cross_compile="powerpc64le-linux-gnu-"
         ;;
 
     *)
@@ -127,6 +133,12 @@ case "$arch" in
         exit 1
         ;;
 esac
+
+# Setup cross compile env if required
+if [ "${cross_build:-}" = "true" ]; then
+    export ARCH="${karch}"
+    export CROSS_COMPILE="${cross_compile}"
+fi
 
 
 # Create build directories
@@ -139,16 +151,56 @@ mkdir -p "${LNXBUILDDIR}" "${LNXHDRDIR}"
 cd "${LNXSRCDIR}"
 
 # Prepare linux sources for headers install
-make defconfig
-
-# Enable CONFIG_KALLSYMS_ALL
-sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config
-
+make allyesconfig
+sed -i "s/CONFIG_MODULE_SIG=y/# CONFIG_MODULE_SIG is not set/g" .config
+make silentoldconfig
 make modules_prepare
 
-# first copy everything
-cp --parents `find  -type f -name "Makefile*" -o -name "Kconfig*"` "${LNXHDRDIR}"
+# Version specific tasks
+case "$kversion" in
+  Ubuntu*)
+    # Add Ubuntu ABI number to kernel headers, this is normally done by the packaging code
+    ABINUM=$(echo $kversion | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')
+    echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> include/generated/utsrelease.h
+    ;;
+esac
 
+# For RT kernels, copy version file
+if [ -s localversion-rt ]; then
+    cp -a localversion-rt "${LNXHDRDIR}"
+fi
+
+# Copy all Makefile related stuff
+find . -path './include/*' -prune \
+    -o -path './scripts/*' -prune -o -type f \
+	\( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' -o \
+        -name '*.sh' -o -name '*.pl' -o -name '*.lds' \) \
+    -print | cpio -pd --preserve-modification-time "${LNXHDRDIR}"
+
+# Copy base scripts and include dirs
+cp -a scripts include "${LNXHDRDIR}"
+
+# Copy arch includes
+(find arch -name include -type d -print | \
+    xargs -n1 -i: find : -type f) | \
+	cpio -pd --preserve-modification-time "${LNXHDRDIR}"
+
+# Copy arch scripts
+(find arch -name scripts -type d -print | \
+    xargs -n1 -i: find : -type f) | \
+	cpio -pd --preserve-modification-time "${LNXHDRDIR}"
+
+# Cleanup scripts
+rm -f "${LNXHDRDIR}/scripts/*.o"
+rm -f "${LNXHDRDIR}/scripts/*/*.o"
+
+# On powerpc this object is required to link modules
+if [ "${karch}" = "powerpc" ]; then
+    make arch/powerpc/lib/crtsavres.o
+    cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LNXHDRDIR}/"
+fi
+
+# Copy modules related stuff, if available
 if [ -s Module.symvers ]; then
     cp Module.symvers "${LNXHDRDIR}"
 fi
@@ -161,34 +213,8 @@ if [ -s Module.markers ]; then
     cp Module.markers "${LNXHDRDIR}"
 fi
 
-# then drop all but the needed Makefiles/Kconfig files
-rm -rf "${LNXHDRDIR}/Documentation"
-rm -rf "${LNXHDRDIR}/scripts"
-rm -rf "${LNXHDRDIR}/include"
-
+# Copy config file
 cp .config "${LNXHDRDIR}"
-cp -a scripts "${LNXHDRDIR}"
-
-if [ -d arch/${karch}/scripts ]; then
-    cp -a arch/${karch}/scripts "${LNXHDRDIR}/arch/${karch}/" || :
-fi
-
-if [ -f arch/${karch}/*lds ]; then
-    cp -a arch/${karch}/*lds "${LNXHDRDIR}/arch/${karch}/" || :
-fi
-
-rm -f "${LNXHDRDIR}/scripts/*.o"
-rm -f "${LNXHDRDIR}/scripts/*/*.o"
-
-if [ "${karch}" = "powerpc" ]; then
-    cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LNXHDRDIR}/"
-fi
-
-if [ -d arch/${karch}/include ]; then
-    cp -a --parents arch/${karch}/include "${LNXHDRDIR}/"
-fi
-
-cp -a include "${LNXHDRDIR}/include"
 
 # Make sure the Makefile and version.h have a matching timestamp so that
 # external modules can be built
@@ -217,13 +243,15 @@ cd "${LNXSRCDIR}"
 make mrproper
 
 # Prepare linux sources for modules OOT build
-make O="${LNXBUILDDIR}" defconfig
-
-# Enable CONFIG_KALLSYMS_ALL
-sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" "${LNXBUILDDIR}"/.config
-
-# Prepare out of tree dir for modules build
+make O="${LNXBUILDDIR}" allyesconfig
+sed -i "s/CONFIG_MODULE_SIG=y/# CONFIG_MODULE_SIG is not set/g" "${LNXBUILDDIR}"/.config
+make O="${LNXBUILDDIR}" silentoldconfig
 make O="${LNXBUILDDIR}" modules_prepare
+
+# On powerpc this object is required to link modules
+if [ "${karch}" = "powerpc" ]; then
+    make O="${LNXBUILDDIR}" arch/powerpc/lib/crtsavres.o
+fi
 
 # Version specific tasks
 case "$kversion" in
@@ -243,5 +271,9 @@ build_modules "${LNXBUILDDIR}" "${LTTBUILKSRCDDIR}"
 
 # Build modules against kernel headers
 build_modules "${LNXHDRDIR}" "${LTTBUILDKHDRDIR}"
+
+# Make sure modules were built
+find "${LNXBUILDDIR}" -name "*.ko"
+find "${LNXHDRDIR}" -name "*.ko"
 
 # EOF
