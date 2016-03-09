@@ -1,2 +1,3 @@
 ---
-__lttng_modules_packages: []
+__lttng_modules_packages:
+  - kernel-wedge
