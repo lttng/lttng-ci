@@ -1,0 +1,10 @@
+- hosts: slave-standalone
+  roles:
+    - common
+    - cross-compilers
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools
+    - lttng-modules
+    - tracecompass

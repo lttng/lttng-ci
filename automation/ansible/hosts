@@ -52,6 +52,10 @@ ci-slave-amd64-05-02
 ci-slave-amd64-05-03
 ci-slave-amd64-05-04
 
+[slave-standalone]
+ci-slave-64-standalone-02
+ci-slave-64-standalone-04
+
 [slave:children]
 slave-i386
 slave-amd64
@@ -59,3 +63,4 @@ slave-armhf
 slave-arm64
 slave-powerpc
 slave-ppc64el
+slave-standalone

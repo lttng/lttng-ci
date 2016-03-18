@@ -6,3 +6,4 @@
 - include: slave-ppc64el.yml
 - include: slave-i386.yml
 - include: slave-amd64.yml
+- include: slave-standalone.yml
