@@ -14,3 +14,10 @@
 
 - include: setup-Debian.yml
   when: ansible_os_family == 'Debian'
+
+- name: checkout repo
+  git: repo=git://artifacts.internal.efficios.com/git/org.eclipse.tracecompass.git
+       dest=/home/jenkins/gitcache/org.eclipse.tracecompass.git
+       bare=yes
+  sudo: yes
+  sudo_user: jenkins
