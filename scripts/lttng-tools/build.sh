@@ -196,7 +196,7 @@ case "$build" in
         BUILD_PATH=`mktemp -d`
 
         # Initial configure and generate tarball
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" ./configure $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" ./configure $CONF_OPTS --enable-build-man-pages
         $MAKE dist
 
         mkdir -p $BUILD_PATH
