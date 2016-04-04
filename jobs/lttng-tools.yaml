@@ -363,6 +363,22 @@
           babelversion: !!python/tuple [master]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: build
+          version: stable-2.8
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.3]
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.8
+          arch: !!python/tuple [armhf, arm64, powerpc]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.3]
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: build
           version: stable-2.7
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
@@ -397,6 +413,9 @@
       - 'lttng-tools_{version}_scan-build':
           version: master
           urcuversion: master
+      - 'lttng-tools_{version}_scan-build':
+          version: stable-2.8
+          urcuversion: stable-0.9
       - 'lttng-tools_{version}_scan-build':
           version: stable-2.7
           urcuversion: stable-0.9
