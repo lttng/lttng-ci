@@ -1,3 +1,4 @@
 ---
 __lttng_modules_packages:
   - kernel-wedge
+  - libelf-dev
