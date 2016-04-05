@@ -35,6 +35,62 @@ vergt() {
 }
 
 
+prepare_lnx_sources() {
+
+    outdir=$1
+
+    if [ "$outdir" = "." ]; then
+      koutput=""
+    else
+      koutput="O=\"${outdir}\""
+    fi
+
+    # Generate kernel configuration
+    case "$kversion" in
+      Ubuntu*)
+        fakeroot debian/rules clean
+        fakeroot debian/rules genconfigs
+        cp CONFIGS/${ubuntu_config} "${outdir}"/.config
+        ;;
+      *)
+        make ${koutput} defconfig
+        ;;
+    esac
+
+    # GCC 4.8
+    sed -i "s/CONFIG_CC_STACKPROTECTOR_STRONG=y/# CONFIG_CC_STACKPROTECTOR_STRONG is not set/g" "${outdir}"/.config
+
+    # Don't try to sign modules
+    sed -i "s/CONFIG_MODULE_SIG=y/# CONFIG_MODULE_SIG is not set/g" "${outdir}"/.config
+
+    # Enable CONFIG_KALLSYMS_ALL
+    echo "CONFIG_KPROBES=y" >> "${outdir}"/.config
+    echo "CONFIG_FTRACE=y" >> "${outdir}"/.config
+    echo "CONFIG_BLK_DEV_IO_TRACE=y" >> "${outdir}"/.config
+    echo "CONFIG_TRACEPOINTS=y" >> "${outdir}"/.config
+    echo "CONFIG_KALLSYMS_ALL=y" >> "${outdir}"/.config
+
+
+    make ${koutput} silentoldconfig
+    make ${koutput} modules_prepare
+
+    # Version specific tasks
+    case "$kversion" in
+      Ubuntu*)
+        # Add Ubuntu ABI number to kernel headers, this is normally done by the packaging code
+        ABINUM=$(echo $kversion | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')
+        echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> ${outdir}/include/generated/utsrelease.h
+        ;;
+    esac
+
+    # On powerpc this object is required to link modules
+    if [ "${karch}" = "powerpc" ]; then
+        make ${koutput} arch/powerpc/lib/crtsavres.o
+    fi
+}
+
+
+
 build_modules() {
 
     kdir="$1"
@@ -63,9 +119,11 @@ build_modules() {
         fi
 
         # We have to publish at least one file or the build will fail
-        echo "This kernel is broken, there is a deadlock in the timekeeping subsystem." > "${bdir}/BROKEN.txt"
+        echo "This kernel is broken, there is a deadlock in the timekeeping subsystem." > "${bdir}/BROKEN.txt.ko"
 
         set -e
+
+        KERNELDIR="${kdir}" make clean
 
     else # Regular build
 
@@ -96,53 +154,94 @@ LTTBUILKSRCDDIR="${WORKSPACE}/build/lttng-modules-ksrc"
 LTTBUILDKHDRDIR="${WORKSPACE}/build/lttng-modules-khdr"
 
 
-# Set arch specific values
-case "$arch" in
-    "x86-32")
-        karch="x86"
-        cross_compile=""
-        ;;
+# Setup cross compile env if available
+if [ "x${cross_arch:-}" != "x" ]; then
 
-    "x86-64")
-        karch="x86"
-        cross_compile=""
-        ;;
+    case "$cross_arch" in
+        "armhf")
+            karch="arm"
+            cross_compile="arm-linux-gnueabihf-"
+            ubuntu_config="armhf-config.flavour.generic"
+            ;;
 
-    "armhf")
-        karch="arm"
-        cross_compile="arm-linux-gnueabihf-"
-        ;;
+        "arm64")
+            karch="arm64"
+            cross_compile="aarch64-linux-gnu-"
+            ubuntu_config="arm64-config.flavour.generic"
+            ;;
 
-    "arm64")
-        karch="arm64"
-        cross_compile="aarch64-linux-gnu-"
-        ;;
+        "powerpc")
+            karch="powerpc"
+            cross_compile="powerpc-linux-gnu-"
+            ubuntu_config="powerpc-config.flavour.powerpc-smp"
+            ;;
 
-    "powerpc")
-        karch="powerpc"
-        cross_compile="powerpc-linux-gnu-"
-        ;;
+        "ppc64el")
+            karch="powerpc"
+            cross_compile="powerpc64le-linux-gnu-"
+            ubuntu_config="ppc64el-config.flavour.generic"
+            ;;
 
-    "ppc64el")
-        karch="powerpc"
-        cross_compile="powerpc64le-linux-gnu-"
-        ;;
+        *)
+            echo "Unsupported cross arch $arch"
+            exit 1
+            ;;
+    esac
 
-    *)
-        echo "Unsupported arch $arch"
-        exit 1
-        ;;
-esac
-
-# Setup cross compile env if required
-if [ "${cross_build:-}" = "true" ]; then
+    # Export variables used by Kbuild for cross compilation
     export ARCH="${karch}"
     export CROSS_COMPILE="${cross_compile}"
+
+
+# Set arch specific values if we are not cross compiling
+elif [ "x${arch:-}" != "x" ]; then
+    case "$arch" in
+        "x86-32")
+            karch="x86"
+            ubuntu_config="i386-config.flavour.generic"
+            ;;
+
+        "x86-64")
+            karch="x86"
+            ubuntu_config="amd64-config.flavour.generic"
+            ;;
+
+        "armhf")
+            karch="arm"
+            ubuntu_config="armhf-config.flavour.generic"
+            ;;
+
+        "arm64")
+            karch="arm64"
+            ubuntu_config="arm64-config.flavour.generic"
+            ;;
+
+        "powerpc")
+            karch="powerpc"
+            ubuntu_config="powerpc-config.flavour.powerpc-smp"
+            ;;
+
+        "ppc64el")
+            karch="powerpc"
+            ubuntu_config="ppc64el-config.flavour.generic"
+            ;;
+
+        *)
+            echo "Unsupported arch $arch"
+            exit 1
+            ;;
+    esac
+else
+    echo "Not arch or cross_arch specified"
+    exit 1
 fi
 
 
+
+
 # Create build directories
-mkdir -p "${LNXBUILDDIR}" "${LNXHDRDIR}"
+mkdir -p "${LNXBUILDDIR}" "${LNXHDRDIR}" "${LTTBUILKSRCDDIR}" "${LTTBUILDKHDRDIR}"
+
 
 
 ## PREPARE DISTRO STYLE KERNEL HEADERS / DEVEL
@@ -150,20 +249,7 @@ mkdir -p "${LNXBUILDDIR}" "${LNXHDRDIR}"
 # Enter linux source dir
 cd "${LNXSRCDIR}"
 
-# Prepare linux sources for headers install
-make allyesconfig
-sed -i "s/CONFIG_MODULE_SIG=y/# CONFIG_MODULE_SIG is not set/g" .config
-make silentoldconfig
-make modules_prepare
-
-# Version specific tasks
-case "$kversion" in
-  Ubuntu*)
-    # Add Ubuntu ABI number to kernel headers, this is normally done by the packaging code
-    ABINUM=$(echo $kversion | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')
-    echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> include/generated/utsrelease.h
-    ;;
-esac
+prepare_lnx_sources "."
 
 # For RT kernels, copy version file
 if [ -s localversion-rt ]; then
@@ -196,7 +282,6 @@ rm -f "${LNXHDRDIR}/scripts/*/*.o"
 
 # On powerpc this object is required to link modules
 if [ "${karch}" = "powerpc" ]; then
-    make arch/powerpc/lib/crtsavres.o
     cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LNXHDRDIR}/"
 fi
 
@@ -240,31 +325,12 @@ cp "${LNXHDRDIR}/.config" "${LNXHDRDIR}/include/config/auto.conf"
 cd "${LNXSRCDIR}"
 
 # Make sure linux source dir is clean
-make mrproper
+git clean -xdf
 
-# Prepare linux sources for modules OOT build
-make O="${LNXBUILDDIR}" allyesconfig
-sed -i "s/CONFIG_MODULE_SIG=y/# CONFIG_MODULE_SIG is not set/g" "${LNXBUILDDIR}"/.config
-make O="${LNXBUILDDIR}" silentoldconfig
-make O="${LNXBUILDDIR}" modules_prepare
+prepare_lnx_sources "${LNXBUILDDIR}"
 
-# On powerpc this object is required to link modules
-if [ "${karch}" = "powerpc" ]; then
-    make O="${LNXBUILDDIR}" arch/powerpc/lib/crtsavres.o
-fi
 
-# Version specific tasks
-case "$kversion" in
-  Ubuntu*)
-    #fakeroot debian/rules clean
-    #fakeroot debian/rules genconfigs
-    #cp CONFIGS/amd64-config.flavour.generic .config
-
-    # Add Ubuntu ABI number to kernel headers, this is normally done by the packaging code
-    ABINUM=$(echo $kversion | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')
-    echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> ${LNXBUILDDIR}/include/generated/utsrelease.h
-    ;;
-esac
+## BUILD modules
 
 # Build modules against full kernel sources
 build_modules "${LNXBUILDDIR}" "${LTTBUILKSRCDDIR}"
@@ -273,7 +339,14 @@ build_modules "${LNXBUILDDIR}" "${LTTBUILKSRCDDIR}"
 build_modules "${LNXHDRDIR}" "${LTTBUILDKHDRDIR}"
 
 # Make sure modules were built
-find "${LNXBUILDDIR}" -name "*.ko"
-find "${LNXHDRDIR}" -name "*.ko"
+if [ "x$(find "${LTTBUILKSRCDDIR}" -name "*.ko" -printf yes -quit)" != "xyes" ]; then
+  echo "No modules built!"
+  exit 1
+fi
+
+if [ "x$(find "${LTTBUILDKHDRDIR}" -name "*.ko" -printf yes -quit)" != "xyes" ]; then
+  echo "No modules built!"
+  exit 1
+fi
 
 # EOF

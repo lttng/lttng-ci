@@ -235,11 +235,7 @@ println "---Build report---"
 for (b in allBuilds) {
   def kernelStr = b.buildVariableResolver.resolve("kversion")
   println "${b.fullDisplayName} (${kernelStr}) completed with status ${b.result}"
-}
-
-// Clean all builds
-// TODO: Delete only builds generated from this job run
-for (b in job.getBuilds()) {
+  // Cleanup builds
   b.delete()
 }
 
