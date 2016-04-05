@@ -11,8 +11,8 @@ cloud05.internal.efficios.com
 #cloud08.internal.efficios.com
 
 [slave-armhf]
-ci-slave-armhf-01
-ci-slave-armhf-02
+ci-node-armhf-01
+ci-node-armhf-02
 
 [slave-arm64]
 ci-slave-arm64-01
