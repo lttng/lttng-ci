@@ -88,10 +88,10 @@
             - 'GNU Make + GNU C Compiler (gcc)'
           total-thresholds:
             unstable:
-              total-all: 1
-              total-high: 1
-              total-normal: 1
-              total-low: 1
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
       - archive:
           artifacts: 'build/**'
           allow-empty: false
