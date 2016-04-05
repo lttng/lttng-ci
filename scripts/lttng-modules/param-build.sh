@@ -53,7 +53,8 @@ prepare_lnx_sources() {
         cp CONFIGS/${ubuntu_config} "${outdir}"/.config
         ;;
       *)
-        make ${koutput} defconfig
+        # Que sera sera
+        make ${koutput} allyesconfig
         ;;
     esac
 
@@ -150,7 +151,7 @@ LNXSRCDIR="${WORKSPACE}/src/linux"
 LNXBUILDDIR="${WORKSPACE}/build/linux"
 LNXHDRDIR="${WORKSPACE}/build/linux-headers"
 
-LTTBUILKSRCDDIR="${WORKSPACE}/build/lttng-modules-ksrc"
+LTTBUILDKSRCDIR="${WORKSPACE}/build/lttng-modules-ksrc"
 LTTBUILDKHDRDIR="${WORKSPACE}/build/lttng-modules-khdr"
 
 
@@ -240,7 +241,7 @@ fi
 
 
 # Create build directories
-mkdir -p "${LNXBUILDDIR}" "${LNXHDRDIR}" "${LTTBUILKSRCDDIR}" "${LTTBUILDKHDRDIR}"
+mkdir -p "${LNXBUILDDIR}" "${LNXHDRDIR}" "${LTTBUILDKSRCDIR}" "${LTTBUILDKHDRDIR}"
 
 
 
@@ -333,18 +334,20 @@ prepare_lnx_sources "${LNXBUILDDIR}"
 ## BUILD modules
 
 # Build modules against full kernel sources
-build_modules "${LNXBUILDDIR}" "${LTTBUILKSRCDDIR}"
+build_modules "${LNXBUILDDIR}" "${LTTBUILDKSRCDIR}"
 
 # Build modules against kernel headers
 build_modules "${LNXHDRDIR}" "${LTTBUILDKHDRDIR}"
 
 # Make sure modules were built
-if [ "x$(find "${LTTBUILKSRCDDIR}" -name "*.ko" -printf yes -quit)" != "xyes" ]; then
+tree "${LTTBUILDKSRCDIR}"
+if [ "x$(find "${LTTBUILDKSRCDIR}" -name '*.ko*' -printf yes -quit)" != "xyes" ]; then
   echo "No modules built!"
   exit 1
 fi
 
-if [ "x$(find "${LTTBUILDKHDRDIR}" -name "*.ko" -printf yes -quit)" != "xyes" ]; then
+tree "${LTTBUILDKHDRDIR}"
+if [ "x$(find "${LTTBUILDKHDRDIR}" -name '*.ko*' -printf yes -quit)" != "xyes" ]; then
   echo "No modules built!"
   exit 1
 fi
