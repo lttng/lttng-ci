@@ -50,7 +50,7 @@ def matchStrs = []
 switch (uversion) {
   case 'xenial':
     matchStrs = [
-      ~/^refs\/tags\/(Ubuntu-4\.4\.0-[\d\.]+)$/,
+      ~/^refs\/tags\/(Ubuntu-4\.4\.0-\d{1,3}\.[\d\.]+)$/,
       ~/^refs\/tags\/(Ubuntu-lts-.*_16\.04\.\d+)$/,
     ]
     break
