@@ -8,6 +8,11 @@
     lttng_tools_packages: "{{ __lttng_tools_packages | list }}"
   when: lttng_tools_packages is not defined
 
+- name: Define lttng_tools_packages_no_recommends.
+  set_fact:
+    lttng_tools_packages_no_recommends: "{{ __lttng_tools_packages_no_recommends | list }}"
+  when: lttng_tools_packages_no_recommends is not defined
+
 # Setup/install tasks.
 - include: setup-RedHat.yml
   when: ansible_os_family == 'RedHat'

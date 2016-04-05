@@ -1,3 +1,5 @@
 ---
 # TODO
 __lttng_tools_packages:
+
+__lttng_tools_packages_no_recommends:
