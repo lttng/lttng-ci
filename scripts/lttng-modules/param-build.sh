@@ -64,6 +64,9 @@ prepare_lnx_sources() {
     # Don't try to sign modules
     sed -i "s/CONFIG_MODULE_SIG=y/# CONFIG_MODULE_SIG is not set/g" "${outdir}"/.config
 
+    # Disable kernel stack frame correctness validation, introduced in 4.6.0 and currently fails
+    sed -i "s/CONFIG_STACK_VALIDATION=y/# CONFIG_STACK_VALIDATION is not set/g" "${outdir}"/.config
+
     # Enable CONFIG_KALLSYMS_ALL
     echo "CONFIG_KPROBES=y" >> "${outdir}"/.config
     echo "CONFIG_FTRACE=y" >> "${outdir}"/.config
