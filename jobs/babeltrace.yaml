@@ -271,6 +271,11 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, static, python-bindings]
       - 'babeltrace_{version}_{buildtype}':
+          buildtype: clangbuild
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [clang]
+          conf: !!python/tuple [std, static]
+      - 'babeltrace_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]

@@ -122,7 +122,13 @@ case "$build" in
         TEST_PLAN_PATH=$BUILD_PATH
         ;;
 
-*)
+    clang)
+        echo "LLVM clang build"
+        export CC=clang
+        clang -v
+	MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        ;;
+    *)
         echo "Standard tree build"
         MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
         ;;
