@@ -39,6 +39,16 @@ solaris11)
     YACC="$BISON -y"
     export PATH="$PATH:/usr/perl5/bin"
     ;;
+macosx)
+    MAKE=make
+    TAR=tar
+    NPROC="getconf _NPROCESSORS_ONLN"
+    BISON="bison"
+    YACC="$BISON -y"
+    export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    export CFLAGS="-I/opt/local/include"
+    export LDFLAGS="-L/opt/local/lib"
+    ;;
 *)
     MAKE=make
     TAR=tar
@@ -55,7 +65,7 @@ static)
     echo "Static build"
     CONF_OPTS="--enable-static --disable-shared"
     ;;
-python-bindings)  
+python-bindings)
     echo "Build with python bindings"
     # We only support bindings built with Python 3
     export PYTHON="python3"
@@ -93,7 +103,7 @@ case "$build" in
 
     dist)
         echo "Distribution out of tree build"
-	BUILD_PATH=`mktemp -d`
+        BUILD_PATH=`mktemp -d`
 
         # Initial configure and generate tarball
         MAKE=$MAKE BISON="$BISON" YACC="$YACC" ./configure
@@ -123,10 +133,7 @@ $MAKE -j `$NPROC` V=1
 $MAKE install
 
 # Run tests
-cd ./tests
-# Run make check tests
-prove --merge -v --exec '' - < $WORKSPACE/tests/tests
-cd ..
+$MAKE check
 
 $MAKE clean
 
