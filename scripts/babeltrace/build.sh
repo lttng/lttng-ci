@@ -141,7 +141,8 @@ $MAKE install
 # Run tests
 $MAKE check
 
-$MAKE clean
+# Remove global test suite log file, it confuses the tap parser
+rm -f tests/test-suite.log
 
 # Cleanup rpath in executables and shared libraries
 find $WORKSPACE/build/bin -type f -perm -0500 -exec chrpath --delete {} \;

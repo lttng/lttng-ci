@@ -72,7 +72,7 @@
     # TODO: Scan for open tasks
     publishers:
       - tap:
-          results: 'tap/**/*.tap'
+          results: 'tests/**/*.log'
           failed-tests-mark-build-as-failure: true
           todo-is-failure: false
       - warnings:
@@ -98,7 +98,7 @@
     <<: *babeltrace_version_buildtype_anchor
     publishers:
       - tap:
-          results: 'tap/**/*.tap'
+          results: 'tests/**/*.log'
           failed-tests-mark-build-as-failure: true
           todo-is-failure: false
       - warnings:
