@@ -16,11 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# Create build directory
-rm -rf $WORKSPACE/build
-mkdir -p $WORKSPACE/build
-
+SRCDIR="$WORKSPACE/src/babeltrace"
+TMPDIR="$WORKSPACE/tmp"
 PREFIX="$WORKSPACE/build"
+
+# Create build and tmp directories
+rm -rf "$PREFIX" "$TMPDIR"
+mkdir -p "$PREFIX" "$TMPDIR"
 
 # Set platform variables
 case "$arch" in
@@ -78,8 +80,10 @@ python-bindings)
     ;;
 esac
 
+# Enter the source directory
+cd "$SRCDIR"
 
-# Run bootstrap prior to configure
+# Run bootstrap in the source directory prior to configure
 ./bootstrap
 
 
@@ -90,15 +94,14 @@ esac
 #
 # Make sure to move to the build_path and configure
 # before continuing
-BUILD_PATH=$WORKSPACE
-TEST_PLAN_PATH=$WORKSPACE
+BUILD_PATH="$SRCDIR"
 case "$build" in
     oot)
         echo "Out of tree build"
         BUILD_PATH=$WORKSPACE/oot
         mkdir -p $BUILD_PATH
         cd $BUILD_PATH
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix=$PREFIX $CONF_OPTS
         ;;
 
     dist)
@@ -106,7 +109,7 @@ case "$build" in
         BUILD_PATH=`mktemp -d`
 
         # Initial configure and generate tarball
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" ./configure
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure"
         $MAKE dist
 
         mkdir -p $BUILD_PATH
@@ -117,20 +120,17 @@ case "$build" in
         $TAR xvf *.tar.* --strip 1
 
         MAKE=$MAKE BISON="$BISON" YACC="$YACC" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
-
-        # Set test plan to dist tar
-        TEST_PLAN_PATH=$BUILD_PATH
         ;;
 
     clang)
         echo "LLVM clang build"
         export CC=clang
         clang -v
-	MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+	MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix=$PREFIX $CONF_OPTS
         ;;
     *)
-        echo "Standard tree build"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        echo "Standard in-tree build"
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix=$PREFIX $CONF_OPTS
         ;;
 esac
 
@@ -141,19 +141,22 @@ $MAKE install
 # Run tests
 $MAKE check
 
-# Remove global test suite log file, it confuses the tap parser
-rm -f tests/test-suite.log
+# Copy tap logs for the jenkins tap parser
+rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+
+# Clean the build directory
+$MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find $WORKSPACE/build/bin -type f -perm -0500 -exec chrpath --delete {} \;
-find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
+find $PREFIX/bin -type f -perm -0500 -exec chrpath --delete {} \;
+find $PREFIX/lib -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
+find $PREFIX/lib -name "*.la" -exec rm -f {} \;
 
 # Clean temp dir for dist build
 if [ "$build" = "dist" ]; then
-    cd $WORKSPACE
+    cd $SRCDIR
     rm -rf $BUILD_PATH
 fi
 

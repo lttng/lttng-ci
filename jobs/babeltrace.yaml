@@ -30,6 +30,7 @@
           browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - origin/{version}
+          basedir: src/babeltrace
 
     triggers:
       - pollscm:
@@ -72,7 +73,7 @@
     # TODO: Scan for open tasks
     publishers:
       - tap:
-          results: 'tests/**/*.log'
+          results: 'tap/**/*.log'
           failed-tests-mark-build-as-failure: true
           todo-is-failure: false
       - warnings:
@@ -98,7 +99,7 @@
     <<: *babeltrace_version_buildtype_anchor
     publishers:
       - tap:
-          results: 'tests/**/*.log'
+          results: 'tap/**/*.log'
           failed-tests-mark-build-as-failure: true
           todo-is-failure: false
       - warnings:
