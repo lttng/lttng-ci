@@ -45,9 +45,6 @@
 
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
-    execution-strategy:
-      combination-filter: |
-        (build=="std") || (liburcu_version=="master")
     axes:
       - axis:
          type: slave
