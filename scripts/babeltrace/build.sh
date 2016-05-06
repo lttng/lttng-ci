@@ -1,6 +1,7 @@
 #!/bin/bash -exu
 #
 # Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+#               2016 - Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +24,8 @@ PREFIX="$WORKSPACE/build"
 # Create build and tmp directories
 rm -rf "$PREFIX" "$TMPDIR"
 mkdir -p "$PREFIX" "$TMPDIR"
+
+export TMPDIR
 
 # Set platform variables
 case "$arch" in
