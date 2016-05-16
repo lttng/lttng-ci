@@ -6,4 +6,6 @@ __babeltrace_packages:
   - python3-sphinx
   - swig2.0
   - libglib2.0-dev
+  - libdw-dev
+  - libelf-dev
   - chrpath
