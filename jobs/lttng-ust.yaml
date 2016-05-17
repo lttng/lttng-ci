@@ -100,6 +100,141 @@
           channels:
             - name: '#lttng'
 
+- job-template:
+    name: lttng-ust_{version}_java-tests
+    defaults: lttng-ust
+    description: |
+      Tests for LTTng-UST's Java agent. Runs the master branch of
+      <a href="https://github.com/lttng/lttng-ust-java-tests">lttng-ust-java-tests</a>
+      against the {version} branches of UST, lttng-tools, and Babeltrace.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: jdk_version
+         values:
+           - 'OpenJDK-8'
+      - axis:
+         type: user-defined
+         name: liburcu_version
+         values:
+           - 'master'
+      - axis:
+         type: user-defined
+         name: lttng_ust_version
+         values:
+           - 'master'
+      - axis:
+         type: user-defined
+         name: lttng_tools_version
+         values:
+           - 'master'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - inject:
+          properties-content: |
+            LD_LIBRARY_PATH="${WORKSPACE}/deps/build/lib"
+            PATH="${{WORKSPACE}}/deps/build/bin:${{PATH}}"
+            LTTNG_CONSUMERD32_BIN="${{WORKSPACE}}/deps/build/lib/lttng/libexec/lttng-consumerd"
+            LTTNG_CONSUMERD64_BIN="${{WORKSPACE}}/deps/build/lib/lttng/libexec/lttng-consumerd"
+          script-content: |
+
+    scm:
+      - git:
+          url: git://github.com/lttng/lttng-ust-java-tests.git
+          browser: githubweb
+          browser-url: https://github.com/lttng/lttng-ust-java-tests
+          branches:
+            - origin/{version}
+          basedir: lttng-ust-java-tests
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    properties:
+      - github:
+          url: https://github.com/lttng/lttng-ust-java-tests
+
+    builders:
+      - copyartifact:
+          project: liburcu_${{liburcu_version}}_build/arch=${{arch}},conf=std,build=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: lttng-ust_{version}_build/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=java-agent,build=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: lttng-tools_${{lttng_tools_version}}_build/babeltrace_version=master,liburcu_version=${{liburcu_version}},arch=${{arch}},conf=java-agent,build=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: babeltrace_master_build/arch=${{arch}},conf=std,build=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps'
+          do-not-fingerprint: true
+      - shell: |
+          #!/bin/sh -eux
+
+          # Start the lttng-sessiond
+          lttng-sessiond -d
+      - maven-target:
+          goals: '-version'
+          maven-version: 'Maven 3.3.3'
+          private-repository: true
+      - maven-target:
+          goals: |
+            clean
+            verify
+          pom: 'lttng-ust-java-tests/pom.xml'
+          properties:
+            - maven.test.failure.ignore=true
+            - common-jar-location=${{WORKSPACE}}/deps/build/share/java/lttng-ust-agent-common.jar
+            - jul-jar-location=${{WORKSPACE}}/deps/build/share/java/lttng-ust-agent-jul.jar
+            - log4j-jar-location=${{WORKSPACE}}/deps/build/share/java/lttng-ust-agent-log4j.jar
+            - argLine=-Djava.library.path=${{WORKSPACE}}/deps/build/lib
+          maven-version: 'Maven 3.3.3'
+          private-repository: true
+      - shell: |
+          #!/bin/sh -eux
+
+          # Kill the sessiond
+          killall lttng-sessiond
+
+    publishers:
+      - junit:
+          results: lttng-ust-java-tests/**/target/failsafe-reports/*.xml
+      - email-ext:
+          recipients: alex@voxpopuli.im
+          matrix-trigger: only-parent
+          failure: false
+          first-failure: true
+          fixed: true
+      - workspace-cleanup
+
 
 - job-template:
     name: lttng-ust_{version}_cppcheck
@@ -246,6 +381,7 @@
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, java-agent, python-agent]
+      - 'lttng-ust_{version}_java-tests'
       - 'lttng-ust_{version}_cppcheck'
       - 'lttng-ust_{version}_scan-build'
       - 'lttng-ust_{version}_coverity':
