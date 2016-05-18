@@ -248,7 +248,7 @@
     builders:
       - shell: |
           rm -f lttng-ust-cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> lttng-ust-cppcheck.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/lttng-ust 2> lttng-ust-cppcheck.xml
 
     publishers:
       - archive:

@@ -123,7 +123,7 @@
     builders:
       - shell: |
           rm -f babeltrace-cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> babeltrace-cppcheck.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/babeltrace 2> babeltrace-cppcheck.xml
 
     publishers:
       - archive:
@@ -180,6 +180,9 @@
 
     publishers:
       - workspace-cleanup
+      - archive:
+          artifacts: 'analysis-results.tgz,cov-int/**'
+          allow-empty: false
 
 - job-template:
     name: babeltrace_{version}_pylint
