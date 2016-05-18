@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+SRCDIR="src/lttng-analyses"
+
 PYTHON3="python3"
 P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
 
@@ -40,6 +42,8 @@ set -u
 pip install --quiet pylint
 pip install --quiet pep8
 
-pep8 lttnganalyses | tee pep8.out
+cd "$SRCDIR"
 
-pylint -f parseable --ignore="_version.py" lttnganalyses | tee pylint.out
+pep8 lttnganalyses | tee $WORKSPACE/pep8.out
+
+pylint -f parseable --ignore="_version.py" lttnganalyses | tee $WORKSPACE/pylint.out

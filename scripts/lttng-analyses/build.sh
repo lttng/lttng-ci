@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+SRCDIR="src/lttng-analyses"
+
 PYTHON3="python3"
 P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
 
@@ -22,6 +24,7 @@ BABELTRACE_DIR=$WORKSPACE/deps/babeltrace/build
 
 export LD_LIBRARY_PATH="$BABELTRACE_DIR/lib"
 export PYTHONPATH="$BABELTRACE_DIR/lib/python${P3_VERSION}/dist-packages/"
+export PATH="$PATH:$BABELTRACE_DIR/bin"
 
 PYENV_HOME=$WORKSPACE/.pyenv/
 
@@ -37,4 +40,8 @@ set +u
 . $PYENV_HOME/bin/activate
 set -u
 
-pip install .
+cd "$SRCDIR"
+
+$PYTHON3 setup.py build
+$PYTHON3 setup.py test
+$PYTHON3 setup.py install

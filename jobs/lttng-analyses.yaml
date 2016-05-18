@@ -26,6 +26,7 @@
           browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - origin/{version}
+          basedir: src/lttng-analyses
 
     triggers:
       - pollscm:
