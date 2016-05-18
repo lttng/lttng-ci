@@ -1,6 +1,7 @@
 #!/bin/bash -exu
 #
-# Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# Copyright (C) 2015, Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+#               2016, Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,16 +17,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# Create build directory
-rm -rf $WORKSPACE/build
-mkdir -p $WORKSPACE/build
-
 # liburcu
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
 URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
 
-
+SRCDIR="$WORKSPACE/src/lttng-ust"
+TMPDIR="$WORKSPACE/tmp"
 PREFIX="$WORKSPACE/build"
+
+# Create build and tmp directories
+rm -rf "$PREFIX" "$TMPDIR"
+mkdir -p "$PREFIX" "$TMPDIR"
+
+export TMPDIR
 
 # Set platform variables
 case "$arch" in
@@ -71,8 +75,10 @@ python-agent)
     ;;
 esac
 
+# Enter the source directory
+cd "$SRCDIR"
 
-# Run bootstrap prior to configure
+# Run bootstrap in the source directory prior to configure
 ./bootstrap
 
 
@@ -83,14 +89,14 @@ esac
 #
 # Make sure to move to the build_path and configure
 # before continuing
-BUILD_PATH=$WORKSPACE
+BUILD_PATH=$SRCDIR
 case "$build" in
 oot)
     echo "Out of tree build"
     BUILD_PATH=$WORKSPACE/oot
     mkdir -p $BUILD_PATH
     cd $BUILD_PATH
-    $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+    $SRCDIR/configure --prefix=$PREFIX $CONF_OPTS
     ;;
 
 dist)
@@ -98,7 +104,7 @@ dist)
     BUILD_PATH=`mktemp -d`
 
     # Initial configure and generate tarball
-    ./configure
+    $SRCDIR/configure
     $MAKE dist
 
     mkdir -p $BUILD_PATH
@@ -112,9 +118,8 @@ dist)
     ;;
 
 *)
-    BUILD_PATH=$WORKSPACE
-    echo "Standard tree build"
-    $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+    echo "Standard in-tree build"
+    $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
     ;;
 esac
 
@@ -123,31 +128,23 @@ $MAKE -j `$NPROC` V=1
 $MAKE install
 
 # Run tests
-rm -rf $WORKSPACE/tap
-mkdir -p $WORKSPACE/tap/unit
+$MAKE check
 
-cd $BUILD_PATH/tests
+# Copy tap logs for the jenkins tap parser
+rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
-prove --merge --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
-
-# TAP plugin is having a hard time with .yml files.
-rm -f $WORKSPACE/tap/unit/meta.yml
-
-# And also with files without extension, so rename all result to *.tap
-find $WORKSPACE/tap/unit/ -type f -exec mv {} {}.tap \;
-
-# Cleanup
+# Clean the build directory
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
+find $PREFIX/lib -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
+find $PREFIX/lib -name "*.la" -exec rm -f {} \;
 
 # Clean temp dir for dist build
 if [ "$build" = "dist" ]; then
-    cd $WORKSPACE
+    cd $SRCDIR
     rm -rf $BUILD_PATH
 fi
 

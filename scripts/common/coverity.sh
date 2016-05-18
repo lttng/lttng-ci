@@ -20,31 +20,63 @@
 # The project name and token have to be provided trough env variables
 #COVERITY_SCAN_PROJECT_NAME=""
 #COVERITY_SCAN_TOKEN=""
-COVERITY_SCAN_VERSION=`git describe --always | sed 's|-|.|g'`
 COVERITY_SCAN_DESCRIPTION="Automated CI build"
 COVERITY_SCAN_NOTIFICATION_EMAIL="ci-notification@lists.lttng.org"
 COVERITY_SCAN_BUILD_OPTIONS=""
 #COVERITY_SCAN_BUILD_OPTIONS="--return-emit-failures 8 --parse-error-threshold 85"
 
+SRCDIR="$WORKSPACE/src/${COVERITY_SCAN_PROJECT_NAME}"
+TMPDIR="$WORKSPACE/tmp"
+
 NPROC=$(nproc)
 PLATFORM=$(uname)
 export CFLAGS="-O0 -g -DDEBUG"
 
-TOOL_ARCHIVE=/tmp/cov-analysis-${PLATFORM}.tgz
+TOOL_ARCHIVE="$TMPDIR/cov-analysis-${PLATFORM}.tgz"
 TOOL_URL=https://scan.coverity.com/download/${PLATFORM}
-TOOL_BASE=/tmp/coverity-scan-analysis
+TOOL_BASE="$TMPDIR/coverity-scan-analysis"
 
 UPLOAD_URL="https://scan.coverity.com/builds"
 SCAN_URL="https://scan.coverity.com"
 
-RESULTS_DIR="cov-int"
+RESULTS_DIR_NAME="cov-int"
+RESULTS_DIR="$WORKSPACE/$RESULTS_DIR_NAME"
+RESULTS_ARCHIVE=analysis-results.tgz
 
+# Create tmp directory
+rm -rf "$TMPDIR"
+mkdir -p "$TMPDIR"
+
+export TMPDIR
+
+case "$COVERITY_SCAN_PROJECT_NAME" in
+babeltrace)
+    CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc"
+    ;;
+liburcu)
+    CONF_OPTS=""
+    ;;
+lttng-modules)
+    CONF_OPTS=""
+    ;;
+lttng-tools)
+    CONF_OPTS=""
+    ;;
+lttng-ust)
+    CONF_OPTS="--enable-java-agent-all --enable-python-agent"
+    export CLASSPATH="/usr/share/java/log4j-1.2.jar"
+    ;;
+*)
+    echo "Generic project, no configure options."
+    CONF_OPTS=""
+    ;;
+esac
 
 # liburcu dependency
 if [ -d "$WORKSPACE/deps/liburcu" ]; then
   URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
   URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
-  
+
   export CPPFLAGS="-I$URCU_INCS ${CPPFLAGS:-}"
   export LDFLAGS="-L$URCU_LIBS ${LDFLAGS:-}"
   export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
@@ -55,7 +87,7 @@ fi
 if [ -d "$WORKSPACE/deps/lttng-ust" ]; then
   UST_INCS="$WORKSPACE/deps/lttng-ust/build/include/"
   UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
-  
+
   export CPPFLAGS="-I$UST_INCS ${CPPFLAGS:-}"
   export LDFLAGS="-L$UST_LIBS ${LDFLAGS:-}"
   export LD_LIBRARY_PATH="$UST_LIBS:${LD_LIBRARY_PATH:-}"
@@ -105,11 +137,14 @@ fi
 TOOL_DIR=`find $TOOL_BASE -type d -name 'cov-analysis*'`
 export PATH=$TOOL_DIR/bin:$PATH
 
+cd "$SRCDIR"
+
+COVERITY_SCAN_VERSION=`git describe --always | sed 's|-|.|g'`
 
 # Prepare build dir
 if [ -f "./bootstrap" ]; then
   ./bootstrap
-  ./configure
+  ./configure $CONF_OPTS
 fi
 
 # Build
@@ -117,11 +152,11 @@ echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
 cov-build --dir $RESULTS_DIR $COVERITY_SCAN_BUILD_OPTIONS make -j$NPROC V=1
 cov-import-scm --dir $RESULTS_DIR --scm git --log $RESULTS_DIR/scm_log.txt
 
+cd "${WORKSPACE}"
+
 # Tar results
 echo -e "\033[33;1mTarring Coverity Scan Analysis results...\033[0m"
-RESULTS_ARCHIVE=analysis-results.tgz
-tar czf $RESULTS_ARCHIVE $RESULTS_DIR
-
+tar czf $RESULTS_ARCHIVE $RESULTS_DIR_NAME
 
 # Upload results
 echo -e "\033[33;1mUploading Coverity Scan Analysis results...\033[0m"
