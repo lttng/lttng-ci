@@ -43,6 +43,7 @@
           browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - origin/{version}
+          basedir: src/liburcu
 
     triggers:
       - pollscm:
@@ -112,7 +113,7 @@
     builders:
       - shell: |
           rm -f liburcu-cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> liburcu-cppcheck.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/liburcu 2> liburcu-cppcheck.xml
 
     publishers:
       - archive:
@@ -170,6 +171,9 @@
 
     publishers:
       - workspace-cleanup
+      - archive:
+          artifacts: 'analysis-results.tgz,cov-int/**'
+          allow-empty: false
 
 
 ## Project

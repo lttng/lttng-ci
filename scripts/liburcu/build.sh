@@ -1,6 +1,7 @@
 #!/bin/bash -exu
 #
 # Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+#               2016 - Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,11 +34,15 @@ vergt() {
 }
 
 
-# Create build directory
-rm -rf $WORKSPACE/build
-mkdir -p $WORKSPACE/build
-
+SRCDIR="$WORKSPACE/src/liburcu"
+TMPDIR="$WORKSPACE/tmp"
 PREFIX="$WORKSPACE/build"
+
+# Create build and tmp directories
+rm -rf "$PREFIX" "$TMPDIR"
+mkdir -p "$PREFIX" "$TMPDIR"
+
+export TMPDIR
 
 # Set platform variables
 case "$arch" in
@@ -84,7 +89,10 @@ tls_fallback)
 esac
 
 
-# Run bootstrap prior to configure
+# Enter the source directory
+cd "$SRCDIR"
+
+# Run bootstrap in the source directory prior to configure
 ./bootstrap
 
 # Get source version from configure script
@@ -98,14 +106,14 @@ eval `grep '^PACKAGE_VERSION=' ./configure`
 #
 # Make sure to move to the build_path and configure
 # before continuing
-BUILD_PATH=$WORKSPACE
+BUILD_PATH=$SRCDIR
 case "$build" in
 oot)
     echo "Out of tree build"
     BUILD_PATH=$WORKSPACE/oot
     mkdir -p $BUILD_PATH
     cd $BUILD_PATH
-    MAKE=$MAKE CFLAGS="$CFLAGS" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+    MAKE=$MAKE CFLAGS="$CFLAGS" $SRCDIR/configure --prefix=$PREFIX $CONF_OPTS
     ;;
 
 dist)
@@ -113,7 +121,7 @@ dist)
     BUILD_PATH=`mktemp -d`
 
     # Initial configure and generate tarball
-    MAKE=$MAKE ./configure
+    MAKE=$MAKE $SRCDIR/configure
     $MAKE dist
 
     mkdir -p $BUILD_PATH
@@ -126,9 +134,8 @@ dist)
     MAKE=$MAKE CFLAGS="$CFLAGS" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
     ;;
 *)
-    BUILD_PATH=$WORKSPACE
-    echo "Standard tree build"
-    MAKE=$MAKE CFLAGS="$CFLAGS" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+    echo "Standard in-tree build"
+    MAKE=$MAKE CFLAGS="$CFLAGS" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
     ;;
 esac
 
@@ -148,14 +155,14 @@ $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
 #find $WORKSPACE/build/bin -type f -perm -0500 -exec chrpath --delete {} \;
-find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
+find $PREFIX/lib -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
+find $PREFIX/lib -name "*.la" -exec rm -f {} \;
 
 # Cleanup temp directory of dist build
 if [ "$build" = "dist" ]; then
-    cd $WORKSPACE
+    cd $SRCDIR
     rm -rf $BUILD_PATH
 fi
 
