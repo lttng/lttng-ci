@@ -29,6 +29,7 @@ def maxConcurrentBuild = build.buildVariableResolver.resolve('maxConcurrentBuild
 def kgitrepo = build.buildVariableResolver.resolve('kgitrepo')
 def uversion = build.buildVariableResolver.resolve('uversion')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
+def currentJobName = build.project.getFullDisplayName()
 
 // Get the out variable
 def config = new HashMap()
@@ -126,6 +127,15 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
       } else {
         throw(e)
       }
+    }
+
+    // Check for queued similar job since we only want to run latest
+    // as Mathieu Desnoyers requirement
+    similarJobQueued = Hudson.instance.queue.items.count{it.task.getFullDisplayName() == currentJobName}
+    if ( similarJobQueued > 0 ) {
+	 // Abort since new build is queued
+        build.setResult(hudson.model.Result.ABORTED)
+        throw new InterruptedException()
     }
 
     def i = ongoingBuild.iterator()

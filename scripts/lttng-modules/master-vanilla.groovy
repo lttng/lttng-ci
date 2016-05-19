@@ -218,7 +218,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
     }
 
     // Check for queued similar job since we only want to run latest
-    // As Mathieu Desnoyers requirement
+    // as Mathieu Desnoyers requirement
     similarJobQueued = Hudson.instance.queue.items.count{it.task.getFullDisplayName() == currentJobName}
     if ( similarJobQueued > 0 ) {
 	 // Abort since new build is queued
