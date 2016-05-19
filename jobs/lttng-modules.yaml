@@ -91,7 +91,7 @@
           description: 'The lttng-modules branch to build.'
       - string:
           name: 'maxConcurrentBuild'
-          default: '4'
+          default: '20'
           description: 'The maximum number of concurrent child build to run.'
       - string:
           name: 'kverfloor'
@@ -135,7 +135,7 @@
           description: 'The lttng-modules branch to build.'
       - string:
           name: 'maxConcurrentBuild'
-          default: '4'
+          default: '20'
           description: 'The maximum number of concurrent child build to run.'
       - string:
           name: 'uversion'
@@ -179,7 +179,7 @@
           description: 'The lttng-modules branch to build.'
       - string:
           name: 'maxConcurrentBuild'
-          default: '4'
+          default: '20'
           description: 'The maximum number of concurrent child build to run.'
       - string:
           name: 'kverfloor'
