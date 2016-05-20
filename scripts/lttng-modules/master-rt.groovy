@@ -246,7 +246,9 @@ for (b in allBuilds) {
   def kernelStr = b.buildVariableResolver.resolve("kversion")
   println "${b.fullDisplayName} (${kernelStr}) completed with status ${b.result}"
   // Cleanup builds
-  b.delete()
+  try {
+    b.delete()
+  } catch (all) {}
 }
 
 // Mark this build failed if any child build has failed

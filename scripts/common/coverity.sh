@@ -93,8 +93,8 @@ if [ -d "$WORKSPACE/deps/lttng-ust" ]; then
   export LD_LIBRARY_PATH="$UST_LIBS:${LD_LIBRARY_PATH:-}"
 fi
 
-if [ -d "$WORKSPACE/linux" ]; then
-	export KERNELDIR="$WORKSPACE/linux"
+if [ -d "$WORKSPACE/src/linux" ]; then
+	export KERNELDIR="$WORKSPACE/src/linux"
 fi
 
 

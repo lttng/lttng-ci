@@ -27,7 +27,7 @@
           shallow-clone: true
           skip-tag: true
           fastpoll: true
-          basedir: lttng-modules
+          basedir: src/lttng-modules
 
     triggers:
       - pollscm:
@@ -60,7 +60,7 @@
           target: 'deps/linux'
           do-not-fingerprint: true
       - shell: |
-          git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://artifacts.internal.efficios.com/git/linux-stable.git linux
+          git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
       - shell:
          !include-raw-escape: scripts/lttng-modules/build.sh
 
@@ -99,7 +99,7 @@
           description: 'The lowest kernel version to build.'
       - string:
           name: 'kgitrepo'
-          default: 'git://artifacts.internal.efficios.com/git/linux-stable.git'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
@@ -143,7 +143,7 @@
           description: 'The lowest kernel version to build.'
       - string:
           name: 'kgitrepo'
-          default: 'git://artifacts.internal.efficios.com/git/ubuntu-{uversion}.git'
+          default: 'git://git-mirror.internal.efficios.com/git/ubuntu-{uversion}.git'
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
@@ -187,7 +187,7 @@
           description: 'The lowest kernel version to build.'
       - string:
           name: 'kgitrepo'
-          default: 'git://artifacts.internal.efficios.com/git/linux-rt-devel.git'
+          default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-rt-devel.git'
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
@@ -230,7 +230,7 @@
           description: 'The linux kernel git tag to build against.'
       - string:
           name: 'kgitrepo'
-          default: 'git://artifacts.internal.efficios.com/git/linux-stable.git'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
           description: 'The linux kernel git repository url.'
 
     concurrent: true
@@ -267,14 +267,6 @@
       - pollscm:
           cron: "@daily"
 
-    scm:
-      - git:
-          url: git://github.com/lttng/lttng-modules.git
-          browser: githubweb
-          browser-url: https://github.com/lttng/lttng-modules
-          branches:
-            - "{mversion}"
-
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -288,12 +280,11 @@
 
     builders:
       - shell: |
-         git clone --depth=1 -b v4.4 --reference $HOME/gitcache/linux-stable.git/ git://artifacts.internal.efficios.com/git/linux-stable.git linux
-         cd linux
+         git clone --depth=1 -b v4.4 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+         cd src/linux
          make defconfig
          sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config
          make modules_prepare
-         cd ..
       - shell:
          !include-raw-escape: scripts/common/coverity.sh
 
@@ -308,18 +299,10 @@
       - pollscm:
           cron: "@daily"
 
-    scm:
-      - git:
-          url: git://github.com/lttng/lttng-modules.git
-          browser: githubweb
-          browser-url: https://github.com/lttng/lttng-modules
-          branches:
-            - "{mversion}"
-
     builders:
       - shell: |
           rm -f cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> cppcheck.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/lttng-modules 2> cppcheck.xml
 
     publishers:
       - archive:

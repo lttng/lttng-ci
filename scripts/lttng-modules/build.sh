@@ -37,9 +37,9 @@ vergt() {
 # Use all CPU cores
 NPROC=$(nproc)
 
-SRCDIR="${WORKSPACE}/lttng-modules"
+SRCDIR="${WORKSPACE}/src/lttng-modules"
 BUILDDIR="${WORKSPACE}/build"
-LNXSRCDIR="${WORKSPACE}/linux"
+LNXSRCDIR="${WORKSPACE}/src/linux"
 LNXBINDIR="${WORKSPACE}/deps/linux/build"
 
 # Create build directory
