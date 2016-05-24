@@ -348,7 +348,9 @@
     github_user: lttng
     github_name: lttng-modules
     mversion:
-      !include: jobs/inc/lttng-modules-versions.yaml.inc
+      - stable-2.7
+      - stable-2.8
+      - master
     jobs:
       - 'lttng-modules_{mversion}_build-vanilla'
       - 'lttng-modules_{mversion}_build-rt':

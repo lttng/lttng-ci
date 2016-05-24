@@ -373,7 +373,9 @@
     github_user: lttng
     github_name: lttng-ust
     version:
-      !include: jobs/inc/lttng-ust-versions.yaml.inc
+      - stable-2.7
+      - stable-2.8
+      - master
     jobs:
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
