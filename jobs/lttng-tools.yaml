@@ -371,7 +371,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.8
-          arch: !!python/tuple [armhf, arm64, powerpc]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [stable-0.9]
