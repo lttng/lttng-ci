@@ -332,7 +332,7 @@
 
     builders:
       - shell: |
-          cloc --by-file --xml --out=cloc.xml lttng-modules/
+          cloc --by-file --xml --out=cloc.xml src/lttng-modules/
 
     publishers:
       - archive:
