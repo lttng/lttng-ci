@@ -49,10 +49,14 @@
          type: slave
          name: arch
          values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: babeltrace_version
+         values: '{obj:babeltrace_version}'
 
     builders:
       - copyartifact:
-          project: babeltrace_master_build/arch=${{arch}},build=std,conf=python-bindings
+          project: babeltrace_${{babeltrace_version}}_build/arch=${{arch}},build=std,conf=python-bindings
           which-build: last-successful
           stable: true
           filter: 'build/**'
@@ -115,5 +119,6 @@
     jobs:
       - 'lttng-analyses_{version}_build':
           arch: !!python/tuple [x86-32, x86-64]
+          babeltrace_version: !!python/tuple [stable-1.3, stable-1.4, master]
       - 'lttng-analyses_{version}_pylint'
 
