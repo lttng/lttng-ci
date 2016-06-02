@@ -1,7 +1,7 @@
 ---
 __common_packages:
   - sudo
-  - openjdk-7-jdk
+  - default-jdk-headless
   - git
   - vim
   - tree

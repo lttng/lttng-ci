@@ -2,8 +2,8 @@
 - name: install pycurl package in order to use the apt_repository module
   apt: pkg=python-pycurl state=present
 
-- name: Add OpenJDK ppa.
-  apt_repository: repo='ppa:openjdk-r/ppa'
+#- name: Add OpenJDK ppa.
+#  apt_repository: repo='ppa:openjdk-r/ppa'
 
 - name: Update apt cache.
   apt: update_cache=yes cache_valid_time=86400
