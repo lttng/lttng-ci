@@ -101,8 +101,9 @@ ci-slave-amd64-05-07
 ci-slave-amd64-05-08
 
 [slave-standalone]
-ci-slave-64-standalone-02
-ci-slave-64-standalone-04
+ci-node-standalone-amd64-02
+ci-node-standalone-amd64-03
+ci-node-alpine-amd64-03
 
 [slave:children]
 slave-i386
