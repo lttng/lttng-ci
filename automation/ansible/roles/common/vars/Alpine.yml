@@ -1,0 +1,26 @@
+---
+__common_packages:
+  - sudo
+  - openjdk8
+  - git
+  - vim
+  - tree
+  - htop
+  - alpine-sdk
+  - clang
+  - automake
+  - autoconf
+  - libtool
+  - bison
+  - flex
+  - perl
+  - jq
+  - cppcheck
+  - cloc
+  - py-virtualenv
+  - curl
+  - gettext
+  - openssl-dev
+  - coreutils
+  - bash
+  - shadow

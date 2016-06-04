@@ -11,7 +11,9 @@
 - name: Define lttng_tools_packages_no_recommends.
   set_fact:
     lttng_tools_packages_no_recommends: "{{ __lttng_tools_packages_no_recommends | list }}"
-  when: lttng_tools_packages_no_recommends is not defined
+  when:
+    - lttng_tools_packages_no_recommends is not defined
+    - ansible_os_family == 'Debian'
 
 # Setup/install tasks.
 - include: setup-RedHat.yml
@@ -19,3 +21,6 @@
 
 - include: setup-Debian.yml
   when: ansible_os_family == 'Debian'
+
+- include: setup-Alpine.yml
+  when: ansible_os_family == 'Alpine'

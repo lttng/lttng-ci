@@ -1,0 +1,7 @@
+---
+- name: Update apk cache.
+  apk: update_cache=yes
+
+- name: Ensure babeltrace build dependencies are installed.
+  apk: "name={{ item }} state=present"
+  with_items: babeltrace_packages

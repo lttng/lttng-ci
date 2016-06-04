@@ -15,6 +15,9 @@
 - include: setup-Debian.yml
   when: ansible_os_family == 'Debian'
 
+- include: setup-Alpine.yml
+  when: ansible_os_family == 'Alpine'
+
 - name: checkout repo
   git: repo=git://artifacts.internal.efficios.com/git/linux-stable.git
        dest=/home/jenkins/gitcache/linux-stable.git
