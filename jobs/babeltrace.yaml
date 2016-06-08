@@ -291,10 +291,6 @@
           arch: !!python/tuple [solaris10, solaris11]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static]
-          version:
-            - stable-1.3
-            - stable-1.4
-            - master
       - 'babeltrace_{version}_{buildtype}':
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
