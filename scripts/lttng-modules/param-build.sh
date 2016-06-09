@@ -54,7 +54,7 @@ prepare_lnx_sources() {
         ;;
       *)
         # Que sera sera
-        make ${koutput} allyesconfig
+        make ${koutput} allyesconfig CC=$CC
         ;;
     esac
 
@@ -75,8 +75,8 @@ prepare_lnx_sources() {
     echo "CONFIG_KALLSYMS_ALL=y" >> "${outdir}"/.config
 
 
-    make ${koutput} silentoldconfig
-    make ${koutput} modules_prepare
+    make ${koutput} silentoldconfig CC=$CC
+    make ${koutput} modules_prepare CC=$CC
 
     # Version specific tasks
     case "$kversion" in
@@ -89,7 +89,7 @@ prepare_lnx_sources() {
 
     # On powerpc this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
-        make ${koutput} arch/powerpc/lib/crtsavres.o
+        make ${koutput} arch/powerpc/lib/crtsavres.o CC=$CC
     fi
 }
 
@@ -115,7 +115,7 @@ build_modules() {
         set +e
 
         # Build modules
-        KERNELDIR="${kdir}" make -j${NPROC} V=1
+        KERNELDIR="${kdir}" make -j${NPROC} V=1 CC=$CC
 
         # We expect this build to fail, if it doesn't, fail the job.
         if [ "$?" -eq 0 ]; then
@@ -127,23 +127,26 @@ build_modules() {
 
         set -e
 
-        KERNELDIR="${kdir}" make clean
+        KERNELDIR="${kdir}" make clean CC=$CC
 
     else # Regular build
 
         # Build modules against full kernel sources
-        KERNELDIR="${kdir}" make -j${NPROC} V=1
+        KERNELDIR="${kdir}" make -j${NPROC} V=1 CC=$CC
 
         # Install modules to build dir
-        KERNELDIR="${kdir}" make INSTALL_MOD_PATH="${bdir}" modules_install
+        KERNELDIR="${kdir}" make INSTALL_MOD_PATH="${bdir}" modules_install CC=$CC
 
         # Clean build dir
-        KERNELDIR="${kdir}" make clean
+        KERNELDIR="${kdir}" make clean CC=$CC
     fi
 }
 
 
 ## MAIN ##
+
+# Use gcc 4.9, older kernel don't build with gcc 5
+export CC=gcc-4.9
 
 # Use all CPU cores
 NPROC=$(nproc)
