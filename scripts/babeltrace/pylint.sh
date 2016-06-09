@@ -16,7 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 BABELTRACE_DIR="deps/babeltrace/build"
-BINDINGS_DIR="$BABELTRACE_DIR/lib/python3.4/dist-packages/babeltrace"
+
+PYTHON3=python3
+P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
+
+BINDINGS_DIR="$BABELTRACE_DIR/lib/python${P3_VERSION}/dist-packages/babeltrace"
 
 PYENV_HOME="$WORKSPACE/.pyenv/"
 
@@ -26,7 +30,7 @@ if [ -d $PYENV_HOME ]; then
 fi
 
 # Create virtualenv and install necessary packages
-virtualenv --system-site-packages -p python3 $PYENV_HOME
+virtualenv --system-site-packages -p ${PYTHON3} $PYENV_HOME
 
 set +u
 . $PYENV_HOME/bin/activate
