@@ -1,6 +1,6 @@
-#!/bin/bash -xue
+#!/bin/bash -exu
 #
-# Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# Copyright (C) 2016 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #                      Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -236,19 +236,24 @@ if [ "$RUN_TESTS" = "yes" ]; then
     mkdir -p $WORKSPACE/tap/fast_regression
     mkdir -p $WORKSPACE/tap/with_bindings_regression
 
-    cd $BUILD_PATH/tests
-
     # Force the lttng-sessiond path to /bin/true to prevent the spawing of a
     # lttng-sessiond --daemonize on "lttng create"
     export LTTNG_SESSIOND_PATH="/bin/true"
 
     # Run 'unit_tests' and 'fast_regression' test suites for all configs except 'no-ust'
     if [ "$conf" != "no-ust" ]; then
-        prove --merge -v --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+        # Run 'unit_tests', 2.8 and up has a new test suite
+        if vergte "$PACKAGE_VERSION" "2.8"; then
+            make check
+            rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+        else
+            prove --merge -v --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+        fi
+
         prove --merge -v --exec '' - < $BUILD_PATH/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
     else
         # Regression is disabled for now, we need to adjust the testsuite for no ust builds.
-        echo "Testsuite disabled for 'no-ust'. See job configuration for more info."
+        echo "Tests disabled for 'no-ust'."
     fi
 
     # Run 'with_bindings_regression' test suite for 'python-bindings' config
@@ -257,14 +262,10 @@ if [ "$RUN_TESTS" = "yes" ]; then
     fi
 
     # TAP plugin is having a hard time with .yml files.
-    rm -f $WORKSPACE/tap/unit/meta.yml
-    rm -f $WORKSPACE/tap/fast_regression/meta.yml
-    rm -f $WORKSPACE/tap/with_bindings_regression/meta.yml
+    find $WORKSPACE/tap -name "meta.yml" -exec rm -f {} \;
 
     # And also with files without extension, so rename all result to *.tap
-    find $WORKSPACE/tap/unit/ -type f -exec mv {} {}.tap \;
-    find $WORKSPACE/tap/fast_regression/ -type f -exec mv {} {}.tap \;
-    find $WORKSPACE/tap/with_bindings_regression/ -type f -exec mv {} {}.tap \;
+    find $WORKSPACE/tap/ -type f -exec mv {} {}.tap \;
 fi
 
 # Cleanup
