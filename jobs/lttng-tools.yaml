@@ -10,12 +10,6 @@
 
     project-type: freestyle
 
-    logrotate:
-        daysToKeep: -1
-        numToKeep: 2
-        artifactDaysToKeep: -1
-        artifactNumToKeep: -1
-
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -36,6 +30,8 @@
     properties:
       - github:
           url: https://github.com/{github_user}/{github_name}
+      - build-discarder:
+          num-to-keep: 2
 
 
 ## Templates
@@ -68,6 +64,10 @@
          values: '{obj:build}'
 
     properties:
+      - github:
+          url: https://github.com/{github_user}/{github_name}
+      - build-discarder:
+          num-to-keep: 2
       - throttle:
           max-per-node: 1
           option: 'category'
@@ -75,6 +75,7 @@
             - 'lttng-tools'
           matrix-builds: false
           matrix-configs: true
+
     triggers:
       - pollscm:
           cron: "@hourly"

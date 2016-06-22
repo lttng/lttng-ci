@@ -9,8 +9,10 @@
       <p>Job is managed by Jenkins Job Builder.</p>
 
     project-type: freestyle
-    logrotate:
-      numToKeep: 2
+
+    properties:
+      - build-discarder:
+          num-to-keep: 2
 
     wrappers:
       - timestamps

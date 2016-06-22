@@ -9,9 +9,6 @@
 
     project-type: freestyle
 
-    logrotate:
-        numToKeep: 2
-
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -34,6 +31,8 @@
           cron: "@hourly"
 
     properties:
+      - build-discarder:
+          num-to-keep: 2
       - github:
           url: https://github.com/{github_user}/{github_name}
 
@@ -234,8 +233,6 @@
           description: 'The linux kernel git repository url.'
 
     concurrent: true
-    logrotate:
-      daysToKeep: 2
 
     scm:
       - git:
