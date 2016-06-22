@@ -18,19 +18,19 @@
 
 # Version compare functions
 verlte() {
-    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | head -n1`" ]
+	[  "$1" = "$(printf '%s\n%s' "$1" "$2" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | head -n1)" ]
 }
 
 verlt() {
-    [ "$1" = "$2" ] && return 1 || verlte $1 $2
+    [ "$1" = "$2" ] && return 1 || verlte "$1" "$2"
 }
 
 vergte() {
-    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | tail -n1`" ]
+	[  "$1" = "$(printf '%s\n%s' "$1" "$2" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | tail -n1)" ]
 }
 
 vergt() {
-    [ "$1" = "$2" ] && return 1 || vergte $1 $2
+    [ "$1" = "$2" ] && return 1 || vergte "$1" "$2"
 }
 
 
@@ -59,6 +59,17 @@ solaris11)
     NPROC=nproc
     CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
     export PATH="$PATH:/usr/perl5/bin"
+    ;;
+
+macosx)
+    MAKE=make
+    TAR=tar
+    NPROC="getconf _NPROCESSORS_ONLN"
+    BISON="bison"
+    YACC="$BISON -y"
+    export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    export CFLAGS="-I/opt/local/include"
+    export LDFLAGS="-L/opt/local/lib"
     ;;
 
 *)

@@ -198,6 +198,13 @@
           version: # Solaris support was introduced in 0.9
             - master
             - stable-0.9
+      - 'liburcu_{version}_{buildtype}':
+          buildtype: macosxbuild
+          arch: !!python/tuple [macosx]
+          build: !!python/tuple [std]
+          version:
+            - master
+            - stable-0.9
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
