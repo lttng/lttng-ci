@@ -35,8 +35,9 @@
 
 
 ## Templates
-- job-template:
-    name: lttng-tools_{version}_{buildtype}
+
+- lttng-tools_version_buildtype_anchor: &lttng-tools_version_buildtype_anchor
+    name: 'lttng-tools_version_buildtype_anchor'
     defaults: lttng-tools
 
     project-type: matrix
@@ -75,13 +76,6 @@
             - 'lttng-tools'
           matrix-builds: false
           matrix-configs: true
-
-    triggers:
-      - pollscm:
-          cron: "@hourly"
-      - reverse:
-            jobs: 'lttng-ust_{version}_{buildtype}'
-            result: 'success'
 
     builders:
       - conditional-step:
@@ -168,7 +162,17 @@
       - shell:
          !include-raw-escape: scripts/lttng-tools/build.sh
 
-    # TODO: Scan for open tasks
+
+- job-template:
+    name: lttng-tools_{version}_{buildtype}
+    <<: *lttng-tools_version_buildtype_anchor
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+      - reverse:
+            jobs: 'lttng-ust_{version}_{buildtype}'
+            result: 'success'
+
     publishers:
       - tap:
           results: 'tap/**/*.tap'
@@ -192,6 +196,27 @@
           matrix-notifier: only-parent
           channels:
             - name: '#lttng'
+
+
+- job-template:
+    name: dev_{user}_lttng-tools_{version}_{buildtype}
+    <<: *lttng-tools_version_buildtype_anchor
+
+    publishers:
+      - tap:
+          results: 'tap/**/*.tap'
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - workspace-cleanup
 
 
 - job-template:
@@ -390,6 +415,39 @@
           version: stable-2.7
           arch: !!python/tuple [armhf, arm64, powerpc]
           build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.3]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          user: jgalar
+          github_user: jgalar
+          github_name: lttng-tools
+          buildtype: build
+          version: master-staging
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [master]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          user: jgalar
+          github_user: jgalar
+          github_name: lttng-tools
+          buildtype: build
+          version: stable-2.8-staging
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.4]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          user: jgalar
+          github_user: jgalar
+          github_name: lttng-tools
+          buildtype: build
+          version: stable-2.7-staging
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.3]

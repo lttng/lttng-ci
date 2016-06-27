@@ -222,19 +222,21 @@ $MAKE install
 
 # Run tests
 if [ "$RUN_TESTS" = "yes" ]; then
+    cd tests
+
     # Allow core dumps
     ulimit -c unlimited
 
     # Add 'babeltrace' binary to PATH
-    chmod +x $BABEL_BINS/babeltrace
+    chmod +x "$BABEL_BINS/babeltrace"
     export PATH="$PATH:$BABEL_BINS"
 
     # Prepare tap output dirs
-    rm -rf $WORKSPACE/tap
-    mkdir -p $WORKSPACE/tap
-    mkdir -p $WORKSPACE/tap/unit
-    mkdir -p $WORKSPACE/tap/fast_regression
-    mkdir -p $WORKSPACE/tap/with_bindings_regression
+    rm -rf "$WORKSPACE/tap"
+    mkdir -p "$WORKSPACE/tap"
+    mkdir -p "$WORKSPACE/tap/unit"
+    mkdir -p "$WORKSPACE/tap/fast_regression"
+    mkdir -p "$WORKSPACE/tap/with_bindings_regression"
 
     # Force the lttng-sessiond path to /bin/true to prevent the spawing of a
     # lttng-sessiond --daemonize on "lttng create"
@@ -245,12 +247,11 @@ if [ "$RUN_TESTS" = "yes" ]; then
         # Run 'unit_tests', 2.8 and up has a new test suite
         if vergte "$PACKAGE_VERSION" "2.8"; then
             make check
-            rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+            rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*'" $BUILD_PATH/tests/" "$WORKSPACE/tap"
         else
-            prove --merge -v --exec '' - < $BUILD_PATH/tests/unit_tests --archive $WORKSPACE/tap/unit/ || true
+            prove --merge -v --exec '' - < "$BUILD_PATH/tests/unit_tests" --archive "$WORKSPACE/tap/unit/" || true
+            prove --merge -v --exec '' - < "$BUILD_PATH/tests/fast_regression" --archive "$WORKSPACE/tap/fast_regression/" || true
         fi
-
-        prove --merge -v --exec '' - < $BUILD_PATH/tests/fast_regression --archive $WORKSPACE/tap/fast_regression/ || true
     else
         # Regression is disabled for now, we need to adjust the testsuite for no ust builds.
         echo "Tests disabled for 'no-ust'."
@@ -258,30 +259,32 @@ if [ "$RUN_TESTS" = "yes" ]; then
 
     # Run 'with_bindings_regression' test suite for 'python-bindings' config
     if [ "$conf" = "python-bindings" ]; then
-        prove --merge -v --exec '' - < $WORKSPACE/tests/with_bindings_regression --archive $WORKSPACE/tap/with_bindings_regression/ || true
+        prove --merge -v --exec '' - < "$WORKSPACE/tests/with_bindings_regression" --archive "$WORKSPACE/tap/with_bindings_regression/" || true
     fi
 
     # TAP plugin is having a hard time with .yml files.
-    find $WORKSPACE/tap -name "meta.yml" -exec rm -f {} \;
+    find "$WORKSPACE/tap" -name "meta.yml" -exec rm -f {} \;
 
     # And also with files without extension, so rename all result to *.tap
-    find $WORKSPACE/tap/ -type f -exec mv {} {}.tap \;
+    find "$WORKSPACE/tap/" -type f -exec mv {} {}.tap \;
+
+    cd -
 fi
 
 # Cleanup
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find $WORKSPACE/build/bin -type f -perm -0500 -exec chrpath --delete {} \;
-find $WORKSPACE/build/lib -name "*.so" -exec chrpath --delete {} \;
+find "$WORKSPACE/build/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find $WORKSPACE/build/lib -name "*.la" -exec rm -f {} \;
+find "$WORKSPACE/build/lib" -name "*.la" -exec rm -f {} \;
 
 # Clean temp dir for dist build
 if [ "$build" = "dist" ]; then
-    cd $WORKSPACE
-    rm -rf $BUILD_PATH
+    cd "$WORKSPACE"
+    rm -rf "$BUILD_PATH"
 fi
 
 # EOF
