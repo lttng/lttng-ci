@@ -99,7 +99,7 @@
                 target: 'deps/babeltrace'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{version}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
+                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
                 which-build: last-successful
                 stable: true
                 filter: 'build/**'
@@ -126,7 +126,7 @@
                 target: 'deps/babeltrace'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{version}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=std,build=std
+                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=std,build=std
                 which-build: last-successful
                 stable: true
                 filter: 'build/**'
@@ -153,7 +153,7 @@
                 target: 'deps/babeltrace'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{version}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
+                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
                 which-build: last-successful
                 stable: true
                 filter: 'build/**'
@@ -261,7 +261,7 @@
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-ust_{version}_build/liburcu_version={urcuversion},arch=x86-64,conf=std,build=std
+          project: lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=x86-64,conf=std,build=std
           which-build: last-successful
           stable: true
           filter: 'build/**'
@@ -298,14 +298,14 @@
 
     builders:
       - copyartifact:
-          project: liburcu_master_build/arch=x86-64,conf=std,build=std
+          project: liburcu_{urcuversion}_build/arch=x86-64,conf=std,build=std
           which-build: last-successful
           stable: true
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-ust_{version}_build/liburcu_version={version},arch=x86-64,conf=std,build=std
+          project: lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=x86-64,conf=std,build=std
           which-build: last-successful
           stable: true
           filter: 'build/**'
@@ -373,6 +373,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: master
+          ustversion: master
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -381,6 +382,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: master
+          ustversion: master
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -389,6 +391,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: stable-2.8
+          ustversion: stable-2.8
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -397,6 +400,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.8
+          ustversion: stable-2.8
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -405,6 +409,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: stable-2.7
+          ustversion: stable-2.7
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -413,6 +418,7 @@
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.7
+          ustversion: stable-2.7
           arch: !!python/tuple [armhf, arm64, powerpc]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -424,6 +430,7 @@
           github_name: lttng-tools
           buildtype: build
           version: master-staging
+          ustversion: master
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -435,6 +442,7 @@
           github_name: lttng-tools
           buildtype: build
           version: stable-2.8-staging
+          ustversion: stable-2.8
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -446,6 +454,7 @@
           github_name: lttng-tools
           buildtype: build
           version: stable-2.7-staging
+          ustversion: stable-2.7
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
@@ -455,13 +464,18 @@
       - 'lttng-tools_{version}_scan-build':
           version: master
           urcuversion: master
+          ustversion: master
       - 'lttng-tools_{version}_scan-build':
           version: stable-2.8
           urcuversion: stable-0.9
+          ustversion: stable-2.8
       - 'lttng-tools_{version}_scan-build':
           version: stable-2.7
           urcuversion: stable-0.9
+          ustversion: stable-2.7
       #- 'lttng-tools_{version}_pylint'
       - 'lttng-tools_{version}_coverity':
           version: master
+          urcuversion: master
+          ustversion: master
 
