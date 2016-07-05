@@ -31,7 +31,8 @@
       - github:
           url: https://github.com/{github_user}/{github_name}
       - build-discarder:
-          num-to-keep: 2
+          num-to-keep: 20
+          artifact-num-to-keep: 2
 
 
 ## Templates
@@ -68,7 +69,8 @@
       - github:
           url: https://github.com/{github_user}/{github_name}
       - build-discarder:
-          num-to-keep: 2
+          num-to-keep: 20
+          artifact-num-to-keep: 2
       - throttle:
           max-per-node: 1
           option: 'category'
