@@ -466,6 +466,42 @@
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.3]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          user: jgalar
+          github_user: jgalar
+          github_name: lttng-tools
+          buildtype: portbuild
+          version: master-staging
+          ustversion: master
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [master]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          user: jgalar
+          github_user: jgalar
+          github_name: lttng-tools
+          buildtype: portbuild
+          version: stable-2.8-staging
+          ustversion: stable-2.8
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.4]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          user: jgalar
+          github_user: jgalar
+          github_name: lttng-tools
+          buildtype: portbuild
+          version: stable-2.7-staging
+          ustversion: stable-2.7
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.3]
       - 'lttng-tools_{version}_cppcheck'
       - 'lttng-tools_{version}_scan-build':
           version: master
