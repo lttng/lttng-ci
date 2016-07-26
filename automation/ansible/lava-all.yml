@@ -6,3 +6,4 @@
     - lttng-ust
     - lttng-tools
     - lttng-modules
+    - lttng-analyses
