@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Has to be set in the environment
+#CODECOV_TOKEN=""
+
 SRCDIR="src/lttng-analyses"
 
 PYTHON3="python3"
@@ -29,19 +32,31 @@ export PATH="$PATH:$BABELTRACE_DIR/bin"
 PYENV_HOME=$WORKSPACE/.pyenv/
 
 # Delete previously built virtualenv
-if [ -d $PYENV_HOME ]; then
-    rm -rf $PYENV_HOME
+if [ -d "$PYENV_HOME" ]; then
+    rm -rf "$PYENV_HOME"
 fi
 
 # Create virtualenv and install necessary packages
-virtualenv --system-site-packages -p $PYTHON3 $PYENV_HOME
+virtualenv --system-site-packages -p $PYTHON3 "$PYENV_HOME"
 
 set +u
-. $PYENV_HOME/bin/activate
+. "$PYENV_HOME/bin/activate"
 set -u
 
-cd "$SRCDIR"
+pip install --quiet codecov
+pip install --quiet tox
 
-$PYTHON3 setup.py build
-$PYTHON3 setup.py test
-$PYTHON3 setup.py install
+# Hack for path too long in venv wrapper shebang
+TMPDIR=$(mktemp -d)
+cd "$TMPDIR"
+ln -s "$WORKSPACE/$SRCDIR" src
+cd src
+
+# Run base test suites and long regression test suite
+for suite in py3 noutf8 pep8 longregression; do
+	export TOXENV="$suite"
+	tox
+	codecov -e TOXENV
+done
+
+unset TOXENV

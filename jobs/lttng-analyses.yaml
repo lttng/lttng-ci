@@ -12,6 +12,11 @@
       - timestamps
       - ansicolor:
           colormap: xterm
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: lttng-analyses_codecov_token
+              username: CODECOV_PROJECT_NAME
+              password: CODECOV_TOKEN
 
     scm:
       - git:
@@ -21,6 +26,7 @@
           branches:
             - origin/{version}
           basedir: src/lttng-analyses
+          skip-tag: true
 
     triggers:
       - pollscm:
@@ -60,10 +66,15 @@
       - shell:
          !include-raw-escape: scripts/lttng-analyses/build.sh
 
-#    publishers:
+    publishers:
 #      - archive:
 #          artifacts: 'build/**'
 #          allow-empty: false
+      - ircbot:
+          strategy: new-failure-and-fixed
+          matrix-notifier: only-parent
+          channels:
+            - name: '#lttng'
 
 
 - job-template:
