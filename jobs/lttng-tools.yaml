@@ -22,6 +22,7 @@
           browser-url: https://github.com/{github_user}/{github_name}
           branches:
             - origin/{version}
+          skip-tag: true
 
     triggers:
       - pollscm:
@@ -160,6 +161,26 @@
                 stable: true
                 filter: 'build/**'
                 target: 'deps/lttng-ust'
+                do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (relayd-only)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: true
+                filter: 'build/**'
+                target: 'deps/liburcu'
+                do-not-fingerprint: true
+            - copyartifact:
+                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: true
+                filter: 'build/**'
+                target: 'deps/babeltrace'
                 do-not-fingerprint: true
       - shell:
          !include-raw-escape: scripts/lttng-tools/build.sh
@@ -395,6 +416,24 @@
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [master]
       - 'lttng-tools_{version}_{buildtype}':
+          buildtype: macosxbuild
+          version: master
+          ustversion: master
+          arch: !!python/tuple [macosx]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [relayd-only]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [master]
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: solarisbuild
+          version: master
+          ustversion: master
+          arch: !!python/tuple [solaris10, solaris11]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [relayd-only]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [master]
+      - 'lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: stable-2.8
           ustversion: stable-2.8
@@ -410,6 +449,15 @@
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.4]
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: solarisbuild
+          version: stable-2.8
+          ustversion: stable-2.8
+          arch: !!python/tuple [solaris10, solaris11]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'lttng-tools_{version}_{buildtype}':

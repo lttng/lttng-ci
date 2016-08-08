@@ -17,26 +17,62 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Version compare functions
+vercomp () {
+    set +u
+    if [[ "$1" == "$2" ]]; then
+        return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++)); do
+        if [[ -z ${ver2[i]} ]]; then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]})); then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]})); then
+            return 2
+        fi
+    done
+    set -u
+    return 0
+}
+
 verlte() {
-    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | head -n1`" ]
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "2" ]
 }
 
 verlt() {
-    [ "$1" = "$2" ] && return 1 || verlte $1 $2
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "2" ]
 }
 
 vergte() {
-    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | tail -n1`" ]
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "1" ]
 }
 
 vergt() {
-    [ "$1" = "$2" ] && return 1 || vergte $1 $2
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "1" ]
+}
+
+verne() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -ne "0" ]
 }
 
 
 # Create build directory
-rm -rf $WORKSPACE/build
-mkdir -p $WORKSPACE/build
+rm -rf "$WORKSPACE/build"
+mkdir -p "$WORKSPACE/build"
 
 # liburcu
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
@@ -78,6 +114,19 @@ solaris11)
     export PATH="$PATH:/usr/perl5/bin"
     ;;
 
+macosx)
+    MAKE=make
+    TAR=tar
+    NPROC="getconf _NPROCESSORS_ONLN"
+    BISON="bison"
+    YACC="$BISON -y"
+    RUN_TESTS="no"
+
+    export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    export CFLAGS="-I/opt/local/include"
+    export LDFLAGS="-L/opt/local/lib"
+    ;;
+
 *)
     MAKE=make
     TAR=tar
@@ -104,6 +153,7 @@ esac
 
 # Get source version from configure script
 eval `grep '^PACKAGE_VERSION=' ./configure`
+PACKAGE_VERSION=`echo "$PACKAGE_VERSION"| sed 's/\-pre$//'`
 
 
 # Export build flags
@@ -164,7 +214,7 @@ python-agent)
 
 relayd-only)
     echo "Build relayd only"
-    CONF_OPTS="--disable-bin-lttng --disable-bin-lttng-consumerd --disable-bin-lttng-crash --disable-bin-lttng-sessiond --disable-extras $NO_UST"
+    CONF_OPTS="--disable-bin-lttng --disable-bin-lttng-consumerd --disable-bin-lttng-crash --disable-bin-lttng-sessiond --disable-extras --disable-man-pages $NO_UST"
     ;;
 
 *)
@@ -186,38 +236,38 @@ case "$build" in
     oot)
         echo "Out of tree build"
         BUILD_PATH=$WORKSPACE/oot
-        mkdir -p $BUILD_PATH
-        cd $BUILD_PATH
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        mkdir -p "$BUILD_PATH"
+        cd "$BUILD_PATH"
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$WORKSPACE/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     dist)
         echo "Distribution out of tree build"
-        BUILD_PATH=`mktemp -d`
+        BUILD_PATH="`mktemp -d`"
 
         # Initial configure and generate tarball
         MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" ./configure $CONF_OPTS --enable-build-man-pages
         $MAKE dist
 
-        mkdir -p $BUILD_PATH
-        cp *.tar.* $BUILD_PATH/
-        cd $BUILD_PATH
+        mkdir -p "$BUILD_PATH"
+        cp ./*.tar.* "$BUILD_PATH/"
+        cd "$BUILD_PATH"
 
         # Ignore level 1 of tar
-        $TAR xvf *.tar.* --strip 1
+        $TAR xvf ./*.tar.* --strip 1
 
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     *)
         BUILD_PATH=$WORKSPACE
         echo "Standard tree build"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" $WORKSPACE/configure --prefix=$PREFIX $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$WORKSPACE/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 esac
 
 # BUILD!
-$MAKE -j `$NPROC` V=1
+$MAKE -j "`$NPROC`" V=1
 $MAKE install
 
 # Run tests
