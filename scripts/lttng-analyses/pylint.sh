@@ -28,15 +28,15 @@ export PYTHONPATH="$BABELTRACE_DIR/lib/python${P3_VERSION}/dist-packages/"
 PYENV_HOME=$WORKSPACE/.pyenv/
 
 # Delete previously built virtualenv
-if [ -d $PYENV_HOME ]; then
-    rm -rf $PYENV_HOME
+if [ -d "$PYENV_HOME" ]; then
+    rm -rf "$PYENV_HOME"
 fi
 
 # Create virtualenv and install necessary packages
-virtualenv --system-site-packages -p $PYTHON3 $PYENV_HOME
+virtualenv --system-site-packages -p $PYTHON3 "$PYENV_HOME"
 
 set +u
-. $PYENV_HOME/bin/activate
+. "$PYENV_HOME/bin/activate"
 set -u
 
 pip install --quiet pylint
@@ -44,6 +44,6 @@ pip install --quiet pep8
 
 cd "$SRCDIR"
 
-pep8 lttnganalyses | tee $WORKSPACE/pep8.out
+pep8 lttnganalyses | tee "$WORKSPACE/pep8.out"
 
-pylint -f parseable --ignore="_version.py" lttnganalyses | tee $WORKSPACE/pylint.out
+pylint -f parseable --ignore="_version.py" --disable=C0111 lttnganalyses | tee "$WORKSPACE/pylint.out"
