@@ -28,6 +28,7 @@
           branches:
             - origin/{version}
           basedir: src/babeltrace
+          skip-tag: true
 
     triggers:
       - pollscm:

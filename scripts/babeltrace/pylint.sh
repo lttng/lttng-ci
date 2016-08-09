@@ -25,20 +25,20 @@ BINDINGS_DIR="$BABELTRACE_DIR/lib/python${P3_VERSION}/dist-packages/babeltrace"
 PYENV_HOME="$WORKSPACE/.pyenv/"
 
 # Delete previously built virtualenv
-if [ -d $PYENV_HOME ]; then
-    rm -rf $PYENV_HOME
+if [ -d "$PYENV_HOME" ]; then
+    rm -rf "$PYENV_HOME"
 fi
 
 # Create virtualenv and install necessary packages
-virtualenv --system-site-packages -p ${PYTHON3} $PYENV_HOME
+virtualenv --system-site-packages -p ${PYTHON3} "$PYENV_HOME"
 
 set +u
-. $PYENV_HOME/bin/activate
+. "$PYENV_HOME/bin/activate"
 set -u
 
 pip install --quiet pylint
 pip install --quiet pep8
 
-pep8 --exclude="nativebt.py" $BINDINGS_DIR | tee pep8.out
+pep8 --exclude="nativebt.py" "$BINDINGS_DIR" | tee pep8.out
 
-pylint -f parseable --ignore="nativebt.py" $BINDINGS_DIR | tee pylint.out
+pylint -f parseable --ignore="nativebt.py" "$BINDINGS_DIR" | tee pylint.out

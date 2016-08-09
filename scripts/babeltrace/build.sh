@@ -101,39 +101,39 @@ BUILD_PATH="$SRCDIR"
 case "$build" in
     oot)
         echo "Out of tree build"
-        BUILD_PATH=$WORKSPACE/oot
-        mkdir -p $BUILD_PATH
-        cd $BUILD_PATH
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix=$PREFIX $CONF_OPTS
+        BUILD_PATH="$WORKSPACE/oot"
+        mkdir -p "$BUILD_PATH"
+        cd "$BUILD_PATH"
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     dist)
         echo "Distribution out of tree build"
-        BUILD_PATH=`mktemp -d`
+        BUILD_PATH="`mktemp -d`"
 
         # Initial configure and generate tarball
         MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure"
         $MAKE dist
 
-        mkdir -p $BUILD_PATH
-        cp *.tar.* $BUILD_PATH/
-        cd $BUILD_PATH
+        mkdir -p "$BUILD_PATH"
+        cp ./*.tar.* "$BUILD_PATH/"
+        cd "$BUILD_PATH"
 
         # Ignore level 1 of tar
-        $TAR xvf *.tar.* --strip 1
+        $TAR xvf ./*.tar.* --strip 1
 
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     clang)
         echo "LLVM clang build"
         export CC=clang
         clang -v
-	MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix=$PREFIX $CONF_OPTS
+	MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
     *)
         echo "Standard in-tree build"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix=$PREFIX $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 esac
 
@@ -151,16 +151,16 @@ rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find $PREFIX/bin -type f -perm -0500 -exec chrpath --delete {} \;
-find $PREFIX/lib -name "*.so" -exec chrpath --delete {} \;
+find "$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find $PREFIX/lib -name "*.la" -exec rm -f {} \;
+find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
 # Clean temp dir for dist build
 if [ "$build" = "dist" ]; then
-    cd $SRCDIR
-    rm -rf $BUILD_PATH
+    cd "$SRCDIR"
+    rm -rf "$BUILD_PATH"
 fi
 
 # EOF
