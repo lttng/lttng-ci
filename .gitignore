@@ -1,3 +1,4 @@
-test/
+/test/
+/etc/jenkins_jobs.ini
+/.tox
 .venv*/
-etc/jenkins_jobs.ini
