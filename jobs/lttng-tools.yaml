@@ -29,6 +29,9 @@
           cron: "@hourly"
 
     properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=lttng-tools
       - github:
           url: https://github.com/{github_user}/{github_name}
       - build-discarder:
@@ -295,7 +298,7 @@
           target: 'deps/lttng-ust'
           do-not-fingerprint: true
       - shell:
-          !include-raw-escape: scripts/lttng-tools/scan-build.sh
+          !include-raw-escape: scripts/common/scan-build.sh
 
     publishers:
       - html-publisher:

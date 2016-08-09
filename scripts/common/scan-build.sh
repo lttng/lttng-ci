@@ -20,7 +20,7 @@
 # do not exit immediately if any command fails
 set +e
 
-SRCDIR="$WORKSPACE/src/lttng-ust"
+SRCDIR="$WORKSPACE/src/$PROJECT_NAME"
 TMPDIR="$WORKSPACE/tmp"
 PREFIX="$WORKSPACE/build"
 
@@ -40,10 +40,15 @@ SCAN_BUILD_TMPDIR=$( mktemp -d )
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
 URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
 
+# lttng-ust
+UST_INCS="$WORKSPACE/deps/lttng-ust/build/include/"
+UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
+
 export CFLAGS="-O0 -g -DDEBUG"
-export CPPFLAGS="-I$URCU_INCS"
-export LDFLAGS="-L$URCU_LIBS"
-export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
+
+export CPPFLAGS="-I$URCU_INCS -I$UST_INCS"
+export LDFLAGS="-L$URCU_LIBS -L$UST_LIBS"
+export LD_LIBRARY_PATH="$URCU_LIBS:$UST_LIBS:${LD_LIBRARY_PATH:-}"
 
 # Enter the source directory
 cd "$SRCDIR"
@@ -55,10 +60,10 @@ cd "$SRCDIR"
 ./configure --prefix="$PREFIX"
 
 # generate the scan-build report
-scan-build -k -o "${SCAN_BUILD_TMPDIR}" make
+scan-build -k -o "${SCAN_BUILD_TMPDIR}" make -j "$(nproc)"
 
 # get the directory name of the report created by scan-build
-SCAN_BUILD_REPORT=$( find "${SCAN_BUILD_TMPDIR}" -maxdepth 1 -not -empty -not -name "`basename ${SCAN_BUILD_TMPDIR}`" )
+SCAN_BUILD_REPORT=$(find "${SCAN_BUILD_TMPDIR}" -maxdepth 1 -not -empty -not -name "$(basename "${SCAN_BUILD_TMPDIR}")")
 rc=$?
 
 if [ -z "${SCAN_BUILD_REPORT}" ]; then
@@ -76,7 +81,7 @@ else
     fi
 
     echo ">>> Archiving scan-build report to ${SCAN_BUILD_ARCHIVE}"
-    mv "${SCAN_BUILD_REPORT}/*" "${SCAN_BUILD_ARCHIVE}/"
+    mv "${SCAN_BUILD_REPORT}"/* "${SCAN_BUILD_ARCHIVE}/"
 
     echo ">>> Removing any temporary files and directories"
     rm -rf "${SCAN_BUILD_TMPDIR}"

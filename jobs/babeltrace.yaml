@@ -35,6 +35,9 @@
           cron: "@hourly"
 
     properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=babeltrace
       - build-discarder:
           num-to-keep: 2
       - github:
@@ -147,7 +150,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/babeltrace/scan-build.sh
+          !include-raw-escape: scripts/common/scan-build.sh
 
     publishers:
       - html-publisher:

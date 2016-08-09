@@ -30,6 +30,9 @@
           cron: "@hourly"
 
     properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=lttng-ust
       - build-discarder:
           num-to-keep: 2
       - github:
@@ -282,7 +285,7 @@
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - shell:
-          !include-raw-escape: scripts/lttng-ust/scan-build.sh
+          !include-raw-escape: scripts/common/scan-build.sh
 
     publishers:
       - html-publisher:

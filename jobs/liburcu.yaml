@@ -48,6 +48,9 @@
           cron: "@hourly"
 
     properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=liburcu
       - build-discarder:
           num-to-keep: 2
       - github:
@@ -137,7 +140,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/liburcu/scan-build.sh
+          !include-raw-escape: scripts/common/scan-build.sh
 
     publishers:
       - html-publisher:
