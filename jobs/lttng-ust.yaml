@@ -23,6 +23,7 @@
           branches:
             - origin/{version}
           basedir: src/lttng-ust
+          skip-tag: true
 
     triggers:
       - pollscm:
@@ -158,6 +159,7 @@
           branches:
             - origin/{version}
           basedir: lttng-ust-java-tests
+          skip-tag: true
 
     triggers:
       - pollscm:

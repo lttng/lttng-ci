@@ -94,37 +94,37 @@ case "$build" in
 oot)
     echo "Out of tree build"
     BUILD_PATH=$WORKSPACE/oot
-    mkdir -p $BUILD_PATH
-    cd $BUILD_PATH
-    $SRCDIR/configure --prefix=$PREFIX $CONF_OPTS
+    mkdir -p "$BUILD_PATH"
+    cd "$BUILD_PATH"
+    "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 dist)
     echo "Distribution out of tree build"
-    BUILD_PATH=`mktemp -d`
+    BUILD_PATH="`mktemp -d`"
 
     # Initial configure and generate tarball
-    $SRCDIR/configure
+    "$SRCDIR/configure"
     $MAKE dist
 
-    mkdir -p $BUILD_PATH
-    cp *.tar.* $BUILD_PATH/
-    cd $BUILD_PATH
+    mkdir -p "$BUILD_PATH"
+    cp ./*.tar.* "$BUILD_PATH/"
+    cd "$BUILD_PATH"
 
     # Ignore level 1 of tar
-    $TAR xvf *.tar.* --strip 1
+    $TAR xvf ./*.tar.* --strip 1
 
-    $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 *)
     echo "Standard in-tree build"
-    $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 esac
 
 # BUILD!
-$MAKE -j `$NPROC` V=1
+$MAKE -j "`$NPROC`" V=1
 $MAKE install
 
 # Run tests
@@ -137,15 +137,15 @@ rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find $PREFIX/lib -name "*.so" -exec chrpath --delete {} \;
+find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find $PREFIX/lib -name "*.la" -exec rm -f {} \;
+find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
 # Clean temp dir for dist build
 if [ "$build" = "dist" ]; then
-    cd $SRCDIR
-    rm -rf $BUILD_PATH
+    cd "$SRCDIR"
+    rm -rf "$BUILD_PATH"
 fi
 
 # EOF
