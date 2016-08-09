@@ -39,18 +39,18 @@ fi
 # Create virtualenv and install necessary packages
 virtualenv --system-site-packages -p $PYTHON3 "$PYENV_HOME"
 
-set +u
+set +ux
 . "$PYENV_HOME/bin/activate"
-set -u
+set -ux
 
 pip install --quiet codecov
 pip install --quiet tox
 
+cd "$SRCDIR"
+
 # Hack for path too long in venv wrapper shebang
-TMPDIR=$(mktemp -d)
-cd "$TMPDIR"
-ln -s "$WORKSPACE/$SRCDIR" src
-cd src
+TOXWORKDIR=$(mktemp -d)
+export TOXWORKDIR
 
 # Run base test suites and long regression test suite
 for suite in py3 noutf8 pep8 longregression; do
@@ -60,3 +60,6 @@ for suite in py3 noutf8 pep8 longregression; do
 done
 
 unset TOXENV
+rm -rf "$TOXWORKDIR"
+
+# EOF
