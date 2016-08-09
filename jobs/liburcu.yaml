@@ -41,6 +41,7 @@
           branches:
             - origin/{version}
           basedir: src/liburcu
+          skip-tag: true
 
     triggers:
       - pollscm:

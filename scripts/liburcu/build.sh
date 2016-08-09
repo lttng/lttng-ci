@@ -17,20 +17,56 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Version compare functions
+vercomp () {
+    set +u
+    if [[ "$1" == "$2" ]]; then
+        return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++)); do
+        if [[ -z ${ver2[i]} ]]; then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]})); then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]})); then
+            return 2
+        fi
+    done
+    set -u
+    return 0
+}
+
 verlte() {
-	[  "$1" = "$(printf '%s\n%s' "$1" "$2" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | head -n1)" ]
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "2" ]
 }
 
 verlt() {
-    [ "$1" = "$2" ] && return 1 || verlte "$1" "$2"
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "2" ]
 }
 
 vergte() {
-	[  "$1" = "$(printf '%s\n%s' "$1" "$2" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | tail -n1)" ]
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "1" ]
 }
 
 vergt() {
-    [ "$1" = "$2" ] && return 1 || vergte "$1" "$2"
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "1" ]
+}
+
+verne() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -ne "0" ]
 }
 
 
@@ -122,9 +158,9 @@ case "$build" in
 oot)
     echo "Out of tree build"
     BUILD_PATH=$WORKSPACE/oot
-    mkdir -p $BUILD_PATH
-    cd $BUILD_PATH
-    MAKE=$MAKE CFLAGS="$CFLAGS" $SRCDIR/configure --prefix=$PREFIX $CONF_OPTS
+    mkdir -p "$BUILD_PATH"
+    cd "$BUILD_PATH"
+    MAKE=$MAKE CFLAGS="$CFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 dist)
@@ -132,21 +168,21 @@ dist)
     BUILD_PATH=`mktemp -d`
 
     # Initial configure and generate tarball
-    MAKE=$MAKE $SRCDIR/configure
+    MAKE=$MAKE "$SRCDIR/configure"
     $MAKE dist
 
-    mkdir -p $BUILD_PATH
-    cp *.tar.* $BUILD_PATH/
-    cd $BUILD_PATH
+    mkdir -p "$BUILD_PATH"
+    cp ./*.tar.* "$BUILD_PATH/"
+    cd "$BUILD_PATH"
 
     # Ignore level 1 of tar
-    $TAR xvf *.tar.* --strip 1
+    $TAR xvf ./*.tar.* --strip 1
 
-    MAKE=$MAKE CFLAGS="$CFLAGS" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+    MAKE=$MAKE CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 *)
     echo "Standard in-tree build"
-    MAKE=$MAKE CFLAGS="$CFLAGS" $BUILD_PATH/configure --prefix=$PREFIX $CONF_OPTS
+    MAKE=$MAKE CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 esac
 
@@ -166,15 +202,15 @@ $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
 #find $WORKSPACE/build/bin -type f -perm -0500 -exec chrpath --delete {} \;
-find $PREFIX/lib -name "*.so" -exec chrpath --delete {} \;
+find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find $PREFIX/lib -name "*.la" -exec rm -f {} \;
+find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
 # Cleanup temp directory of dist build
 if [ "$build" = "dist" ]; then
-    cd $SRCDIR
-    rm -rf $BUILD_PATH
+    cd "$SRCDIR"
+    rm -rf "$BUILD_PATH"
 fi
 
 # EOF
