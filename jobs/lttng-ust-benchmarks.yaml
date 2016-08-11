@@ -1,0 +1,130 @@
+- defaults:
+    name: lttng-ust-benchmarks
+    description: |
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - origin/{version}
+          basedir: src/lttng-ust-benchmarks
+          skip-tag: true
+
+    triggers:
+      - reverse:
+          jobs:
+            - liburcu_master_build
+            - lttng-tools_master_build
+            - lttng-ust_master_build
+          result: 'success'
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=lttng-ust-benchmarks
+      - build-discarder:
+          num-to-keep: 7
+      - github:
+          url: https://github.com/{github_user}/{github_name}
+
+
+## Templates
+- job-template:
+    name: lttng-ust-benchmarks_{version}_{buildtype}
+    defaults: lttng-ust-benchmarks
+
+    project-type: freestyle
+    node: x86-64
+
+    builders:
+      - copyartifact:
+          project: liburcu_master_build/arch=x86-64,build=std,conf=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/liburcu'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: babeltrace_master_build/arch=x86-64,build=std,conf=std
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/babeltrace'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: lttng-tools_master_build/arch=x86-64,babeltrace_version=master,build=std,conf=python-bindings,liburcu_version=master
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/lttng-tools'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: lttng-ust_master_build/arch=x86-64,build=std,conf=std,liburcu_version=master/
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/lttng-ust'
+          do-not-fingerprint: true
+      - shell:
+         !include-raw-escape: scripts/lttng-ust-benchmarks/build.sh
+
+    # TODO: Scan for open tasks
+    publishers:
+      - archive:
+          artifacts: 'src/lttng-ust-benchmarks/benchmarks.json'
+          allow-empty: false
+      - plot:
+         - title: Process Start Time Overhead (app with 1 TP)
+           group: Benchmarks
+           yaxis: s
+           style: line
+           series:
+             - file: jenkins_plot_data/8_cpus.basic.tracing_disabled.start_overhead_s.properties
+               format: properties
+             - file: jenkins_plot_data/8_cpus.basic.tracing_enabled.start_overhead_s.properties
+               format: properties
+             - file: jenkins_plot_data/8_cpus.sha2.tracing_disabled.start_overhead_s.properties
+               format: properties
+             - file: jenkins_plot_data/8_cpus.sha2.tracing_enabled.start_overhead_s.properties
+               format: properties
+         - title: Event Overhead (app with 1 TP)
+           group: Benchmarks
+           yaxis: ns/event
+           style: line
+           series:
+             - file: jenkins_plot_data/8_cpus.basic.tracing_disabled.ns_per_event.properties
+               format: properties
+             - file: jenkins_plot_data/8_cpus.basic.tracing_enabled.ns_per_event.properties
+               format: properties
+             - file: jenkins_plot_data/8_cpus.sha2.tracing_disabled.ns_per_event.properties
+               format: properties
+             - file: jenkins_plot_data/8_cpus.sha2.tracing_enabled.ns_per_event.properties
+               format: properties
+               label: SHA-256 benchmark (tracing enabled)
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+            - not-built: false
+
+## Project
+- project:
+    name: lttng-ust-benchmarks
+    github_user: PSRCode
+    github_name: lttng-ust-benchmarks
+    version:
+      - master
+    jobs:
+      - 'lttng-ust-benchmarks_{version}_{buildtype}':
+          buildtype: build
+
