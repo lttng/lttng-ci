@@ -218,6 +218,10 @@
           name: arch
           values: '{obj:arch}'
 
+    properties:
+      - build-discarder:
+          days-to-keep: 2
+
     parameters:
       - string:
           name: 'mversion'
