@@ -1,0 +1,363 @@
+---
+- defaults:
+    name: latency-tracker
+    description: |
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - "{mversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/latency-tracker
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - build-discarder:
+          num-to-keep: 2
+      - github:
+          url: https://github.com/{github_user}/{github_name}
+
+
+## Templates
+- job-template:
+    name: latency-tracker_{mversion}_{kversion}_{buildtype}
+    defaults: latency-tracker
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+
+    builders:
+      - copyartifact:
+          project: kernel_{kversion}_{buildtype}/arch=$arch
+          which-build: last-successful
+          stable: true
+          filter: 'build/**'
+          target: 'deps/linux'
+          do-not-fingerprint: true
+      - shell: |
+          git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+      - shell:
+         !include-raw-escape: scripts/latency-tracker/build.sh
+
+    publishers:
+      - archive:
+          artifacts: 'build/**'
+          allow-empty: false
+      - workspace-cleanup
+
+- job-template:
+    name: latency-tracker_{mversion}_build-vanilla
+    defaults: latency-tracker
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job will build the {mversion} branch against all stable vanilla
+      kernel tags.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    node: 'master'
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: '{mversion}'
+          description: 'The latency-tracker branch to build.'
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '20'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: 'v2.6.36'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'latency-tracker_VERSION_param-build'
+          description: 'The parametrized job to use for child builds.'
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/latency-tracker/master-vanilla.groovy
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: latency-tracker_{mversion}_build-{uversion}
+    defaults: latency-tracker
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job will build the {mversion} branch against all Ubuntu {uversion}
+      released kernels, including the LTS backport kernels.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    node: 'master'
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: '{mversion}'
+          description: 'The latency-tracker branch to build.'
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '20'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'uversion'
+          default: '{uversion}'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/git/ubuntu-{uversion}.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'latency-tracker_VERSION_param-build'
+          description: 'The parametrized job to use for child builds.'
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/latency-tracker/master-ubuntu.groovy
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: latency-tracker_{mversion}_build-rt
+    defaults: latency-tracker
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job will build the {mversion} branch against all Linutronix RT
+      kernels.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    node: 'master'
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: '{mversion}'
+          description: 'The latency-tracker branch to build.'
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '20'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: 'v2.6.36-rt0-rebase'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-rt-devel.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'latency-tracker_VERSION_param-build'
+          description: 'The parametrized job to use for child builds.'
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/latency-tracker/master-rt.groovy
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: latency-tracker_VERSION_param-build
+    defaults: latency-tracker
+    description: |
+      This is a parametrized job used by 'master' jobs to build any combinations
+      of latency-tracker and linux kernel versions.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+          type: slave
+          name: arch
+          values: '{obj:arch}'
+
+    properties:
+      - build-discarder:
+          days-to-keep: 2
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: 'master'
+          description: 'The latency-tracker branch to build.'
+      - string:
+          name: 'kversion'
+          default: ''
+          description: 'The linux kernel git tag to build against.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          description: 'The linux kernel git repository url.'
+
+    concurrent: true
+
+    scm:
+      - git:
+          url: git://github.com/efficios/latency-tracker.git
+          browser: githubweb
+          browser-url: https://github.com/efficios/latency-tracker
+          branches:
+            - "${{mversion}}"
+          skip-tag: true
+          basedir: src/latency-tracker
+
+    triggers:
+
+    builders:
+      - shell: |
+          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
+      - shell:
+          !include-raw-escape: scripts/latency-tracker/param-build.sh
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: latency-tracker_{mversion}_coverity
+    defaults: latency-tracker
+    node: 'x86-64'
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor:
+          colormap: xterm
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: latency-tracker_coverity_token
+              username: COVERITY_SCAN_PROJECT_NAME
+              password: COVERITY_SCAN_TOKEN
+
+    builders:
+      - shell: |
+         git clone --depth=1 -b v4.4 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+         cd src/linux
+         make defconfig
+         sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config
+         make modules_prepare
+      - shell:
+         !include-raw-escape: scripts/common/coverity.sh
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: latency-tracker_{mversion}_cppcheck
+    defaults: latency-tracker
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    builders:
+      - shell: |
+          rm -f cppcheck.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/latency-tracker 2> cppcheck.xml
+
+    publishers:
+      - archive:
+          artifacts: 'cppcheck.xml'
+          allow-empty: false
+      - cppcheck:
+          pattern: 'cppcheck.xml'
+      - email:
+          recipients: 'ci-notification@lists.lttng.org'
+          notify-every-unstable-build: true
+          send-to-individuals: false
+
+- job-template:
+    name: latency-tracker_{mversion}_sloccount
+    defaults: latency-tracker
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job runs the sloccount utility and generates a trend report.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    builders:
+      - shell: |
+          cloc --by-file --xml --out=cloc.xml src/latency-tracker/
+
+    publishers:
+      - archive:
+          artifacts: 'cloc.xml'
+          allow-empty: false
+      - sloccount:
+          report-files: 'cloc.xml'
+
+
+## Project
+- project:
+    name: latency-tracker
+    github_user: efficios
+    github_name: latency-tracker
+    mversion:
+      - master
+    jobs:
+      - 'latency-tracker_{mversion}_build-vanilla'
+      - 'latency-tracker_{mversion}_build-rt':
+#      - 'latency-tracker_{mversion}_build-{uversion}':
+#          uversion:
+#            - xenial
+      - 'latency-tracker_VERSION_param-build':
+          arch: !!python/tuple [x86-32, x86-64]
+      - 'latency-tracker_{mversion}_cppcheck'
+      - 'latency-tracker_{mversion}_sloccount':
+          mversion: master
+#      - 'latency-tracker_{mversion}_coverity':
+#          mversion: master
