@@ -21,8 +21,8 @@ ci-slave-arm64-01
 ci-slave-powerpc-01
 
 [slave-ppc64el]
-140.211.168.186
-140.211.168.187
+140.211.168.84
+140.211.168.85
 
 [slave-i386]
 ci-slave-i386-02-01
