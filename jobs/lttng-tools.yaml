@@ -553,6 +553,18 @@
           conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.3]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          user: jgalar
+          github_user: jgalar
+          github_name: lttng-tools
+          buildtype: macosxbuild
+          version: master-staging
+          ustversion: master
+          arch: !!python/tuple [macosx]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [relayd-only]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [master]
       - 'lttng-tools_{version}_cppcheck'
       - 'lttng-tools_{version}_scan-build':
           version: master
