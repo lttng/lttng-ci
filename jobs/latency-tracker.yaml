@@ -92,7 +92,7 @@
           description: 'The maximum number of concurrent child build to run.'
       - string:
           name: 'kverfloor'
-          default: 'v2.6.36'
+          default: 'v3.12'
           description: 'The lowest kernel version to build.'
       - string:
           name: 'kgitrepo'
@@ -110,6 +110,8 @@
 
     publishers:
       - workspace-cleanup
+      - email-ext:
+          recipients: jdesfossez@efficios.com
 
 - job-template:
     name: latency-tracker_{mversion}_build-{uversion}
@@ -154,6 +156,8 @@
 
     publishers:
       - workspace-cleanup
+      - email-ext:
+          recipients: jdesfossez@efficios.com
 
 - job-template:
     name: latency-tracker_{mversion}_build-rt
@@ -198,6 +202,8 @@
 
     publishers:
       - workspace-cleanup
+      - email-ext:
+          recipients: jdesfossez@efficios.com
 
 - job-template:
     name: latency-tracker_VERSION_param-build
@@ -351,9 +357,9 @@
     jobs:
       - 'latency-tracker_{mversion}_build-vanilla'
       - 'latency-tracker_{mversion}_build-rt':
-#      - 'latency-tracker_{mversion}_build-{uversion}':
-#          uversion:
-#            - xenial
+      - 'latency-tracker_{mversion}_build-{uversion}':
+          uversion:
+            - xenial
       - 'latency-tracker_VERSION_param-build':
           arch: !!python/tuple [x86-32, x86-64]
       - 'latency-tracker_{mversion}_cppcheck'
