@@ -243,6 +243,7 @@
     version:
       - stable-2.7
       - stable-2.8
+      - stable-2.9
       - master
     jobs:
       - 'lttng-ust_{version}_{buildtype}':

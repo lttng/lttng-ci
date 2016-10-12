@@ -351,6 +351,7 @@
     mversion:
       - stable-2.7
       - stable-2.8
+      - stable-2.9
       - master
     jobs:
       - 'lttng-modules_{mversion}_build-vanilla'
