@@ -69,10 +69,22 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+# Required parameters
+arch=${arch:-}
+conf=${conf:-}
+build=${build:-}
 
-# Create build directory
-rm -rf "$WORKSPACE/build"
-mkdir -p "$WORKSPACE/build"
+SRCDIR="$WORKSPACE/src/lttng-tools"
+TMPDIR="$WORKSPACE/tmp"
+PREFIX="$WORKSPACE/build"
+TAPDIR="$WORKSPACE/tap"
+
+
+# Create build and tmp directories
+rm -rf "$PREFIX" "$TMPDIR" "$TAPDIR"
+mkdir -p "$PREFIX" "$TMPDIR" "$TAPDIR"
+
+export TMPDIR
 
 # liburcu
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
@@ -84,11 +96,10 @@ UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
 UST_JAVA="$WORKSPACE/deps/lttng-ust/build/share/java/"
 
 # babeltrace
-BABEL_INCS="$WORKSPACE/deps/babeltrace/build/include/"
+#BABEL_INCS="$WORKSPACE/deps/babeltrace/build/include/"
 BABEL_LIBS="$WORKSPACE/deps/babeltrace/build/lib/"
 BABEL_BINS="$WORKSPACE/deps/babeltrace/build/bin/"
 
-PREFIX="$WORKSPACE/build"
 
 # Set platform variables
 case "$arch" in
@@ -148,12 +159,15 @@ macosx)
 esac
 
 
-# Run bootstrap prior to configure
+# Enter the source directory
+cd "$SRCDIR"
+
+# Run bootstrap in the source directory prior to configure
 ./bootstrap
 
 # Get source version from configure script
-eval `grep '^PACKAGE_VERSION=' ./configure`
-PACKAGE_VERSION=`echo "$PACKAGE_VERSION"| sed 's/\-pre$//'`
+eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+PACKAGE_VERSION=$(echo "$PACKAGE_VERSION"| sed 's/\-pre$//')
 
 
 # Export build flags
@@ -231,22 +245,22 @@ esac
 #
 # Make sure to move to the build_path and run configure
 # before continuing
-BUILD_PATH=$WORKSPACE
+BUILD_PATH=$SRCDIR
 case "$build" in
     oot)
         echo "Out of tree build"
         BUILD_PATH=$WORKSPACE/oot
         mkdir -p "$BUILD_PATH"
         cd "$BUILD_PATH"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$WORKSPACE/configure" --prefix="$PREFIX" $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     dist)
         echo "Distribution out of tree build"
-        BUILD_PATH="`mktemp -d`"
+	BUILD_PATH="$(mktemp -d)"
 
         # Initial configure and generate tarball
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" ./configure $CONF_OPTS --enable-build-man-pages
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
         $MAKE dist
 
         mkdir -p "$BUILD_PATH"
@@ -260,19 +274,18 @@ case "$build" in
         ;;
 
     *)
-        BUILD_PATH=$WORKSPACE
         echo "Standard tree build"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$WORKSPACE/configure" --prefix="$PREFIX" $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 esac
 
 # BUILD!
-$MAKE -j "`$NPROC`" V=1
+$MAKE -j "$($NPROC)" V=1
 $MAKE install
 
 # Run tests
 if [ "$RUN_TESTS" = "yes" ]; then
-    cd tests
+    cd tests || exit 1
 
     # Allow core dumps
     ulimit -c unlimited
@@ -282,11 +295,11 @@ if [ "$RUN_TESTS" = "yes" ]; then
     export PATH="$PATH:$BABEL_BINS"
 
     # Prepare tap output dirs
-    rm -rf "$WORKSPACE/tap"
-    mkdir -p "$WORKSPACE/tap"
-    mkdir -p "$WORKSPACE/tap/unit"
-    mkdir -p "$WORKSPACE/tap/fast_regression"
-    mkdir -p "$WORKSPACE/tap/with_bindings_regression"
+    rm -rf "$TAPDIR"
+    mkdir -p "$TAPDIR"
+    mkdir -p "$TAPDIR/unit"
+    mkdir -p "$TAPDIR/fast_regression"
+    mkdir -p "$TAPDIR/with_bindings_regression"
 
     # Force the lttng-sessiond path to /bin/true to prevent the spawing of a
     # lttng-sessiond --daemonize on "lttng create"
@@ -297,10 +310,10 @@ if [ "$RUN_TESTS" = "yes" ]; then
         # Run 'unit_tests', 2.8 and up has a new test suite
         if vergte "$PACKAGE_VERSION" "2.8"; then
             make check
-            rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*'" $BUILD_PATH/tests/" "$WORKSPACE/tap"
+            rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*'" $BUILD_PATH/tests/" "$TAPDIR"
         else
-            prove --merge -v --exec '' - < "$BUILD_PATH/tests/unit_tests" --archive "$WORKSPACE/tap/unit/" || true
-            prove --merge -v --exec '' - < "$BUILD_PATH/tests/fast_regression" --archive "$WORKSPACE/tap/fast_regression/" || true
+            prove --merge -v --exec '' - < "$BUILD_PATH/tests/unit_tests" --archive "$TAPDIR/unit/" || true
+            prove --merge -v --exec '' - < "$BUILD_PATH/tests/fast_regression" --archive "$TAPDIR/fast_regression/" || true
         fi
     else
         # Regression is disabled for now, we need to adjust the testsuite for no ust builds.
@@ -309,14 +322,14 @@ if [ "$RUN_TESTS" = "yes" ]; then
 
     # Run 'with_bindings_regression' test suite for 'python-bindings' config
     if [ "$conf" = "python-bindings" ]; then
-        prove --merge -v --exec '' - < "$WORKSPACE/tests/with_bindings_regression" --archive "$WORKSPACE/tap/with_bindings_regression/" || true
+        prove --merge -v --exec '' - < "$BUILD_PATH/tests/with_bindings_regression" --archive "$TAPDIR/with_bindings_regression/" || true
     fi
 
     # TAP plugin is having a hard time with .yml files.
-    find "$WORKSPACE/tap" -name "meta.yml" -exec rm -f {} \;
+    find "$TAPDIR" -name "meta.yml" -exec rm -f {} \;
 
     # And also with files without extension, so rename all result to *.tap
-    find "$WORKSPACE/tap/" -type f -exec mv {} {}.tap \;
+    find "$TAPDIR/" -type f -exec mv {} {}.tap \;
 
     cd -
 fi
@@ -325,15 +338,15 @@ fi
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find "$WORKSPACE/build/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \;
+find "$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find "$WORKSPACE/build/lib" -name "*.la" -exec rm -f {} \;
+find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
 # Clean temp dir for dist build
 if [ "$build" = "dist" ]; then
-    cd "$WORKSPACE"
+    cd "$SRCDIR"
     rm -rf "$BUILD_PATH"
 fi
 
