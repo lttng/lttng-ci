@@ -298,7 +298,7 @@
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, static]
+          conf: !!python/tuple [std]
           version:
             - stable-1.4
             - master
