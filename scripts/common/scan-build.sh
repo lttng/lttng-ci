@@ -1,4 +1,4 @@
-#!/bin/sh -exu
+#!/bin/bash -exu
 #
 # Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #               2016 - Michael Jeanson <mjeanson@efficios.com>

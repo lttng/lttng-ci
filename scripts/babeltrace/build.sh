@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Required parameters
+arch=${arch:-}
+conf=${conf:-}
+build=${build:-}
+
 
 SRCDIR="$WORKSPACE/src/babeltrace"
 TMPDIR="$WORKSPACE/tmp"
@@ -109,7 +114,7 @@ case "$build" in
 
     dist)
         echo "Distribution out of tree build"
-        BUILD_PATH="`mktemp -d`"
+        BUILD_PATH="$(mktemp -d)"
 
         # Initial configure and generate tarball
         MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure"
@@ -138,7 +143,7 @@ case "$build" in
 esac
 
 # BUILD!
-$MAKE -j `$NPROC` V=1
+$MAKE -j "$($NPROC)" V=1
 $MAKE install
 
 # Run tests

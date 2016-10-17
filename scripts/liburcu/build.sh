@@ -69,6 +69,11 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+# Required parameters
+arch=${arch:-}
+conf=${conf:-}
+build=${build:-}
+
 
 SRCDIR="$WORKSPACE/src/liburcu"
 TMPDIR="$WORKSPACE/tmp"
@@ -124,7 +129,7 @@ static)
     CONF_OPTS="--enable-static --disable-shared"
     ;;
 
-tls_fallback)  
+tls_fallback)
     echo  "Using pthread_getspecific() to emulate TLS"
     CONF_OPTS="--disable-compiler-tls"
     ;;
@@ -143,7 +148,7 @@ cd "$SRCDIR"
 ./bootstrap
 
 # Get source version from configure script
-eval `grep '^PACKAGE_VERSION=' ./configure`
+eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 
 
 # Build type
@@ -165,7 +170,7 @@ oot)
 
 dist)
     echo "Distribution out of tree build"
-    BUILD_PATH=`mktemp -d`
+    BUILD_PATH=$(mktemp -d)
 
     # Initial configure and generate tarball
     MAKE=$MAKE "$SRCDIR/configure"
@@ -187,7 +192,7 @@ dist)
 esac
 
 # BUILD!
-$MAKE -j `$NPROC` V=1
+$MAKE -j "$($NPROC)" V=1
 $MAKE install
 
 # Run tests

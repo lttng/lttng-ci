@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Required parameters
+arch=${arch:-}
+conf=${conf:-}
+build=${build:-}
+
 
 # liburcu
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
@@ -37,9 +42,9 @@ case "$arch" in
      MAKE=make
      TAR=tar
      NPROC=nproc
-     BISON="bison"
-     YACC="$BISON -y"
-     CFLAGS=""
+     #BISON="bison"
+     #YACC="$BISON -y"
+     #CFLAGS=""
      ;;
 esac
 
@@ -101,7 +106,7 @@ oot)
 
 dist)
     echo "Distribution out of tree build"
-    BUILD_PATH="`mktemp -d`"
+    BUILD_PATH="$(mktemp -d)"
 
     # Initial configure and generate tarball
     "$SRCDIR/configure"
@@ -124,7 +129,7 @@ dist)
 esac
 
 # BUILD!
-$MAKE -j "`$NPROC`" V=1
+$MAKE -j "$($NPROC)" V=1
 $MAKE install
 
 # Run tests

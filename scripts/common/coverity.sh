@@ -1,4 +1,4 @@
-#!/bin/sh -xue
+#!/bin/bash -exu
 #
 # Copyright (C) 2015 - Michael Jeanson <mjeanson@efficios.com>
 #                      Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
@@ -100,17 +100,17 @@ fi
 
 # Verify upload is permitted
 set +x
-AUTH_RES=`curl -s --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" $SCAN_URL/api/upload_permitted`
+AUTH_RES=$(curl -s --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" $SCAN_URL/api/upload_permitted)
 set -x
 if [ "$AUTH_RES" = "Access denied" ]; then
   echo -e "\033[33;1mCoverity Scan API access denied. Check COVERITY_SCAN_PROJECT_NAME and COVERITY_SCAN_TOKEN.\033[0m"
   exit 1
 else
-  AUTH=`echo $AUTH_RES | jq .upload_permitted`
+  AUTH=$(echo "$AUTH_RES" | jq .upload_permitted)
   if [ "$AUTH" = "true" ]; then
     echo -e "\033[33;1mCoverity Scan analysis authorized per quota.\033[0m"
   else
-    WHEN=`echo $AUTH_RES | jq .next_upload_permitted_at`
+    WHEN=$(echo "$AUTH_RES" | jq .next_upload_permitted_at)
     echo -e "\033[33;1mCoverity Scan analysis NOT authorized until $WHEN.\033[0m"
     exit 1
   fi
@@ -118,28 +118,28 @@ fi
 
 
 # Download Coverity Scan Analysis Tool
-if [ ! -d $TOOL_BASE ]; then
-  if [ ! -e $TOOL_ARCHIVE ]; then
+if [ ! -d "$TOOL_BASE" ]; then
+  if [ ! -e "$TOOL_ARCHIVE" ]; then
     echo -e "\033[33;1mDownloading Coverity Scan Analysis Tool...\033[0m"
     set +x
-    wget -nv -O $TOOL_ARCHIVE $TOOL_URL --post-data "project=$COVERITY_SCAN_PROJECT_NAME&token=$COVERITY_SCAN_TOKEN"
+    wget -nv -O "$TOOL_ARCHIVE" "$TOOL_URL" --post-data "project=$COVERITY_SCAN_PROJECT_NAME&token=$COVERITY_SCAN_TOKEN"
     set -x
   fi
 
   # Extract Coverity Scan Analysis Tool
   echo -e "\033[33;1mExtracting Coverity Scan Analysis Tool...\033[0m"
-  mkdir -p $TOOL_BASE
-  cd $TOOL_BASE
-  tar xzf $TOOL_ARCHIVE
+  mkdir -p "$TOOL_BASE"
+  cd "$TOOL_BASE" || exit 1
+  tar xzf "$TOOL_ARCHIVE"
   cd -
 fi
 
-TOOL_DIR=`find $TOOL_BASE -type d -name 'cov-analysis*'`
+TOOL_DIR=$(find "$TOOL_BASE" -type d -name 'cov-analysis*')
 export PATH=$TOOL_DIR/bin:$PATH
 
 cd "$SRCDIR"
 
-COVERITY_SCAN_VERSION=`git describe --always | sed 's|-|.|g'`
+COVERITY_SCAN_VERSION=$(git describe --always | sed 's|-|.|g')
 
 # Prepare build dir
 if [ -f "./bootstrap" ]; then
@@ -149,8 +149,8 @@ fi
 
 # Build
 echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
-cov-build --dir $RESULTS_DIR $COVERITY_SCAN_BUILD_OPTIONS make -j$NPROC V=1
-cov-import-scm --dir $RESULTS_DIR --scm git --log $RESULTS_DIR/scm_log.txt
+cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" V=1
+cov-import-scm --dir "$RESULTS_DIR" --scm git --log "$RESULTS_DIR/scm_log.txt"
 
 cd "${WORKSPACE}"
 
@@ -163,13 +163,13 @@ echo -e "\033[33;1mUploading Coverity Scan Analysis results...\033[0m"
 set +x
 response=$(curl \
   --silent --write-out "\n%{http_code}\n" \
-  --form project=$COVERITY_SCAN_PROJECT_NAME \
-  --form token=$COVERITY_SCAN_TOKEN \
-  --form email=$COVERITY_SCAN_NOTIFICATION_EMAIL \
-  --form file=@$RESULTS_ARCHIVE \
-  --form version=$COVERITY_SCAN_VERSION \
-  --form description=$COVERITY_SCAN_DESCRIPTION \
-  $UPLOAD_URL)
+  --form project="$COVERITY_SCAN_PROJECT_NAME" \
+  --form token="$COVERITY_SCAN_TOKEN" \
+  --form email="$COVERITY_SCAN_NOTIFICATION_EMAIL" \
+  --form file=@"$RESULTS_ARCHIVE" \
+  --form version="$COVERITY_SCAN_VERSION" \
+  --form description="$COVERITY_SCAN_DESCRIPTION" \
+  "$UPLOAD_URL")
 set -x
 status_code=$(echo "$response" | sed -n '$p')
 if [ "$status_code" != "201" ]; then
@@ -177,3 +177,5 @@ if [ "$status_code" != "201" ]; then
   echo -e "\033[33;1mCoverity Scan upload failed: $TEXT.\033[0m"
   exit 1
 fi
+
+# EOF
