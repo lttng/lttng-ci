@@ -272,6 +272,7 @@
     version:
       - stable-1.3
       - stable-1.4
+      - stable-1.5
       - master
     jobs:
       - 'babeltrace_{version}_{buildtype}':
@@ -301,6 +302,7 @@
           conf: !!python/tuple [std]
           version:
             - stable-1.4
+            - stable-1.5
             - master
       - 'babeltrace_{version}_cppcheck'
       - 'babeltrace_{version}_scan-build'
@@ -324,6 +326,7 @@
             - master-staging
             - stable-1.3-staging
             - stable-1.4-staging
+            - stable-1.5-staging
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, static, python-bindings]
