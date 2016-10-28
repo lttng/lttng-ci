@@ -330,4 +330,16 @@
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, static, python-bindings]
+      - 'dev_{user}_babeltrace_{version}_{buildtype}':
+          user: jgalar
+          github_user: jgalar
+          github_name: babeltrace
+          buildtype: macosxbuild
+          version:
+            - master-staging
+            - stable-1.4-staging
+            - stable-1.5-staging
+          arch: !!python/tuple [macosx]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
 
