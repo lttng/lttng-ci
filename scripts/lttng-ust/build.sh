@@ -63,15 +63,13 @@ static)
     CONF_OPTS="--enable-static --disable-shared"
     ;;
 
-java-agent)
-    echo "Java agent build"
+agents)
+    echo "Enable Java agent build"
     export CLASSPATH="/usr/share/java/log4j-1.2.jar"
-    CONF_OPTS="--enable-java-agent-all"
-    ;;
+    CONF_OPTS+=" --enable-java-agent-all --enable-jni-interface"
 
-python-agent)
-    echo "Python agent build"
-    CONF_OPTS="--enable-python-agent"
+    echo "Enable Python agent build"
+    CONF_OPTS+=" --enable-python-agent"
     ;;
 
 *)
@@ -88,9 +86,10 @@ cd "$SRCDIR"
 
 
 # Build type
-# oot : out-of-tree build
-# dist: build via make dist
-# *   : normal tree build
+# oot     : out-of-tree build
+# dist    : build via make dist
+# oot-dist: build via make dist out-of-tree
+# *       : normal tree build
 #
 # Make sure to move to the build_path and configure
 # before continuing
@@ -99,27 +98,52 @@ case "$build" in
 oot)
     echo "Out of tree build"
     BUILD_PATH=$WORKSPACE/oot
+
     mkdir -p "$BUILD_PATH"
     cd "$BUILD_PATH"
+
     "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 dist)
-    echo "Distribution out of tree build"
-    BUILD_PATH="$(mktemp -d)"
+    echo "Distribution tarball in-tree build"
 
     # Initial configure and generate tarball
     "$SRCDIR/configure"
     $MAKE dist
 
-    mkdir -p "$BUILD_PATH"
+    BUILD_PATH="$(mktemp -d)"
     cp ./*.tar.* "$BUILD_PATH/"
     cd "$BUILD_PATH"
 
     # Ignore level 1 of tar
     $TAR xvf ./*.tar.* --strip 1
 
+    # Build in extracted source tree
     "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    ;;
+
+oot-dist)
+    echo "Distribution tarball out of tree build"
+    BUILD_PATH="$(mktemp -d)"
+    cd "$BUILD_PATH"
+
+    # Initial configure and generate tarball
+    "$SRCDIR/configure"
+    $MAKE dist
+
+    NEWSRC_PATH="$(mktemp -d)"
+    cp ./*.tar.* "$NEWSRC_PATH/"
+    cd "$NEWSRC_PATH"
+
+    # Ignore level 1 of tar
+    $TAR xvf ./*.tar.* --strip 1
+
+    BUILD_PATH="$(mktemp -d)"
+    cd "$BUILD_PATH"
+
+    # Build oot from extracted sources
+    "$NEWSRC_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 *)

@@ -14,6 +14,10 @@
       - workspace-cleanup
       - timestamps
       - ansicolor
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
 
     scm:
       - git:
@@ -115,7 +119,7 @@
       - conditional-step:
           condition-kind: regex-match
           label: '$conf'
-          regex: (python-bindings|no-ust)
+          regex: no-ust
           on-evaluation-failure: run
           steps:
             - copyartifact:
@@ -142,7 +146,7 @@
       - conditional-step:
           condition-kind: regex-match
           label: '$conf'
-          regex: (java-agent|python-agent)
+          regex: agents
           on-evaluation-failure: run
           steps:
             - copyartifact:
@@ -362,7 +366,7 @@
 
     builders:
        - copyartifact:
-           project: lttng-tools-{version}/arch=x86-64,build=std,conf=python-agent
+           project: lttng-tools-{version}/arch=x86-64,build=std,conf=agents
            which-build: last-successful
            stable: true
            filter: 'build/**'
@@ -408,7 +412,7 @@
           ustversion: master
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [master]
       - 'lttng-tools_{version}_{buildtype}':
@@ -417,7 +421,7 @@
           ustversion: master
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [master]
       - 'lttng-tools_{version}_{buildtype}':
@@ -453,7 +457,7 @@
           ustversion: stable-2.9
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'lttng-tools_{version}_{buildtype}':
@@ -462,7 +466,7 @@
           ustversion: stable-2.9
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'lttng-tools_{version}_{buildtype}':
@@ -480,7 +484,7 @@
           ustversion: stable-2.8
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'lttng-tools_{version}_{buildtype}':
@@ -489,7 +493,7 @@
           ustversion: stable-2.8
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'lttng-tools_{version}_{buildtype}':
@@ -507,7 +511,7 @@
           ustversion: stable-2.7
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.3]
       - 'lttng-tools_{version}_{buildtype}':
@@ -516,7 +520,7 @@
           ustversion: stable-2.7
           arch: !!python/tuple [armhf, arm64, powerpc]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.3]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -528,7 +532,7 @@
           ustversion: master
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [master]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -540,7 +544,7 @@
           ustversion: stable-2.9
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -552,7 +556,7 @@
           ustversion: stable-2.8
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -564,7 +568,7 @@
           ustversion: stable-2.7
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.3]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -576,7 +580,7 @@
           ustversion: master
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [master]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -588,7 +592,7 @@
           ustversion: stable-2.9
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -600,7 +604,7 @@
           ustversion: stable-2.8
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.4]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -612,7 +616,7 @@
           ustversion: stable-2.7
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, python-bindings, java-agent, python-agent]
+          conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.3]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':

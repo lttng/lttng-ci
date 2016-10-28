@@ -206,7 +206,7 @@
 
     builders:
        - copyartifact:
-           project: lttng-ust-{version}/arch=x86-64,build=std,conf=python-agent
+           project: lttng-ust-{version}/arch=x86-64,build=std,conf=agents
            which-build: last-successful
            stable: true
            filter: 'build/**'
@@ -249,13 +249,13 @@
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, java-agent, python-agent]
+          build: !!python/tuple [std, dist, oot, oot-dist]
+          conf: !!python/tuple [std, agents]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, java-agent, python-agent]
+          conf: !!python/tuple [std, agents]
       - 'lttng-ust_{version}_cppcheck'
       - 'lttng-ust_{version}_scan-build'
       - 'lttng-ust_{version}_coverity':

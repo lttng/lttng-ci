@@ -75,16 +75,16 @@ conf=${conf:-}
 build=${build:-}
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
-TMPDIR="$WORKSPACE/tmp"
+#TMPDIR="$WORKSPACE/tmp"
 PREFIX="$WORKSPACE/build"
 TAPDIR="$WORKSPACE/tap"
 
 
 # Create build and tmp directories
-rm -rf "$PREFIX" "$TMPDIR" "$TAPDIR"
-mkdir -p "$PREFIX" "$TMPDIR" "$TAPDIR"
+rm -rf "$PREFIX" "$TAPDIR"
+mkdir -p "$PREFIX" "$TAPDIR"
 
-export TMPDIR
+#export TMPDIR
 
 # liburcu
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
@@ -200,30 +200,26 @@ static)
     CONF_OPTS="--enable-static --disable-shared"
     ;;
 
-python-bindings)
-    echo "Build with python bindings"
-    # We only support bindings built with Python 3
-    export PYTHON="python3"
-    export PYTHON_CONFIG="/usr/bin/python3-config"
-    CONF_OPTS="--enable-python-bindings"
-    ;;
-
 no-ust)
     echo "Build without UST support"
     CONF_OPTS="$NO_UST"
     ;;
 
-java-agent)
-    echo "Build with Java Agents"
+agents)
+    echo "Enable Java Agents"
     export JAVA_HOME="/usr/lib/jvm/default-java"
     export CLASSPATH="$UST_JAVA/*:/usr/share/java/*"
-    CONF_OPTS="--enable-test-java-agent-all"
-    ;;
+    CONF_OPTS+=" --enable-test-java-agent-all"
 
-python-agent)
-    echo "Build with python agents"
+    echo "Enable Python agents"
     export PYTHONPATH="$UST_PYTHON2:$UST_PYTHON3"
-    CONF_OPTS="--enable-test-python-agent-all"
+    CONF_OPTS+=" --enable-test-python-agent-all"
+
+    echo "Enable Python bindings"
+    # We only support bindings built with Python 3
+    export PYTHON="python3"
+    export PYTHON_CONFIG="/usr/bin/python3-config"
+    CONF_OPTS+=" --enable-python-bindings"
     ;;
 
 relayd-only)
@@ -239,9 +235,10 @@ esac
 
 
 # Build type
-# oot : out-of-tree build
-# dist: build via make dist
-# *   : normal tree build
+# oot     : out-of-tree build
+# dist    : build via make dist
+# oot-dist: build via make dist out-of-tree
+# *       : normal tree build
 #
 # Make sure to move to the build_path and run configure
 # before continuing
@@ -256,21 +253,44 @@ case "$build" in
         ;;
 
     dist)
-        echo "Distribution out of tree build"
-	BUILD_PATH="$(mktemp -d)"
+        echo "Distribution tarball in-tree build"
 
         # Initial configure and generate tarball
         MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
         $MAKE dist
 
-        mkdir -p "$BUILD_PATH"
+        BUILD_PATH="$(mktemp -d)"
         cp ./*.tar.* "$BUILD_PATH/"
         cd "$BUILD_PATH"
 
         # Ignore level 1 of tar
         $TAR xvf ./*.tar.* --strip 1
 
+        # Build in extracted source tree
         MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+        ;;
+
+    oot-dist)
+        echo "Distribution tarball out of tree build"
+        BUILD_PATH="$(mktemp -d)"
+        cd "$BUILD_PATH"
+
+        # Initial configure and generate tarball
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
+        $MAKE dist
+
+        NEWSRC_PATH="$(mktemp -d)"
+        cp ./*.tar.* "$NEWSRC_PATH/"
+        cd "$NEWSRC_PATH"
+
+        # Ignore level 1 of tar
+        $TAR xvf ./*.tar.* --strip 1
+
+        BUILD_PATH="$(mktemp -d)"
+        cd "$BUILD_PATH"
+
+        # Build oot from extracted sources
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$NEWSRC_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     *)

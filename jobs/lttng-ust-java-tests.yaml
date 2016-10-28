@@ -91,14 +91,14 @@
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-ust_${{lttng_ust_version}}_build/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=java-agent,build=std
+          project: lttng-ust_${{lttng_ust_version}}_build/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=agents,build=std
           which-build: last-successful
           stable: true
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-tools_${{lttng_tools_version}}_build/babeltrace_version=master,liburcu_version=${{liburcu_version}},arch=${{arch}},conf=java-agent,build=std
+          project: lttng-tools_${{lttng_tools_version}}_build/babeltrace_version=master,liburcu_version=${{liburcu_version}},arch=${{arch}},conf=agents,build=std
           which-build: last-successful
           stable: true
           filter: 'build/**'
