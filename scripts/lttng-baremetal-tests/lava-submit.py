@@ -320,6 +320,8 @@ def main():
 
     jobid = server.scheduler.submit_job(json.dumps(j))
 
+    print('Lava jobid:{}'.format(jobid))
+
     #Check the status of the job every 30 seconds
     jobstatus = server.scheduler.job_status(jobid)['job_status']
     while jobstatus in 'Submitted' or jobstatus in 'Running':
@@ -332,12 +334,12 @@ def main():
 
     passed, failed=check_job_all_test_cases_state_count(server, jobid)
 
-    print('With {} passed tests and {} failed tests.'.format(passed, failed))
+    print('With {} passed and {} failed Lava test cases.'.format(passed, failed))
 
     if test_type is TestType.tests:
         print_test_output(server, jobid)
 
-    if  failed == 0:
+    if failed == 0:
         return 0
     else:
         return -1
