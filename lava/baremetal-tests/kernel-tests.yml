@@ -1,0 +1,21 @@
+metadata:
+        format: Lava-Test Test Definition 1.0
+        name: lttng-kernel-test
+        description: "Run kernel test suite"
+install:
+        steps:
+                - export TMPDIR="/tmp"
+                - cd
+                - ulimit -c unlimited
+                - mkdir -p coredump
+                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+run:
+        steps:
+                - source /tmp/virtenv/activate
+                - cd /tmp/virtenv/src/lttng-tools
+                - lava-test-case build-test-suite --shell "make"
+                - cd tests
+                - lava-test-case run-tests --shell "./run.sh root_regression"
+                - cd
+                - tar czf coredump.tar.gz coredump
+                - lava-test-case-attach run-benchmarks coredump.tar.gz

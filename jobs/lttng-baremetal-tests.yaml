@@ -1,0 +1,217 @@
+- defaults:
+    name: lttng-baremetal-tests
+
+    logrotate:
+      numToKeep: 5
+
+    project-type: freestyle
+    node: 'master'
+    scm:
+      - git:
+          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
+          branches:
+            - "{lttngversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/lttng-tools
+      - git:
+          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
+          branches:
+            - "{lttngversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/lttng-modules
+      - git:
+          url: git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git
+          branches:
+            - "{kversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/linux
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - throttle:
+          max-total: 3
+          option: 'category'
+          categories:
+            - 'baremetal-tests'
+    publishers:
+      - email:
+          recipients: 'francis.deslauriers@efficios.com'
+
+## Templates
+- job-template:
+    name: baremetal_tests_k{kversion}_l{lttngversion}
+    description: |
+      Runs baremetal kernel tests over different combination of kernel and lttng configurations.
+    defaults: lttng-baremetal-tests
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_FRDESO_TOKEN
+      - inject:
+          properties-content: |
+            TOOLS_BRANCH={lttngversion}
+            UST_BRANCH={lttngversion}
+
+    builders:
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-tests.sh
+
+- job-template:
+    name: baremetal_benchmarks_k{kversion}_l{lttngversion}
+    description: |
+      Runs baremetal kernel benchmarks over different combination of kernel and lttng configurations.
+    defaults: lttng-baremetal-tests
+    logrotate:
+      numToKeep: 5
+
+    scm:
+      - git:
+          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
+          branches:
+            - "{lttngversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/lttng-tools
+      - git:
+          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
+          branches:
+            - "{lttngversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/lttng-modules
+      - git:
+          url: git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git
+          branches:
+            - "{kversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/linux
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_FRDESO_TOKEN
+    builders:
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-benchmarks.sh
+
+- job:
+    name: build_kernel_PARAM
+    description: |
+      Builds a Linux Kernel and LTTng Modules if necessary
+    defaults: global
+    concurrent: true
+
+    logrotate:
+      numToKeep: 2
+    node: 'x86-64'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - file:
+              credential-id: lava_jenkins_storage_frdeso
+              variable: identity_file
+    builders:
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-slave.sh
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/check-build-needs.sh
+      - conditional-step:
+          condition-kind: not
+          condition-operand:
+              condition-kind: file-exists
+              condition-filename: kernel-built.txt
+              condition-basedir: workspace
+          steps:
+              - shell: !include-raw-escape: scripts/lttng-baremetal-tests/build-kernel.sh
+      - conditional-step:
+          condition-kind: not
+          condition-operand:
+              condition-kind: file-exists
+              condition-filename: modules-built.txt
+              condition-basedir: workspace
+          steps:
+              - shell: !include-raw-escape: scripts/lttng-baremetal-tests/build-modules.sh
+
+    parameters:
+      - string:
+          name: 'LTTNG_MODULES_COMMIT_ID'
+          description: 'The lttng-modules commmit to build.'
+      - string:
+          name: 'KERNEL_COMMIT_ID'
+          description: 'The kernel commit to build.'
+      - string:
+          name: 'KGITREPO'
+          description: 'The kernel git repo to fetch from'
+      - string:
+          name: 'STORAGE_KERNEL_FOLDER'
+          description: 'Path to store the Kernel image'
+      - string:
+          name: 'STORAGE_KERNEL_IMAGE'
+          description: 'Path to store the Kernel IMAGE'
+      - string:
+          name: 'STORAGE_LINUX_MODULES'
+          description: 'Path to store the Kernel Modules'
+      - string:
+          name: 'STORAGE_LTTNG_MODULES'
+          description: 'Path to store the LTTng Modules'
+
+## Project
+- project:
+    name: lttng-kernel-tests
+    kversion:
+      - linux-4.4.y
+      - linux-4.8.y
+      - v4.8.1
+    lttngversion:
+      - master
+      - stable-2.8
+      - stable-2.9
+    jobs:
+      - 'baremetal_tests_k{kversion}_l{lttngversion}'
+      - 'baremetal_benchmarks_k{kversion}_l{lttngversion}'
+
+- project:
+    name: lttng-kernel-tests-oldkernel
+    kversion:
+      - linux-3.18.y
+      - linux-4.4.y
+    lttngversion:
+      - stable-2.7
+    jobs:
+      - 'baremetal_tests_k{kversion}_l{lttngversion}':
+      - 'baremetal_benchmarks_k{kversion}_l{lttngversion}':
