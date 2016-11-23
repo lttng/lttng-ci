@@ -90,15 +90,18 @@ def print_test_output(server, job):
                             print('----- TEST SUITE OUTPUT END -----')
                             break
 
-def create_new_job(name):
+def create_new_job(name, build_device):
     job = OrderedDict({
         'health_check': False,
         'job_name': name,
-        'device_type': 'x86',
-        'tags': [ 'dev-sda1' ],
+        'device_type':build_device,
+        'tags': [ ],
         'timeout': 18000,
         'actions': []
     })
+    if build_device in 'x86':
+        job['tags'].append('dev-sda1')
+
     return job
 
 def get_boot_cmd():
@@ -107,7 +110,7 @@ def get_boot_cmd():
         })
     return command
 
-def get_config_cmd():
+def get_config_cmd(build_device):
     packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
             'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
             'libelf-dev', 'libmount-dev', 'libxml2', 'python3-pandas', \
@@ -120,15 +123,21 @@ def get_config_cmd():
                 'route -n',
                 'cat /etc/resolv.conf',
                 'echo nameserver 172.18.0.12 > /etc/resolv.conf',
-                'mount /dev/sda1 /tmp',
-                'rm -rf /tmp/*',
-                'depmod -a',
-                'locale-gen en_US.UTF-8',
-                'apt-get update',
-                'apt-get install -y {}'.format(' '.join(packages)),
+                'groupadd tracing'
                 ]
             }
         })
+    if build_device in 'x86':
+        command['parameters']['commands'].extend([
+                    'mount /dev/sda1 /tmp',
+                    'rm -rf /tmp/*'])
+
+    command['parameters']['commands'].extend([
+                    'depmod -a',
+                    'locale-gen en_US.UTF-8',
+                    'apt-get update',
+                    'apt-get install -y {}'.format(' '.join(packages))
+                ])
     return command
 
 def get_benchmarks_cmd():
@@ -183,7 +192,26 @@ def get_results_cmd(stream_name):
     command['parameters']['stream']='/anonymous/'+stream_name+'/'
     return command
 
-def get_deploy_cmd(jenkins_job, kernel_path, linux_modules_path, lttng_modules_path, nb_iter=None):
+def get_deploy_cmd_kvm(jenkins_job, kernel_path, linux_modules_path, lttng_modules_path):
+    command = OrderedDict({
+            'command': 'deploy_kernel',
+            'metadata': {},
+            'parameters': {
+                'customize': {},
+                'kernel': None,
+                'rootfs': 'file:///var/lib/lava-server/default/media/images/trusty-grub.img.gz',
+                'target_type': 'ubuntu'
+                }
+            })
+
+    command['parameters']['customize'][SCP_PATH+linux_modules_path]=['rootfs:/','archive']
+    command['parameters']['customize'][SCP_PATH+lttng_modules_path]=['rootfs:/','archive']
+    command['parameters']['kernel'] = str(SCP_PATH+kernel_path)
+    command['metadata']['jenkins_jobname'] = jenkins_job
+
+    return command
+
+def get_deploy_cmd_x86(jenkins_job, kernel_path, linux_modules_path, lttng_modules_path, nb_iter=None):
     command = OrderedDict({
             'command': 'deploy_kernel',
             'metadata': {},
@@ -198,14 +226,14 @@ def get_deploy_cmd(jenkins_job, kernel_path, linux_modules_path, lttng_modules_p
     command['parameters']['overlays'].append( str(SCP_PATH+linux_modules_path))
     command['parameters']['overlays'].append( str(SCP_PATH+lttng_modules_path))
     command['parameters']['kernel'] = str(SCP_PATH+kernel_path)
-    command['metadata']['jenkins_jobname'] = jenkins_job    
+    command['metadata']['jenkins_jobname'] = jenkins_job
     if nb_iter is not None:
         command['metadata']['nb_iterations'] = nb_iter
 
     return command
 
 
-def get_env_setup_cmd(lttng_tools_commit, lttng_ust_commit=None):
+def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
     command = OrderedDict({
         'command': 'lava_command_run',
         'parameters': {
@@ -228,9 +256,18 @@ def get_env_setup_cmd(lttng_tools_commit, lttng_ust_commit=None):
                     ' --override projects.lttng-ust.checkout='+lttng_ust_commit+ \
                     ' --profile lttng-ust-no-man-pages'
 
-    vlttng_cmd += " /tmp/virtenv"
+    virtenv_path = None
+    if build_device in 'kvm':
+        virtenv_path = '/root/virtenv'
+    else:
+        virtenv_path = '/tmp/virtenv'
+
+    vlttng_cmd += ' '+virtenv_path
 
     command['parameters']['commands'].append(vlttng_cmd)
+    command['parameters']['commands'].append('ln -s '+virtenv_path+' /root/lttngvenv')
+    command['parameters']['commands'].append('sync')
+
     return command
 
 def main():
@@ -246,12 +283,6 @@ def main():
     parser.add_argument('-uc', '--ust-commit', required=False)
     args = parser.parse_args()
 
-
-    j = create_new_job(args.jobname)
-    j['actions'].append(get_deploy_cmd(args.jobname, args.kernel, args.kmodule, args.lmodule))
-    j['actions'].append(get_boot_cmd())
-    j['actions'].append(get_config_cmd())
-
     if args.type in 'benchmarks':
         test_type = TestType.benchmarks
     elif args.type in 'tests':
@@ -261,14 +292,25 @@ def main():
         return -1
 
     if test_type is TestType.benchmarks:
-        j['actions'].append(get_env_setup_cmd(args.tools_commit))
+        j = create_new_job(args.jobname, build_device='x86')
+        j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
+    elif test_type  is TestType.tests:
+        j = create_new_job(args.jobname, build_device='kvm')
+        j['actions'].append(get_deploy_cmd_kvm(args.jobname, args.kernel, args.kmodule, args.lmodule))
+
+    j['actions'].append(get_boot_cmd())
+
+    if test_type is TestType.benchmarks:
+        j['actions'].append(get_config_cmd('x86'))
+        j['actions'].append(get_env_setup_cmd('x86', args.tools_commit))
         j['actions'].append(get_benchmarks_cmd())
         j['actions'].append(get_results_cmd(stream_name='benchmark-kernel'))
     elif test_type  is TestType.tests:
         if args.ust_commit is None:
             print('Tests runs need -uc/--ust-commit options. Exiting...')
             return -1
-        j['actions'].append(get_env_setup_cmd(args.tools_commit, args.ust_commit))
+        j['actions'].append(get_config_cmd('kvm'))
+        j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
         j['actions'].append(get_tests_cmd())
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     else:

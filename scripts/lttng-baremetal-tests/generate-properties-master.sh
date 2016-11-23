@@ -48,8 +48,9 @@ echo "LTTNG_TOOLS_COMMIT_ID=$LTTNG_TOOLS_COMMIT_ID" >> properties.txt
 
 BASE_STORAGE_FOLDER="/storage/jenkins-lava/baremetal-tests"
 
+echo "BUILD_DEVICE=$BUILD_DEVICE" >> properties.txt
 echo "KGITREPO=git://git-mirror.internal.efficios.com/git/linux-stable.git" >> properties.txt
 echo "STORAGE_KERNEL_FOLDER=$BASE_STORAGE_FOLDER/kernel" >> properties.txt
-echo "STORAGE_KERNEL_IMAGE=$BASE_STORAGE_FOLDER/kernel/$KERNEL_COMMIT_ID.bzImage" >> properties.txt
-echo "STORAGE_LINUX_MODULES=$BASE_STORAGE_FOLDER/modules/linux/$KERNEL_COMMIT_ID.linux.modules.tar.gz" >> properties.txt
-echo "STORAGE_LTTNG_MODULES=$BASE_STORAGE_FOLDER/modules/lttng/$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.lttng.modules.tar.gz" >> properties.txt
+echo "STORAGE_KERNEL_IMAGE=$BASE_STORAGE_FOLDER/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage" >> properties.txt
+echo "STORAGE_LINUX_MODULES=$BASE_STORAGE_FOLDER/modules/linux/$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz" >> properties.txt
+echo "STORAGE_LTTNG_MODULES=$BASE_STORAGE_FOLDER/modules/lttng/$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.gz" >> properties.txt

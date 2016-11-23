@@ -11,11 +11,11 @@ install:
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 run:
         steps:
-                - source /tmp/virtenv/activate
-                - cd /tmp/virtenv/src/lttng-tools
+                - source /root/lttngvenv/activate
+                - cd /root/lttngvenv/src/lttng-tools
                 - lava-test-case build-test-suite --shell "make"
                 - cd tests
-                - lava-test-case run-tests --shell "./run.sh root_regression"
+                - lava-test-case run-tests --shell "prove --verbose --merge --exec '' - < root_regression"
                 - cd
                 - tar czf coredump.tar.gz coredump
                 - lava-test-case-attach run-benchmarks coredump.tar.gz
