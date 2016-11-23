@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 echo 'modules-built.txt does not exist'
-echo 'So we built them against the kernel'
+echo 'So we build them against the kernel'
 
 $SCP_COMMAND "$STORAGE_USER@$STORAGE_HOST:$STORAGE_KERNEL_MODULE_SYMVERS" "$LINUX_PATH/Module.symvers"
 

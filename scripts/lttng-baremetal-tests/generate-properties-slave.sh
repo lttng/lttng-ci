@@ -42,8 +42,8 @@ echo "LTTNG_MODULES_COMMIT_ID=$LTTNG_MODULES_COMMIT_ID" >> properties.txt
 echo "BUILD_NAME=$BUILD_NAME" >> properties.txt
 echo "BUILD_DEVICE=$BUILD_DEVICE" >> properties.txt
 
-echo "STORAGE_KERNEL_MODULE_SYMVERS=$STORAGE_KERNEL_FOLDER/$KERNEL_COMMIT_ID.$BUILD_DEVICE.symvers" >>properties.txt
-echo "STORAGE_KERNEL_CONFIG=$STORAGE_KERNEL_FOLDER/$KERNEL_COMMIT_ID.$BUILD_DEVICE.config" >> properties.txt
+echo "STORAGE_KERNEL_MODULE_SYMVERS=$STORAGE_KERNEL_FOLDER/symvers/$KERNEL_COMMIT_ID.$BUILD_DEVICE.symvers" >>properties.txt
+echo "STORAGE_KERNEL_CONFIG=$STORAGE_KERNEL_FOLDER/config/$KERNEL_COMMIT_ID.$BUILD_DEVICE.config" >> properties.txt
 
 echo "STORAGE_HOST=storage01.internal.efficios.com" >> properties.txt
 echo "STORAGE_USER=jenkins-lava" >> properties.txt
