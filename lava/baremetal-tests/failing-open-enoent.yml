@@ -6,6 +6,9 @@ params:
     JENKINS_JOBNAME: "default jobname"
 
 install:
+        deps:
+                - python3-pandas
+                - python3-numpy
         git-repos:
                 - url: https://github.com/frdeso/syscall-bench-it.git
                   destination: benchmarks
