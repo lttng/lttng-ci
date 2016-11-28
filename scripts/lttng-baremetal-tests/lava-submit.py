@@ -332,16 +332,16 @@ def main():
         time.sleep(30)
         jobstatus = server.scheduler.job_status(jobid)['job_status']
 
-    print('Job ended with {} status.'.format(jobstatus))
-    if jobstatus not in 'Complete':
-        return -1
-
     passed, failed=check_job_all_test_cases_state_count(server, jobid)
-
-    print('With {} passed and {} failed Lava test cases.'.format(passed, failed))
 
     if test_type is TestType.tests:
         print_test_output(server, jobid)
+
+    print('Job ended with {} status.'.format(jobstatus))
+    if jobstatus not in 'Complete':
+        return -1
+    else:
+        print('With {} passed and {} failed Lava test cases.'.format(passed, failed))
 
     if failed == 0:
         return 0
