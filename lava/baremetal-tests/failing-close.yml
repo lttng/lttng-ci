@@ -20,7 +20,7 @@ install:
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 run:
         steps:
-                - source /tmp/virtenv/activate
+                - source /root/lttngvenv/activate
                 - cd benchmarks
                 - lava-test-case build-benchmarks --shell "make"
                 - lava-test-case run-benchmarks --shell "./run.sh failing-close"

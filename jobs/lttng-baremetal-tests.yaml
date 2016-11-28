@@ -36,12 +36,6 @@
       - pollscm:
           cron: "@hourly"
 
-    properties:
-      - throttle:
-          max-total: 3
-          option: 'category'
-          categories:
-            - 'baremetal-tests'
     publishers:
       - email:
           recipients: 'francis.deslauriers@efficios.com'
@@ -52,6 +46,12 @@
     description: |
       Runs baremetal kernel tests over different combination of kernel and lttng configurations.
     defaults: lttng-baremetal-tests
+    properties:
+      - throttle:
+          max-total: 2
+          option: 'category'
+          categories:
+            - 'kvm-tests'
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -64,6 +64,7 @@
           properties-content: |
             TOOLS_BRANCH={lttngversion}
             UST_BRANCH={lttngversion}
+            BUILD_DEVICE=kvm
 
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
@@ -83,6 +84,12 @@
     logrotate:
       numToKeep: 5
 
+    properties:
+      - throttle:
+          max-total: 2
+          option: 'category'
+          categories:
+            - 'baremetal-tests'
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
@@ -116,6 +123,9 @@
           - text:
               credential-id: jenkins_lava_key
               variable: LAVA_FRDESO_TOKEN
+      - inject:
+          properties-content: |
+            BUILD_DEVICE=baremetal
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
       - trigger-builds:
@@ -189,6 +199,9 @@
       - string:
           name: 'STORAGE_LTTNG_MODULES'
           description: 'Path to store the LTTng Modules'
+      - string:
+          name: 'BUILD_DEVICE'
+          description: 'The target device. (kvm or baremetal)'
 
 ## Project
 - project:

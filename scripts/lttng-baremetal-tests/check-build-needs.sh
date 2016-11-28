@@ -47,9 +47,13 @@ if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
   popd
 
   git clone https://github.com/lttng/lttng-ci "$LTTNG_CI_PATH"
-  cp "$LTTNG_CI_PATH"/lava/kernel/vanilla/x86_64_server.config "$LINUX_PATH"/.config
-
+  cp "$LTTNG_CI_PATH"/lava/kernel/vanilla/x86_64_server.config "$LINUX_PATH/.config"
   make --directory="$LINUX_PATH" olddefconfig
+
+  if [ $BUILD_DEVICE = 'kvm' ] ; then
+    make --directory="$LINUX_PATH" kvmconfig
+  fi
+
   make --directory="$LINUX_PATH" modules_prepare
 fi
 
