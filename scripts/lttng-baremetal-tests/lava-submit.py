@@ -126,8 +126,6 @@ def get_config_cmd(build_device):
         'command': 'lava_command_run',
         'parameters': {
             'commands': [
-                'ifup eth0',
-                'route -n',
                 'cat /etc/resolv.conf',
                 'echo nameserver 172.18.0.12 > /etc/resolv.conf',
                 'groupadd tracing'
