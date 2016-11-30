@@ -261,7 +261,7 @@ def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
             }
         })
 
-    vlttng_cmd = 'vlttng --jobs=16 --profile urcu-master' \
+    vlttng_cmd = 'vlttng --jobs=$(nproc) --profile urcu-master' \
                     ' --profile babeltrace-stable-1.4 ' \
                     ' --profile lttng-tools-master' \
                     ' --override projects.lttng-tools.checkout='+lttng_tools_commit + \
