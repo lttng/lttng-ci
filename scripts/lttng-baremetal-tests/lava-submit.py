@@ -252,6 +252,7 @@ def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
         'parameters': {
             'commands': [
                 'pip3 install --upgrade pip',
+                'hash -r',
                 'git clone https://github.com/frdeso/syscall-bench-it.git bm',
                 'pip3 install vlttng',
                         ],
