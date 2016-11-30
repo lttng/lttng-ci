@@ -143,6 +143,7 @@ def get_config_cmd(build_device):
                     'depmod -a',
                     'locale-gen en_US.UTF-8',
                     'apt-get update',
+                    'apt-get upgrade',
                     'apt-get install -y {}'.format(' '.join(packages))
                 ])
     return command
@@ -211,8 +212,10 @@ def get_deploy_cmd_kvm(jenkins_job, kernel_path, linux_modules_path, lttng_modul
             'parameters': {
                 'customize': {},
                 'kernel': None,
-                'rootfs': 'file:///var/lib/lava-server/default/media/images/trusty-grub.img.gz',
-                'target_type': 'ubuntu'
+                'target_type': 'ubuntu',
+                'rootfs': 'file:///var/lib/lava-server/default/media/images/xenial.img.gz',
+                'login_prompt': 'kvm02 login:',
+                'username': 'root'
                 }
             })
 
@@ -250,6 +253,7 @@ def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
         'command': 'lava_command_run',
         'parameters': {
             'commands': [
+                'pip3 install --upgrade pip',
                 'git clone https://github.com/frdeso/syscall-bench-it.git bm',
                 'pip3 install vlttng',
                         ],
