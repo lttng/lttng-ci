@@ -20,7 +20,7 @@ git clone https://github.com/lttng/lttng-ci
 
 set +x
 python lttng-ci/scripts/lttng-baremetal-tests/lava-submit.py \
-                          -t tests \
+                          -t kvm-tests \
                           -j "$JOB_NAME" \
                           -l "$LAVA_FRDESO_TOKEN" \
                           -k "$STORAGE_KERNEL_IMAGE" \

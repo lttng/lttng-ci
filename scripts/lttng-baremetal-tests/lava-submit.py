@@ -29,8 +29,9 @@ HOSTNAME = 'lava-master.internal.efficios.com'
 SCP_PATH = 'scp://jenkins-lava@storage.internal.efficios.com'
 
 class TestType(Enum):
-    benchmarks=1
-    tests=2
+    baremetal_benchmarks=1
+    baremetal_tests=2
+    kvm_tests=3
 
 def get_job_bundle_content(server, job):
     bundle_sha = server.scheduler.job_status(str(job))['bundle_sha1']
@@ -121,7 +122,7 @@ def get_boot_cmd():
 def get_config_cmd(build_device):
     packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
             'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
-            'libelf-dev', 'libmount-dev', 'libxml2']
+            'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev']
     command = OrderedDict({
         'command': 'lava_command_run',
         'parameters': {
@@ -146,7 +147,7 @@ def get_config_cmd(build_device):
                 ])
     return command
 
-def get_benchmarks_cmd():
+def get_baremetal_benchmarks_cmd():
     command = OrderedDict({
         'command': 'lava_test_shell',
         'parameters': {
@@ -165,7 +166,18 @@ def get_benchmarks_cmd():
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/failing-open-enoent.yml'
-                },
+                }
+                ],
+            'timeout': 18000
+            }
+        })
+    return command
+
+def get_baremetal_tests_cmd():
+    command = OrderedDict({
+        'command': 'lava_test_shell',
+        'parameters': {
+            'testdef_repos': [
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
@@ -177,7 +189,7 @@ def get_benchmarks_cmd():
         })
     return command
 
-def get_tests_cmd():
+def get_kvm_tests_cmd():
     command = OrderedDict({
         'command': 'lava_test_shell',
         'parameters': {
@@ -298,35 +310,48 @@ def main():
     parser.add_argument('-uc', '--ust-commit', required=False)
     args = parser.parse_args()
 
-    if args.type in 'benchmarks':
-        test_type = TestType.benchmarks
-    elif args.type in 'tests':
-        test_type = TestType.tests
+    if args.type in 'baremetal-benchmarks':
+        test_type = TestType.baremetal_benchmarks
+    elif args.type in 'baremetal-tests':
+        test_type = TestType.baremetal_tests
+    elif args.type in 'kvm-tests':
+        test_type = TestType.kvm_tests
     else:
         print('argument -t/--type {} unrecognized. Exiting...'.format(args.type))
         return -1
 
-    if test_type is TestType.benchmarks:
+    if test_type is TestType.baremetal_benchmarks:
         j = create_new_job(args.jobname, build_device='x86')
         j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
-    elif test_type  is TestType.tests:
+    elif test_type is TestType.baremetal_tests:
+        j = create_new_job(args.jobname, build_device='x86')
+        j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
+    elif test_type  is TestType.kvm_tests:
         j = create_new_job(args.jobname, build_device='kvm')
         j['actions'].append(get_deploy_cmd_kvm(args.jobname, args.kernel, args.kmodule, args.lmodule))
 
     j['actions'].append(get_boot_cmd())
 
-    if test_type is TestType.benchmarks:
+    if test_type is TestType.baremetal_benchmarks:
         j['actions'].append(get_config_cmd('x86'))
         j['actions'].append(get_env_setup_cmd('x86', args.tools_commit))
-        j['actions'].append(get_benchmarks_cmd())
+        j['actions'].append(get_baremetal_benchmarks_cmd())
         j['actions'].append(get_results_cmd(stream_name='benchmark-kernel'))
-    elif test_type  is TestType.tests:
+    elif test_type is TestType.baremetal_tests:
+        if args.ust_commit is None:
+            print('Tests runs need -uc/--ust-commit options. Exiting...')
+            return -1
+        j['actions'].append(get_config_cmd('x86'))
+        j['actions'].append(get_env_setup_cmd('x86', args.tools_commit, args.ust_commit))
+        j['actions'].append(get_baremetal_tests_cmd())
+        j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
+    elif test_type  is TestType.kvm_tests:
         if args.ust_commit is None:
             print('Tests runs need -uc/--ust-commit options. Exiting...')
             return -1
         j['actions'].append(get_config_cmd('kvm'))
         j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
-        j['actions'].append(get_tests_cmd())
+        j['actions'].append(get_kvm_tests_cmd())
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     else:
         assert False, 'Unknown test type'
@@ -345,7 +370,7 @@ def main():
 
     passed, failed=check_job_all_test_cases_state_count(server, jobid)
 
-    if test_type is TestType.tests:
+    if test_type is TestType.kvm_tests:
         print_test_output(server, jobid)
 
     print('Job ended with {} status.'.format(jobstatus))
