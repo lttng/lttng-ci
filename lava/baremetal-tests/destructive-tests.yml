@@ -1,0 +1,24 @@
+metadata:
+        format: Lava-Test Test Definition 1.0
+        name: lttng-destructive-tests
+        description: "Run root destructive test suite"
+install:
+        steps:
+                - export TMPDIR="/tmp"
+                - cd
+                - systemctl stop systemd-timesyncd.service
+                - ulimit -c unlimited
+                - mkdir -p coredump
+                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+run:
+        steps:
+                - source /root/lttngvenv/activate
+                - cd /root/lttngvenv/src/lttng-tools
+                - lava-test-case build-test-suite --shell "make"
+                - export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
+                - cd tests
+                #Need to check if the file is present for branches where the testcase was not backported
+                - lava-test-case run-tests --shell "if [ -e root_destructive_tests ]; then prove --verbose --merge --exec '' - < root_destructive_tests; else echo 'root_destructive_tests not found'; fi"
+                - cd
+                - tar czf coredump.tar.gz coredump
+                - lava-test-case-attach run-benchmarks coredump.tar.gz

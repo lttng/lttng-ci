@@ -198,6 +198,11 @@ def get_kvm_tests_cmd():
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/kernel-tests.yml'
+                },
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
+                    'testdef': 'lava/baremetal-tests/destructive-tests.yml'
                 }
                 ],
             'timeout': 18000
