@@ -34,8 +34,11 @@ class TestType(Enum):
     kvm_tests=3
 
 def get_job_bundle_content(server, job):
-    bundle_sha = server.scheduler.job_status(str(job))['bundle_sha1']
-    bundle = server.dashboard.get(bundle_sha)
+    try:
+        bundle_sha = server.scheduler.job_status(str(job))['bundle_sha1']
+        bundle = server.dashboard.get(bundle_sha)
+    except Fault as f:
+        print 'Error while fetching results bundle', f
 
     return json.loads(bundle['content'])
 
@@ -375,7 +378,7 @@ def main():
 
     passed, failed=check_job_all_test_cases_state_count(server, jobid)
 
-    if test_type is TestType.kvm_tests:
+    if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
         print_test_output(server, jobid)
 
     print('Job ended with {} status.'.format(jobstatus))
