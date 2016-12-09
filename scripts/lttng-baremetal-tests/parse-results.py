@@ -1,8 +1,10 @@
 #! /usr/bin/python3
 from subprocess import call
-import sys
+from collections import defaultdict
+import csv
 import numpy as np
 import pandas as pd
+import sys
 
 def test_case(df):
     df['nsecperiter']=(df['duration']*1000)/(df['nbiter'])
@@ -17,7 +19,6 @@ def test_case(df):
     tmp = mean.merge(stdev)
     tmp = tmp.merge(mem_mean)
     tmp = tmp.merge(mem_stdev)
-
 
     for i, row in tmp.iterrows():
         testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'pereventmean'])
@@ -40,6 +41,7 @@ def test_case(df):
 def main():
     results_file=sys.argv[1]
     df = pd.read_csv(results_file)
+    results=defaultdict()
     data = test_case(df)
     for res in data:
         call(
@@ -48,6 +50,16 @@ def main():
             '--result', res['result'],
             '--measurement', res['measurement'],
             '--units', res['units']])
+
+        # Save the results to write to the CSV file
+        if 'pereventmean' in res['name']:
+            results[res['name']]=res['measurement']
+
+    # Write the dictionnary to a csv file where each key is a column
+    with open('processed_results.csv', 'w') as output_csv:
+        dict_csv_write=csv.DictWriter(output_csv, results.keys())
+        dict_csv_write.writeheader()
+        dict_csv_write.writerow(results)
 
 if __name__ == '__main__':
     main()
