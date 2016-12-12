@@ -66,6 +66,31 @@ def check_job_all_test_cases_state_count(server, job):
                     failed_tests+=1
     return (passed_tests, failed_tests)
 
+# Get the benchmark results from the lava bundle
+# save them as CSV files localy
+def fetch_benchmark_results(server, job):
+    content = get_job_bundle_content(server, job)
+    testcases = ['processed_results_close.csv', 'processed_results_open_enoent.csv', 'processed_results_open_efault.csv']
+
+    # The result bundle is a large JSON containing the results of every testcase
+    # of the LAVA job as well as the files that were attached during the run.
+    # We need to iterate over this JSON to get the base64 representation of the
+    # benchmark results produced during the run.
+    for run in content['test_runs']:
+        # We only care of the benchmark testcases
+        if 'benchmark-syscall-' in run['test_id']:
+            if 'test_results' in run:
+                for res in run['test_results']:
+                    if 'attachments' in res:
+                        for a in res['attachments']:
+                            # We only save the results file
+                            if a['pathname'] in testcases:
+                                with open(a['pathname'],'w') as f:
+                                    # Convert the b64 representation of the
+                                    # result file and write it to a file
+                                    # in the current working directory
+                                    f.write(base64.b64decode(a['content']))
+
 # Parse the attachment of the testcase to fetch the stdout of the test suite
 def print_test_output(server, job):
     content = get_job_bundle_content(server, job)
@@ -380,6 +405,8 @@ def main():
 
     if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
         print_test_output(server, jobid)
+    elif test_type is TestType.baremetal_benchmarks:
+        fetch_benchmark_results(server, jobid)
 
     print('Job ended with {} status.'.format(jobstatus))
     if jobstatus not in 'Complete':

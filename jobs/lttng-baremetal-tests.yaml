@@ -31,8 +31,16 @@
             UST_BRANCH={lttngversion}
             BUILD_DEVICE=baremetal
     publishers:
+      - archive:
+          artifacts: '*.png,*.csv'
+          stable: true
+          do-not-fingerprint: true
       - email:
           recipients: 'francis.deslauriers@efficios.com'
+      - image-gallery:
+        - gallery-type: archived-images-gallery
+          title: Results
+          includes: '*.png'
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
@@ -68,6 +76,7 @@
       - inject:
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
+
 
 
 - defaults:
