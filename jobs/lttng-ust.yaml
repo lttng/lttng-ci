@@ -72,7 +72,7 @@
       - copyartifact:
           project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
@@ -142,7 +142,7 @@
       - copyartifact:
           project: liburcu_master_build/arch=x86-64,conf=std,build=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
@@ -179,7 +179,7 @@
       - copyartifact:
           project: liburcu_master_build/arch=x86-64,conf=std,build=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
@@ -208,7 +208,7 @@
        - copyartifact:
            project: lttng-ust-{version}/arch=x86-64,build=std,conf=agents
            which-build: last-successful
-           stable: true
+           stable: false
            filter: 'build/**'
            target: 'deps/lttng-ust'
            do-not-fingerprint: true

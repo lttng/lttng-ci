@@ -51,28 +51,28 @@
       - copyartifact:
           project: liburcu_master_build/arch=x86-64,build=std,conf=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - copyartifact:
           project: babeltrace_master_build/arch=x86-64,build=std,conf=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/babeltrace'
           do-not-fingerprint: true
       - copyartifact:
           project: lttng-tools_master_build/arch=x86-64,babeltrace_version=master,build=std,conf=python-bindings,liburcu_version=master
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/lttng-tools'
           do-not-fingerprint: true
       - copyartifact:
           project: lttng-ust_master_build/arch=x86-64,build=std,conf=std,liburcu_version=master/
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/lttng-ust'
           do-not-fingerprint: true

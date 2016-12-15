@@ -202,7 +202,7 @@
        - copyartifact:
            project: babeltrace_{version}_build/arch=x86-64,build=std,conf=python-bindings
            which-build: last-successful
-           stable: true
+           stable: false
            filter: 'build/**'
            target: 'deps/babeltrace'
        - shell:

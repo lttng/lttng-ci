@@ -86,28 +86,28 @@
       - copyartifact:
           project: liburcu_${{liburcu_version}}_build/arch=${{arch}},conf=std,build=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
           project: lttng-ust_${{lttng_ust_version}}_build/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=agents,build=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
           project: lttng-tools_${{lttng_tools_version}}_build/babeltrace_version=master,liburcu_version=${{liburcu_version}},arch=${{arch}},conf=agents,build=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
           project: babeltrace_master_build/arch=${{arch}},conf=std,build=std
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true

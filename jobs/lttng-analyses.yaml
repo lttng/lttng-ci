@@ -60,7 +60,7 @@
       - copyartifact:
           project: babeltrace_${{babeltrace_version}}_build/arch=${{arch}},build=std,conf=python-bindings
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/babeltrace'
       - shell:
@@ -90,7 +90,7 @@
        - copyartifact:
            project: babeltrace_master_build/arch=x86-64,build=std,conf=python-bindings
            which-build: last-successful
-           stable: true
+           stable: false
            filter: 'build/**'
            target: 'deps/babeltrace'
        - shell:

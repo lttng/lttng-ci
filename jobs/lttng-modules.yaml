@@ -54,7 +54,7 @@
       - copyartifact:
           project: kernel_{kversion}_{buildtype}/arch=$arch
           which-build: last-successful
-          stable: true
+          stable: false
           filter: 'build/**'
           target: 'deps/linux'
           do-not-fingerprint: true
