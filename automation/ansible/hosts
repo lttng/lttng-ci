@@ -1,7 +1,7 @@
 localhost ansible_connection=local
 
 [hosts]
-cloud01.internal.efficios.com
+#cloud01.internal.efficios.com
 cloud02.internal.efficios.com
 cloud03.internal.efficios.com
 cloud04.internal.efficios.com
@@ -18,7 +18,7 @@ ci-node-armhf-02
 ci-slave-arm64-01
 
 [slave-powerpc]
-ci-slave-powerpc-01
+ci-node-powerpc-01
 
 [slave-ppc64el]
 140.211.168.84
