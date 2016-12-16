@@ -1,0 +1,24 @@
+metadata:
+        format: Lava-Test Test Definition 1.0
+        name: lttng-perf-tests
+        description: "Run perf regression test suite"
+install:
+        deps:
+                - libpfm4-dev
+        steps:
+                - export TMPDIR="/tmp"
+                - cd
+                - ulimit -c unlimited
+                - mkdir -p coredump
+                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+run:
+        steps:
+                - source /root/lttngvenv/activate
+                - cd /root/lttngvenv/src/lttng-tools
+                - lava-test-case build-test-suite --shell "make"
+                - cd tests
+                #Need to check if the file is present for branches where the testcase was not backported
+                - lava-test-case run-tests --shell "if [ -e perf_regression ]; then prove --verbose --merge --exec '' - < perf_regression; else echo 'perf_regression not found'; fi"
+                - cd
+                - tar czf coredump.tar.gz coredump
+                - lava-test-case-attach run-benchmarks coredump.tar.gz
