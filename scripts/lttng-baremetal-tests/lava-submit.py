@@ -338,7 +338,6 @@ def main():
     parser.add_argument('-k', '--kernel', required=True)
     parser.add_argument('-km', '--kmodule', required=True)
     parser.add_argument('-lm', '--lmodule', required=True)
-    parser.add_argument('-l', '--lava-key', required=True)
     parser.add_argument('-tc', '--tools-commit', required=True)
     parser.add_argument('-uc', '--ust-commit', required=False)
     args = parser.parse_args()
@@ -351,6 +350,13 @@ def main():
         test_type = TestType.kvm_tests
     else:
         print('argument -t/--type {} unrecognized. Exiting...'.format(args.type))
+        return -1
+
+    lava_api_key = None
+    try:
+        lava_api_key = os.environ['LAVA_FRDESO_TOKEN']
+    except Exception, e:
+        print('LAVA_FRDESO_TOKEN not found in the environment variable. Exiting...')
         return -1
 
     if test_type is TestType.baremetal_benchmarks:
@@ -389,7 +395,7 @@ def main():
     else:
         assert False, 'Unknown test type'
 
-    server = xmlrpclib.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, args.lava_key, HOSTNAME))
+    server = xmlrpclib.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME))
 
     jobid = server.scheduler.submit_job(json.dumps(j))
 
