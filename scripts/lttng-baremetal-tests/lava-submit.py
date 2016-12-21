@@ -397,7 +397,11 @@ def main():
 
     #Check the status of the job every 30 seconds
     jobstatus = server.scheduler.job_status(jobid)['job_status']
+    not_running = False
     while jobstatus in 'Submitted' or jobstatus in 'Running':
+        if not_running is False and jobstatus in 'Running':
+            print('Job started running')
+            not_running = True
         time.sleep(30)
         jobstatus = server.scheduler.job_status(jobid)['job_status']
 
