@@ -56,14 +56,14 @@
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - copyartifact:
-          project: babeltrace_master_build/arch=x86-64,build=std,conf=std
+          project: babeltrace_{babeltrace_version}_build/arch=x86-64,build=std,conf=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps/babeltrace'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-tools_master_build/arch=x86-64,babeltrace_version=master,build=std,conf=python-bindings,liburcu_version=master
+          project: lttng-tools_master_build/arch=x86-64,babeltrace_version={babeltrace_version},build=std,conf=agents,liburcu_version=master
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -127,4 +127,5 @@
     jobs:
       - 'lttng-ust-benchmarks_{version}_{buildtype}':
           buildtype: build
+          babeltrace_version: stable-1.5
 

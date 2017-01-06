@@ -414,7 +414,7 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: master
@@ -423,7 +423,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: macosxbuild
           version: master
@@ -432,7 +432,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: macosxbuild
           version: stable-2.9
@@ -441,7 +441,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.4]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: solarisbuild
           version: master
@@ -450,7 +450,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: stable-2.9
@@ -459,7 +459,7 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.4]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.9
@@ -468,7 +468,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.4]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: solarisbuild
           version: stable-2.9
@@ -477,7 +477,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.4]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: stable-2.8
@@ -534,7 +534,7 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           user: jgalar
           github_user: jgalar
@@ -546,7 +546,7 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.4]
+          babelversion: !!python/tuple [stable-1.5]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           user: jgalar
           github_user: jgalar
@@ -582,7 +582,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           user: jgalar
           github_user: jgalar
@@ -594,7 +594,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.4]
+          babelversion: !!python/tuple [stable-1.5]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           user: jgalar
           github_user: jgalar
@@ -630,7 +630,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           user: jgalar
           github_user: jgalar
@@ -642,7 +642,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_cppcheck'
       - 'lttng-tools_{version}_scan-build':
           version: master

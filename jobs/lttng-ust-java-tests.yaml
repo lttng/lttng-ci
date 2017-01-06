@@ -98,14 +98,14 @@
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-tools_${{lttng_tools_version}}_build/babeltrace_version=master,liburcu_version=${{liburcu_version}},arch=${{arch}},conf=agents,build=std
+          project: lttng-tools_${{lttng_tools_version}}_build/babeltrace_version={babeltrace_version},liburcu_version=${{liburcu_version}},arch=${{arch}},conf=agents,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
-          project: babeltrace_master_build/arch=${{arch}},conf=std,build=std
+          project: babeltrace_{babeltrace_version}_build/arch=${{arch}},conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -157,6 +157,7 @@
       - master
     lttng_tools_version:
       - master
+    babeltrace_version: stable-1.5
     jobs:
       - 'lttng-ust-java-tests_{version}_build':
           arch: !!python/tuple [x86-32, x86-64]
