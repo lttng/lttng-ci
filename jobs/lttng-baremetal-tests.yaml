@@ -76,6 +76,7 @@
       - inject:
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/summarize-results.sh
 
 - defaults:
     name: vm_tests
