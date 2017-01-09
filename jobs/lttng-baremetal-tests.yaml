@@ -77,8 +77,6 @@
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
 
-
-
 - defaults:
     name: kvm_tests
     description: |
@@ -299,26 +297,7 @@
             - "master"
           fastpoll: true
           basedir: src/linux
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor
-      - credentials-binding:
-          - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_FRDESO_TOKEN
-      - inject:
-          properties-content: |
-            BUILD_DEVICE=baremetal
-    builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
-      - trigger-builds:
-        - project: "build_kernel_PARAM"
-          property-file: 'properties.txt'
-          block: true
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
+
 - job-template:
     name: baremetal_benchmarks_kmainline_l{lttngversion}
     defaults: baremetal_benchmarks
@@ -349,26 +328,6 @@
             - "master"
           fastpoll: true
           basedir: src/linux
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor
-      - credentials-binding:
-          - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_FRDESO_TOKEN
-      - inject:
-          properties-content: |
-            BUILD_DEVICE=baremetal
-    builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
-      - trigger-builds:
-        - project: "build_kernel_PARAM"
-          property-file: 'properties.txt'
-          block: true
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
 
 - job:
     name: build_kernel_PARAM
