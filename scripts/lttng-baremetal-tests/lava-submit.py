@@ -20,7 +20,7 @@ import json
 import os
 import sys
 import time
-import xmlrpclib
+import xmlrpc.client
 from collections import OrderedDict
 from enum import Enum
 
@@ -37,8 +37,8 @@ def get_job_bundle_content(server, job):
     try:
         bundle_sha = server.scheduler.job_status(str(job))['bundle_sha1']
         bundle = server.dashboard.get(bundle_sha)
-    except Fault as f:
-        print 'Error while fetching results bundle', f
+    except xmlrpc.client.Fault as f:
+        print('Error while fetching results bundle', f.faultString)
 
     return json.loads(bundle['content'])
 
@@ -85,7 +85,7 @@ def fetch_benchmark_results(server, job):
                         for a in res['attachments']:
                             # We only save the results file
                             if a['pathname'] in testcases:
-                                with open(a['pathname'],'w') as f:
+                                with open(a['pathname'],'wb') as f:
                                     # Convert the b64 representation of the
                                     # result file and write it to a file
                                     # in the current working directory
@@ -103,7 +103,7 @@ def print_test_output(server, job):
 
                     # Decode the base64 file and split on newlines to iterate
                     # on list
-                    testoutput = base64.b64decode(attachment['content']).split('\n')
+                    testoutput = str(base64.b64decode(bytes(attachment['content'], encoding='UTF-8'))).split('\n')
 
                     # Create a generator to iterate on the lines and keeping
                     # the state of the iterator across the two loops.
@@ -355,8 +355,8 @@ def main():
     lava_api_key = None
     try:
         lava_api_key = os.environ['LAVA_FRDESO_TOKEN']
-    except Exception, e:
-        print('LAVA_FRDESO_TOKEN not found in the environment variable. Exiting...')
+    except Exception as e:
+        print('LAVA_FRDESO_TOKEN not found in the environment variable. Exiting...', e )
         return -1
 
     if test_type is TestType.baremetal_benchmarks:
@@ -395,7 +395,7 @@ def main():
     else:
         assert False, 'Unknown test type'
 
-    server = xmlrpclib.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME))
+    server = xmlrpc.client.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME))
 
     jobid = server.scheduler.submit_job(json.dumps(j))
 
