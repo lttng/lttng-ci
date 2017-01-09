@@ -16,7 +16,7 @@
           categories:
             - 'baremetal-tests'
     project-type: freestyle
-    node: 'master'
+    node: 'x86-64'
     wrappers:
       - workspace-cleanup
       - timestamps
