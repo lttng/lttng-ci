@@ -411,8 +411,6 @@ def main():
         time.sleep(30)
         jobstatus = server.scheduler.job_status(jobid)['job_status']
 
-    passed, failed=check_job_all_test_cases_state_count(server, jobid)
-
     if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
         print_test_output(server, jobid)
     elif test_type is TestType.baremetal_benchmarks:
@@ -422,12 +420,13 @@ def main():
     if jobstatus not in 'Complete':
         return -1
     else:
+        passed, failed=check_job_all_test_cases_state_count(server, jobid)
         print('With {} passed and {} failed Lava test cases.'.format(passed, failed))
 
-    if failed == 0:
-        return 0
-    else:
-        return -1
+        if failed == 0:
+            return 0
+        else:
+            return -1
 
 if __name__ == "__main__":
     sys.exit(main())
