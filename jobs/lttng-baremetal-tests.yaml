@@ -137,6 +137,11 @@
     publishers:
       - email:
           recipients: 'francis.deslauriers@efficios.com'
+      - ircbot:
+          strategy: new-failure-and-fixed
+          channels:
+            - name: '#lttng'
+
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
       - trigger-builds:
@@ -206,6 +211,10 @@
     publishers:
       - email:
           recipients: 'francis.deslauriers@efficios.com'
+      - ircbot:
+          strategy: new-failure-and-fixed
+          channels:
+            - name: '#lttng'
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
       - trigger-builds:
