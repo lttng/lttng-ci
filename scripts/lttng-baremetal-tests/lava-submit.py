@@ -150,7 +150,8 @@ def get_boot_cmd():
 def get_config_cmd(build_device):
     packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
             'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
-            'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev']
+            'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
+            'libnuma-dev']
     command = OrderedDict({
         'command': 'lava_command_run',
         'parameters': {
