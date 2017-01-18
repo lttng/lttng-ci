@@ -354,9 +354,9 @@ def main():
 
     lava_api_key = None
     try:
-        lava_api_key = os.environ['LAVA_FRDESO_TOKEN']
+        lava_api_key = os.environ['LAVA_JENKINS_TOKEN']
     except Exception as e:
-        print('LAVA_FRDESO_TOKEN not found in the environment variable. Exiting...', e )
+        print('LAVA_JENKINS_TOKEN not found in the environment variable. Exiting...', e )
         return -1
 
     if test_type is TestType.baremetal_benchmarks:

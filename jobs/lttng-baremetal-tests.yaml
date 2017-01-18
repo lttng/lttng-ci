@@ -24,7 +24,7 @@
       - credentials-binding:
           - text:
               credential-id: jenkins_lava_key
-              variable: LAVA_FRDESO_TOKEN
+              variable: LAVA_JENKINS_TOKEN
       - inject:
           properties-content: |
             TOOLS_BRANCH={lttngversion}
@@ -102,7 +102,7 @@
       - credentials-binding:
           - text:
               credential-id: jenkins_lava_key
-              variable: LAVA_FRDESO_TOKEN
+              variable: LAVA_JENKINS_TOKEN
       - inject:
           properties-content: |
             BUILD_DEVICE=kvm
@@ -177,7 +177,7 @@
       - credentials-binding:
           - text:
               credential-id: jenkins_lava_key
-              variable: LAVA_FRDESO_TOKEN
+              variable: LAVA_JENKINS_TOKEN
       - inject:
           properties-content: |
             UST_BRANCH={lttngversion}
