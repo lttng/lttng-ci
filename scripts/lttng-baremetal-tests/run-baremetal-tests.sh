@@ -18,11 +18,9 @@ echo 'At this point, we built the modules and kernel if we needed to.'
 echo 'We can now launch the lava job using those artefacts'
 git clone https://github.com/lttng/lttng-ci
 
-set +x
-python lttng-ci/scripts/lttng-baremetal-tests/lava-submit.py \
+python3 -u lttng-ci/scripts/lttng-baremetal-tests/lava-submit.py \
                           -t baremetal-tests \
                           -j "$JOB_NAME" \
-                          -l "$LAVA_FRDESO_TOKEN" \
                           -k "$STORAGE_KERNEL_IMAGE" \
                           -km "$STORAGE_LINUX_MODULES" \
                           -lm "$STORAGE_LTTNG_MODULES" \

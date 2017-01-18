@@ -20,7 +20,7 @@ import json
 import os
 import sys
 import time
-import xmlrpclib
+import xmlrpc.client
 from collections import OrderedDict
 from enum import Enum
 
@@ -37,8 +37,8 @@ def get_job_bundle_content(server, job):
     try:
         bundle_sha = server.scheduler.job_status(str(job))['bundle_sha1']
         bundle = server.dashboard.get(bundle_sha)
-    except Fault as f:
-        print 'Error while fetching results bundle', f
+    except xmlrpc.client.Fault as f:
+        print('Error while fetching results bundle', f.faultString)
 
     return json.loads(bundle['content'])
 
@@ -66,6 +66,31 @@ def check_job_all_test_cases_state_count(server, job):
                     failed_tests+=1
     return (passed_tests, failed_tests)
 
+# Get the benchmark results from the lava bundle
+# save them as CSV files localy
+def fetch_benchmark_results(server, job):
+    content = get_job_bundle_content(server, job)
+    testcases = ['processed_results_close.csv', 'processed_results_open_enoent.csv', 'processed_results_open_efault.csv']
+
+    # The result bundle is a large JSON containing the results of every testcase
+    # of the LAVA job as well as the files that were attached during the run.
+    # We need to iterate over this JSON to get the base64 representation of the
+    # benchmark results produced during the run.
+    for run in content['test_runs']:
+        # We only care of the benchmark testcases
+        if 'benchmark-syscall-' in run['test_id']:
+            if 'test_results' in run:
+                for res in run['test_results']:
+                    if 'attachments' in res:
+                        for a in res['attachments']:
+                            # We only save the results file
+                            if a['pathname'] in testcases:
+                                with open(a['pathname'],'wb') as f:
+                                    # Convert the b64 representation of the
+                                    # result file and write it to a file
+                                    # in the current working directory
+                                    f.write(base64.b64decode(a['content']))
+
 # Parse the attachment of the testcase to fetch the stdout of the test suite
 def print_test_output(server, job):
     content = get_job_bundle_content(server, job)
@@ -78,7 +103,7 @@ def print_test_output(server, job):
 
                     # Decode the base64 file and split on newlines to iterate
                     # on list
-                    testoutput = base64.b64decode(attachment['content']).split('\n')
+                    testoutput = str(base64.b64decode(bytes(attachment['content'], encoding='UTF-8'))).split('\n')
 
                     # Create a generator to iterate on the lines and keeping
                     # the state of the iterator across the two loops.
@@ -125,7 +150,8 @@ def get_boot_cmd():
 def get_config_cmd(build_device):
     packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
             'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
-            'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev']
+            'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
+            'libnuma-dev']
     command = OrderedDict({
         'command': 'lava_command_run',
         'parameters': {
@@ -313,7 +339,6 @@ def main():
     parser.add_argument('-k', '--kernel', required=True)
     parser.add_argument('-km', '--kmodule', required=True)
     parser.add_argument('-lm', '--lmodule', required=True)
-    parser.add_argument('-l', '--lava-key', required=True)
     parser.add_argument('-tc', '--tools-commit', required=True)
     parser.add_argument('-uc', '--ust-commit', required=False)
     args = parser.parse_args()
@@ -326,6 +351,13 @@ def main():
         test_type = TestType.kvm_tests
     else:
         print('argument -t/--type {} unrecognized. Exiting...'.format(args.type))
+        return -1
+
+    lava_api_key = None
+    try:
+        lava_api_key = os.environ['LAVA_JENKINS_TOKEN']
+    except Exception as e:
+        print('LAVA_JENKINS_TOKEN not found in the environment variable. Exiting...', e )
         return -1
 
     if test_type is TestType.baremetal_benchmarks:
@@ -364,7 +396,7 @@ def main():
     else:
         assert False, 'Unknown test type'
 
-    server = xmlrpclib.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, args.lava_key, HOSTNAME))
+    server = xmlrpc.client.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME))
 
     jobid = server.scheduler.submit_job(json.dumps(j))
 
@@ -372,25 +404,30 @@ def main():
 
     #Check the status of the job every 30 seconds
     jobstatus = server.scheduler.job_status(jobid)['job_status']
+    not_running = False
     while jobstatus in 'Submitted' or jobstatus in 'Running':
+        if not_running is False and jobstatus in 'Running':
+            print('Job started running')
+            not_running = True
         time.sleep(30)
         jobstatus = server.scheduler.job_status(jobid)['job_status']
 
-    passed, failed=check_job_all_test_cases_state_count(server, jobid)
-
     if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
         print_test_output(server, jobid)
+    elif test_type is TestType.baremetal_benchmarks:
+        fetch_benchmark_results(server, jobid)
 
     print('Job ended with {} status.'.format(jobstatus))
     if jobstatus not in 'Complete':
         return -1
     else:
+        passed, failed=check_job_all_test_cases_state_count(server, jobid)
         print('With {} passed and {} failed Lava test cases.'.format(passed, failed))
 
-    if failed == 0:
-        return 0
-    else:
-        return -1
+        if failed == 0:
+            return 0
+        else:
+            return -1
 
 if __name__ == "__main__":
     sys.exit(main())
