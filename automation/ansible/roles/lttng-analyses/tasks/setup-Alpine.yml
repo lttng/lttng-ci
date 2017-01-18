@@ -4,5 +4,5 @@
 
 - name: Ensure lttng-analyses build dependencies are installed.
   apk: "name={{ item }} state=present"
-  with_items: lttng_analyses_packages
+  with_items: "{{ lttng_analyses_packages }}"
 

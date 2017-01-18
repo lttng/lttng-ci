@@ -3,4 +3,4 @@
   yum:
     name: "{{ item }}"
     state: installed
-  with_items: lttng_ust_packages
+  with_items: "{{ lttng_ust_packages }}"

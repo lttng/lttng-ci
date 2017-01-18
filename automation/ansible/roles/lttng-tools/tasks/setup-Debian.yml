@@ -4,8 +4,8 @@
 
 - name: Ensure lttng-tools build dependencies are installed.
   apt: "name={{ item }} state=installed"
-  with_items: lttng_tools_packages
+  with_items: "{{ lttng_tools_packages }}"
 
 - name: Ensure lttng-tools build dependencies are installed (no recommends).
   apt: "name={{ item }} state=installed install_recommends=no"
-  with_items: lttng_tools_packages_no_recommends
+  with_items: "{{ lttng_tools_packages_no_recommends }}"

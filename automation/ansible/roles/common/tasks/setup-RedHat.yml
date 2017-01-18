@@ -3,4 +3,4 @@
   yum:
     name: "{{ item }}"
     state: installed
-  with_items: common_packages
+  with_items: "{{ common_packages }}"

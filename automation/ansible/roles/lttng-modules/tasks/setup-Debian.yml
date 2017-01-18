@@ -4,5 +4,5 @@
 
 - name: Ensure lttng-modules build dependencies are installed.
   apt: "name={{ item }} state=installed"
-  with_items: lttng_modules_packages
+  with_items: "{{ lttng_modules_packages }}"
 

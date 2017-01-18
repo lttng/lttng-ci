@@ -3,4 +3,4 @@
   yum:
     name: "{{ item }}"
     state: installed
-  with_items: babeltrace_packages
+  with_items: "{{ babeltrace_packages }}"

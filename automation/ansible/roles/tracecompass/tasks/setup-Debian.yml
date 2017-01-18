@@ -16,5 +16,5 @@
 
 - name: Ensure tracecompass build dependencies are installed.
   apt: "name={{ item }} state=installed"
-  with_items: tracecompass_packages
+  with_items: "{{ tracecompass_packages }}"
 
