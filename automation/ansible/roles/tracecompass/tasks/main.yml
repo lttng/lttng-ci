@@ -19,5 +19,5 @@
   git: repo=git://artifacts.internal.efficios.com/git/org.eclipse.tracecompass.git
        dest=/home/jenkins/gitcache/org.eclipse.tracecompass.git
        bare=yes
-  sudo: yes
-  sudo_user: jenkins
+  become: yes
+  become_user: jenkins

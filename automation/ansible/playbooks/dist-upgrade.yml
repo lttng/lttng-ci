@@ -18,7 +18,7 @@
    - name: apt-get dist-upgrade
      apt: upgrade=dist
 
-   - name: apt-get autoremove 
+   - name: apt-get autoremove
      command: apt-get -y --purge autoremove
      register: autoremove_output
      changed_when: "'The following packages will be REMOVED' in autoremove_output.stdout"
@@ -30,7 +30,7 @@
      ignore_errors: true
      when: reboot == "yes"
      register: last_result
- 
+
    - name: wait for the server to reboot
      local_action: wait_for host={{ inventory_hostname }}
                    port=22
@@ -38,4 +38,4 @@
                    timeout=300
                    state=started
      when: last_result.changed
-     sudo: false
+     become: false

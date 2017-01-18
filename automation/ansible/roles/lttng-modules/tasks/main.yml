@@ -22,5 +22,5 @@
   git: repo=git://artifacts.internal.efficios.com/git/linux-stable.git
        dest=/home/jenkins/gitcache/linux-stable.git
        bare=yes
-  sudo: yes
-  sudo_user: jenkins
+  become: yes
+  become_user: jenkins
