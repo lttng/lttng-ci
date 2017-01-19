@@ -27,16 +27,16 @@ from matplotlib.ticker import MaxNLocator
 from cycler import cycler
 
 def rename_cols(df):
-    new_cols = {'baseline_1thr_pereventmean': 'basel_1thr',
-            'baseline_2thr_pereventmean': 'basel_2thr',
-            'baseline_4thr_pereventmean': 'basel_4thr',
-            'baseline_8thr_pereventmean': 'basel_8thr',
-            'baseline_16thr_pereventmean': 'basel_16thr',
-            'lttng_1thr_pereventmean': 'lttng_1thr',
-            'lttng_2thr_pereventmean': 'lttng_2thr',
-            'lttng_4thr_pereventmean': 'lttng_4thr',
-            'lttng_8thr_pereventmean': 'lttng_8thr',
-            'lttng_16thr_pereventmean': 'lttng_16thr'
+    new_cols = {'baseline_1thr_peritermean': 'basel_1thr',
+            'baseline_2thr_peritermean': 'basel_2thr',
+            'baseline_4thr_peritermean': 'basel_4thr',
+            'baseline_8thr_peritermean': 'basel_8thr',
+            'baseline_16thr_peritermean': 'basel_16thr',
+            'lttng_1thr_peritermean': 'lttng_1thr',
+            'lttng_2thr_peritermean': 'lttng_2thr',
+            'lttng_4thr_peritermean': 'lttng_4thr',
+            'lttng_8thr_peritermean': 'lttng_8thr',
+            'lttng_16thr_peritermean': 'lttng_16thr'
             }
     df.rename(columns=new_cols, inplace=True)
     return df
@@ -63,7 +63,7 @@ def create_plot(df, graph_type):
         ax.set_ylim(0)
         ax.grid()
         ax.set_xlabel('Jenkins Build ID')
-        ax.set_ylabel('Meantime per syscall [ns]')
+        ax.set_ylabel('Meantime per syscall [us]')
         ax.legend(labels=curr_df.columns.values, bbox_to_anchor=(1.2,1))
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 

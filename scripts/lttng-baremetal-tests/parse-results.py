@@ -7,27 +7,64 @@ import pandas as pd
 import sys
 
 def test_case(df):
-    df['nsecperiter']=(df['duration']*1000)/(df['nbiter'])
-    stdev = pd.DataFrame({'perevent_stdev' : 
-                          df.groupby(['nbthreads', 'tracer', 'testcase','sleeptime'])['nsecperiter'].std()}).reset_index()
-    mean = pd.DataFrame({'perevent_mean' :
-                         df.groupby(['nbthreads', 'tracer', 'testcase','sleeptime'])['nsecperiter'].mean()}).reset_index()
-    mem_mean = pd.DataFrame({'mem_mean' :
-                             df.groupby(['nbthreads','tracer','testcase','sleeptime'])['maxmem'].mean()}).reset_index()
-    mem_stdev = pd.DataFrame({'mem_stdev' :
-                              df.groupby(['nbthreads','tracer','testcase','sleeptime'])['maxmem'].std()}).reset_index()
-    tmp = mean.merge(stdev)
-    tmp = tmp.merge(mem_mean)
-    tmp = tmp.merge(mem_stdev)
+    # Duration is in usec
+    # usecPecIter = Duration/(average number of iteration per thread)
+    df['usecperiter'] = (df['nbthreads'] * df['duration']) / df['nbiter']
+
+    periter_mean = pd.DataFrame({'periter_mean' :
+                         df.groupby(['nbthreads', 'tracer', 'testcase','sleeptime'])['usecperiter'].mean()}).reset_index()
+
+    periter_stdev = pd.DataFrame({'periter_stdev' :
+                          df.groupby(['nbthreads', 'tracer', 'testcase','sleeptime'])['usecperiter'].std()}).reset_index()
+
+    nbiter_mean = pd.DataFrame({'nbiter_mean' :
+                          df.groupby(['nbthreads', 'tracer', 'testcase','sleeptime'])['nbiter'].mean()}).reset_index()
+
+    nbiter_stdev = pd.DataFrame({'nbiter_stdev' :
+                          df.groupby(['nbthreads', 'tracer', 'testcase','sleeptime'])['nbiter'].std()}).reset_index()
+
+    duration_mean = pd.DataFrame({'duration_mean' :
+                         df.groupby(['nbthreads', 'tracer', 'testcase','sleeptime'])['duration'].mean()}).reset_index()
+
+    duration_stdev = pd.DataFrame({'duration_stdev' :
+                         df.groupby(['nbthreads', 'tracer', 'testcase','sleeptime'])['duration'].std()}).reset_index()
+
+    tmp = periter_mean.merge(periter_stdev)
+
+    tmp = tmp.merge(nbiter_mean)
+    tmp = tmp.merge(nbiter_stdev)
+
+    tmp = tmp.merge(duration_mean)
+    tmp = tmp.merge(duration_stdev)
+
+    # if there is any NaN or None value in the DF we raise an exeception
+    if tmp.isnull().values.any():
+        raise Exception('NaN value found in dataframe')
 
     for i, row in tmp.iterrows():
-        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'pereventmean'])
-        yield( {"name": testcase_name, "result": "pass", "units": "nsec/event",
-            "measurement": str(row['perevent_mean'])})
+        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'peritermean'])
+        yield( {"name": testcase_name, "result": "pass", "units": "usec/iter",
+            "measurement": str(row['periter_mean'])})
 
-        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'pereventstdev'])
-        yield( {"name": testcase_name, "result": "pass", "units": "nsec/event",
-            "measurement": str(row['perevent_stdev'])})
+        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'periterstdev'])
+        yield( {"name": testcase_name, "result": "pass", "units": "usec/iter",
+            "measurement": str(row['periter_stdev'])})
+
+        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'nbitermean'])
+        yield( {"name": testcase_name, "result": "pass", "units": "iterations",
+            "measurement": str(row['nbiter_mean'])})
+
+        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'nbiterstdev'])
+        yield( {"name": testcase_name, "result": "pass", "units": "iterations",
+            "measurement": str(row['nbiter_stdev'])})
+
+        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'durationmean'])
+        yield( {"name": testcase_name, "result": "pass", "units": "usec",
+            "measurement": str(row['duration_mean'])})
+
+        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'durationstdev'])
+        yield( {"name": testcase_name, "result": "pass", "units": "usec",
+            "measurement": str(row['duration_stdev'])})
 
         testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'memmean'])
         yield( {"name": testcase_name, "result": "pass", "units": "kB",
@@ -52,8 +89,7 @@ def main():
             '--units', res['units']])
 
         # Save the results to write to the CSV file
-        if 'pereventmean' in res['name']:
-            results[res['name']]=res['measurement']
+        results[res['name']]=res['measurement']
 
     # Write the dictionnary to a csv file where each key is a column
     with open('processed_results.csv', 'w') as output_csv:
