@@ -36,7 +36,17 @@ def rename_cols(df):
             'lttng_2thr_peritermean': 'lttng_2thr',
             'lttng_4thr_peritermean': 'lttng_4thr',
             'lttng_8thr_peritermean': 'lttng_8thr',
-            'lttng_16thr_peritermean': 'lttng_16thr'
+            'lttng_16thr_peritermean': 'lttng_16thr',
+            'baseline_1thr_periterstdev': 'basel_1thr_stdev',
+            'baseline_2thr_periterstdev': 'basel_2thr_stdev',
+            'baseline_4thr_periterstdev': 'basel_4thr_stdev',
+            'baseline_8thr_periterstdev': 'basel_8thr_stdev',
+            'baseline_16thr_periterstdev': 'basel_16thr_stdev',
+            'lttng_1thr_periterstdev': 'lttng_1thr_stdev',
+            'lttng_2thr_periterstdev': 'lttng_2thr_stdev',
+            'lttng_4thr_periterstdev': 'lttng_4thr_stdev',
+            'lttng_8thr_periterstdev': 'lttng_8thr_stdev',
+            'lttng_16thr_periterstdev': 'lttng_16thr_stdev'
             }
     df.rename(columns=new_cols, inplace=True)
     return df
@@ -48,9 +58,16 @@ def convert_us_to_ns(df):
 
 def create_plot(df, graph_type):
     # We split the data into two plots so it's easier to read
-    lower = ['basel_1thr', 'basel_2thr', 'basel_4thr', 'lttng_1thr', 'lttng_2thr', 'lttng_4thr']
+    lower = ['basel_{}thr'.format(s) for s in [1,2,4]]
+    lower += ['lttng_{}thr'.format(s) for s in [1,2,4]]
+
+    upper = ['basel_{}thr'.format(s) for s in [8, 16]]
+    upper += ['lttng_{}thr'.format(s) for s in [8, 16]]
+
+    lower_stdev = ['{}_stdev'.format(s) for s in lower]
+    upper_stdev = ['{}_stdev'.format(s) for s in upper]
+
     lower_color = ['lightcoral', 'gray', 'chartreuse', 'red', 'black', 'forestgreen']
-    upper = ['basel_8thr', 'basel_16thr', 'lttng_8thr', 'lttng_16thr']
     upper_color = ['deepskyblue', 'orange', 'mediumblue', 'saddlebrown']
 
     title='Meantime per syscalls for {} testcase'.format(graph_type)
@@ -60,10 +77,16 @@ def create_plot(df, graph_type):
 
     f.suptitle(title, fontsize=18)
 
-    for (ax, sub, colors)  in zip(arrax, [lower, upper], [lower_color,upper_color]):
-        curr_df = df[sub]
+    for (ax, data_cols, stdev_cols, colors)  in zip(arrax, [lower, upper], [lower_stdev, upper_stdev], [lower_color,upper_color]):
+        curr_df = df[data_cols]
+
+        # set the color cycler for this plot
         ax.set_prop_cycle(cycler('color', colors))
-        ax.plot(curr_df, marker='o')
+
+        # Plot each line and its errorbars
+        for (data, stdev) in  zip(data_cols, stdev_cols):
+            ax.errorbar(x=df.index.values, y=df[data], yerr=df[stdev], marker='o')
+
         ax.set_ylim(0)
         ax.grid()
         ax.set_xlabel('Jenkins Build ID')
