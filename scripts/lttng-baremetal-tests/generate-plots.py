@@ -41,13 +41,17 @@ def rename_cols(df):
     df.rename(columns=new_cols, inplace=True)
     return df
 
+def convert_us_to_ns(df):
+    cols = [col for col in df.columns if 'periter' in col]
+    df[cols] = df[cols].apply(lambda x: x*1000)
+    return df
+
 def create_plot(df, graph_type):
     # We split the data into two plots so it's easier to read
     lower = ['basel_1thr', 'basel_2thr', 'basel_4thr', 'lttng_1thr', 'lttng_2thr', 'lttng_4thr']
     lower_color = ['lightcoral', 'gray', 'chartreuse', 'red', 'black', 'forestgreen']
     upper = ['basel_8thr', 'basel_16thr', 'lttng_8thr', 'lttng_16thr']
     upper_color = ['deepskyblue', 'orange', 'mediumblue', 'saddlebrown']
-
 
     title='Meantime per syscalls for {} testcase'.format(graph_type)
 
@@ -106,6 +110,7 @@ def create_plots(res_dir):
             list_.append(tmp)
 
         df = pd.concat(list_)
+        df = convert_us_to_ns(df)
         df = rename_cols(df)
         df.sort_index(inplace=True)
 
