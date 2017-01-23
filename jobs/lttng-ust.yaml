@@ -69,13 +69,33 @@
          values: '{obj:build}'
 
     builders:
-      - copyartifact:
-          project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std
-          which-build: last-successful
-          stable: false
-          filter: 'build/**'
-          target: 'deps/liburcu'
-          do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (std|agents)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps/liburcu'
+                do-not-fingerprint: true
+
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (debug-rcu)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=debug-rcu,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps/liburcu'
+                do-not-fingerprint: true
       - shell:
          !include-raw-escape: scripts/lttng-ust/build.sh
 
@@ -250,7 +270,7 @@
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, dist, oot, oot-dist]
-          conf: !!python/tuple [std, agents]
+          conf: !!python/tuple [std, agents, debug-rcu]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
