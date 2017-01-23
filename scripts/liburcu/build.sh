@@ -124,7 +124,17 @@ macosx)
     ;;
 esac
 
-# Set configure options for each build configuration
+# Enter the source directory
+cd "$SRCDIR"
+
+# Run bootstrap in the source directory prior to configure
+./bootstrap
+
+# Get source version from configure script
+eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+
+# Set configure options and environment variables for each build
+# configuration.
 CONF_OPTS=""
 case "$conf" in
 static)
@@ -137,22 +147,20 @@ tls_fallback)
     CONF_OPTS="--disable-compiler-tls"
     ;;
 
+debug-rcu)
+    echo "Enable RCU sanity checks for debugging"
+    if vergt "$PACKAGE_VERSION" "0.9"; then
+       CONF_OPTS="--enable-debug-rcu"
+    else
+       CFLAGS="$CFLAGS -DDEBUG_RCU"
+    fi
+    ;;
+
 *)
     echo "Standard build"
     CONF_OPTS=""
     ;;
 esac
-
-
-# Enter the source directory
-cd "$SRCDIR"
-
-# Run bootstrap in the source directory prior to configure
-./bootstrap
-
-# Get source version from configure script
-eval "$(grep '^PACKAGE_VERSION=' ./configure)"
-
 
 # Build type
 # oot : out-of-tree build
