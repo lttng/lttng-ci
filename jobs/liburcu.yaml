@@ -76,6 +76,7 @@
           - std
           - static
           - tls_fallback
+          - debug-rcu
       - axis:
          type: user-defined
          name: build
