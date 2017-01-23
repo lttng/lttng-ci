@@ -25,7 +25,7 @@
           skip-tag: true
 
     triggers:
-      - timed: "@hourly"
+      - timed: "@daily"
 
     properties:
       - build-discarder:
