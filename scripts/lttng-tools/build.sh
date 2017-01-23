@@ -227,6 +227,11 @@ relayd-only)
     CONF_OPTS="--disable-bin-lttng --disable-bin-lttng-consumerd --disable-bin-lttng-crash --disable-bin-lttng-sessiond --disable-extras --disable-man-pages $NO_UST"
     ;;
 
+debug-rcu)
+    echo "Enable RCU sanity checks for debugging"
+    CPPFLAGS="${CPPFLAGS:-} -DDEBUG_RCU"
+    ;;
+
 *)
     echo "Standard build"
     CONF_OPTS=""
