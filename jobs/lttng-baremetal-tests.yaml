@@ -236,15 +236,24 @@
     name: baremetal_tests_k{kversion}_l{lttngversion}
     defaults: baremetal_tests
 
+# Canary jobs are made to confirm that the whole Lava pipeline is working.
+# They are scheduled once a day always on the same (LTTng, Kernel) code. If any
+# of those jobs fails, it means that there is an issue with the configuration
 - job-template:
     name: baremetal_tests_k{kversion}_l{lttngversion}_canary
     defaults: baremetal_tests
+    triggers:
+      - timed: "@daily"
 - job-template:
     name: vm_tests_k{kversion}_l{lttngversion}_canary
     defaults: vm_tests
+    triggers:
+      - timed: "@daily"
 - job-template:
     name: baremetal_benchmarks_k{kversion}_l{lttngversion}_canary
     defaults: baremetal_benchmarks
+    triggers:
+      - timed: "@daily"
 
 - job-template:
     name: vm_tests_kmainline_l{lttngversion}
