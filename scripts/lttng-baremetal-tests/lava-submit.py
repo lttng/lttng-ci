@@ -159,7 +159,8 @@ def get_config_cmd(build_device):
                 'cat /etc/resolv.conf',
                 'echo nameserver 172.18.0.12 > /etc/resolv.conf',
                 'groupadd tracing'
-                ]
+                ],
+                'timeout':300
             }
         })
     if build_device in 'x86':
