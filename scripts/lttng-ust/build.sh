@@ -74,6 +74,11 @@ agents)
     CONF_OPTS+=" --enable-python-agent"
     ;;
 
+debug-rcu)
+    echo "Enable RCU sanity checks for debugging"
+    CPPFLAGS="${CPPFLAGS:-} -DDEBUG_RCU"
+    ;;
+
 *)
     echo "Standard build"
     CONF_OPTS=""
