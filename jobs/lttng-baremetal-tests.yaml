@@ -41,6 +41,7 @@
         - gallery-type: archived-images-gallery
           title: Results
           includes: '*.png'
+      - workspace-cleanup
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
@@ -142,6 +143,7 @@
           strategy: new-failure-and-fixed
           channels:
             - name: '#lttng'
+      - workspace-cleanup
 
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
@@ -216,6 +218,8 @@
           strategy: new-failure-and-fixed
           channels:
             - name: '#lttng'
+      - workspace-cleanup
+
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
       - trigger-builds:
@@ -414,6 +418,8 @@
       - string:
           name: 'BUILD_DEVICE'
           description: 'The target device. (kvm or baremetal)'
+    publishers:
+      - workspace-cleanup
 
 ## Project
 - project:
