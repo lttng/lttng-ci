@@ -70,7 +70,7 @@
       - workspace-cleanup
 
 - job-template:
-    name: lttng-modules_{mversion}_build-vanilla
+    name: lttng-modules_{mversion}_{buildtype}-vanilla
     defaults: lttng-modules
     description: |
       The LTTng modules provide Linux kernel tracing capability to the LTTng
@@ -94,15 +94,19 @@
           description: 'The maximum number of concurrent child build to run.'
       - string:
           name: 'kverfloor'
-          default: 'v2.6.36'
+          default: '{kverfloor}'
           description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverfilter'
+          default: '{kverfilter}'
+          description: 'Kernel versions list filtering strategy.'
       - string:
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
-          default: 'lttng-modules_VERSION_param-build'
+          default: 'lttng-modules_VERSION_param-{buildtype}'
           description: 'The parametrized job to use for child builds.'
 
     builders:
@@ -260,6 +264,64 @@
       - workspace-cleanup
 
 - job-template:
+    name: lttng-modules_VERSION_param-crossbuild
+    defaults: lttng-modules
+    description: |
+      This is a parametrized job used by 'master' jobs to build any combinations
+      of lttng-modules and linux kernel versions.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+          type: user-defined
+          name: cross_arch
+          values: '{obj:cross_arch}'
+
+    properties:
+      - build-discarder:
+          days-to-keep: 2
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: 'master'
+          description: 'The lttng-modules branch to build.'
+      - string:
+          name: 'kversion'
+          default: ''
+          description: 'The linux kernel git tag to build against.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          description: 'The linux kernel git repository url.'
+
+    concurrent: true
+
+    scm:
+      - git:
+          url: git://github.com/lttng/lttng-modules.git
+          browser: githubweb
+          browser-url: https://github.com/lttng/lttng-modules
+          branches:
+            - "${{mversion}}"
+          skip-tag: true
+          basedir: src/lttng-modules
+
+    triggers:
+
+    builders:
+      - shell: |
+          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
+      - shell:
+          !include-raw-escape: scripts/lttng-modules/param-build.sh
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
     name: lttng-modules_{mversion}_coverity
     defaults: lttng-modules
     node: 'x86-64'
@@ -354,15 +416,24 @@
       - stable-2.9
       - master
     jobs:
-      - 'lttng-modules_{mversion}_build-vanilla'
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          buildtype: build
+          kverfloor: v2.6.36
+          kverfilter: none
       - 'lttng-modules_{mversion}_build-rt':
           mversion: master
       - 'lttng-modules_{mversion}_build-{uversion}':
           uversion:
             - trusty
             - xenial
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          buildtype: crossbuild
+          kverfloor: v3.16
+          kverfilter: stable-head
       - 'lttng-modules_VERSION_param-build':
           arch: !!python/tuple [x86-32, x86-64]
+      - 'lttng-modules_VERSION_param-crossbuild':
+          cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
       - 'lttng-modules_{mversion}_cppcheck'
       - 'lttng-modules_{mversion}_sloccount':
           mversion: master

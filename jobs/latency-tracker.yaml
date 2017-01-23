@@ -68,7 +68,7 @@
       - workspace-cleanup
 
 - job-template:
-    name: latency-tracker_{mversion}_build-vanilla
+    name: latency-tracker_{mversion}_{buildtype}-vanilla
     defaults: latency-tracker
     description: |
       The LTTng modules provide Linux kernel tracing capability to the LTTng
@@ -95,12 +95,16 @@
           default: 'v3.12'
           description: 'The lowest kernel version to build.'
       - string:
+          name: 'kverfilter'
+          default: 'stable-head'
+          description: 'Kernel versions list filtering strategy.'
+      - string:
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
-          default: 'latency-tracker_VERSION_param-build'
+          default: 'latency-tracker_VERSION_param-{buildtype}'
           description: 'The parametrized job to use for child builds.'
 
     builders:
@@ -264,6 +268,64 @@
       - workspace-cleanup
 
 - job-template:
+    name: latency-tracker_VERSION_param-crossbuild
+    defaults: latency-tracker
+    description: |
+      This is a parametrized job used by 'master' jobs to build any combinations
+      of latency-tracker and linux kernel versions.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+          type: user-defined
+          name: cross_arch
+          values: '{obj:cross_arch}'
+
+    properties:
+      - build-discarder:
+          days-to-keep: 2
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: 'master'
+          description: 'The latency-tracker branch to build.'
+      - string:
+          name: 'kversion'
+          default: ''
+          description: 'The linux kernel git tag to build against.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          description: 'The linux kernel git repository url.'
+
+    concurrent: true
+
+    scm:
+      - git:
+          url: git://github.com/efficios/latency-tracker.git
+          browser: githubweb
+          browser-url: https://github.com/efficios/latency-tracker
+          branches:
+            - "${{mversion}}"
+          skip-tag: true
+          basedir: src/latency-tracker
+
+    triggers:
+
+    builders:
+      - shell: |
+          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
+      - shell:
+          !include-raw-escape: scripts/latency-tracker/param-build.sh
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
     name: latency-tracker_{mversion}_coverity
     defaults: latency-tracker
     node: 'x86-64'
@@ -355,13 +417,18 @@
     mversion:
       - master
     jobs:
-      - 'latency-tracker_{mversion}_build-vanilla'
+      - 'latency-tracker_{mversion}_{buildtype}-vanilla':
+          buildtype: build
       - 'latency-tracker_{mversion}_build-rt':
       - 'latency-tracker_{mversion}_build-{uversion}':
           uversion:
             - xenial
+      - 'latency-tracker_{mversion}_{buildtype}-vanilla':
+          buildtype: crossbuild
       - 'latency-tracker_VERSION_param-build':
           arch: !!python/tuple [x86-32, x86-64]
+      - 'latency-tracker_VERSION_param-crossbuild':
+          cross_arch: !!python/tuple [armhf, arm64]
       - 'latency-tracker_{mversion}_cppcheck'
       - 'latency-tracker_{mversion}_sloccount':
           mversion: master

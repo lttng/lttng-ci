@@ -75,7 +75,7 @@ prepare_lnx_sources() {
     echo "CONFIG_KALLSYMS_ALL=y" >> "${outdir}"/.config
 
 
-    make ${koutput} silentoldconfig CC=$CC
+    make ${koutput} olddefconfig CC=$CC
     make ${koutput} modules_prepare CC=$CC
 
     # Version specific tasks
@@ -119,6 +119,7 @@ build_modules() {
 
         # We expect this build to fail, if it doesn't, fail the job.
         if [ "$?" -eq 0 ]; then
+            echo "This build should have failed."
             exit 1
         fi
 
@@ -144,9 +145,6 @@ build_modules() {
 
 
 ## MAIN ##
-
-# Use gcc 4.9, older kernel don't build with gcc 5
-export CC=gcc-4.9
 
 # Use all CPU cores
 NPROC=$(nproc)
@@ -195,13 +193,16 @@ if [ "x${cross_arch:-}" != "x" ]; then
             ;;
     esac
 
+    # Use default gcc when cross-compiling
+    CC="${cross_compile}gcc"
+
     # Export variables used by Kbuild for cross compilation
     export ARCH="${karch}"
     export CROSS_COMPILE="${cross_compile}"
 
-
 # Set arch specific values if we are not cross compiling
 elif [ "x${arch:-}" != "x" ]; then
+
     case "$arch" in
         "x86-32")
             karch="x86"
@@ -238,6 +239,10 @@ elif [ "x${arch:-}" != "x" ]; then
             exit 1
             ;;
     esac
+
+    # Use gcc 4.9, older kernel don't build with gcc 5
+    CC=gcc-4.9
+
 else
     echo "Not arch or cross_arch specified"
     exit 1

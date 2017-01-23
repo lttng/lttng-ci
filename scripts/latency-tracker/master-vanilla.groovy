@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - Michael Jeanson <mjeanson@efficios.com>
+ * Copyright (C) 2016-2017 - Michael Jeanson <mjeanson@efficios.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,21 +79,36 @@ class kVersion implements Comparable<kVersion> {
     return this.rc != Integer.MAX_VALUE
   }
 
-  @Override int compareTo(kVersion o) {
+  // Return true if both version are of the same stable branch
+  Boolean isSameStable(kVersion o) {
     if (this.major != o.major) {
-      return Integer.compare(this.major, o.major);
+      return false
     }
     if (this.majorB != o.majorB) {
-      return Integer.compare(this.majorB, o.majorB);
+      return false
     }
     if (this.minor != o.minor) {
-      return Integer.compare(this.minor, o.minor);
+      return false
+    }
+
+    return true
+  }
+
+  @Override int compareTo(kVersion o) {
+    if (this.major != o.major) {
+      return Integer.compare(this.major, o.major)
+    }
+    if (this.majorB != o.majorB) {
+      return Integer.compare(this.majorB, o.majorB)
+    }
+    if (this.minor != o.minor) {
+      return Integer.compare(this.minor, o.minor)
     }
     if (this.patch != o.patch) {
-      return Integer.compare(this.patch, o.patch);
+      return Integer.compare(this.patch, o.patch)
     }
     if (this.rc != o.rc) {
-      return Integer.compare(this.rc, o.rc);
+      return Integer.compare(this.rc, o.rc)
     }
 
     // Same version
@@ -126,6 +141,7 @@ def mversion = build.buildVariableResolver.resolve('mversion')
 def maxConcurrentBuild = build.buildVariableResolver.resolve('maxConcurrentBuild')
 def kgitrepo = build.buildVariableResolver.resolve('kgitrepo')
 def kverfloor = new kVersion(build.buildVariableResolver.resolve('kverfloor'))
+def kverfilter = build.buildVariableResolver.resolve('kverfilter')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
 def currentJobName = build.project.getFullDisplayName()
 
@@ -162,6 +178,30 @@ for (ref in refs) {
 
 kversions.sort()
 kversionsRC.sort()
+
+switch (kverfilter) {
+  case 'stable-head':
+    // Keep only the head of each stable branch
+    println('Filter kernel versions to keep only the latest point release of each stable branch.')
+
+    for (i = 0; i < kversions.size(); i++) {
+      def curr = kversions[i]
+      def next = i < kversions.size() - 1 ? kversions[i + 1] : null
+
+      if (next != null) {
+        if (curr.isSameStable(next)) {
+          kversions.remove(i)
+          i--
+        }
+      }
+    }
+    break
+
+  default:
+    // No filtering of kernel versions
+    println('No kernel versions filtering selected.')
+    break
+}
 
 // If the last RC version is newer than the last stable, add it to the build list
 if (kversionsRC.last() > kversions.last()) {
@@ -217,8 +257,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
       }
     }
 
-    // Check for queued similar job since we only want to run latest
-    // as Mathieu Desnoyers requirement
+    // If a newer instance of this job is queued, abort to let it run
     similarJobQueued = Hudson.instance.queue.items.count{it.task.getFullDisplayName() == currentJobName}
     if ( similarJobQueued > 0 ) {
 	 // Abort since new build is queued

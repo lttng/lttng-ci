@@ -54,7 +54,7 @@ prepare_lnx_sources() {
         ;;
       *)
         # Que sera sera
-        make ${koutput} allyesconfig CC=$CC
+        make ${koutput} ${vanilla_config} CC=$CC
         ;;
     esac
 
@@ -75,7 +75,7 @@ prepare_lnx_sources() {
     echo "CONFIG_KALLSYMS_ALL=y" >> "${outdir}"/.config
 
 
-    make ${koutput} silentoldconfig CC=$CC
+    make ${koutput} olddefconfig CC=$CC
     make ${koutput} modules_prepare CC=$CC
 
     # Version specific tasks
@@ -119,6 +119,7 @@ build_modules() {
 
         # We expect this build to fail, if it doesn't, fail the job.
         if [ "$?" -eq 0 ]; then
+            echo "This build should have failed."
             exit 1
         fi
 
@@ -145,9 +146,6 @@ build_modules() {
 
 ## MAIN ##
 
-# Use gcc 4.9, older kernel don't build with gcc 5
-export CC=gcc-4.9
-
 # Use all CPU cores
 NPROC=$(nproc)
 
@@ -168,24 +166,28 @@ if [ "x${cross_arch:-}" != "x" ]; then
         "armhf")
             karch="arm"
             cross_compile="arm-linux-gnueabihf-"
+            vanilla_config="allyesconfig"
             ubuntu_config="armhf-config.flavour.generic"
             ;;
 
         "arm64")
             karch="arm64"
             cross_compile="aarch64-linux-gnu-"
+            vanilla_config="allyesconfig"
             ubuntu_config="arm64-config.flavour.generic"
             ;;
 
         "powerpc")
             karch="powerpc"
             cross_compile="powerpc-linux-gnu-"
+            vanilla_config="ppc44x_defconfig"
             ubuntu_config="powerpc-config.flavour.powerpc-smp"
             ;;
 
         "ppc64el")
             karch="powerpc"
             cross_compile="powerpc64le-linux-gnu-"
+            vanilla_config="pseries_le_defconfig"
             ubuntu_config="ppc64el-config.flavour.generic"
             ;;
 
@@ -195,41 +197,50 @@ if [ "x${cross_arch:-}" != "x" ]; then
             ;;
     esac
 
+    # Use default gcc when cross-compiling
+    CC="${cross_compile}gcc"
+
     # Export variables used by Kbuild for cross compilation
     export ARCH="${karch}"
     export CROSS_COMPILE="${cross_compile}"
 
-
 # Set arch specific values if we are not cross compiling
 elif [ "x${arch:-}" != "x" ]; then
+
     case "$arch" in
         "x86-32")
             karch="x86"
+            vanilla_config="allyesconfig"
             ubuntu_config="i386-config.flavour.generic"
             ;;
 
         "x86-64")
             karch="x86"
+            vanilla_config="allyesconfig"
             ubuntu_config="amd64-config.flavour.generic"
             ;;
 
         "armhf")
             karch="arm"
+            vanilla_config="allyesconfig"
             ubuntu_config="armhf-config.flavour.generic"
             ;;
 
         "arm64")
             karch="arm64"
+            vanilla_config="allyesconfig"
             ubuntu_config="arm64-config.flavour.generic"
             ;;
 
         "powerpc")
             karch="powerpc"
+            vanilla_config="allyesconfig"
             ubuntu_config="powerpc-config.flavour.powerpc-smp"
             ;;
 
         "ppc64el")
             karch="powerpc"
+            vanilla_config="allyesconfig"
             ubuntu_config="ppc64el-config.flavour.generic"
             ;;
 
@@ -238,6 +249,10 @@ elif [ "x${arch:-}" != "x" ]; then
             exit 1
             ;;
     esac
+
+    # Use gcc 4.9, older kernel don't build with gcc 5
+    CC=gcc-4.9
+
 else
     echo "Not arch or cross_arch specified"
     exit 1
