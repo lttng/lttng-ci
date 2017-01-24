@@ -59,7 +59,7 @@
           target: 'deps/linux'
           do-not-fingerprint: true
       - shell: |
-          git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+          git clone --depth=1 -b "v{kversion}" --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/git/linux-all.git src/linux
       - shell:
          !include-raw-escape: scripts/lttng-modules/build.sh
 
@@ -102,7 +102,7 @@
           description: 'Kernel versions list filtering strategy.'
       - string:
           name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
@@ -237,7 +237,7 @@
           description: 'The linux kernel git tag to build against.'
       - string:
           name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
           description: 'The linux kernel git repository url.'
 
     concurrent: true
@@ -295,7 +295,7 @@
           description: 'The linux kernel git tag to build against.'
       - string:
           name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
           description: 'The linux kernel git repository url.'
 
     concurrent: true
@@ -343,7 +343,7 @@
 
     builders:
       - shell: |
-         git clone --depth=1 -b v4.4 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+         git clone --depth=1 -b v4.9 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
          cd src/linux
          make defconfig
          sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config
