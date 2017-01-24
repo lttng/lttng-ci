@@ -19,19 +19,19 @@
 
 # Kernel version compare functions
 verlte() {
-    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | head -n1`" ]
+    [  "$1" = "$(printf '%s\n%s' "$1" "$2" | sort -V | head -n1)" ]
 }
 
 verlt() {
-    [ "$1" = "$2" ] && return 1 || verlte $1 $2
+    [ "$1" = "$2" ] && return 1 || verlte "$1" "$2"
 }
 
 vergte() {
-    [  "$1" = "`printf '%s\n%s' $1 $2 | sort -V | tail -n1`" ]
+    [  "$1" = "$(printf '%s\n%s' "$1" "$2" | sort -V | tail -n1)" ]
 }
 
 vergt() {
-    [ "$1" = "$2" ] && return 1 || vergte $1 $2
+    [ "$1" = "$2" ] && return 1 || vergte "$1" "$2"
 }
 
 
@@ -50,11 +50,11 @@ prepare_lnx_sources() {
       Ubuntu*)
         fakeroot debian/rules clean
         fakeroot debian/rules genconfigs
-        cp CONFIGS/${ubuntu_config} "${outdir}"/.config
+        cp CONFIGS/"${ubuntu_config}" "${outdir}"/.config
         ;;
       *)
         # Que sera sera
-        make ${koutput} ${vanilla_config} CC=$CC
+        make "${vanilla_config}" CC="$CC" ${koutput}
         ;;
     esac
 
@@ -67,29 +67,34 @@ prepare_lnx_sources() {
     # Disable kernel stack frame correctness validation, introduced in 4.6.0 and currently fails
     sed -i "s/CONFIG_STACK_VALIDATION=y/# CONFIG_STACK_VALIDATION is not set/g" "${outdir}"/.config
 
-    # Enable CONFIG_KALLSYMS_ALL
-    echo "CONFIG_KPROBES=y" >> "${outdir}"/.config
-    echo "CONFIG_FTRACE=y" >> "${outdir}"/.config
-    echo "CONFIG_BLK_DEV_IO_TRACE=y" >> "${outdir}"/.config
-    echo "CONFIG_TRACEPOINTS=y" >> "${outdir}"/.config
-    echo "CONFIG_KALLSYMS_ALL=y" >> "${outdir}"/.config
+    # Set required options
+    {
+        echo "CONFIG_KPROBES=y";
+        echo "CONFIG_FTRACE=y";
+        echo "CONFIG_BLK_DEV_IO_TRACE=y";
+        echo "CONFIG_TRACEPOINTS=y";
+        echo "CONFIG_KALLSYMS_ALL=y";
+    } >> "${outdir}"/.config
 
 
-    make ${koutput} $oldconf_target CC=$CC
-    make ${koutput} modules_prepare CC=$CC
+    make "$oldconf_target" CC="$CC" ${koutput}
+    make modules_prepare CC="$CC" ${koutput}
+
+    # Debug
+    #cat "${outdir}"/.config
 
     # Version specific tasks
     case "$kversion" in
       Ubuntu*)
         # Add Ubuntu ABI number to kernel headers, this is normally done by the packaging code
-        ABINUM=$(echo $kversion | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')
-        echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> ${outdir}/include/generated/utsrelease.h
+        ABINUM="$(echo "$kversion" | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')"
+        echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> "${outdir}"/include/generated/utsrelease.h
         ;;
     esac
 
     # On powerpc this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
-        make ${koutput} arch/powerpc/lib/crtsavres.o CC=$CC
+        make arch/powerpc/lib/crtsavres.o CC="$CC" ${koutput}
     fi
 }
 
@@ -115,7 +120,7 @@ build_modules() {
         set +e
 
         # Build modules
-        KERNELDIR="${kdir}" make -j${NPROC} V=1 CC=$CC
+        KERNELDIR="${kdir}" make -j"${NPROC}" V=1 CC="$CC"
 
         # We expect this build to fail, if it doesn't, fail the job.
         if [ "$?" -eq 0 ]; then
@@ -128,18 +133,18 @@ build_modules() {
 
         set -e
 
-        KERNELDIR="${kdir}" make clean CC=$CC
+        KERNELDIR="${kdir}" make clean CC="$CC"
 
     else # Regular build
 
         # Build modules against full kernel sources
-        KERNELDIR="${kdir}" make -j${NPROC} V=1 CC=$CC
+        KERNELDIR="${kdir}" make -j"${NPROC}" V=1 CC="$CC"
 
         # Install modules to build dir
-        KERNELDIR="${kdir}" make INSTALL_MOD_PATH="${bdir}" modules_install CC=$CC
+        KERNELDIR="${kdir}" make INSTALL_MOD_PATH="${bdir}" modules_install CC="$CC"
 
         # Clean build dir
-        KERNELDIR="${kdir}" make clean CC=$CC
+        KERNELDIR="${kdir}" make clean CC="$CC"
     fi
 }
 
@@ -192,7 +197,7 @@ if [ "x${cross_arch:-}" != "x" ]; then
             ;;
 
         *)
-            echo "Unsupported cross arch $arch"
+            echo "Unsupported cross arch $cross_arch"
             exit 1
             ;;
     esac
@@ -293,13 +298,13 @@ find . -path './include/*' -prune \
 cp -a scripts include "${LNXHDRDIR}"
 
 # Copy arch includes
-(find arch -name include -type d -print | \
-    xargs -n1 -i: find : -type f) | \
+(find arch -name include -type d -print0 | \
+    xargs -0 -n1 -i: find : -type f) | \
 	cpio -pd --preserve-modification-time "${LNXHDRDIR}"
 
 # Copy arch scripts
-(find arch -name scripts -type d -print | \
-    xargs -n1 -i: find : -type f) | \
+(find arch -name scripts -type d -print0 | \
+    xargs -0 -n1 -i: find : -type f) | \
 	cpio -pd --preserve-modification-time "${LNXHDRDIR}"
 
 # Cleanup scripts
