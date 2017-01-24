@@ -75,7 +75,7 @@ prepare_lnx_sources() {
     echo "CONFIG_KALLSYMS_ALL=y" >> "${outdir}"/.config
 
 
-    make ${koutput} olddefconfig CC=$CC
+    make ${koutput} $oldconf_target CC=$CC
     make ${koutput} modules_prepare CC=$CC
 
     # Version specific tasks
@@ -204,6 +204,8 @@ if [ "x${cross_arch:-}" != "x" ]; then
     export ARCH="${karch}"
     export CROSS_COMPILE="${cross_compile}"
 
+    oldconf_target="olddefconfig"
+
 # Set arch specific values if we are not cross compiling
 elif [ "x${arch:-}" != "x" ]; then
 
@@ -252,6 +254,8 @@ elif [ "x${arch:-}" != "x" ]; then
 
     # Use gcc 4.9, older kernel don't build with gcc 5
     CC=gcc-4.9
+
+    oldconf_target="silentoldconfig"
 
 else
     echo "Not arch or cross_arch specified"
