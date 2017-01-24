@@ -25,6 +25,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from cycler import cycler
+from collections import OrderedDict
 
 def rename_cols(df):
     new_cols = {'baseline_1thr_peritermean': 'basel_1thr',
@@ -57,28 +58,43 @@ def convert_us_to_ns(df):
     return df
 
 def create_plot(df, graph_type):
-    # We split the data into two plots so it's easier to read
-    lower = ['basel_{}thr'.format(s) for s in [1,2,4]]
-    lower += ['lttng_{}thr'.format(s) for s in [1,2,4]]
+    # We map all test configurations and their
+    # respective color
+    conf_to_color = OrderedDict([
+        ('basel_1thr','lightcoral'),
+        ('lttng_1thr','red'),
+        ('basel_2thr','gray'),
+        ('lttng_2thr','black'),
+        ('basel_4thr','chartreuse'),
+        ('lttng_4thr','forestgreen'),
+        ('basel_8thr','deepskyblue'),
+        ('lttng_8thr','mediumblue'),
+        ('basel_16thr','orange'),
+        ('lttng_16thr','saddlebrown')])
 
-    upper = ['basel_{}thr'.format(s) for s in [8, 16]]
-    upper += ['lttng_{}thr'.format(s) for s in [8, 16]]
+    # We create a list for each of the subplots
+    baseline = [x for x in conf_to_color.keys() if 'basel' in x]
+    lttng = [x for x in conf_to_color.keys() if 'lttng' in x]
+    one_thr = [x for x in conf_to_color.keys() if '_1thr' in x]
+    two_thr = [x for x in conf_to_color.keys() if '_2thr' in x]
+    four_thr = [x for x in conf_to_color.keys() if '_4thr' in x]
+    eight_thr = [x for x in conf_to_color.keys() if '_8thr' in x]
+    sixteen_thr = [x for x in conf_to_color.keys() if '_16thr' in x]
 
-    lower_stdev = ['{}_stdev'.format(s) for s in lower]
-    upper_stdev = ['{}_stdev'.format(s) for s in upper]
-
-    lower_color = ['lightcoral', 'gray', 'chartreuse', 'red', 'black', 'forestgreen']
-    upper_color = ['deepskyblue', 'orange', 'mediumblue', 'saddlebrown']
+    plots = [baseline, lttng, one_thr, two_thr, four_thr, eight_thr, sixteen_thr]
 
     title='Meantime per syscalls for {} testcase'.format(graph_type)
 
-    # Create a plot with 2 sub-plots
-    f, arrax = plt.subplots(2, sharex=True, figsize=(12, 14))
+    # Create a axe object for each sub-plots
+    f, arrax = plt.subplots(len(plots), sharex=True, figsize=(16, 25))
+    f.suptitle(title, fontsize=20)
 
-    f.suptitle(title, fontsize=18)
-
-    for (ax, data_cols, stdev_cols, colors)  in zip(arrax, [lower, upper], [lower_stdev, upper_stdev], [lower_color,upper_color]):
+    for (ax, data_cols)  in zip(arrax, plots):
         curr_df = df[data_cols]
+
+        stdev_cols = ['{}_stdev'.format(x) for x in data_cols]
+        # Extract the color for each configuration
+        colors = [conf_to_color[x] for x in data_cols]
 
         # set the color cycler for this plot
         ax.set_prop_cycle(cycler('color', colors))
@@ -91,9 +107,13 @@ def create_plot(df, graph_type):
         ax.grid()
         ax.set_xlabel('Jenkins Build ID')
         ax.set_ylabel('Meantime per syscall [us]')
-        ax.legend(labels=curr_df.columns.values, bbox_to_anchor=(1.2,1))
+
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
+        ax.legend(prop={'family': 'monospace'},
+                    labels=curr_df.columns.values, bbox_to_anchor=(1.2,1))
+
+    plt.subplots_adjust(top=0.95)
     plt.savefig('{}.png'.format(graph_type), bbox_inches='tight')
 
 # Writes a file that contains commit id of all configurations shown in the
