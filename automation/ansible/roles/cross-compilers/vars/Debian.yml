@@ -4,3 +4,7 @@ __cross_compilers_packages:
   - gcc-powerpc64le-linux-gnu
   - gcc-arm-linux-gnueabihf
   - gcc-powerpc-linux-gnu
+  - gcc-4.9-aarch64-linux-gnu
+  - gcc-4.9-powerpc64le-linux-gnu
+  - gcc-4.9-arm-linux-gnueabihf
+  - gcc-4.9-powerpc-linux-gnu
