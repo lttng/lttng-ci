@@ -78,7 +78,7 @@
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
 
 - defaults:
-    name: kvm_tests
+    name: vm_tests
     description: |
       Runs baremetal kernel tests over different combination of kernel and lttng configurations.
     project-type: freestyle
@@ -229,8 +229,8 @@
     name: baremetal_benchmarks_k{kversion}_l{lttngversion}
     defaults: baremetal_benchmarks
 - job-template:
-    name: kvm_tests_k{kversion}_l{lttngversion}
-    defaults: kvm_tests
+    name: vm_tests_k{kversion}_l{lttngversion}
+    defaults: vm_tests
 - job-template:
     name: baremetal_tests_k{kversion}_l{lttngversion}
     defaults: baremetal_tests
@@ -239,15 +239,15 @@
     name: baremetal_tests_k{kversion}_l{lttngversion}_canary
     defaults: baremetal_tests
 - job-template:
-    name: kvm_tests_k{kversion}_l{lttngversion}_canary
-    defaults: kvm_tests
+    name: vm_tests_k{kversion}_l{lttngversion}_canary
+    defaults: vm_tests
 - job-template:
     name: baremetal_benchmarks_k{kversion}_l{lttngversion}_canary
     defaults: baremetal_benchmarks
 
 - job-template:
-    name: kvm_tests_kmainline_l{lttngversion}
-    defaults: kvm_tests
+    name: vm_tests_kmainline_l{lttngversion}
+    defaults: vm_tests
     triggers:
       - pollscm:
           cron: "@daily"
@@ -417,7 +417,7 @@
       - stable-2.8
       - stable-2.9
     jobs:
-      - 'kvm_tests_k{kversion}_l{lttngversion}'
+      - 'vm_tests_k{kversion}_l{lttngversion}'
       - 'baremetal_benchmarks_k{kversion}_l{lttngversion}'
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
 
@@ -429,7 +429,7 @@
     lttngversion:
       - stable-2.7
     jobs:
-      - 'kvm_tests_k{kversion}_l{lttngversion}':
+      - 'vm_tests_k{kversion}_l{lttngversion}':
       - 'baremetal_tests_k{kversion}_l{lttngversion}':
       - 'baremetal_benchmarks_k{kversion}_l{lttngversion}':
 
@@ -440,7 +440,7 @@
     lttngversion:
       - v2.8.1
     jobs:
-      - 'kvm_tests_k{kversion}_l{lttngversion}_canary'
+      - 'vm_tests_k{kversion}_l{lttngversion}_canary'
       - 'baremetal_tests_k{kversion}_l{lttngversion}_canary'
       - 'baremetal_benchmarks_k{kversion}_l{lttngversion}_canary'
 
@@ -449,6 +449,6 @@
     lttngversion:
       - v2.8.1
     jobs:
-      - 'kvm_tests_kmainline_l{lttngversion}'
+      - 'vm_tests_kmainline_l{lttngversion}'
       - 'baremetal_tests_kmainline_l{lttngversion}'
       - 'baremetal_benchmarks_kmainline_l{lttngversion}'
