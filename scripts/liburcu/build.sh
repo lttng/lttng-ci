@@ -149,7 +149,7 @@ tls_fallback)
 
 debug-rcu)
     echo "Enable RCU sanity checks for debugging"
-    if vergt "$PACKAGE_VERSION" "0.9"; then
+    if vergte "$PACKAGE_VERSION" "0.10"; then
        CONF_OPTS="--enable-rcu-debug"
     else
        CFLAGS="$CFLAGS -DDEBUG_RCU"
