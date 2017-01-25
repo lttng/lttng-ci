@@ -97,6 +97,10 @@
           default: '{kverfloor}'
           description: 'The lowest kernel version to build.'
       - string:
+          name: 'kverceil'
+          default: '{kverceil}'
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
           name: 'kverfilter'
           default: '{kverfilter}'
           description: 'Kernel versions list filtering strategy.'
@@ -410,31 +414,66 @@
     name: lttng-modules
     github_user: lttng
     github_name: lttng-modules
-    mversion:
-      - stable-2.7
-      - stable-2.8
-      - stable-2.9
-      - master
     jobs:
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - stable-2.9
+            - master
           buildtype: build
           kverfloor: v2.6.36
+          kverceil: ''
+          kverfilter: none
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion: stable-2.7
+          buildtype: build
+          kverfloor: v2.6.36
+          kverceil: v4.8-rc0
+          kverfilter: none
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion: stable-2.8
+          buildtype: build
+          kverfloor: v2.6.36
+          kverceil: v4.10-rc0
           kverfilter: none
       - 'lttng-modules_{mversion}_build-rt':
           mversion: master
       - 'lttng-modules_{mversion}_build-{uversion}':
+          mversion:
+            - stable-2.8
+            - stable-2.9
+            - master
           uversion:
             - trusty
             - xenial
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - stable-2.9
+            - master
           buildtype: crossbuild
           kverfloor: v3.16
+          kverceil: ''
+          kverfilter: stable-head
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion: stable-2.7
+          buildtype: crossbuild
+          kverfloor: v3.16
+          kverceil: v4.8-rc0
+          kverfilter: stable-head
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion: stable-2.8
+          buildtype: crossbuild
+          kverfloor: v3.16
+          kverceil: v4.10-rc0
           kverfilter: stable-head
       - 'lttng-modules_VERSION_param-build':
           arch: !!python/tuple [x86-32, x86-64]
       - 'lttng-modules_VERSION_param-crossbuild':
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
-      - 'lttng-modules_{mversion}_cppcheck'
+      - 'lttng-modules_{mversion}_cppcheck':
+          mversion:
+            - stable-2.8
+            - stable-2.9
+            - master
       - 'lttng-modules_{mversion}_sloccount':
           mversion: master
       - 'lttng-modules_{mversion}_coverity':

@@ -23,6 +23,18 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 
 
+class InvalidkVersionException extends Exception {
+  public InvalidkVersionException(String message) {
+    super(message)
+  }
+}
+
+class EmptykVersionException extends Exception {
+  public EmptykVersionException(String message) {
+    super(message)
+  }
+}
+
 class kVersion implements Comparable<kVersion> {
 
   Integer major = 0;
@@ -44,9 +56,13 @@ class kVersion implements Comparable<kVersion> {
     this.patch = 0
     this.rc = Integer.MAX_VALUE
 
+    if (!version) {
+      throw new EmptykVersionException("Empty kernel version")
+    }
+
     def match = version =~ /^v(\d+)\.(\d+)(\.(\d+))?(\.(\d+))?(-rc(\d+))?$/
     if (!match) {
-      throw new Exception("Invalid kernel version: ${version}")
+      throw new InvalidkVersionException("Invalid kernel version: ${version}")
     }
 
     Integer offset = 0;
@@ -140,10 +156,21 @@ class kVersion implements Comparable<kVersion> {
 def mversion = build.buildVariableResolver.resolve('mversion')
 def maxConcurrentBuild = build.buildVariableResolver.resolve('maxConcurrentBuild')
 def kgitrepo = build.buildVariableResolver.resolve('kgitrepo')
-def kverfloor = new kVersion(build.buildVariableResolver.resolve('kverfloor'))
+def kverfloor_raw = build.buildVariableResolver.resolve('kverfloor')
+def kverceil_raw = build.buildVariableResolver.resolve('kverceil')
 def kverfilter = build.buildVariableResolver.resolve('kverfilter')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
 def currentJobName = build.project.getFullDisplayName()
+
+// Parse kernel versions
+def kverfloor = new kVersion(kverfloor_raw)
+def kverceil = ""
+
+try {
+    kverceil = new kVersion(kverceil_raw)
+} catch (EmptykVersionException e) {
+    kverceil = new kVersion("v" + Integer.MAX_VALUE + ".0.0")
+}
 
 // Get the out variable
 def config = new HashMap()
@@ -151,8 +178,6 @@ def bindings = getBinding()
 config.putAll(bindings.getVariables())
 def out = config['out']
 
-def jlc = new jenkins.model.JenkinsLocationConfiguration()
-def jenkinsUrl = jlc.url
 
 // Get tags from git repository
 def refs = Git.lsRemoteRepository().setTags(true).setRemote(kgitrepo).call();
@@ -166,7 +191,7 @@ for (ref in refs) {
   if (match) {
     def v = new kVersion(match.group(1))
 
-    if (v >= kverfloor) {
+    if ((v >= kverfloor) && (v < kverceil)) {
       if (v.isRC()) {
         kversionsRC.add(v)
       } else {
