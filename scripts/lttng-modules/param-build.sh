@@ -202,8 +202,8 @@ if [ "x${cross_arch:-}" != "x" ]; then
             ;;
     esac
 
-    # Use default gcc when cross-compiling
-    CC="${cross_compile}gcc"
+    # Use gcc 4.9, older kernel don't build with gcc 5
+    CC="${cross_compile}gcc-4.9"
 
     # Export variables used by Kbuild for cross compilation
     export ARCH="${karch}"
