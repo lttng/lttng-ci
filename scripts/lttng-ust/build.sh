@@ -48,10 +48,12 @@ case "$arch" in
      ;;
 esac
 
-# Export build flags
-export CPPFLAGS="-I$URCU_INCS"
-export LDFLAGS="-L$URCU_LIBS"
+# Export time env. variables flags
 export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
+
+# Define flags
+CPPFLAGS="-I$URCU_INCS"
+LDFLAGS="-L$URCU_LIBS"
 
 
 # Set configure options for each build configuration
@@ -70,6 +72,11 @@ agents)
 
     echo "Enable Python agent build"
     CONF_OPTS+=" --enable-python-agent"
+    ;;
+
+debug-rcu)
+    echo "Enable RCU sanity checks for debugging"
+    CPPFLAGS="${CPPFLAGS:-} -DDEBUG_RCU"
     ;;
 
 *)
@@ -102,7 +109,7 @@ oot)
     mkdir -p "$BUILD_PATH"
     cd "$BUILD_PATH"
 
-    "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 dist)
@@ -120,7 +127,7 @@ dist)
     $TAR xvf ./*.tar.* --strip 1
 
     # Build in extracted source tree
-    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 oot-dist)
@@ -143,12 +150,12 @@ oot-dist)
     cd "$BUILD_PATH"
 
     # Build oot from extracted sources
-    "$NEWSRC_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$NEWSRC_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 *)
     echo "Standard in-tree build"
-    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 esac
 

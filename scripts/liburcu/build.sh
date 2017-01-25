@@ -91,6 +91,7 @@ solaris10)
     MAKE=gmake
     TAR=gtar
     NPROC=gnproc
+    LDFLAGS=""
     CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
     ;;
 
@@ -98,6 +99,7 @@ solaris11)
     MAKE=gmake
     TAR=gtar
     NPROC=nproc
+    LDFLAGS=""
     CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
     export PATH="$PATH:/usr/perl5/bin"
     ;;
@@ -108,20 +110,31 @@ macosx)
     NPROC="getconf _NPROCESSORS_ONLN"
     BISON="bison"
     YACC="$BISON -y"
+    LDFLAGS="-L/opt/local/lib"
+    CFLAGS="-I/opt/local/include"
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    export CFLAGS="-I/opt/local/include"
-    export LDFLAGS="-L/opt/local/lib"
     ;;
 
 *)
     MAKE=make
     TAR=tar
     NPROC=nproc
+    LDFLAGS=""
     CFLAGS=""
     ;;
 esac
 
-# Set configure options for each build configuration
+# Enter the source directory
+cd "$SRCDIR"
+
+# Run bootstrap in the source directory prior to configure
+./bootstrap
+
+# Get source version from configure script
+eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+
+# Set configure options and environment variables for each build
+# configuration.
 CONF_OPTS=""
 case "$conf" in
 static)
@@ -134,22 +147,20 @@ tls_fallback)
     CONF_OPTS="--disable-compiler-tls"
     ;;
 
+debug-rcu)
+    echo "Enable RCU sanity checks for debugging"
+    if vergt "$PACKAGE_VERSION" "0.9"; then
+       CONF_OPTS="--enable-debug-rcu"
+    else
+       CFLAGS="$CFLAGS -DDEBUG_RCU"
+    fi
+    ;;
+
 *)
     echo "Standard build"
     CONF_OPTS=""
     ;;
 esac
-
-
-# Enter the source directory
-cd "$SRCDIR"
-
-# Run bootstrap in the source directory prior to configure
-./bootstrap
-
-# Get source version from configure script
-eval "$(grep '^PACKAGE_VERSION=' ./configure)"
-
 
 # Build type
 # oot : out-of-tree build
@@ -165,7 +176,7 @@ oot)
     BUILD_PATH=$WORKSPACE/oot
     mkdir -p "$BUILD_PATH"
     cd "$BUILD_PATH"
-    MAKE=$MAKE CFLAGS="$CFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+    MAKE=$MAKE CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 dist)
@@ -183,11 +194,11 @@ dist)
     # Ignore level 1 of tar
     $TAR xvf ./*.tar.* --strip 1
 
-    MAKE=$MAKE CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    MAKE=$MAKE CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 *)
     echo "Standard in-tree build"
-    MAKE=$MAKE CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    MAKE=$MAKE CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 esac
 

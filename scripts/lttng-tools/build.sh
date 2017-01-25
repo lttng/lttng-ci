@@ -134,8 +134,8 @@ macosx)
     RUN_TESTS="no"
 
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    export CFLAGS="-I/opt/local/include"
-    export LDFLAGS="-L/opt/local/lib"
+    CFLAGS="-I/opt/local/include"
+    LDFLAGS="-L/opt/local/lib"
     ;;
 
 *)
@@ -173,14 +173,14 @@ PACKAGE_VERSION=$(echo "$PACKAGE_VERSION"| sed 's/\-pre$//')
 # Export build flags
 case "$conf" in
 no-ust)
-    export CPPFLAGS="-I$URCU_INCS"
-    export LDFLAGS="-L$URCU_LIBS"
+    CPPFLAGS="${CPPFLAGS:-} -I$URCU_INCS"
+    LDFLAGS="${LDFLAGS:-} -L$URCU_LIBS"
     export LD_LIBRARY_PATH="$URCU_LIBS:$BABEL_LIBS:${LD_LIBRARY_PATH:-}"
     ;;
 
 *)
-    export CPPFLAGS="-I$URCU_INCS -I$UST_INCS"
-    export LDFLAGS="-L$URCU_LIBS -L$UST_LIBS"
+    CPPFLAGS="${CPPFLAGS:-} -I$URCU_INCS -I$UST_INCS"
+    LDFLAGS="${LDFLAGS:-} -L$URCU_LIBS -L$UST_LIBS"
     export LD_LIBRARY_PATH="$URCU_LIBS:$UST_LIBS:$BABEL_LIBS:${LD_LIBRARY_PATH:-}"
     ;;
 esac
@@ -227,6 +227,11 @@ relayd-only)
     CONF_OPTS="--disable-bin-lttng --disable-bin-lttng-consumerd --disable-bin-lttng-crash --disable-bin-lttng-sessiond --disable-extras --disable-man-pages $NO_UST"
     ;;
 
+debug-rcu)
+    echo "Enable RCU sanity checks for debugging"
+    CPPFLAGS="${CPPFLAGS:-} -DDEBUG_RCU"
+    ;;
+
 *)
     echo "Standard build"
     CONF_OPTS=""
@@ -249,14 +254,14 @@ case "$build" in
         BUILD_PATH=$WORKSPACE/oot
         mkdir -p "$BUILD_PATH"
         cd "$BUILD_PATH"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     dist)
         echo "Distribution tarball in-tree build"
 
         # Initial configure and generate tarball
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
         $MAKE dist
 
         BUILD_PATH="$(mktemp -d)"
@@ -267,7 +272,7 @@ case "$build" in
         $TAR xvf ./*.tar.* --strip 1
 
         # Build in extracted source tree
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     oot-dist)
@@ -276,7 +281,7 @@ case "$build" in
         cd "$BUILD_PATH"
 
         # Initial configure and generate tarball
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
         $MAKE dist
 
         NEWSRC_PATH="$(mktemp -d)"
@@ -290,12 +295,12 @@ case "$build" in
         cd "$BUILD_PATH"
 
         # Build oot from extracted sources
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$NEWSRC_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$NEWSRC_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     *)
         echo "Standard tree build"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 esac
 

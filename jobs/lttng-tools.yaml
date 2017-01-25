@@ -190,6 +190,33 @@
                 filter: 'build/**'
                 target: 'deps/babeltrace'
                 do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: debug-rcu
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=debug-rcu,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps/liburcu'
+                do-not-fingerprint: true
+            - copyartifact:
+                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps/babeltrace'
+                do-not-fingerprint: true
+            - copyartifact:
+                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=debug-rcu,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps/lttng-ust'
+                do-not-fingerprint: true
       - shell:
          !include-raw-escape: scripts/lttng-tools/build.sh
 
@@ -412,7 +439,7 @@
           ustversion: master
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, agents]
+          conf: !!python/tuple [std, no-ust, agents, debug-rcu]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_{buildtype}':
