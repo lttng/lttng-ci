@@ -159,7 +159,8 @@ def get_config_cmd(build_device):
                 'cat /etc/resolv.conf',
                 'echo nameserver 172.18.0.12 > /etc/resolv.conf',
                 'groupadd tracing'
-                ]
+                ],
+                'timeout':300
             }
         })
     if build_device in 'x86':
@@ -401,6 +402,7 @@ def main():
     jobid = server.scheduler.submit_job(json.dumps(j))
 
     print('Lava jobid:{}'.format(jobid))
+    print('Lava job URL: http://lava-master.internal.efficios.com/scheduler/job/{}/log_file'.format(jobid))
 
     #Check the status of the job every 30 seconds
     jobstatus = server.scheduler.job_status(jobid)['job_status']
