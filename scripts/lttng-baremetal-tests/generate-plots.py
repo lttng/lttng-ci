@@ -123,7 +123,11 @@ def create_metadata_file(res_dir):
     for dirname, dirnames, res_files in os.walk('./'+res_dir):
         if len(dirnames) > 0:
             continue
-        metadata = pd.read_csv(os.path.join(dirname, 'metadata.csv'))
+        try:
+            metadata = pd.read_csv(os.path.join(dirname, 'metadata.csv'))
+        except Exception:
+            print('Omitting run {} because metadata.csv is missing'.format(dirname))
+            continue
         list_.append(metadata)
 
     df = pd.concat(list_)
@@ -140,7 +144,11 @@ def create_plots(res_dir):
     for dirname, dirnames, res_files in os.walk('./'+res_dir):
         if len(dirnames) > 0:
             continue
-        metadata = pd.read_csv(os.path.join(dirname, 'metadata.csv'))
+        try:
+            metadata = pd.read_csv(os.path.join(dirname, 'metadata.csv'))
+        except Exception:
+            print('Omitting run {} because metadata.csv is missing'.format(dirname))
+            continue
 
         for res in res_files:
             if res in 'metadata.csv':
