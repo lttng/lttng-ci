@@ -25,3 +25,17 @@ python3 -u lttng-ci/scripts/lttng-baremetal-tests/lava-submit.py \
                           -km "$STORAGE_LINUX_MODULES" \
                           -lm "$STORAGE_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID"
+
+# Create a results folder for this job
+RESULT_STORAGE_FOLDER="$BASE_STORAGE_FOLDER/benchmark-results/$JOB_NAME/$BUILD_NUMBER"
+$SSH_COMMAND "$STORAGE_USER@$STORAGE_HOST" mkdir -p "$RESULT_STORAGE_FOLDER"
+
+# Create a metadata file for this job containing the build_id and the commit ids
+echo "build_id,kernel_commit,modules_commit,tools_commit" > metadata.csv
+echo "$BUILD_NUMBER,$KERNEL_COMMIT_ID,$LTTNG_MODULES_COMMIT_ID,$LTTNG_TOOLS_COMMIT_ID" >> metadata.csv
+
+# Copy the result files for each benchmark and metadata on storage server
+$SCP_COMMAND ./processed_results_close.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/close.csv"
+$SCP_COMMAND ./processed_results_open_efault.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/open-efault.csv"
+$SCP_COMMAND ./processed_results_open_enoent.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/open-enoent.csv"
+$SCP_COMMAND ./metadata.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/metadata.csv"

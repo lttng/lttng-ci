@@ -50,9 +50,16 @@ echo "LTTNG_TOOLS_COMMIT_ID=$LTTNG_TOOLS_COMMIT_ID" >> properties.txt
 
 BASE_STORAGE_FOLDER="/storage/jenkins-lava/baremetal-tests"
 
+echo "BASE_STORAGE_FOLDER=$BASE_STORAGE_FOLDER" >> properties.txt
+echo "STORAGE_HOST=storage01.internal.efficios.com" >> properties.txt
+echo "STORAGE_USER=jenkins-lava" >> properties.txt
+
 echo "BUILD_DEVICE=$BUILD_DEVICE" >> properties.txt
 echo "KGITREPO=git://git-mirror.internal.efficios.com/git/linux-stable.git" >> properties.txt
 echo "STORAGE_KERNEL_FOLDER=$BASE_STORAGE_FOLDER/kernel" >> properties.txt
 echo "STORAGE_KERNEL_IMAGE=$BASE_STORAGE_FOLDER/kernel/$KERNEL_VERSION-$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage" >> properties.txt
 echo "STORAGE_LINUX_MODULES=$BASE_STORAGE_FOLDER/modules/linux/$KERNEL_VERSION-$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz" >> properties.txt
 echo "STORAGE_LTTNG_MODULES=$BASE_STORAGE_FOLDER/modules/lttng/$KERNEL_VERSION-$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.gz" >> properties.txt
+
+echo SSH_COMMAND="ssh -oStrictHostKeyChecking=no -i $identity_file" >> properties.txt
+echo SCP_COMMAND="scp -oStrictHostKeyChecking=no -i $identity_file" >> properties.txt
