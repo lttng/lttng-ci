@@ -26,7 +26,7 @@
               credential-id: jenkins_lava_key
               variable: LAVA_JENKINS_TOKEN
           - file:
-              credential-id: lava_jenkins_storage_frdeso
+              credential-id: system_tests_storage_key
               variable: identity_file
       - inject:
           properties-content: |
@@ -372,7 +372,7 @@
       - ansicolor
       - credentials-binding:
           - file:
-              credential-id: lava_jenkins_storage_frdeso
+              credential-id: system_tests_storage_key
               variable: identity_file
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-slave.sh
