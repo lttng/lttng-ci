@@ -101,14 +101,14 @@ def create_plot(df, graph_type):
 
         # Plot each line and its errorbars
         for (data, stdev) in  zip(data_cols, stdev_cols):
-            ax.errorbar(x=df.index.values, y=df[data], yerr=df[stdev], marker='o')
+            ax.errorbar(x=df.index.values, y=df[data].values, yerr=df[stdev].values, marker='o')
 
         ax.set_ylim(0)
         ax.grid()
         ax.set_xlabel('Jenkins Build ID')
         ax.set_ylabel('Meantime per syscall [us]')
 
-        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True, nbins=30))
 
         ax.legend(prop={'family': 'monospace'},
                     labels=curr_df.columns.values, bbox_to_anchor=(1.2,1))
