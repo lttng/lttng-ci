@@ -116,7 +116,7 @@ dist)
     echo "Distribution tarball in-tree build"
 
     # Initial configure and generate tarball
-    "$SRCDIR/configure"
+    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$SRCDIR/configure"
     $MAKE dist
 
     BUILD_PATH="$(mktemp -d)"
@@ -136,7 +136,7 @@ oot-dist)
     cd "$BUILD_PATH"
 
     # Initial configure and generate tarball
-    "$SRCDIR/configure"
+    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$SRCDIR/configure"
     $MAKE dist
 
     NEWSRC_PATH="$(mktemp -d)"
