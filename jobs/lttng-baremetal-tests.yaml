@@ -287,7 +287,7 @@
           fastpoll: true
           basedir: src/lttng-modules
       - git:
-          url: git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git
+          url: git://git-mirror.internal.efficios.com/kernel/torvalds/linux.git
           refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
           branches:
             - "master"
@@ -318,7 +318,7 @@
           fastpoll: true
           basedir: src/lttng-modules
       - git:
-          url: git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git
+          url: git://git-mirror.internal.efficios.com/kernel/torvalds/linux.git
           refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
           branches:
             - "master"
@@ -349,7 +349,7 @@
           fastpoll: true
           basedir: src/lttng-modules
       - git:
-          url: git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git
+          url: git://git-mirror.internal.efficios.com/kernel/torvalds/linux.git
           refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
           branches:
             - "master"

@@ -55,7 +55,8 @@ echo "STORAGE_HOST=storage.internal.efficios.com" >> properties.txt
 echo "STORAGE_USER=jenkins-lava" >> properties.txt
 
 echo "BUILD_DEVICE=$BUILD_DEVICE" >> properties.txt
-echo "KGITREPO=git://git-mirror.internal.efficios.com/git/linux-stable.git" >> properties.txt
+KGITREPO=$(git --git-dir="$LINUX_PATH"/.git/ remote get-url origin)
+echo "KGITREPO=$KGITREPO" >> properties.txt
 echo "STORAGE_KERNEL_FOLDER=$BASE_STORAGE_FOLDER/kernel" >> properties.txt
 echo "STORAGE_KERNEL_IMAGE=$BASE_STORAGE_FOLDER/kernel/$KERNEL_VERSION-$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage" >> properties.txt
 echo "STORAGE_LINUX_MODULES=$BASE_STORAGE_FOLDER/modules/linux/$KERNEL_VERSION-$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz" >> properties.txt
