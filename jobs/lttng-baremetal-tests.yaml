@@ -73,6 +73,7 @@
 
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/inject-ssh-commands.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
           property-file: 'properties.txt'
