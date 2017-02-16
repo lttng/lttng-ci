@@ -264,16 +264,30 @@
       - timed: "@daily"
 
 - job-template:
-    name: vm_tests_kmainline_l{lttngversion}
+    name: vm_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
     defaults: vm_tests
     triggers:
       - pollscm:
           cron: "@daily"
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_JENKINS_TOKEN
+      - inject:
+          properties-content: |
+            TOOLS_BRANCH={toolsversion}
+            MODULES_BRANCH={modulesversion}
+            UST_BRANCH={ustversion}
+            BUILD_DEVICE=baremetal
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
           branches:
-            - "{lttngversion}"
+            - "{toolsversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -281,7 +295,7 @@
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
           branches:
-            - "{lttngversion}"
+            - "{modulesversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -295,16 +309,30 @@
           basedir: src/linux
 
 - job-template:
-    name: baremetal_tests_kmainline_l{lttngversion}
+    name: baremetal_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
     defaults: baremetal_tests
     triggers:
       - pollscm:
           cron: "@daily"
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_JENKINS_TOKEN
+      - inject:
+          properties-content: |
+            TOOLS_BRANCH={toolsversion}
+            MODULES_BRANCH={modulesversion}
+            UST_BRANCH={ustversion}
+            BUILD_DEVICE=baremetal
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
           branches:
-            - "{lttngversion}"
+            - "{toolsversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -312,7 +340,7 @@
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
           branches:
-            - "{lttngversion}"
+            - "{modulesversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -324,18 +352,34 @@
             - "master"
           fastpoll: true
           basedir: src/linux
-
 - job-template:
-    name: baremetal_benchmarks_kmainline_l{lttngversion}
+    name: baremetal_benchmarks_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
     defaults: baremetal_benchmarks
     triggers:
       - pollscm:
           cron: "@daily"
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_JENKINS_TOKEN
+          - file:
+              credential-id: system_tests_storage_key
+              variable: identity_file
+      - inject:
+          properties-content: |
+            TOOLS_BRANCH={toolsversion}
+            MODULES_BRANCH={modulesversion}
+            UST_BRANCH={ustversion}
+            BUILD_DEVICE=baremetal
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
           branches:
-            - "{lttngversion}"
+            - "{toolsversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -343,7 +387,7 @@
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
           branches:
-            - "{lttngversion}"
+            - "{modulesversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -466,9 +510,13 @@
 
 - project:
     name: lttng-kernel-tests-mainline
-    lttngversion:
-      - v2.8.1
+    toolsversion:
+      - v2.9.3
+    ustversion:
+      - v2.9.0
+    modulesversion:
+      - stable-2.9
     jobs:
-      - 'vm_tests_kmainline_l{lttngversion}'
-      - 'baremetal_tests_kmainline_l{lttngversion}'
-      - 'baremetal_benchmarks_kmainline_l{lttngversion}'
+      - 'vm_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
+      - 'baremetal_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
+      - 'baremetal_benchmarks_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
