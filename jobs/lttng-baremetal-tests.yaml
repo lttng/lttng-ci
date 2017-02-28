@@ -446,6 +446,10 @@
           name: 'LTTNG_MODULES_COMMIT_ID'
           description: 'The lttng-modules commmit to build.'
       - string:
+          name: 'LTTNG_MODULES_REPO'
+          description: 'The LTTng Modules git repo to fetch from'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
+      - string:
           name: 'KERNEL_COMMIT_ID'
           description: 'The kernel commit to build.'
       - string:
