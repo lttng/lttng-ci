@@ -66,15 +66,6 @@ def test_case(df):
         yield( {"name": testcase_name, "result": "pass", "units": "usec",
             "measurement": str(row['duration_stdev'])})
 
-        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'memmean'])
-        yield( {"name": testcase_name, "result": "pass", "units": "kB",
-            "measurement": str(row['mem_mean'])})
-
-        testcase_name='_'.join([row['tracer'],str(row['nbthreads'])+'thr', 'memstdev'])
-        yield( {"name": testcase_name, "result": "pass", "units": "kB",
-            "measurement": str(row['mem_stdev'])})
-
-
 def main():
     results_file=sys.argv[1]
     df = pd.read_csv(results_file)

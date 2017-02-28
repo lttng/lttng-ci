@@ -1,6 +1,6 @@
 metadata:
         format: Lava-Test Test Definition 1.0
-        name: benchmark-syscall-failing-open-enoent
+        name: benchmark-syscall-success-dup-close
         description: "Perform syscall tracing benchmark of failing open-enoent"
 params:
     JENKINS_JOBNAME: "default jobname"
@@ -26,13 +26,13 @@ run:
                 - source /root/lttngvenv/activate
                 - cd benchmarks
                 - lava-test-case build-benchmarks --shell "make"
-                - lava-test-case run-benchmarks --shell "./run.sh failing-open-enoent"
+                - lava-test-case run-benchmarks --shell "./run.sh success-dup-close"
                 - lava-test-case-attach run-benchmarks "./results.csv"
                 - cd -
                 - cd ci
                 - python3 ./scripts/lttng-baremetal-tests/parse-results.py ../benchmarks/results.csv
-                - mv ./processed_results.csv ../processed_results_open_enoent.csv
+                - mv ./processed_results.csv ../processed_results_dup_close.csv
                 - cd -
                 - tar czf coredump.tar.gz coredump
                 - lava-test-case-attach run-benchmarks coredump.tar.gz
-                - lava-test-case-attach run-benchmarks "./processed_results_open_enoent.csv"
+                - lava-test-case-attach run-benchmarks "./processed_results_dup_close.csv"
