@@ -31,9 +31,12 @@ python3 -u "$LTTNG_CI_PATH"/scripts/lttng-baremetal-tests/lava-submit.py \
 RESULT_STORAGE_FOLDER="$BASE_STORAGE_FOLDER/benchmark-results/$JOB_NAME/$BUILD_NUMBER"
 $SSH_COMMAND "$STORAGE_USER@$STORAGE_HOST" mkdir -p "$RESULT_STORAGE_FOLDER"
 
-# Create a metadata file for this job containing the build_id and the commit ids
-echo "build_id,kernel_commit,modules_commit,tools_commit" > metadata.csv
-echo "$BUILD_NUMBER,$KERNEL_COMMIT_ID,$LTTNG_MODULES_COMMIT_ID,$LTTNG_TOOLS_COMMIT_ID" >> metadata.csv
+# Create a metadata file for this job containing the build_id, timestamp and the commit ids
+TIMESTAMP=$(/bin/date --iso-8601=seconds)
+LTTNG_CI_COMMIT_ID="$(git --git-dir="$LTTNG_CI_PATH"/.git/ --work-tree="$LTTNG_CI_PATH" rev-parse --short HEAD)"
+
+echo "build_id,timestamp,kernel_commit,modules_commit,tools_commit,ci_commit" > metadata.csv
+echo "$BUILD_NUMBER,$TIMESTAMP,$KERNEL_COMMIT_ID,$LTTNG_MODULES_COMMIT_ID,$LTTNG_TOOLS_COMMIT_ID,$LTTNG_CI_COMMIT_ID" >> metadata.csv
 
 # Copy the result files for each benchmark and metadata on storage server
 $SCP_COMMAND ./processed_results_close.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/close.csv"
