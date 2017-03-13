@@ -1,0 +1,230 @@
+- defaults:
+    name: lttng-scope
+    description: |
+      Nightly build of LTTng Scope.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - origin/{version}
+          skip-tag: true
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - build-discarder:
+          num-to-keep: 7
+      - github:
+          url: https://github.com/{github_user}/{github_name}
+
+
+## Templates
+- job-template:
+    name: lttng-scope_{version}_build
+    defaults: lttng-scope
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: SWT_GTK3
+         values:
+           - "0"
+           - "1"
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - xvfb:
+          installation-name: "default"
+          auto-display-name: true
+          parallel-build: false
+          screen: 1024x768x24
+      - timeout:
+          timeout: 120
+          fail: true
+          type: absolute
+
+    builders:
+      - shell:
+          !include-raw-escape: scripts/lttng-scope/launch-wm.sh
+      - maven-target:
+          maven-version: "default"
+          goals: "-version"
+          private-repository: true
+      - maven-target:
+          maven-version: "default"
+          goals: clean install -Dmaven.test.skip=false
+          private-repository: true
+          settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
+          properties:
+            - maven.test.failure.ignore=true
+            - eclipse.p2.mirrors=false
+
+    publishers:
+      - archive:
+          artifacts: 'releng/org.lttng.scope.rcp.product/target/repository/**,releng/org.lttng.scope.rcp.product/target/products/*'
+          allow-empty: false
+          only-if-success: true
+      - junit:
+          results: '**/target/surefire-reports/*.xml'
+      - workspace-cleanup
+      - email-ext:
+          recipients: alex@voxpopuli.im
+          matrix-trigger: only-parent
+#      - ircbot:
+#          strategy: new-failure-and-fixed
+#          matrix-notifier: only-parent
+#          channels:
+#            - name: '#lttng'
+
+
+- job-template:
+    name: lttng-scope_{version}_winbuild
+    defaults: lttng-scope
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - origin/{version}
+          skip-tag: true
+          git-tool: 'jgit' # Use jgit on windows to work around path too long
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - timeout:
+          timeout: 120
+          fail: true
+          type: absolute
+
+    builders:
+      - maven-target:
+          maven-version: "default"
+          goals: clean install -Dmaven.test.skip=false
+          private-repository: true
+          settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
+          properties:
+            - maven.test.failure.ignore=true
+            - eclipse.p2.mirrors=false
+
+    publishers:
+      - archive:
+          artifacts: 'releng/org.lttng.scope.rcp.product/target/repository/**,releng/org.lttng.scope.rcp.product/target/products/*'
+          allow-empty: false
+          only-if-success: true
+      - junit:
+          results: '**/target/surefire-reports/*.xml'
+      - workspace-cleanup
+      - email-ext:
+          recipients: alex@voxpopuli.im
+          matrix-trigger: only-parent
+#      - ircbot:
+#          strategy: new-failure-and-fixed
+#          matrix-notifier: only-parent
+#          channels:
+#            - name: '#lttng'
+
+
+- job-template:
+    name: lttng-scope_{version}_macosxbuild
+    defaults: lttng-scope
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - timeout:
+          timeout: 120
+          fail: true
+          type: absolute
+
+    builders:
+      - maven-target:
+          maven-version: "default"
+          goals: "-version"
+          private-repository: true
+      - maven-target:
+          maven-version: "default"
+          goals: clean install -Dmaven.test.skip=false
+          private-repository: true
+          settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
+          properties:
+            - maven.test.failure.ignore=true
+            - eclipse.p2.mirrors=false
+
+    publishers:
+      - archive:
+          artifacts: 'releng/org.lttng.scope.rcp.product/target/repository/**,releng/org.lttng.scope.rcp.product/target/products/*'
+          allow-empty: false
+          only-if-success: true
+      - junit:
+          results: '**/target/surefire-reports/*.xml'
+      - workspace-cleanup
+      - email-ext:
+          recipients: alex@voxpopuli.im
+          matrix-trigger: only-parent
+#      - ircbot:
+#          strategy: new-failure-and-fixed
+#          matrix-notifier: only-parent
+#          channels:
+#            - name: '#lttng'
+
+
+## Project
+- project:
+    name: lttng-scope
+    github_user: lttng
+    github_name: lttng-scope
+    version:
+      - master
+    jobs:
+      - 'lttng-scope_{version}_build':
+          arch: !!python/tuple [x86-32, x86-64]
+
+      - 'lttng-scope_{version}_winbuild':
+          arch: !!python/tuple [win64]
+
+      - 'lttng-scope_{version}_macosxbuild':
+          arch: !!python/tuple [macosx]
+
