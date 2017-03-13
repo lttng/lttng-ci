@@ -1,0 +1,6 @@
+---
+- name: Ensure lttng_scope build dependencies are installed.
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ lttng_scope_packages }}"

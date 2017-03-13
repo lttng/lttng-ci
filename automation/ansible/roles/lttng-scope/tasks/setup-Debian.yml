@@ -1,0 +1,11 @@
+---
+- name: Update apt cache.
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: Ensure unity is installed.
+  apt: "name=unity install_recommends=no"
+
+- name: Ensure lttng_scope build dependencies are installed.
+  apt: "name={{ item }} state=installed"
+  with_items: "{{ lttng_scope_packages }}"
+
