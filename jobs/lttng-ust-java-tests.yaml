@@ -114,11 +114,11 @@
       - shell:
           !include-raw-escape: scripts/lttng-ust-java-tests/start-sessiond.sh
       - maven-target:
-          maven-version: "Maven 3.3.9"
+          maven-version: "default"
           goals: "-version"
           private-repository: true
       - maven-target:
-          maven-version: "Maven 3.3.9"
+          maven-version: "default"
           goals: clean verify
           pom: 'lttng-ust-java-tests/pom.xml'
           properties:
