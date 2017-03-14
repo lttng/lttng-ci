@@ -1,0 +1,71 @@
+- defaults:
+    name: ctf-java
+    description: |
+      Nightly build of CTF Java.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: maven
+
+    maven:
+      goals: 'clean install'
+      private-repository: 'local-to-workspace'
+      automatic-fingerprinting: false
+      per-module-email: false
+      settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
+      settings-type: cfp
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - origin/{version}
+          skip-tag: true
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - build-discarder:
+          num-to-keep: 2
+      - github:
+          url: https://github.com/{github_user}/{github_name}
+
+
+## Templates
+- job-template:
+    name: ctf-java_{version}_build
+    defaults: ctf-java
+
+    publishers:
+      - warnings:
+          console-log-parsers:
+            - 'Maven'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - workspace-cleanup
+      - email-ext:
+          recipients: alex@voxpopuli.im
+          matrix-trigger: only-parent
+
+## Project
+- project:
+    name: ctf-java
+    github_user: efficios
+    github_name: ctf-java
+    version:
+      - master
+    jobs:
+      - 'ctf-java_{version}_build'
