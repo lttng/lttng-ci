@@ -66,6 +66,10 @@ lttng-ust)
     CONF_OPTS="--enable-java-agent-all --enable-python-agent"
     export CLASSPATH="/usr/share/java/log4j-1.2.jar"
     ;;
+lttng-scope)
+    CONF_OPTS=""
+    MVN_BIN="$HOME/tools/hudson.tasks.Maven_MavenInstallation/default/bin/mvn"
+    ;;
 *)
     echo "Generic project, no configure options."
     CONF_OPTS=""
@@ -141,7 +145,7 @@ cd "$SRCDIR"
 
 COVERITY_SCAN_VERSION=$(git describe --always | sed 's|-|.|g')
 
-# Prepare build dir
+# Prepare build dir for autotools based projects
 if [ -f "./bootstrap" ]; then
   ./bootstrap
   ./configure $CONF_OPTS
@@ -149,7 +153,26 @@ fi
 
 # Build
 echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
-cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" V=1
+case "$COVERITY_SCAN_PROJECT_NAME" in
+lttng-scope)
+    export
+    cov-configure --java
+    cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS "$MVN_BIN" \
+      -s "$MVN_SETTINGS" \
+      -Dmaven.repo.local="$WORKSPACE/.repository" \
+      -Dmaven.compiler.fork=true \
+      -Dmaven.compiler.forceJavaCompilerUse=true \
+      -Dmaven.test.skip=true \
+      -DskipTests \
+      clean verify
+    ;;
+*)
+    cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" V=1
+    ;;
+esac
+
+
+
 cov-import-scm --dir "$RESULTS_DIR" --scm git --log "$RESULTS_DIR/scm_log.txt"
 
 cd "${WORKSPACE}"
@@ -172,7 +195,9 @@ response=$(curl \
   "$UPLOAD_URL")
 set -x
 status_code=$(echo "$response" | sed -n '$p')
-if [ "$status_code" != "201" ]; then
+if [ "$status_code" == "201" ]; then
+  echo -e "\033[33;1mCoverity Scan upload successful.\033[0m"
+else
   TEXT=$(echo "$response" | sed '$d')
   echo -e "\033[33;1mCoverity Scan upload failed: $TEXT.\033[0m"
   exit 1
