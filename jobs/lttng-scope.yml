@@ -89,6 +89,15 @@
           only-if-success: true
       - junit:
           results: '**/target/surefire-reports/*.xml'
+      - warnings:
+          console-log-parsers:
+            - 'Maven'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
       - workspace-cleanup
       - email-ext:
           recipients: alex@voxpopuli.im
@@ -148,6 +157,15 @@
           only-if-success: true
       - junit:
           results: '**/target/surefire-reports/*.xml'
+      - warnings:
+          console-log-parsers:
+            - 'Maven'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
       - workspace-cleanup
       - email-ext:
           recipients: alex@voxpopuli.im
@@ -202,6 +220,15 @@
           only-if-success: true
       - junit:
           results: '**/target/surefire-reports/*.xml'
+      - warnings:
+          console-log-parsers:
+            - 'Maven'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
       - workspace-cleanup
       - email-ext:
           recipients: alex@voxpopuli.im
