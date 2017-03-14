@@ -26,7 +26,7 @@ run:
                 - source /root/lttngvenv/activate
                 - cd benchmarks
                 - lava-test-case build-benchmarks --shell "make"
-                - lava-test-case run-benchmarks --shell "./run.sh failing-open-efault"
+                - lava-test-case run-benchmarks --shell "./run.sh failing-open-efault sys_open"
                 - lava-test-case-attach run-benchmarks "./results.csv"
                 - cd -
                 - cd ci
