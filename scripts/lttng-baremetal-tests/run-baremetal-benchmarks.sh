@@ -42,4 +42,5 @@ echo "$BUILD_NUMBER,$TIMESTAMP,$KERNEL_COMMIT_ID,$LTTNG_MODULES_COMMIT_ID,$LTTNG
 $SCP_COMMAND ./processed_results_close.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/close.csv"
 $SCP_COMMAND ./processed_results_open_efault.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/open-efault.csv"
 $SCP_COMMAND ./processed_results_dup_close.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/dup-close.csv"
+$SCP_COMMAND ./processed_results_lttng_test_filter.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/lttng-test-filter.csv"
 $SCP_COMMAND ./metadata.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/metadata.csv"

@@ -72,7 +72,8 @@ def fetch_benchmark_results(server, job):
     content = get_job_bundle_content(server, job)
     testcases = ['processed_results_close.csv',
             'processed_results_open_efault.csv',
-            'processed_results_dup_close.csv']
+            'processed_results_dup_close.csv',
+            'processed_results_lttng_test_filter.csv']
 
     # The result bundle is a large JSON containing the results of every testcase
     # of the LAVA job as well as the files that were attached during the run.
@@ -80,7 +81,7 @@ def fetch_benchmark_results(server, job):
     # benchmark results produced during the run.
     for run in content['test_runs']:
         # We only care of the benchmark testcases
-        if 'benchmark-syscall-' in run['test_id']:
+        if 'benchmark-' in run['test_id']:
             if 'test_results' in run:
                 for res in run['test_results']:
                     if 'attachments' in res:
@@ -198,6 +199,11 @@ def get_baremetal_benchmarks_cmd():
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/success-dup-close.yml'
+                },
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
+                    'testdef': 'lava/baremetal-tests/lttng-test-filter.yml'
                 }
                 ],
             'timeout': 18000
