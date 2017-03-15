@@ -49,7 +49,6 @@
          name: SWT_GTK3
          values:
            - "0"
-           - "1"
 
     wrappers:
       - workspace-cleanup
