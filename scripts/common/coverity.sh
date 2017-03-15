@@ -52,27 +52,34 @@ export TMPDIR
 case "$COVERITY_SCAN_PROJECT_NAME" in
 babeltrace)
     CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc"
+    BUILD_TYPE="autotools"
     ;;
 liburcu)
     CONF_OPTS=""
+    BUILD_TYPE="autotools"
     ;;
 lttng-modules)
     CONF_OPTS=""
+    BUILD_TYPE="autotools"
     ;;
 lttng-tools)
     CONF_OPTS=""
+    BUILD_TYPE="autotools"
     ;;
 lttng-ust)
     CONF_OPTS="--enable-java-agent-all --enable-python-agent"
+    BUILD_TYPE="autotools"
     export CLASSPATH="/usr/share/java/log4j-1.2.jar"
     ;;
-lttng-scope)
+lttng-scope|ctf-java|libdelorean-java|jabberwocky)
     CONF_OPTS=""
+    BUILD_TYPE="maven"
     MVN_BIN="$HOME/tools/hudson.tasks.Maven_MavenInstallation/default/bin/mvn"
     ;;
 *)
     echo "Generic project, no configure options."
     CONF_OPTS=""
+    BUILD_TYPE="autotools"
     ;;
 esac
 
@@ -153,9 +160,8 @@ fi
 
 # Build
 echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
-case "$COVERITY_SCAN_PROJECT_NAME" in
-lttng-scope)
-    export
+case "$BUILD_TYPE" in
+maven)
     cov-configure --java
     cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS "$MVN_BIN" \
       -s "$MVN_SETTINGS" \
@@ -166,8 +172,12 @@ lttng-scope)
       -DskipTests \
       clean verify
     ;;
-*)
+autotools)
     cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" V=1
+    ;;
+*)
+    echo "Unsupported build type: $BUILD_TYPE"
+    exit 1
     ;;
 esac
 
