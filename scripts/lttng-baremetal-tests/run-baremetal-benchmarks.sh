@@ -40,6 +40,7 @@ echo "$BUILD_NUMBER,$TIMESTAMP,$KERNEL_COMMIT_ID,$LTTNG_MODULES_COMMIT_ID,$LTTNG
 
 # Copy the result files for each benchmark and metadata on storage server
 $SCP_COMMAND ./processed_results_close.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/close.csv"
+$SCP_COMMAND ./processed_results_ioctl.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/ioctl.csv"
 $SCP_COMMAND ./processed_results_open_efault.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/open-efault.csv"
 $SCP_COMMAND ./processed_results_open_enoent.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/open-enoent.csv"
 $SCP_COMMAND ./processed_results_dup_close.csv "$STORAGE_USER@$STORAGE_HOST:$RESULT_STORAGE_FOLDER/dup-close.csv"

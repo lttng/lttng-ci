@@ -71,6 +71,7 @@ def check_job_all_test_cases_state_count(server, job):
 def fetch_benchmark_results(server, job):
     content = get_job_bundle_content(server, job)
     testcases = ['processed_results_close.csv',
+            'processed_results_ioctl.csv',
             'processed_results_open_efault.csv',
             'processed_results_open_enoent.csv',
             'processed_results_dup_close.csv',
@@ -190,6 +191,11 @@ def get_baremetal_benchmarks_cmd():
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/failing-close.yml'
+                },
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
+                    'testdef': 'lava/baremetal-tests/failing-ioctl.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
