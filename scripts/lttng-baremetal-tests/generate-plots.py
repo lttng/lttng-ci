@@ -83,7 +83,7 @@ def create_plot(df, graph_type):
 
     plots = [baseline, lttng, one_thr, two_thr, four_thr, eight_thr, sixteen_thr]
 
-    title='Meantime per syscalls for {} testcase'.format(graph_type)
+    title='Meantime per event for {} testcase'.format(graph_type)
 
     # Create a axe object for each sub-plots
     f, arrax = plt.subplots(len(plots), sharex=True, figsize=(16, 25))
@@ -106,7 +106,7 @@ def create_plot(df, graph_type):
         ax.set_ylim(0)
         ax.grid()
         ax.set_xlabel('Jenkins Build ID')
-        ax.set_ylabel('Meantime per syscall [us]')
+        ax.set_ylabel('Meantime per event [us]')
 
         ax.xaxis.set_major_locator(MaxNLocator(integer=True, nbins=30))
 
