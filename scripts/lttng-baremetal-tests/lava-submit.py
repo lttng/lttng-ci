@@ -75,6 +75,7 @@ def fetch_benchmark_results(server, job):
             'processed_results_open_efault.csv',
             'processed_results_open_enoent.csv',
             'processed_results_dup_close.csv',
+            'processed_results_raw_syscall_getpid.csv',
             'processed_results_lttng_test_filter.csv']
 
     # The result bundle is a large JSON containing the results of every testcase
@@ -206,6 +207,11 @@ def get_baremetal_benchmarks_cmd():
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/success-dup-close.yml'
+                },
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
+                    'testdef': 'lava/baremetal-tests/raw-syscall-getpid.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
