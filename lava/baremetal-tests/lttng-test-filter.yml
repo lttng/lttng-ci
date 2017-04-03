@@ -1,7 +1,7 @@
 metadata:
         format: Lava-Test Test Definition 1.0
-        name: benchmark-syscall-failing-open-efault
-        description: "Perform syscall tracing benchmark of failing open-efault"
+        name: benchmark-lttng-test-filter
+        description: "Perform syscall tracing benchmark of the lttng-test-filter"
 params:
     JENKINS_JOBNAME: "default jobname"
 
@@ -25,14 +25,15 @@ run:
         steps:
                 - source /root/lttngvenv/activate
                 - cd benchmarks
+                - modprobe lttng-test
                 - lava-test-case build-benchmarks --shell "make"
-                - lava-test-case run-benchmarks --shell "./run.sh failing-open-efault sys_open"
+                - lava-test-case run-benchmarks --shell "./run.sh lttng-test-filter lttng_test_filter_event"
                 - lava-test-case-attach run-benchmarks "./results.csv"
                 - cd -
                 - cd ci
                 - python3 ./scripts/lttng-baremetal-tests/parse-results.py ../benchmarks/results.csv
-                - mv ./processed_results.csv ../processed_results_open_efault.csv
+                - mv ./processed_results.csv ../processed_results_lttng_test_filter.csv
                 - cd -
                 - tar czf coredump.tar.gz coredump
                 - lava-test-case-attach run-benchmarks coredump.tar.gz
-                - lava-test-case-attach run-benchmarks "./processed_results_open_efault.csv"
+                - lava-test-case-attach run-benchmarks "./processed_results_lttng_test_filter.csv"

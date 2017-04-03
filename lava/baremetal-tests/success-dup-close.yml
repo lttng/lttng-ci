@@ -1,7 +1,7 @@
 metadata:
         format: Lava-Test Test Definition 1.0
         name: benchmark-syscall-success-dup-close
-        description: "Perform syscall tracing benchmark of failing open-enoent"
+        description: "Perform syscall tracing benchmark of successful dup and close"
 params:
     JENKINS_JOBNAME: "default jobname"
 
@@ -26,7 +26,7 @@ run:
                 - source /root/lttngvenv/activate
                 - cd benchmarks
                 - lava-test-case build-benchmarks --shell "make"
-                - lava-test-case run-benchmarks --shell "./run.sh success-dup-close"
+                - lava-test-case run-benchmarks --shell "./run.sh success-dup-close sys_close,sys_dup"
                 - lava-test-case-attach run-benchmarks "./results.csv"
                 - cd -
                 - cd ci
