@@ -28,10 +28,15 @@
     project-type: freestyle
 
     wrappers:
-      - workspace-cleanup
+      - ansicolor
+      - timeout:
+          timeout: 90
+          fail: true
+          type: absolute
       - timestamps
-      - ansicolor:
-          colormap: xterm
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
 
     scm:
       - git:
@@ -42,6 +47,7 @@
             - origin/{version}
           basedir: src/liburcu
           skip-tag: true
+          git-tool: jgit
 
     triggers:
       - pollscm:
@@ -57,11 +63,9 @@
           url: https://github.com/{github_user}/{github_name}
 
 
-## Templates
-- job-template:
-    name: liburcu_{version}_{buildtype}
-    defaults: liburcu
-
+## Anchors
+- liburcu_build_axes_defaults: &liburcu_build_axes_defaults
+    name: 'liburcu_build_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     axes:
@@ -72,21 +76,72 @@
       - axis:
          type: user-defined
          name: conf
-         values:
-          - std
-          - static
-          - tls_fallback
-          - debug-rcu
+         values: '{obj:conf}'
       - axis:
          type: user-defined
          name: build
          values: '{obj:build}'
 
+- liburcu_build_builders_defaults: &liburcu_build_builders_defaults
+    name: 'liburcu_build_builders_defaults'
     builders:
       - shell:
          !include-raw-escape: scripts/liburcu/build.sh
 
-    # TODO: Scan for open tasks
+- liburcu_build_builders_win: &liburcu_build_builders_win
+    name: 'liburcu_build_builders_win'
+    builders:
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'cygwin'
+          steps:
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/cygwin-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/liburcu/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'cygwin64'
+          steps:
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/cygwin64-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/liburcu/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'msys32'
+          steps:
+            - inject:
+               properties-content: 'MSYSTEM=MINGW32'
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/msys32-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/liburcu/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'msys64'
+          steps:
+            - inject:
+               properties-content: 'MSYSTEM=MINGW64'
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/msys64-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/liburcu/build.sh
+
+- liburcu_build_publishers_defaults: &liburcu_build_publishers_defaults
+    name: 'liburcu_build_publishers_defaults'
     publishers:
       - warnings:
           console-log-parsers:
@@ -105,6 +160,24 @@
           matrix-notifier: only-parent
           channels:
             - name: '#lttng'
+
+
+## Templates
+- job-template:
+    name: liburcu_{version}_{buildtype}
+    defaults: liburcu
+
+    <<: *liburcu_build_axes_defaults
+    <<: *liburcu_build_builders_defaults
+    <<: *liburcu_build_publishers_defaults
+
+- job-template:
+    name: liburcu_{version}_winbuild
+    defaults: liburcu
+
+    <<: *liburcu_build_axes_defaults
+    <<: *liburcu_build_builders_win
+    <<: *liburcu_build_publishers_defaults
 
 - job-template:
     name: liburcu_{version}_cppcheck
@@ -159,10 +232,15 @@
           cron: "@daily"
 
     wrappers:
-      - workspace-cleanup
+      - ansicolor
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
       - timestamps
-      - ansicolor:
-          colormap: xterm
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
       - credentials-binding:
           - username-password-separated:
               credential-id: liburcu_coverity_token
@@ -186,20 +264,25 @@
     github_user: urcu
     github_name: userspace-rcu
     version:
-      !include: jobs/inc/liburcu-versions.yaml.inc
+      - stable-0.8
+      - stable-0.9
+      - master
     jobs:
       - 'liburcu_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [x86-32, x86-64]
           build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
       - 'liburcu_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
           build: !!python/tuple [std]
+          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
       - 'liburcu_{version}_{buildtype}':
           buildtype: solarisbuild
           arch: !!python/tuple [solaris10, solaris11]
           build: !!python/tuple [std]
+          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
           version: # Solaris support was introduced in 0.9
             - master
             - stable-0.9
@@ -207,6 +290,14 @@
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
           build: !!python/tuple [std]
+          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          version:
+            - master
+            - stable-0.9
+      - 'liburcu_{version}_winbuild':
+          arch: !!python/tuple [cygwin, cygwin64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
           version:
             - master
             - stable-0.9

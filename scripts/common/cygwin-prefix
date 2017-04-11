@@ -1,0 +1,5 @@
+set -exu
+
+WORKSPACE="$(cygpath "$WORKSPACE")"
+
+cd "$WORKSPACE"
