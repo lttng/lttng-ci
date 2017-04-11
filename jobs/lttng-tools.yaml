@@ -11,13 +11,15 @@
     project-type: freestyle
 
     wrappers:
-      - workspace-cleanup
-      - timestamps
       - ansicolor
       - timeout:
-          timeout: 60
+          timeout: 90
           fail: true
           type: absolute
+      - timestamps
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
 
     scm:
       - git:
@@ -28,6 +30,7 @@
             - origin/{version}
           basedir: src/lttng-tools
           skip-tag: true
+          git-tool: jgit
 
     triggers:
       - pollscm:
@@ -44,12 +47,9 @@
           artifact-num-to-keep: 2
 
 
-## Templates
-
-- lttng-tools_version_buildtype_anchor: &lttng-tools_version_buildtype_anchor
-    name: 'lttng-tools_version_buildtype_anchor'
-    defaults: lttng-tools
-
+## Anchors
+- lttng-tools_build_axes_defaults: &lttng-tools_build_axes_defaults
+    name: 'lttng-tools_build_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     axes:
@@ -74,20 +74,8 @@
          name: build
          values: '{obj:build}'
 
-    properties:
-      - github:
-          url: https://github.com/{github_user}/{github_name}
-      - build-discarder:
-          num-to-keep: 20
-          artifact-num-to-keep: 2
-      - throttle:
-          max-per-node: 1
-          option: 'category'
-          categories:
-            - 'lttng-tools'
-          matrix-builds: false
-          matrix-configs: true
-
+- lttng-tools_build_builders_defaults: &lttng-tools_build_builders_defaults
+    name: 'lttng-tools_build_builders_defaults'
     builders:
       - conditional-step:
           condition-kind: regex-match
@@ -220,17 +208,74 @@
       - shell:
          !include-raw-escape: scripts/lttng-tools/build.sh
 
+- lttng-tools_build_builders_win: &lttng-tools_build_builders_win
+    name: 'lttng-tools_build_builders_win'
+    builders:
+      - copyartifact:
+          project: liburcu_${{liburcu_version}}_winbuild/arch=${{arch}},conf=std,build=std
+          which-build: last-successful
+          stable: false
+          filter: 'build/**'
+          target: 'deps/liburcu'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: babeltrace_${{babeltrace_version}}_winbuild/arch=${{arch}},conf=std,build=std
+          which-build: last-successful
+          stable: false
+          filter: 'build/**'
+          target: 'deps/babeltrace'
+          do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'cygwin'
+          steps:
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/cygwin-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/lttng-tools/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'cygwin64'
+          steps:
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/cygwin64-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/lttng-tools/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'msys32'
+          steps:
+            - inject:
+               properties-content: 'MSYSTEM=MINGW32'
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/msys32-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/lttng-tools/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'msys64'
+          steps:
+            - inject:
+               properties-content: 'MSYSTEM=MINGW64'
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/msys64-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/lttng-tools/build.sh
 
-- job-template:
-    name: lttng-tools_{version}_{buildtype}
-    <<: *lttng-tools_version_buildtype_anchor
-    triggers:
-      - pollscm:
-          cron: "@hourly"
-      - reverse:
-            jobs: 'lttng-ust_{version}_{buildtype}'
-            result: 'success'
-
+- lttng-tools_build_publishers_defaults: &lttng-tools_build_publishers_defaults
+    name: 'lttng-tools_build_publishers_defaults'
     publishers:
       - tap:
           results: 'tap/**/*.tap'
@@ -245,12 +290,16 @@
               total-high: 0
               total-normal: 0
               total-low: 0
-      - archive:
-          artifacts: 'build/**'
-          allow-empty: false
       - workspace-cleanup:
           clean-if:
             - failure: false
+
+- lttng-tools_build_publishers_prod: &lttng-tools_build_publishers_prod
+    name: 'lttng-tools_build_publishers_prod'
+    publishers:
+      - archive:
+          artifacts: 'build/**'
+          allow-empty: false
       - ircbot:
           strategy: new-failure-and-fixed
           matrix-notifier: only-parent
@@ -258,28 +307,39 @@
             - name: '#lttng'
 
 
+## Templates
+- job-template:
+    name: lttng-tools_{version}_{buildtype}
+    defaults: lttng-tools
+
+    <<: *lttng-tools_build_axes_defaults
+    <<: *lttng-tools_build_builders_defaults
+    <<: *lttng-tools_build_publishers_defaults
+    <<: *lttng-tools_build_publishers_prod
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+      - reverse:
+            jobs: 'lttng-ust_{version}_{buildtype}'
+            result: 'success'
+
+- job-template:
+    name: lttng-tools_{version}_winbuild
+    defaults: lttng-tools
+
+    <<: *lttng-tools_build_axes_defaults
+    <<: *lttng-tools_build_builders_win
+    <<: *lttng-tools_build_publishers_defaults
+    <<: *lttng-tools_build_publishers_prod
+
 - job-template:
     name: dev_{user}_lttng-tools_{version}_{buildtype}
-    <<: *lttng-tools_version_buildtype_anchor
+    defaults: lttng-tools
 
-    publishers:
-      - tap:
-          results: 'tap/**/*.tap'
-          failed-tests-mark-build-as-failure: true
-          todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
-
+    <<: *lttng-tools_build_axes_defaults
+    <<: *lttng-tools_build_builders_defaults
+    <<: *lttng-tools_build_publishers_defaults
 
 - job-template:
     name: lttng-tools_{version}_cppcheck
@@ -550,125 +610,21 @@
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.3]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: build
-          version: master-staging
+      - 'lttng-tools_{version}_winbuild':
+          version: master
           ustversion: master
-          arch: !!python/tuple [x86-32, x86-64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: build
-          version: stable-2.9-staging
-          ustversion: stable-2.9
-          arch: !!python/tuple [x86-32, x86-64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.5]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: build
-          version: stable-2.8-staging
-          ustversion: stable-2.8
-          arch: !!python/tuple [x86-32, x86-64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.4]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: build
-          version: stable-2.7-staging
-          ustversion: stable-2.7
-          arch: !!python/tuple [x86-32, x86-64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.3]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: portbuild
-          version: master-staging
-          ustversion: master
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: portbuild
-          version: stable-2.9-staging
-          ustversion: stable-2.9
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.5]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: portbuild
-          version: stable-2.8-staging
-          ustversion: stable-2.8
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.4]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: portbuild
-          version: stable-2.7-staging
-          ustversion: stable-2.7
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.3]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: macosxbuild
-          version: master-staging
-          ustversion: master
-          arch: !!python/tuple [macosx]
+          arch: !!python/tuple [cygwin, cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [stable-1.5]
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          user: jgalar
-          github_user: jgalar
-          github_name: lttng-tools
-          buildtype: solarisbuild
-          version: master-staging
-          ustversion: master
-          arch: !!python/tuple [solaris10, solaris11]
+      - 'lttng-tools_{version}_winbuild':
+          version: stable-2.9
+          ustversion: stable-2.9
+          arch: !!python/tuple [cygwin, cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [master]
+          urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
       - 'lttng-tools_{version}_cppcheck'
       - 'lttng-tools_{version}_scan-build':
@@ -693,3 +649,100 @@
           urcuversion: master
           ustversion: master
 
+
+- project:
+    name: dev_jgalar_lttng-tools
+    user: jgalar
+    github_user: jgalar
+    github_name: lttng-tools
+    jobs:
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: build
+          version: master-staging
+          ustversion: master
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: build
+          version: stable-2.9-staging
+          ustversion: stable-2.9
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.5]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: build
+          version: stable-2.8-staging
+          ustversion: stable-2.8
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.4]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: build
+          version: stable-2.7-staging
+          ustversion: stable-2.7
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.3]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: portbuild
+          version: master-staging
+          ustversion: master
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.9-staging
+          ustversion: stable-2.9
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.5]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.8-staging
+          ustversion: stable-2.8
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.4]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.7-staging
+          ustversion: stable-2.7
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.3]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: macosxbuild
+          version: master-staging
+          ustversion: master
+          arch: !!python/tuple [macosx]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [relayd-only]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: solarisbuild
+          version: master-staging
+          ustversion: master
+          arch: !!python/tuple [solaris10, solaris11]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [relayd-only]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]

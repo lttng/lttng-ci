@@ -138,6 +138,16 @@ macosx)
     LDFLAGS="-L/opt/local/lib"
     ;;
 
+cygwin|cygwin64|msys32|msys64)
+    MAKE=make
+    TAR=tar
+    NPROC=nproc
+    BISON="bison"
+    YACC="$BISON -y"
+    CFLAGS=""
+    RUN_TESTS="no"
+    ;;
+
 *)
     MAKE=make
     TAR=tar
