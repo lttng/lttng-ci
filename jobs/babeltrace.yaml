@@ -15,10 +15,15 @@
     project-type: freestyle
 
     wrappers:
-      - workspace-cleanup
+      - ansicolor
+      - timeout:
+          timeout: 90
+          fail: true
+          type: absolute
       - timestamps
-      - ansicolor:
-          colormap: xterm
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
 
     scm:
       - git:
@@ -29,6 +34,7 @@
             - origin/{version}
           basedir: src/babeltrace
           skip-tag: true
+          git-tool: jgit
 
     triggers:
       - pollscm:
@@ -44,12 +50,9 @@
           url: https://github.com/{github_user}/{github_name}
 
 
-## Templates
-
-- babeltrace_version_buildtype_anchor: &babeltrace_version_buildtype_anchor
-    name: 'babeltrace_version_buildtype_anchor'
-    defaults: babeltrace
-
+## Anchors
+- babeltrace_build_axes_defaults: &babeltrace_build_axes_defaults
+    name: 'babeltrace_build_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     axes:
@@ -66,14 +69,67 @@
          name: build
          values: '{obj:build}'
 
+- babeltrace_build_builders_defaults: &babeltrace_build_builders_defaults
+    name: 'babeltrace_build_builders_defaults'
     builders:
       - shell:
          !include-raw-escape: scripts/babeltrace/build.sh
 
-- job-template:
-    name: babeltrace_{version}_{buildtype}
-    <<: *babeltrace_version_buildtype_anchor
-    # TODO: Scan for open tasks
+- babeltrace_build_builders_win: &babeltrace_build_builders_win
+    name: 'babeltrace_build_builders_win'
+    builders:
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'cygwin'
+          steps:
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/cygwin-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/babeltrace/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'cygwin64'
+          steps:
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/cygwin64-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/babeltrace/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'msys32'
+          steps:
+            - inject:
+               properties-content: 'MSYSTEM=MINGW32'
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/msys32-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/babeltrace/build.sh
+      - conditional-step:
+          condition-kind: strings-match
+          on-evaluation-failure: run
+          condition-string1: '${{arch}}'
+          condition-string2: 'msys64'
+          steps:
+            - inject:
+               properties-content: 'MSYSTEM=MINGW64'
+            - shell:
+               !include-raw-escape:
+                 - scripts/common/msys64-shebang
+                 - scripts/common/cygwin-prefix
+                 - scripts/babeltrace/build.sh
+
+
+- babeltrace_build_publishers_defaults: &babeltrace_build_publishers_defaults
+    name: 'babeltrace_build_publishers_defaults'
     publishers:
       - tap:
           results: 'tap/**/*.log'
@@ -88,6 +144,10 @@
               total-high: 0
               total-normal: 0
               total-low: 0
+
+- babeltrace_build_publishers_prod: &babeltrace_build_publishers_prod
+    name: 'babeltrace_build_publishers_prod'
+    publishers:
       - archive:
           artifacts: 'build/**'
           allow-empty: false
@@ -97,23 +157,33 @@
           channels:
             - name: '#lttng'
 
+## Templates
+
+- job-template:
+    name: babeltrace_{version}_{buildtype}
+    defaults: babeltrace
+
+    <<: *babeltrace_build_axes_defaults
+    <<: *babeltrace_build_builders_defaults
+    <<: *babeltrace_build_publishers_defaults
+    <<: *babeltrace_build_publishers_prod
+
+- job-template:
+    name: babeltrace_{version}_winbuild
+    defaults: babeltrace
+
+    <<: *babeltrace_build_axes_defaults
+    <<: *babeltrace_build_builders_win
+    <<: *babeltrace_build_publishers_defaults
+    <<: *babeltrace_build_publishers_prod
+
 - job-template:
     name: dev_{user}_babeltrace_{version}_{buildtype}
-    <<: *babeltrace_version_buildtype_anchor
-    publishers:
-      - tap:
-          results: 'tap/**/*.log'
-          failed-tests-mark-build-as-failure: true
-          todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
+    defaults: babeltrace
+
+    <<: *babeltrace_build_axes_defaults
+    <<: *babeltrace_build_builders_defaults
+    <<: *babeltrace_build_publishers_defaults
 
 - job-template:
     name: babeltrace_{version}_cppcheck
@@ -134,10 +204,6 @@
           allow-empty: false
       - cppcheck:
           pattern: 'babeltrace-cppcheck.xml'
-      - email:
-          recipients: 'ci-notification@lists.lttng.org'
-          notify-every-unstable-build: true
-          send-to-individuals: false
 
 - job-template:
     name: babeltrace_{version}_scan-build
@@ -264,6 +330,7 @@
     name: dev_{user}_babeltrace_{version}_glib-2.22.5
     <<: *babeltrace_version_glib-2-22-5_anchor
 
+
 ## Project
 - project:
     name: babeltrace
@@ -304,6 +371,12 @@
             - stable-1.4
             - stable-1.5
             - master
+      - 'babeltrace_{version}_winbuild':
+          arch: !!python/tuple [cygwin, cygwin64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          version:
+            - stable-1.5
       - 'babeltrace_{version}_cppcheck'
       - 'babeltrace_{version}_scan-build'
       - 'babeltrace_{version}_pylint'
