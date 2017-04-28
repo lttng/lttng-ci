@@ -23,30 +23,42 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 
 
-class InvalidkVersionException extends Exception {
-  public InvalidkVersionException(String message) {
+class InvalidKVersionException extends Exception {
+  public InvalidKVersionException(String message) {
     super(message)
   }
 }
 
-class EmptykVersionException extends Exception {
-  public EmptykVersionException(String message) {
+class EmptyKVersionException extends Exception {
+  public EmptyKVersionException(String message) {
     super(message)
   }
 }
 
-class kVersion implements Comparable<kVersion> {
+class VanillaKVersion implements Comparable<VanillaKVersion> {
 
-  Integer major = 0;
-  Integer majorB = 0;
-  Integer minor = 0;
-  Integer patch = 0;
-  Integer rc = Integer.MAX_VALUE;
+  Integer major = 0
+  Integer majorB = 0
+  Integer minor = 0
+  Integer patch = 0
+  Integer rc = Integer.MAX_VALUE
 
-  kVersion() {}
+  VanillaKVersion() {}
 
-  kVersion(version) {
+  VanillaKVersion(version) {
     this.parse(version)
+  }
+
+  static VanillaKVersion minKVersion() {
+    return new VanillaKVersion("v0.0.0")
+  }
+
+  static VanillaKVersion maxKVersion() {
+    return new VanillaKVersion("v" + Integer.MAX_VALUE + ".0.0")
+  }
+
+  static VanillaKVersion factory(version) {
+    return new VanillaKVersion(version)
   }
 
   def parse(version) {
@@ -57,12 +69,12 @@ class kVersion implements Comparable<kVersion> {
     this.rc = Integer.MAX_VALUE
 
     if (!version) {
-      throw new EmptykVersionException("Empty kernel version")
+      throw new EmptyKVersionException("Empty kernel version")
     }
 
     def match = version =~ /^v(\d+)\.(\d+)(\.(\d+))?(\.(\d+))?(-rc(\d+))?$/
     if (!match) {
-      throw new InvalidkVersionException("Invalid kernel version: ${version}")
+      throw new InvalidKVersionException("Invalid kernel version: ${version}")
     }
 
     Integer offset = 0;
@@ -96,7 +108,7 @@ class kVersion implements Comparable<kVersion> {
   }
 
   // Return true if both version are of the same stable branch
-  Boolean isSameStable(kVersion o) {
+  Boolean isSameStable(VanillaKVersion o) {
     if (this.major != o.major) {
       return false
     }
@@ -110,7 +122,7 @@ class kVersion implements Comparable<kVersion> {
     return true
   }
 
-  @Override int compareTo(kVersion o) {
+  @Override int compareTo(VanillaKVersion o) {
     if (this.major != o.major) {
       return Integer.compare(this.major, o.major)
     }
@@ -151,6 +163,140 @@ class kVersion implements Comparable<kVersion> {
   }
 }
 
+class UbuntuKVersion implements Comparable<UbuntuKVersion> {
+
+  Integer major = 0
+  Integer minor = 0
+  Integer patch = 0
+  Integer umajor = 0
+  Integer uminor = 0
+  String suffix = ""
+  Boolean isLTS = false
+
+  UbuntuKVersion() {}
+
+  UbuntuKVersion(version) {
+    this.parse(version)
+  }
+
+  static UbuntuKVersion minKVersion() {
+    return new UbuntuKVersion("Ubuntu-lts-0.0.0-0.0")
+  }
+
+  static UbuntuKVersion maxKVersion() {
+    return new UbuntuKVersion("Ubuntu-" + Integer.MAX_VALUE + ".0.0-0.0")
+  }
+
+  static UbuntuKVersion factory(version) {
+    return new UbuntuKVersion(version)
+  }
+
+  def parse(version) {
+    this.major = 0
+    this.minor = 0
+    this.patch = 0
+    this.umajor = 0
+    this.uminor = 0
+    this.suffix = "";
+    this.isLTS = false
+
+    if (!version) {
+      throw new EmptyKVersionException("Empty kernel version")
+    }
+
+    //'Ubuntu-lts-4.8.0-27.29_16.04.1',
+    //'Ubuntu-4.4.0-70.91',
+    def match = version =~ /^Ubuntu-(lts-)??(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)(.*)??$/
+    if (!match) {
+      throw new InvalidKVersionException("Invalid kernel version: ${version}")
+    }
+
+    this.isLTS = match.group(1) != null
+
+    // Major
+    this.major = Integer.parseInt(match.group(2))
+
+    // Minor
+    this.minor = Integer.parseInt(match.group(3))
+
+    // Patch level
+    this.patch = Integer.parseInt(match.group(4))
+
+    // Ubuntu major
+    this.umajor = Integer.parseInt(match.group(5))
+
+    // Ubuntu minor
+    this.uminor = Integer.parseInt(match.group(6))
+
+    if (match.group(7) != null) {
+      this.suffix = match.group(7)
+    }
+  }
+
+  // Return true if this version is a release candidate
+  Boolean isRC() {
+    return false
+  }
+
+  // Return true if both version are of the same stable branch
+  Boolean isSameStable(UbuntuKVersion o) {
+    if (this.isLTS != o.isLTS) {
+      return false
+    }
+    if (this.major != o.major) {
+      return false
+    }
+    if (this.minor != o.minor) {
+      return false
+    }
+    if (this.patch != o.patch) {
+      return false
+    }
+
+    return true
+  }
+
+  @Override int compareTo(UbuntuKVersion o) {
+    if (this.major != o.major) {
+      return Integer.compare(this.major, o.major)
+    }
+    if (this.minor != o.minor) {
+      return Integer.compare(this.minor, o.minor)
+    }
+    if (this.patch != o.patch) {
+      return Integer.compare(this.patch, o.patch)
+    }
+    if (this.umajor != o.umajor) {
+      return Integer.compare(this.umajor, o.umajor)
+    }
+    if (this.uminor != o.uminor) {
+      return Integer.compare(this.uminor, o.uminor)
+    }
+    if (this.isLTS != o.isLTS) {
+      if (o.isLTS) {
+        return 1
+      } else {
+        return -1
+      }
+    }
+
+    // Same version
+    return 0;
+  }
+
+  String toString() {
+    String vString = "Ubuntu-"
+
+    if (this.isLTS) {
+      vString = vString.concat("lts-")
+    }
+
+    vString = vString.concat("${this.major}.${this.minor}.${this.patch}-${this.umajor}.${this.uminor}${this.suffix}")
+
+    return vString
+  }
+}
+
 
 // Retrieve parameters of the current build
 def mversion = build.buildVariableResolver.resolve('mversion')
@@ -159,18 +305,10 @@ def kgitrepo = build.buildVariableResolver.resolve('kgitrepo')
 def kverfloor_raw = build.buildVariableResolver.resolve('kverfloor')
 def kverceil_raw = build.buildVariableResolver.resolve('kverceil')
 def kverfilter = build.buildVariableResolver.resolve('kverfilter')
+def uversion = build.buildVariableResolver.resolve('uversion')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
 def currentJobName = build.project.getFullDisplayName()
 
-// Parse kernel versions
-def kverfloor = new kVersion(kverfloor_raw)
-def kverceil = ""
-
-try {
-    kverceil = new kVersion(kverceil_raw)
-} catch (EmptykVersionException e) {
-    kverceil = new kVersion("v" + Integer.MAX_VALUE + ".0.0")
-}
 
 // Get the out variable
 def config = new HashMap()
@@ -185,17 +323,73 @@ def refs = Git.lsRemoteRepository().setTags(true).setRemote(kgitrepo).call();
 // Get kernel versions to build
 def kversions = []
 def kversionsRC = []
+def matchStrs = []
+def blacklist = []
+def kversionFactory = ""
+
+if (uversion != null) {
+  kversionFactory = new UbuntuKVersion()
+  switch (uversion) {
+    case 'xenial':
+      matchStrs = [
+        ~/^refs\/tags\/(Ubuntu-4\.4\.0-\d{1,3}?\.[\d]+)$/,
+        ~/^refs\/tags\/(Ubuntu-lts-4\.8\.0-.*_16\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-lts-4\.10\.0-.*_16\.04\.\d+)$/,
+      ]
+
+      blacklist = [
+        'Ubuntu-lts-4.10.0-7.9_16.04.1',
+      ]
+      break
+
+    case 'trusty':
+      matchStrs = [
+        ~/^refs\/tags\/(Ubuntu-3\.13\.0-[\d\.]+)$/,
+        ~/^refs\/tags\/(Ubuntu-lts-.*_14\.04\.\d+)$/,
+      ]
+      break
+
+    default:
+      println 'Unsupported Ubuntu version: ${uversion}'
+      throw new InterruptedException()
+      break
+  }
+} else {
+  // Vanilla
+  kversionFactory = new VanillaKVersion()
+  matchStrs = [
+    ~/^refs\/tags\/(v[\d\.]+(-rc(\d+))?)$/,
+  ]
+}
+
+// Parse kernel versions
+def kverfloor = ""
+try {
+    kverfloor = kversionFactory.factory(kverfloor_raw)
+} catch (EmptyKVersionException e) {
+    kverfloor = kversionFactory.minKVersion()
+}
+
+def kverceil = ""
+try {
+    kverceil = kversionFactory.factory(kverceil_raw)
+} catch (EmptyKVersionException e) {
+    kverceil = kversionFactory.maxKVersion()
+}
+
+// Build a sorted list of versions to build
 for (ref in refs) {
-  def match = ref.getName() =~ /^refs\/tags\/(v[\d\.]+(-rc(\d+))?)$/
+  for (matchStr in matchStrs) {
+    def match = ref.getName() =~ matchStr
+    if (match && !blacklist.contains(match.group(1))) {
+      def v = kversionFactory.factory(match.group(1))
 
-  if (match) {
-    def v = new kVersion(match.group(1))
-
-    if ((v >= kverfloor) && (v < kverceil)) {
-      if (v.isRC()) {
-        kversionsRC.add(v)
-      } else {
-        kversions.add(v)
+      if ((v >= kverfloor) && (v < kverceil)) {
+        if (v.isRC()) {
+          kversionsRC.add(v)
+        } else {
+          kversions.add(v)
+        }
       }
     }
   }
@@ -229,11 +423,10 @@ switch (kverfilter) {
 }
 
 // If the last RC version is newer than the last stable, add it to the build list
-if (kversionsRC.last() > kversions.last()) {
+if (kversionsRC.size() > 0 && kversionsRC.last() > kversions.last()) {
   kversions.add(kversionsRC.last())
 }
 
-// Debug
 println "Building the following kernel versions:"
 for (k in kversions) {
   println k
@@ -272,7 +465,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
 
     println "Waiting... Queued: " + kversions.size() + " Running: " + ongoingBuild.size()
     try {
-      Thread.sleep(5000)
+      Thread.sleep(10000)
     } catch(e) {
       if (e in InterruptedException) {
         build.setResult(hudson.model.Result.ABORTED)
@@ -282,10 +475,9 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
       }
     }
 
-    // If a newer instance of this job is queued, abort to let it run
+    // Abort job if a newer instance is queued
     similarJobQueued = Hudson.instance.queue.items.count{it.task.getFullDisplayName() == currentJobName}
     if ( similarJobQueued > 0 ) {
-	 // Abort since new build is queued
         build.setResult(hudson.model.Result.ABORTED)
         throw new InterruptedException()
     }
