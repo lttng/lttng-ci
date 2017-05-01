@@ -83,6 +83,11 @@ prepare_lnx_sources() {
     # Debug
     #cat "${outdir}"/.config
 
+    # On powerpc this object is required to link modules
+    if [ "${karch}" = "powerpc" ]; then
+        make arch/powerpc/lib/crtsavres.o CC="$CC" ${koutput}
+    fi
+
     # Version specific tasks
     case "$kversion" in
       Ubuntu*)
@@ -91,11 +96,6 @@ prepare_lnx_sources() {
         echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> "${outdir}"/include/generated/utsrelease.h
         ;;
     esac
-
-    # On powerpc this object is required to link modules
-    if [ "${karch}" = "powerpc" ]; then
-        make arch/powerpc/lib/crtsavres.o CC="$CC" ${koutput}
-    fi
 }
 
 
