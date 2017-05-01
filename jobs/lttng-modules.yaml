@@ -152,6 +152,33 @@
 
 ## Templates
 - job-template:
+    name: lttng-modules_ALL_trigger-vanilla
+    defaults: lttng-modules
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job will trigger the build jobs when a new tag is added to the vanilla
+      and stable kernel trees.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    node: 'master'
+
+    wrappers:
+      - timestamps
+      - ansicolor
+
+    scm: []
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/lttng-modules/trigger-vanilla.groovy
+
+    publishers: []
+
+- job-template:
     name: lttng-modules_{mversion}_{buildtype}-vanilla
     defaults: lttng-modules
     description: |
@@ -535,6 +562,7 @@
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
 
 # Misc jobs
+      - 'lttng-modules_ALL_trigger-vanilla'
       - 'lttng-modules_{mversion}_cppcheck':
           mversion:
             - stable-2.8
