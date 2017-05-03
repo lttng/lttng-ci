@@ -47,6 +47,12 @@ def get_job_bundle_content(server, job):
 def check_job_all_test_cases_state_count(server, job):
     content = get_job_bundle_content(server, job)
 
+    # FIXME:Those tests are part of the boot actions and fail randomly but
+    # doesn't affect the behaviour of the tests. We should update our Lava
+    # installation and try to reproduce it. This error was encountered on
+    # Ubuntu 16.04.
+    tests_known_to_fail=['mount', 'df', 'ls', 'ip', 'wait_for_test_image_prompt']
+
     passed_tests=0
     failed_tests=0
     for run in content['test_runs']:
@@ -54,13 +60,7 @@ def check_job_all_test_cases_state_count(server, job):
             if 'test_case_id' in result :
                 if result['result'] in 'pass':
                     passed_tests+=1
-                elif result['test_case_id'] in 'wait_for_test_image_prompt':
-                    # FIXME:This test is part of the boot action and fails
-                    # randomly but doesn't affect the behaviour of the tests.
-                    # No reply on the Lava IRC channel yet. We should update
-                    # our Lava installation and try to reproduce it. This error
-                    # was encountered ont the KVM trusty image only. Not seen
-                    # on Xenial at this point.
+                elif result['test_case_id'] in tests_known_to_fail:
                     pass
                 else:
                     failed_tests+=1
