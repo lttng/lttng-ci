@@ -145,6 +145,7 @@
           recipients: 'francis.deslauriers@efficios.com'
       - ircbot:
           strategy: new-failure-and-fixed
+          message-type: summary
           channels:
             - name: '#lttng'
       - workspace-cleanup
@@ -220,6 +221,7 @@
           recipients: 'francis.deslauriers@efficios.com'
       - ircbot:
           strategy: new-failure-and-fixed
+          message-type: summary
           channels:
             - name: '#lttng'
       - workspace-cleanup
