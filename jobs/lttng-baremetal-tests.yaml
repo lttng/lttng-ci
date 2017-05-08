@@ -5,7 +5,7 @@
 
     triggers:
       - pollscm:
-          cron: "@hourly"
+          cron: "H * * * 1-5"
     logrotate:
       numToKeep: 10
 
@@ -97,7 +97,7 @@
             - 'kvm-tests'
     triggers:
       - pollscm:
-          cron: "@hourly"
+          cron: "H * * * 1-5"
     logrotate:
       numToKeep: 10
 
@@ -174,7 +174,7 @@
             - 'baremetal-tests'
     triggers:
       - pollscm:
-          cron: "@hourly"
+          cron: "H * * * 1-5"
     logrotate:
       numToKeep: 10
 
