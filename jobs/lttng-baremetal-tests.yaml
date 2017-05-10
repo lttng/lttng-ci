@@ -410,7 +410,7 @@
     concurrent: true
 
     logrotate:
-      numToKeep: 50
+      numToKeep: 100
     node: 'x86-64'
 
     wrappers:
