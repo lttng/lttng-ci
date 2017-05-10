@@ -5,7 +5,7 @@
 
     triggers:
       - pollscm:
-          cron: "@hourly"
+          cron: "H * * * 1-5"
     logrotate:
       numToKeep: 10
 
@@ -97,7 +97,7 @@
             - 'kvm-tests'
     triggers:
       - pollscm:
-          cron: "@hourly"
+          cron: "H * * * 1-5"
     logrotate:
       numToKeep: 10
 
@@ -145,6 +145,7 @@
           recipients: 'francis.deslauriers@efficios.com'
       - ircbot:
           strategy: new-failure-and-fixed
+          message-type: summary
           channels:
             - name: '#lttng'
       - workspace-cleanup
@@ -173,7 +174,7 @@
             - 'baremetal-tests'
     triggers:
       - pollscm:
-          cron: "@hourly"
+          cron: "H * * * 1-5"
     logrotate:
       numToKeep: 10
 
@@ -220,6 +221,7 @@
           recipients: 'francis.deslauriers@efficios.com'
       - ircbot:
           strategy: new-failure-and-fixed
+          message-type: summary
           channels:
             - name: '#lttng'
       - workspace-cleanup
@@ -251,24 +253,24 @@
     name: baremetal_tests_k{kversion}_l{lttngversion}_canary
     defaults: baremetal_tests
     triggers:
-      - timed: "@daily"
+      - timed: "0 1 * * 1-5"
 - job-template:
     name: vm_tests_k{kversion}_l{lttngversion}_canary
     defaults: vm_tests
     triggers:
-      - timed: "@daily"
+      - timed: "0 1 * * 1-5"
 - job-template:
     name: baremetal_benchmarks_k{kversion}_l{lttngversion}_canary
     defaults: baremetal_benchmarks
     triggers:
-      - timed: "@daily"
+      - timed: "0 1 * * 1-5"
 
 - job-template:
     name: vm_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
     defaults: vm_tests
     triggers:
       - pollscm:
-          cron: "@daily"
+          cron: "0 1 * * 1-5"
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -313,7 +315,7 @@
     defaults: baremetal_tests
     triggers:
       - pollscm:
-          cron: "@daily"
+          cron: "0 1 * * 1-5"
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -357,7 +359,7 @@
     defaults: baremetal_benchmarks
     triggers:
       - pollscm:
-          cron: "@daily"
+          cron: "0 1 * * 1-5"
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -408,7 +410,7 @@
     concurrent: true
 
     logrotate:
-      numToKeep: 50
+      numToKeep: 100
     node: 'x86-64'
 
     wrappers:

@@ -47,6 +47,12 @@ def get_job_bundle_content(server, job):
 def check_job_all_test_cases_state_count(server, job):
     content = get_job_bundle_content(server, job)
 
+    # FIXME:Those tests are part of the boot actions and fail randomly but
+    # doesn't affect the behaviour of the tests. We should update our Lava
+    # installation and try to reproduce it. This error was encountered on
+    # Ubuntu 16.04.
+    tests_known_to_fail=['mount', 'df', 'ls', 'ip', 'wait_for_test_image_prompt']
+
     passed_tests=0
     failed_tests=0
     for run in content['test_runs']:
@@ -54,13 +60,7 @@ def check_job_all_test_cases_state_count(server, job):
             if 'test_case_id' in result :
                 if result['result'] in 'pass':
                     passed_tests+=1
-                elif result['test_case_id'] in 'wait_for_test_image_prompt':
-                    # FIXME:This test is part of the boot action and fails
-                    # randomly but doesn't affect the behaviour of the tests.
-                    # No reply on the Lava IRC channel yet. We should update
-                    # our Lava installation and try to reproduce it. This error
-                    # was encountered ont the KVM trusty image only. Not seen
-                    # on Xenial at this point.
+                elif result['test_case_id'] in tests_known_to_fail:
                     pass
                 else:
                     failed_tests+=1
@@ -71,8 +71,11 @@ def check_job_all_test_cases_state_count(server, job):
 def fetch_benchmark_results(server, job):
     content = get_job_bundle_content(server, job)
     testcases = ['processed_results_close.csv',
+            'processed_results_ioctl.csv',
             'processed_results_open_efault.csv',
+            'processed_results_open_enoent.csv',
             'processed_results_dup_close.csv',
+            'processed_results_raw_syscall_getpid.csv',
             'processed_results_lttng_test_filter.csv']
 
     # The result bundle is a large JSON containing the results of every testcase
@@ -154,7 +157,7 @@ def get_config_cmd(build_device):
     packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
             'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
             'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
-            'libnuma-dev']
+            'libnuma-dev', 'python3-dev']
     command = OrderedDict({
         'command': 'lava_command_run',
         'parameters': {
@@ -193,12 +196,27 @@ def get_baremetal_benchmarks_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
+                    'testdef': 'lava/baremetal-tests/failing-ioctl.yml'
+                },
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
                     'testdef': 'lava/baremetal-tests/failing-open-efault.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/success-dup-close.yml'
+                },
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
+                    'testdef': 'lava/baremetal-tests/raw-syscall-getpid.yml'
+                },
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
+                    'testdef': 'lava/baremetal-tests/failing-open-enoent.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
@@ -316,7 +334,10 @@ def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
         })
 
     vlttng_cmd = 'vlttng --jobs=$(nproc) --profile urcu-master' \
-                    ' --profile babeltrace-stable-1.4 ' \
+                    ' --override projects.babeltrace.build-env.PYTHON=python3' \
+                    ' --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config' \
+                    ' --profile babeltrace-stable-1.4' \
+                    ' --profile babeltrace-python' \
                     ' --profile lttng-tools-master' \
                     ' --override projects.lttng-tools.checkout='+lttng_tools_commit + \
                     ' --profile lttng-tools-no-man-pages'
