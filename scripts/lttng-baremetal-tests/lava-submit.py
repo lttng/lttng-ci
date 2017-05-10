@@ -157,7 +157,7 @@ def get_config_cmd(build_device):
     packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
             'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
             'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
-            'libnuma-dev']
+            'libnuma-dev', 'python3-dev']
     command = OrderedDict({
         'command': 'lava_command_run',
         'parameters': {
@@ -334,7 +334,10 @@ def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
         })
 
     vlttng_cmd = 'vlttng --jobs=$(nproc) --profile urcu-master' \
-                    ' --profile babeltrace-stable-1.4 ' \
+                    ' --override projects.babeltrace.build-env.PYTHON=python3' \
+                    ' --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config' \
+                    ' --profile babeltrace-stable-1.4' \
+                    ' --profile babeltrace-python' \
                     ' --profile lttng-tools-master' \
                     ' --override projects.lttng-tools.checkout='+lttng_tools_commit + \
                     ' --profile lttng-tools-no-man-pages'
