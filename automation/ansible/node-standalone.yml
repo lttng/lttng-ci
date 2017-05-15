@@ -1,4 +1,4 @@
-- hosts: slave-amd64
+- hosts: node-standalone
   roles:
     - common
     - cross-compilers

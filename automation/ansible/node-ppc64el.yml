@@ -1,4 +1,4 @@
-- hosts: slave-arm64
+- hosts: node-ppc64el
   roles:
     - common
     - babeltrace

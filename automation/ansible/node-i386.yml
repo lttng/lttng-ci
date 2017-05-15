@@ -1,4 +1,4 @@
-- hosts: slave-standalone
+- hosts: node-i386
   roles:
     - common
     - cross-compilers

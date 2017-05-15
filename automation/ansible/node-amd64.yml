@@ -1,4 +1,4 @@
-- hosts: slave-i386
+- hosts: node-amd64
   roles:
     - common
     - cross-compilers

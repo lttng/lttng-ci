@@ -1,4 +1,4 @@
-- hosts: slave-armhf
+- hosts: node-arm64
   roles:
     - common
     - babeltrace

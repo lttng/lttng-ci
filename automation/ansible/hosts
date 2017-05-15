@@ -10,21 +10,21 @@ cloud05.internal.efficios.com
 #cloud07.internal.efficios.com
 #cloud08.internal.efficios.com
 
-[slave-armhf]
+[node-armhf]
 ci-node-armhf-01
 ci-node-armhf-02
 
-[slave-arm64]
-ci-slave-arm64-01
+[node-arm64]
+ci-node-arm64-01
 
-[slave-powerpc]
+[node-powerpc]
 ci-node-powerpc-01
 
-[slave-ppc64el]
+[node-ppc64el]
 140.211.168.84
 140.211.168.85
 
-[slave-i386]
+[node-i386]
 ci-slave-i386-02-01
 ci-slave-i386-02-02
 ci-slave-i386-02-03
@@ -62,7 +62,7 @@ ci-slave-i386-05-06
 ci-slave-i386-05-07
 ci-slave-i386-05-08
 
-[slave-amd64]
+[node-amd64]
 ci-slave-amd64-02-01
 ci-slave-amd64-02-02
 ci-slave-amd64-02-03
@@ -100,16 +100,16 @@ ci-slave-amd64-05-06
 ci-slave-amd64-05-07
 ci-slave-amd64-05-08
 
-[slave-standalone]
+[node-standalone]
 ci-node-standalone-amd64-02
 ci-node-standalone-amd64-03
 ci-node-alpine-amd64-03
 
-[slave:children]
-slave-i386
-slave-amd64
-slave-armhf
-slave-arm64
-slave-powerpc
-slave-ppc64el
-slave-standalone
+[node:children]
+node-i386
+node-amd64
+node-armhf
+node-arm64
+node-powerpc
+node-ppc64el
+node-standalone
