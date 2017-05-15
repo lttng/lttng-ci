@@ -8,4 +8,4 @@
     - lttng-tools
     - lttng-modules
     - lttng-analyses
-    - tracecompass
+    - lttng-scope

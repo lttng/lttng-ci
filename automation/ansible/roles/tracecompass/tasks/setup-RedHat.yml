@@ -1,6 +1,0 @@
----
-- name: Ensure tracecompass build dependencies are installed.
-  yum:
-    name: "{{ item }}"
-    state: installed
-  with_items: "{{ tracecompass_packages }}"
