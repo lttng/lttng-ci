@@ -171,6 +171,9 @@
 
     scm: []
 
+    triggers:
+      - timed: "@hourly"
+
     builders:
       - system-groovy:
          command:
