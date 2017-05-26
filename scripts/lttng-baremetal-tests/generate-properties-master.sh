@@ -38,6 +38,11 @@ echo "LINUX_PATH=$LINUX_PATH" >> properties.txt
 echo "LTTNG_MODULES_PATH=$LTTNG_MODULES_PATH" >> properties.txt
 echo "LTTNG_TOOLS_PATH=$LTTNG_TOOLS_PATH" >> properties.txt
 
+# Checkout the last kernel tag for cases where the job is triggered by commits
+# on the LTTng repos
+KERNEL_TAG="$(git --git-dir="$LINUX_PATH"/.git/ --work-tree="$LINUX_PATH" describe --abbrev=0)"
+git --git-dir="$LINUX_PATH"/.git/ --work-tree="$LINUX_PATH" checkout "$KERNEL_TAG"
+
 KERNEL_COMMIT_ID="$(git --git-dir="$LINUX_PATH"/.git/ --work-tree="$LINUX_PATH" rev-parse HEAD)"
 LTTNG_MODULES_COMMIT_ID="$(git --git-dir="$LTTNG_MODULES_PATH"/.git/ --work-tree="$LTTNG_MODULES_PATH" rev-parse --short HEAD)"
 LTTNG_TOOLS_COMMIT_ID="$(git --git-dir="$LTTNG_TOOLS_PATH"/.git/ --work-tree="$LTTNG_TOOLS_PATH" rev-parse --short HEAD)"
