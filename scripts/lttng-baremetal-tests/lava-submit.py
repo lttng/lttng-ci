@@ -157,7 +157,7 @@ def get_config_cmd(build_device):
     packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
             'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
             'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
-            'libnuma-dev', 'python3-dev']
+            'libnuma-dev', 'python3-dev', 'swig']
     command = OrderedDict({
         'command': 'lava_command_run',
         'parameters': {
