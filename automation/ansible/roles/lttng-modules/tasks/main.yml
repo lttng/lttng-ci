@@ -19,7 +19,7 @@
   when: ansible_os_family == 'Alpine'
 
 - name: checkout repo
-  git: repo=git://artifacts.internal.efficios.com/git/linux-all.git
+  git: repo=git://git-mirror.internal.efficios.com/git/linux-all.git
        dest=/home/jenkins/gitcache/linux-stable.git
        bare=yes
   become: yes
