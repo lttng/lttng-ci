@@ -1,5 +1,6 @@
 ---
 __common_packages:
+  - openssh-server
   - sudo
   - default-jdk-headless
   - git
@@ -21,3 +22,4 @@ __common_packages:
   - curl
   - gettext
   - libssl-dev
+  - psmisc
