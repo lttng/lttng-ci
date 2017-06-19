@@ -18,6 +18,9 @@
 - include: setup-Alpine.yml
   when: ansible_os_family == 'Alpine'
 
+- include: setup-Suse.yml
+  when: ansible_os_family == 'Suse'
+
 - name: checkout repo
   git: repo=git://git-mirror.internal.efficios.com/git/linux-all.git
        dest=/home/jenkins/gitcache/linux-stable.git

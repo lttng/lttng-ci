@@ -103,7 +103,9 @@ ci-node-xenial-amd64-05-08
 [node-standalone]
 ci-node-standalone-amd64-02
 ci-node-standalone-amd64-03
-ci-node-alpine-amd64-03
+
+[node-sles]
+ci-node-sles12sp2-amd64-03-01
 
 [node:children]
 node-i386
@@ -113,3 +115,4 @@ node-arm64
 node-powerpc
 node-ppc64el
 node-standalone
+node-sles

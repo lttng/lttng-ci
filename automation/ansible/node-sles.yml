@@ -1,0 +1,8 @@
+- hosts: node-sles
+  roles:
+    - common
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools
+    - lttng-modules

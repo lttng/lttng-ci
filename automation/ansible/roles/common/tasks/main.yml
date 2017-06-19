@@ -18,6 +18,9 @@
 - include: setup-Alpine.yml
   when: ansible_os_family == 'Alpine'
 
+- include: setup-Suse.yml
+  when: ansible_os_family == 'Suse'
+
 - name: Remove ubuntu user
   user:
     name: ubuntu

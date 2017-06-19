@@ -1,0 +1,29 @@
+---
+__common_patterns:
+  - base
+  - Minimal
+  - Basis-Devel
+
+__common_packages:
+  - openssh
+  - sudo
+  - java-1_8_0-openjdk-headless
+  - java-1_8_0-openjdk-devel
+  - git-core
+  - vim
+  - tree
+#  - htop
+  - automake
+  - autoconf
+  - libtool
+  - bison
+  - flex
+#  - libtap-harness-archive-perl
+#  - jq
+#  - cppcheck
+#  - cloc
+#  - python-virtualenv
+  - curl
+  - gettext-runtime
+  - libopenssl-devel
+  - psmisc

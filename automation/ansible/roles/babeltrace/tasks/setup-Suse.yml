@@ -1,0 +1,4 @@
+---
+- name: Ensure babeltrace build dependencies are installed.
+  zypper: "name={{ item }} state=installed update_cache=yes"
+  with_items: "{{ babeltrace_packages }}"

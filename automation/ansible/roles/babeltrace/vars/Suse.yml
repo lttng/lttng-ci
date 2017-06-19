@@ -1,0 +1,12 @@
+---
+__babeltrace_packages:
+  - popt-devel
+  - uuid-devel
+  - python3-devel
+#  - python3-sphinx
+  - swig
+  - glib2-devel
+  - glib2-devel-static
+  - libdw-devel
+  - libelf-devel
+  - chrpath

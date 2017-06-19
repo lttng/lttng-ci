@@ -1,0 +1,13 @@
+---
+- name: Define common_patterns.
+  set_fact:
+    common_patterns: "{{ __common_patterns | list }}"
+  when: common_patterns is not defined
+
+- name: Ensure common patterns are installed.
+  zypper: "name={{ item }} type=pattern state=present update_cache=yes"
+  with_items: "{{ common_patterns }}"
+
+- name: Ensure common packages are installed.
+  zypper: "name={{ item }} type=package state=present update_cache=yes"
+  with_items: "{{ common_packages }}"

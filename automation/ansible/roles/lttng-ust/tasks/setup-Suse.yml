@@ -1,0 +1,4 @@
+---
+- name: Ensure lttng-ust build dependencies are installed.
+  zypper: "name={{ item }} state=installed update_cache=yes"
+  with_items: "{{ lttng_ust_packages }}"

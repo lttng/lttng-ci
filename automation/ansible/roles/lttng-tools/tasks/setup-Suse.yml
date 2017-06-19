@@ -1,0 +1,8 @@
+---
+- name: Ensure lttng-tools build dependencies are installed.
+  zypper: "name={{ item }} state=installed update_cache=yes"
+  with_items: "{{ lttng_tools_packages }}"
+
+- name: Ensure lttng-tools build dependencies are installed (no recommends).
+  zypper: "name={{ item }} state=installed disable_recommends=yes"
+  with_items: "{{ lttng_tools_packages_no_recommends }}"

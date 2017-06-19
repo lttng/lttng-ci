@@ -13,7 +13,7 @@
     lttng_tools_packages_no_recommends: "{{ __lttng_tools_packages_no_recommends | list }}"
   when:
     - lttng_tools_packages_no_recommends is not defined
-    - ansible_os_family == 'Debian'
+    - ansible_os_family == 'Debian' or ansible_os_family == 'Suse'
 
 # Setup/install tasks.
 - include: setup-RedHat.yml
@@ -24,3 +24,6 @@
 
 - include: setup-Alpine.yml
   when: ansible_os_family == 'Alpine'
+
+- include: setup-Suse.yml
+  when: ansible_os_family == 'Suse'

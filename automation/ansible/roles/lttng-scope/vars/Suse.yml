@@ -1,0 +1,12 @@
+---
+__lttng_scope_packages:
+  - openjdk-8-jdk
+  - openjfx
+  - metacity
+  - xfonts-100dpi
+  - xfonts-75dpi
+  - xfonts-scalable
+  - xfonts-cyrillic
+  - xvfb
+  - x11-apps
+  - imagemagick

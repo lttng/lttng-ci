@@ -7,3 +7,4 @@
 - include: node-i386.yml
 - include: node-amd64.yml
 - include: node-standalone.yml
+- include: node-sles.yml
