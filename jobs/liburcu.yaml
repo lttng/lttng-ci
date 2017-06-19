@@ -266,6 +266,7 @@
     version:
       - stable-0.8
       - stable-0.9
+      - stable-0.10
       - master
     jobs:
       - 'liburcu_{version}_{buildtype}':
@@ -286,6 +287,7 @@
           version: # Solaris support was introduced in 0.9
             - master
             - stable-0.9
+            - stable-0.10
       - 'liburcu_{version}_{buildtype}':
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
@@ -294,6 +296,7 @@
           version:
             - master
             - stable-0.9
+            - stable-0.10
       - 'liburcu_{version}_winbuild':
           arch: !!python/tuple [cygwin, cygwin64]
           build: !!python/tuple [std]
@@ -301,6 +304,7 @@
           version:
             - master
             - stable-0.9
+            - stable-0.10
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
