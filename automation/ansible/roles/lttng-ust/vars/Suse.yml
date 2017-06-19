@@ -1,6 +1,6 @@
 ---
 __lttng_ust_packages:
-  - uuid-devel
+  - libuuid-devel
   - texinfo
   - python3
   - log4j
