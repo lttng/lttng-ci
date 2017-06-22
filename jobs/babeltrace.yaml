@@ -104,26 +104,26 @@
           condition-kind: strings-match
           on-evaluation-failure: run
           condition-string1: '${{arch}}'
-          condition-string2: 'msys32'
+          condition-string2: 'msys2-mingw32'
           steps:
             - inject:
                properties-content: 'MSYSTEM=MINGW32'
             - shell:
                !include-raw-escape:
-                 - scripts/common/msys32-shebang
+                 - scripts/common/msys2-shebang
                  - scripts/common/cygwin-prefix
                  - scripts/babeltrace/build.sh
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
           condition-string1: '${{arch}}'
-          condition-string2: 'msys64'
+          condition-string2: 'msys2-mingw64'
           steps:
             - inject:
                properties-content: 'MSYSTEM=MINGW64'
             - shell:
                !include-raw-escape:
-                 - scripts/common/msys64-shebang
+                 - scripts/common/msys2-shebang
                  - scripts/common/cygwin-prefix
                  - scripts/babeltrace/build.sh
 
@@ -375,6 +375,12 @@
           version:
             - stable-1.4
             - stable-1.5
+            - master
+      - 'babeltrace_{version}_winbuild':
+          arch: !!python/tuple [cygwin, cygwin64, msys2-mingw32, msys2-mingw64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          version:
             - master
       - 'babeltrace_{version}_winbuild':
           arch: !!python/tuple [cygwin, cygwin64]
