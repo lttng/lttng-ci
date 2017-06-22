@@ -358,6 +358,11 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static, python-bindings]
       - 'babeltrace_{version}_{buildtype}':
+          buildtype: slesbuild
+          arch: !!python/tuple [sles12sp2]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+      - 'babeltrace_{version}_{buildtype}':
           buildtype: solarisbuild
           arch: !!python/tuple [solaris10, solaris11]
           build: !!python/tuple [std]
