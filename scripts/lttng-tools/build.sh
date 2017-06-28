@@ -109,8 +109,10 @@ solaris10)
     NPROC=gnproc
     BISON="bison"
     YACC="$BISON -y"
-    CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
+    CFLAGS="-D_XOPEN_SOURCE=500"
     RUN_TESTS="no"
+
+    export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
     ;;
 
 solaris11)
@@ -119,7 +121,7 @@ solaris11)
     NPROC=nproc
     BISON="/opt/csw/bin/bison"
     YACC="$BISON -y"
-    CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
+    CFLAGS="-D_XOPEN_SOURCE=500"
     RUN_TESTS="no"
 
     export PATH="$PATH:/usr/perl5/bin"

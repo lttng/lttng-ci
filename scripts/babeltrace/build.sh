@@ -40,6 +40,7 @@ solaris10)
     NPROC=gnproc
     BISON=bison
     YACC="$BISON -y"
+    export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
     ;;
 solaris11)
     MAKE=gmake

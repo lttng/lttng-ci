@@ -92,7 +92,8 @@ solaris10)
     TAR=gtar
     NPROC=gnproc
     LDFLAGS=""
-    CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
+    CFLAGS=""
+    export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
     ;;
 
 solaris11)
@@ -100,7 +101,7 @@ solaris11)
     TAR=gtar
     NPROC=nproc
     LDFLAGS=""
-    CFLAGS="-D_XOPEN_SOURCE=1 -D_XOPEN_SOURCE_EXTENDED=1 -D__EXTENSIONS__=1"
+    CFLAGS=""
     export PATH="$PATH:/usr/perl5/bin"
     ;;
 
