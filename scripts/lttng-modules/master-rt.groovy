@@ -173,7 +173,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
     def kversion = kversions.pop()
     def job_params = [
       new StringParameterValue('mversion', mversion),
-      new StringParameterValue('kversion', kversion.toString()),
+      new StringParameterValue('ktag', kversion.toString()),
       new StringParameterValue('kgitrepo', kgitrepo),
     ]
 
@@ -217,7 +217,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
         // Print results
         def matrixParent = currentBuild.get()
         allBuilds.add(matrixParent)
-        def kernelStr = matrixParent.buildVariableResolver.resolve("kversion")
+        def kernelStr = matrixParent.buildVariableResolver.resolve("ktag")
         println "${matrixParent.fullDisplayName} (${kernelStr}) completed with status ${matrixParent.result}"
 
         // Process child runs of matrixBuild
@@ -243,7 +243,7 @@ for (failedRun in failedRuns) {
 
 println "---Build report---"
 for (b in allBuilds) {
-  def kernelStr = b.buildVariableResolver.resolve("kversion")
+  def kernelStr = b.buildVariableResolver.resolve("ktag")
   println "${b.fullDisplayName} (${kernelStr}) completed with status ${b.result}"
   // Cleanup builds
   try {

@@ -301,7 +301,7 @@
           default: 'master'
           description: 'The lttng-modules branch to build.'
       - string:
-          name: 'kversion'
+          name: 'ktag'
           default: ''
           description: 'The linux kernel git tag to build against.'
       - string:
@@ -325,7 +325,7 @@
 
     builders:
       - shell: |
-          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
+          git clone --depth=1 -b "$ktag" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
       - shell:
           !include-raw-escape: scripts/lttng-modules/param-build.sh
 
@@ -356,7 +356,7 @@
           default: 'master'
           description: 'The lttng-modules branch to build.'
       - string:
-          name: 'kversion'
+          name: 'ktag'
           default: ''
           description: 'The linux kernel git tag to build against.'
       - string:
@@ -380,7 +380,7 @@
 
     builders:
       - shell: |
-          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
+          git clone --depth=1 -b "$ktag" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
       - shell:
           !include-raw-escape: scripts/lttng-modules/param-build.sh
 

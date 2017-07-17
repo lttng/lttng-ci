@@ -46,7 +46,7 @@ prepare_lnx_sources() {
     fi
 
     # Generate kernel configuration
-    case "$kversion" in
+    case "$ktag" in
       Ubuntu*)
         fakeroot debian/rules clean
         fakeroot debian/rules genconfigs
@@ -88,11 +88,18 @@ prepare_lnx_sources() {
         make arch/powerpc/lib/crtsavres.o CC="$CC" ${koutput}
     fi
 
+    # On arm64 this object is required to build with ftrace support
+    if [ "${karch}" = "arm64" ]; then
+        if vergte "$KVERSION" "4.13-rc1"; then
+            make arch/arm64/kernel/ftrace-mod.o CC="$CC" ${koutput}
+        fi
+    fi
+
     # Version specific tasks
-    case "$kversion" in
+    case "$ktag" in
       Ubuntu*)
         # Add Ubuntu ABI number to kernel headers, this is normally done by the packaging code
-        ABINUM="$(echo "$kversion" | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')"
+        ABINUM="$(echo "$ktag" | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')"
         echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> "${outdir}"/include/generated/utsrelease.h
         ;;
     esac
@@ -105,17 +112,13 @@ build_modules() {
     kdir="$1"
     bdir="$2"
 
-    # Get kernel version from source tree
-    cd "${kdir}"
-    kversion=$(make kernelversion)
-
     # Enter lttng-modules source dir
     cd "${LTTSRCDIR}"
 
     # kernels 3.10 to 3.10.13 and 3.11 to 3.11.2 introduce a deadlock in the
     # timekeeping subsystem. We want those build to fail.
-    if { vergte "$kversion" "3.10" && verlte "$kversion" "3.10.13"; } || \
-       { vergte "$kversion" "3.11" && verlte "$kversion" "3.11.2"; }; then
+    if { vergte "$KVERSION" "3.10" && verlte "$KVERSION" "3.10.13"; } || \
+       { vergte "$KVERSION" "3.11" && verlte "$KVERSION" "3.11.2"; }; then
 
         set +e
 
@@ -280,6 +283,9 @@ mkdir -p "${LNXBUILDDIR}" "${LNXHDRDIR}" "${LTTBUILDKSRCDIR}" "${LTTBUILDKHDRDIR
 # Enter linux source dir
 cd "${LNXSRCDIR}"
 
+# Get kernel version from source tree
+KVERSION=$(make kernelversion)
+
 prepare_lnx_sources "."
 
 # For RT kernels, copy version file
@@ -314,6 +320,13 @@ rm -f "${LNXHDRDIR}/scripts/*/*.o"
 # On powerpc this object is required to link modules
 if [ "${karch}" = "powerpc" ]; then
     cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LNXHDRDIR}/"
+fi
+
+# On arm64 this object is required to build with ftrace support
+if [ "${karch}" = "arm64" ]; then
+    if vergte "$KVERSION" "4.13-rc1"; then
+        cp -a --parents arch/arm64/kernel/ftrace-mod.[So] "${LNXHDRDIR}/"
+    fi
 fi
 
 # Copy modules related stuff, if available
