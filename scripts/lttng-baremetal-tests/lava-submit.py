@@ -157,7 +157,7 @@ def get_config_cmd(build_device):
     packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
             'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
             'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
-            'libnuma-dev', 'python3-dev', 'swig']
+            'libnuma-dev', 'python3-dev', 'swig', 'stress']
     command = OrderedDict({
         'command': 'lava_command_run',
         'parameters': {
@@ -259,6 +259,11 @@ def get_kvm_tests_cmd():
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/destructive-tests.yml'
+                },
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
+                    'testdef': 'lava/baremetal-tests/kprobe-fuzzing-tests.yml'
                 }
                 ],
             'timeout': 18000

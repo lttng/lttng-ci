@@ -1,0 +1,22 @@
+metadata:
+        format: Lava-Test Test Definition 1.0
+        name: lttng-fuzzing-kprobe-test
+        description: "Run kprobe fuzzing test suite"
+install:
+        git-repos:
+                - url: https://github.com/lttng/lttng-ci
+                  destination: ci
+                  branch: master
+        steps:
+                - export TMPDIR="/tmp"
+                - cd
+                - ulimit -c unlimited
+                - mkdir -p coredump
+                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+run:
+        steps:
+                - source /root/lttngvenv/activate
+                - cd ci/
+                - lava-test-case run-tests --shell "./scripts/lttng-baremetal-tests/kprobe-fuzzing.sh"
+                - tar czf coredump.tar.gz coredump
+                - lava-test-case-attach run-benchmarks coredump.tar.gz
