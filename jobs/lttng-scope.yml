@@ -83,7 +83,7 @@
 
     publishers:
       - archive:
-          artifacts: 'releng/org.lttng.scope.rcp.product/target/repository/**,releng/org.lttng.scope.rcp.product/target/products/*'
+          artifacts: 'org.lttng.scope.rcp.product/target/repository/**,org.lttng.scope.rcp.product/target/products/*'
           allow-empty: false
           only-if-success: true
       - junit:
@@ -151,7 +151,7 @@
 
     publishers:
       - archive:
-          artifacts: 'releng/org.lttng.scope.rcp.product/target/repository/**,releng/org.lttng.scope.rcp.product/target/products/*'
+          artifacts: 'org.lttng.scope.rcp.product/target/repository/**,org.lttng.scope.rcp.product/target/products/*'
           allow-empty: false
           only-if-success: true
       - junit:
@@ -214,7 +214,7 @@
 
     publishers:
       - archive:
-          artifacts: 'releng/org.lttng.scope.rcp.product/target/repository/**,releng/org.lttng.scope.rcp.product/target/products/*'
+          artifacts: 'org.lttng.scope.rcp.product/target/repository/**,org.lttng.scope.rcp.product/target/products/*'
           allow-empty: false
           only-if-success: true
       - junit:
