@@ -16,6 +16,59 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Version compare functions
+vercomp () {
+    set +u
+    if [[ "$1" == "$2" ]]; then
+        return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++)); do
+        if [[ -z ${ver2[i]} ]]; then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]})); then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]})); then
+            return 2
+        fi
+    done
+    set -u
+    return 0
+}
+
+verlte() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "2" ]
+}
+
+verlt() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "2" ]
+}
+
+vergte() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "1" ]
+}
+
+vergt() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "1" ]
+}
+
+verne() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -ne "0" ]
+}
+
 # Required parameters
 arch=${arch:-}
 conf=${conf:-}
@@ -34,58 +87,41 @@ export TMPDIR
 
 # Set platform variables
 case "$arch" in
-solaris10)
-    MAKE=gmake
-    TAR=gtar
-    NPROC=gnproc
-    BISON=bison
-    YACC="$BISON -y"
+sol10-i386)
+    export MAKE=gmake
+    export TAR=gtar
+    export NPROC=gnproc
+    export BISON=bison
+    export YACC="$BISON -y"
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
+    export CPPFLAGS="-I/opt/csw/include"
+    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib"
+    export PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
     ;;
-solaris11)
-    MAKE=gmake
-    TAR=gtar
-    NPROC=nproc
-    BISON="/opt/csw/bin/bison"
-    YACC="$BISON -y"
+sol11-i386)
+    export MAKE=gmake
+    export TAR=gtar
+    export NPROC=nproc
+    export BISON="/opt/csw/bin/bison"
+    export YACC="$BISON -y"
     export PATH="$PATH:/usr/perl5/bin"
+    export LD_ALTEXEC=/usr/sfw/bin/gld
+    export LD=/usr/sfw/bin/gld
     ;;
 macosx)
-    MAKE=make
-    TAR=tar
-    NPROC="getconf _NPROCESSORS_ONLN"
-    BISON="bison"
-    YACC="$BISON -y"
+    export MAKE=make
+    export TAR=tar
+    export NPROC="getconf _NPROCESSORS_ONLN"
+    export BISON="bison"
+    export YACC="$BISON -y"
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     export CFLAGS="-I/opt/local/include"
     export LDFLAGS="-L/opt/local/lib"
     ;;
 *)
-    MAKE=make
-    TAR=tar
-    NPROC=nproc
-    BISON=bison
-    YACC="$BISON -y"
-    ;;
-esac
-
-# Set configure options for each build configuration
-CONF_OPTS=""
-case "$conf" in
-static)
-    echo "Static build"
-    CONF_OPTS="--enable-static --disable-shared"
-    ;;
-python-bindings)
-    echo "Build with python bindings"
-    # We only support bindings built with Python 3
-    export PYTHON="python3"
-    export PYTHON_CONFIG="/usr/bin/python3-config"
-    CONF_OPTS="--enable-python-bindings"
-    ;;
-*)
-    echo "Standard build"
-    CONF_OPTS=""
+    export MAKE=make
+    export TAR=tar
+    export NPROC=nproc
     ;;
 esac
 
@@ -95,6 +131,35 @@ cd "$SRCDIR"
 # Run bootstrap in the source directory prior to configure
 ./bootstrap
 
+# Get source version from configure script
+eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+
+# Set configure options for each build configuration
+CONF_OPTS=""
+case "$conf" in
+static)
+    echo "Static build"
+    CONF_OPTS="--enable-static --disable-shared"
+    if vergte "$PACKAGE_VERSION" "2.0"; then
+        CONF_OPTS="${CONF_OPTS} --enable-built-in-plugins"
+    fi
+    ;;
+python-bindings)
+    echo "Build with python bindings"
+    # We only support bindings built with Python 3
+    export PYTHON="python3"
+    export PYTHON_CONFIG="/usr/bin/python3-config"
+    CONF_OPTS="--enable-python-bindings"
+
+    if vergte "$PACKAGE_VERSION" "2.0"; then
+        CONF_OPTS="${CONF_OPTS} --enable-python-bindings-doc --enable-python-bindings-tests --enable-python-plugins"
+    fi
+    ;;
+*)
+    echo "Standard build"
+    CONF_OPTS=""
+    ;;
+esac
 
 # Build type
 # oot : out-of-tree build
@@ -110,7 +175,7 @@ case "$build" in
         BUILD_PATH="$WORKSPACE/oot"
         mkdir -p "$BUILD_PATH"
         cd "$BUILD_PATH"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+        "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     dist)
@@ -118,7 +183,7 @@ case "$build" in
         BUILD_PATH="$(mktemp -d)"
 
         # Initial configure and generate tarball
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure"
+        "$SRCDIR/configure"
         $MAKE dist
 
         mkdir -p "$BUILD_PATH"
@@ -128,18 +193,18 @@ case "$build" in
         # Ignore level 1 of tar
         $TAR xvf ./*.tar.* --strip 1
 
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+        "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
     clang)
         echo "LLVM clang build"
         export CC=clang
         clang -v
-	MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+	"$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
     *)
         echo "Standard in-tree build"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+        "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 esac
 
