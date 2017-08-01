@@ -87,41 +87,42 @@ export TMPDIR
 
 # Set platform variables
 case "$arch" in
-solaris10)
-    MAKE=gmake
-    TAR=gtar
-    NPROC=gnproc
-    LDFLAGS=""
-    CFLAGS=""
+sol10-i386)
+    export MAKE=gmake
+    export TAR=gtar
+    export NPROC=gnproc
+    export BISON=bison
+    export YACC="$BISON -y"
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
+    export CPPFLAGS="-I/opt/csw/include"
+    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib"
+    export PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
     ;;
-
-solaris11)
-    MAKE=gmake
-    TAR=gtar
-    NPROC=nproc
-    LDFLAGS=""
-    CFLAGS=""
+sol11-i386)
+    export MAKE=gmake
+    export TAR=gtar
+    export NPROC=nproc
+    export BISON="/opt/csw/bin/bison"
+    export YACC="$BISON -y"
     export PATH="$PATH:/usr/perl5/bin"
+    #export LD_ALTEXEC=/usr/sfw/bin/gld
+    #export LD=/usr/sfw/bin/gld
     ;;
-
 macosx)
-    MAKE=make
-    TAR=tar
-    NPROC="getconf _NPROCESSORS_ONLN"
-    BISON="bison"
-    YACC="$BISON -y"
-    LDFLAGS="-L/opt/local/lib"
-    CFLAGS="-I/opt/local/include"
+    export MAKE=make
+    export TAR=tar
+    export NPROC="getconf _NPROCESSORS_ONLN"
+    export BISON="bison"
+    export YACC="$BISON -y"
+    export LDFLAGS="-L/opt/local/lib"
+    export CFLAGS="-I/opt/local/include"
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     ;;
 
 *)
-    MAKE=make
-    TAR=tar
-    NPROC=nproc
-    LDFLAGS=""
-    CFLAGS=""
+    export MAKE=make
+    export TAR=tar
+    export NPROC=nproc
     ;;
 esac
 
@@ -153,7 +154,7 @@ debug-rcu)
     if vergte "$PACKAGE_VERSION" "0.10"; then
        CONF_OPTS="--enable-rcu-debug"
     else
-       CFLAGS="$CFLAGS -DDEBUG_RCU"
+       export CFLAGS="${CFLAGS:} -DDEBUG_RCU"
     fi
     ;;
 
@@ -177,7 +178,7 @@ oot)
     BUILD_PATH=$WORKSPACE/oot
     mkdir -p "$BUILD_PATH"
     cd "$BUILD_PATH"
-    MAKE=$MAKE CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+    "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 dist)
@@ -185,7 +186,7 @@ dist)
     BUILD_PATH=$(mktemp -d)
 
     # Initial configure and generate tarball
-    MAKE=$MAKE "$SRCDIR/configure"
+    "$SRCDIR/configure"
     $MAKE dist
 
     mkdir -p "$BUILD_PATH"
@@ -195,11 +196,11 @@ dist)
     # Ignore level 1 of tar
     $TAR xvf ./*.tar.* --strip 1
 
-    MAKE=$MAKE CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 *)
     echo "Standard in-tree build"
-    MAKE=$MAKE CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 esac
 

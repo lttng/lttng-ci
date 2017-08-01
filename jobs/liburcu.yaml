@@ -286,7 +286,7 @@
           conf: !!python/tuple [std]
       - 'liburcu_{version}_{buildtype}':
           buildtype: solarisbuild
-          arch: !!python/tuple [solaris10, solaris11]
+          arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
           version: # Solaris support was introduced in 0.9

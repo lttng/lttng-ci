@@ -535,7 +535,7 @@
           buildtype: solarisbuild
           version: master
           ustversion: master
-          arch: !!python/tuple [solaris10, solaris11]
+          arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
@@ -581,7 +581,7 @@
           buildtype: solarisbuild
           version: stable-2.10
           ustversion: stable-2.10
-          arch: !!python/tuple [solaris10, solaris11]
+          arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
@@ -636,7 +636,7 @@
           buildtype: solarisbuild
           version: stable-2.9
           ustversion: stable-2.9
-          arch: !!python/tuple [solaris10, solaris11]
+          arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
@@ -691,7 +691,7 @@
           buildtype: solarisbuild
           version: stable-2.8
           ustversion: stable-2.8
-          arch: !!python/tuple [solaris10, solaris11]
+          arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
@@ -863,7 +863,7 @@
           buildtype: solarisbuild
           version: master-staging
           ustversion: master
-          arch: !!python/tuple [solaris10, solaris11]
+          arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]

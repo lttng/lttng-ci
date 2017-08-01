@@ -103,7 +103,7 @@ BABEL_BINS="$WORKSPACE/deps/babeltrace/build/bin/"
 
 # Set platform variables
 case "$arch" in
-solaris10)
+sol10-i386)
     MAKE=gmake
     TAR=gtar
     NPROC=gnproc
@@ -115,7 +115,7 @@ solaris10)
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
     ;;
 
-solaris11)
+sol11-i386)
     MAKE=gmake
     TAR=gtar
     NPROC=nproc
