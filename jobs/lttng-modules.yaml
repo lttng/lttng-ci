@@ -472,8 +472,8 @@
 # Vanilla normal builds
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
-            - stable-2.8
             - stable-2.9
+            - stable-2.10
             - master
           buildtype: build
           parambuildtype: build
@@ -489,8 +489,8 @@
           kverfilter: stable-head
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
-            - stable-2.8
             - stable-2.9
+            - stable-2.10
             - master
           buildtype: build
           parambuildtype: build
@@ -512,8 +512,8 @@
 # Ubuntu normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           mversion:
-            - stable-2.8
             - stable-2.9
+            - stable-2.10
             - master
           uversion:
             - trusty
@@ -527,8 +527,8 @@
 # Vanilla crossbuilds
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
-            - stable-2.8
             - stable-2.9
+            - stable-2.10
             - master
           buildtype: crossbuild
           parambuildtype: crossbuild
@@ -546,8 +546,8 @@
 # Ubuntu cross builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           mversion:
-            - stable-2.8
             - stable-2.9
+            - stable-2.10
             - master
           uversion:
             - trusty
@@ -568,8 +568,8 @@
       - 'lttng-modules_ALL_trigger-vanilla'
       - 'lttng-modules_{mversion}_cppcheck':
           mversion:
-            - stable-2.8
             - stable-2.9
+            - stable-2.10
             - master
       - 'lttng-modules_{mversion}_sloccount':
           mversion: master
