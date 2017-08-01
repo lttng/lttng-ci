@@ -15,6 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Parameters
+arch=${arch:-}
+cross_arch=${cross_arch:-}
+ktag=${ktag:-}
+
+
 ## FUNCTIONS ##
 
 # Kernel version compare functions
@@ -48,6 +54,12 @@ prepare_lnx_sources() {
     # Generate kernel configuration
     case "$ktag" in
       Ubuntu*)
+        if [ "${cross_arch}" = "powerpc" ]; then
+          if vergte "$KVERSION" "4.10"; then
+            echo "Ubuntu removed big endian powerpc configuration from kernel >= 4.10. Don't try to build it."
+            exit 0
+          fi
+        fi
         fakeroot debian/rules clean
         fakeroot debian/rules genconfigs
         cp CONFIGS/"${ubuntu_config}" "${outdir}"/.config
@@ -168,7 +180,7 @@ LTTBUILDKHDRDIR="${WORKSPACE}/build/lttng-modules-khdr"
 
 
 # Setup cross compile env if available
-if [ "x${cross_arch:-}" != "x" ]; then
+if [ "x${cross_arch}" != "x" ]; then
 
     case "$cross_arch" in
         "armhf")
@@ -215,7 +227,7 @@ if [ "x${cross_arch:-}" != "x" ]; then
     oldconf_target="olddefconfig"
 
 # Set arch specific values if we are not cross compiling
-elif [ "x${arch:-}" != "x" ]; then
+elif [ "x${arch}" != "x" ]; then
 
     case "$arch" in
         "x86-32")
