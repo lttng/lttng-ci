@@ -259,7 +259,17 @@ def get_kvm_tests_cmd():
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/destructive-tests.yml'
-                },
+                }
+                ],
+            'timeout': 18000
+            }
+        })
+    return command
+def get_kprobes_test_cmd():
+    command = OrderedDict({
+        'command': 'lava_test_shell',
+        'parameters': {
+            'testdef_repos': [
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
@@ -427,6 +437,7 @@ def main():
         j['actions'].append(get_config_cmd('kvm'))
         j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
         j['actions'].append(get_kvm_tests_cmd())
+        j['actions'].append(get_kprobes_test_cmd())
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     else:
         assert False, 'Unknown test type'
