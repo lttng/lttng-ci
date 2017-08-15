@@ -137,9 +137,9 @@ def create_new_job(name, build_device):
     job = OrderedDict({
         'health_check': False,
         'job_name': name,
-        'device_type':build_device,
+        'device_type': build_device,
         'tags': [ ],
-        'timeout': 18000,
+        'timeout': 7200,
         'actions': []
     })
     if build_device in 'x86':
@@ -224,7 +224,7 @@ def get_baremetal_benchmarks_cmd():
                     'testdef': 'lava/baremetal-tests/lttng-test-filter.yml'
                 }
                 ],
-            'timeout': 18000
+            'timeout': 7200
             }
         })
     return command
@@ -240,7 +240,7 @@ def get_baremetal_tests_cmd():
                     'testdef': 'lava/baremetal-tests/perf-tests.yml'
                 }
                 ],
-            'timeout': 18000
+            'timeout': 3600
             }
         })
     return command
@@ -261,7 +261,7 @@ def get_kvm_tests_cmd():
                     'testdef': 'lava/baremetal-tests/destructive-tests.yml'
                 }
                 ],
-            'timeout': 18000
+            'timeout': 3600
             }
         })
     return command
@@ -276,7 +276,7 @@ def get_kprobes_test_cmd():
                     'testdef': 'lava/baremetal-tests/kprobe-fuzzing-tests.yml'
                 }
                 ],
-            'timeout': 18000
+            'timeout': 7200
             }
         })
     return command
@@ -344,7 +344,7 @@ def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
                 'git clone https://github.com/frdeso/syscall-bench-it.git bm',
                 'pip3 install vlttng',
                         ],
-            'timeout': 18000
+            'timeout': 3600
             }
         })
 
