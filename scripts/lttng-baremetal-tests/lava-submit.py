@@ -32,6 +32,7 @@ class TestType(Enum):
     baremetal_benchmarks=1
     baremetal_tests=2
     kvm_tests=3
+    kvm_fuzzing_tests=4
 
 def get_job_bundle_content(server, job):
     try:
@@ -394,6 +395,8 @@ def main():
         test_type = TestType.baremetal_tests
     elif args.type in 'kvm-tests':
         test_type = TestType.kvm_tests
+    elif args.type in 'kvm-fuzzing-tests':
+        test_type = TestType.kvm_fuzzing_tests
     else:
         print('argument -t/--type {} unrecognized. Exiting...'.format(args.type))
         return -1
@@ -411,7 +414,7 @@ def main():
     elif test_type is TestType.baremetal_tests:
         j = create_new_job(args.jobname, build_device='x86')
         j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
-    elif test_type  is TestType.kvm_tests:
+    elif test_type  is TestType.kvm_tests or test_type is TestType.kvm_fuzzing_tests:
         j = create_new_job(args.jobname, build_device='kvm')
         j['actions'].append(get_deploy_cmd_kvm(args.jobname, args.kernel, args.kmodule, args.lmodule))
 
@@ -437,6 +440,13 @@ def main():
         j['actions'].append(get_config_cmd('kvm'))
         j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
         j['actions'].append(get_kvm_tests_cmd())
+        j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
+    elif test_type is TestType.kvm_fuzzing_tests:
+        if args.ust_commit is None:
+            print('Tests runs need -uc/--ust-commit options. Exiting...')
+            return -1
+        j['actions'].append(get_config_cmd('kvm'))
+        j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
         j['actions'].append(get_kprobes_test_cmd())
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     else:

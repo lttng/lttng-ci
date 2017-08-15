@@ -161,6 +161,51 @@
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-kvm-tests.sh
 
 - defaults:
+    name: vm_tests_kmainline
+    defaults: vm_tests
+    triggers:
+      - pollscm:
+          cron: "0 1 * * 1-5"
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_JENKINS_TOKEN
+      - inject:
+          properties-content: |
+            TOOLS_BRANCH={toolsversion}
+            MODULES_BRANCH={modulesversion}
+            UST_BRANCH={ustversion}
+            BUILD_DEVICE=baremetal
+    scm:
+      - git:
+          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
+          branches:
+            - "{toolsversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/lttng-tools
+      - git:
+          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
+          branches:
+            - "{modulesversion}"
+          shallow-clone: true
+          skip-tag: true
+          fastpoll: true
+          basedir: src/lttng-modules
+      - git:
+          url: git://git-mirror.internal.efficios.com/kernel/torvalds/linux.git
+          refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
+          branches:
+            - "master"
+          fastpoll: true
+          basedir: src/linux
+
+- defaults:
     name: baremetal_tests
     description: |
       Runs baremetal kernel tests over different combination of kernel and lttng configurations.
@@ -264,51 +309,23 @@
     defaults: baremetal_benchmarks
     triggers:
       - timed: "0 1 * * 1-5"
-
 - job-template:
     name: vm_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
-    defaults: vm_tests
-    triggers:
-      - pollscm:
-          cron: "0 1 * * 1-5"
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor
-      - credentials-binding:
-          - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_JENKINS_TOKEN
+    defaults: vm_tests_kmainline
+
+- job-template:
+    name: vm_tests_fuzzing_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
+    defaults: vm_tests_kmainline
+
+    builders:
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
       - inject:
-          properties-content: |
-            TOOLS_BRANCH={toolsversion}
-            MODULES_BRANCH={modulesversion}
-            UST_BRANCH={ustversion}
-            BUILD_DEVICE=baremetal
-    scm:
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
-          branches:
-            - "{toolsversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-tools
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
-          branches:
-            - "{modulesversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-modules
-      - git:
-          url: git://git-mirror.internal.efficios.com/kernel/torvalds/linux.git
-          refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
-          branches:
-            - "master"
-          fastpoll: true
-          basedir: src/linux
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-kvm-fuzzing-tests.sh
 
 - job-template:
     name: baremetal_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
@@ -524,5 +541,6 @@
       - stable-2.9
     jobs:
       - 'vm_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
+      - 'vm_tests_fuzzing_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
       - 'baremetal_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
       - 'baremetal_benchmarks_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
