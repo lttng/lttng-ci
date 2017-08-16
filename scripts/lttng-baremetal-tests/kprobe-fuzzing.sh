@@ -26,6 +26,10 @@ set -x
 # Loop over the list of symbols and enable the symbols in groups of
 # $NB_KPROBE_PER_ITER
 for i in $(seq 0 "$NB_KPROBE_PER_ITER" "$nb_syms"); do
+	# Print time in UTC at each iteration to easily see when the script
+	# hangs
+	date --utc
+
 	# Pick $NB_KPROBE_PER_ITER symbols to instrument, craft enable-event
 	# command and save them to a file. We craft the commands and executed
 	# them in two steps so that the pipeline can be done without the bash
