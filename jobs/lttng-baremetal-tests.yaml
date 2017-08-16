@@ -484,8 +484,8 @@
       - v4.8.1
     lttngversion:
       - master
-      - stable-2.8
       - stable-2.9
+      - stable-2.10
     jobs:
       - 'vm_tests_k{kversion}_l{lttngversion}'
       - 'baremetal_benchmarks_k{kversion}_l{lttngversion}'
