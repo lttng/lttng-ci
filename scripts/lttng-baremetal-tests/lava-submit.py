@@ -32,6 +32,7 @@ class TestType(Enum):
     baremetal_benchmarks=1
     baremetal_tests=2
     kvm_tests=3
+    kvm_fuzzing_tests=4
 
 def get_job_bundle_content(server, job):
     try:
@@ -137,9 +138,9 @@ def create_new_job(name, build_device):
     job = OrderedDict({
         'health_check': False,
         'job_name': name,
-        'device_type':build_device,
+        'device_type': build_device,
         'tags': [ ],
-        'timeout': 18000,
+        'timeout': 7200,
         'actions': []
     })
     if build_device in 'x86':
@@ -224,7 +225,7 @@ def get_baremetal_benchmarks_cmd():
                     'testdef': 'lava/baremetal-tests/lttng-test-filter.yml'
                 }
                 ],
-            'timeout': 18000
+            'timeout': 7200
             }
         })
     return command
@@ -240,7 +241,7 @@ def get_baremetal_tests_cmd():
                     'testdef': 'lava/baremetal-tests/perf-tests.yml'
                 }
                 ],
-            'timeout': 18000
+            'timeout': 3600
             }
         })
     return command
@@ -259,14 +260,24 @@ def get_kvm_tests_cmd():
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/destructive-tests.yml'
-                },
+                }
+                ],
+            'timeout': 3600
+            }
+        })
+    return command
+def get_kprobes_test_cmd():
+    command = OrderedDict({
+        'command': 'lava_test_shell',
+        'parameters': {
+            'testdef_repos': [
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
                     'testdef': 'lava/baremetal-tests/kprobe-fuzzing-tests.yml'
                 }
                 ],
-            'timeout': 18000
+            'timeout': 7200
             }
         })
     return command
@@ -334,7 +345,7 @@ def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
                 'git clone https://github.com/frdeso/syscall-bench-it.git bm',
                 'pip3 install vlttng',
                         ],
-            'timeout': 18000
+            'timeout': 3600
             }
         })
 
@@ -384,6 +395,8 @@ def main():
         test_type = TestType.baremetal_tests
     elif args.type in 'kvm-tests':
         test_type = TestType.kvm_tests
+    elif args.type in 'kvm-fuzzing-tests':
+        test_type = TestType.kvm_fuzzing_tests
     else:
         print('argument -t/--type {} unrecognized. Exiting...'.format(args.type))
         return -1
@@ -401,7 +414,7 @@ def main():
     elif test_type is TestType.baremetal_tests:
         j = create_new_job(args.jobname, build_device='x86')
         j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
-    elif test_type  is TestType.kvm_tests:
+    elif test_type  is TestType.kvm_tests or test_type is TestType.kvm_fuzzing_tests:
         j = create_new_job(args.jobname, build_device='kvm')
         j['actions'].append(get_deploy_cmd_kvm(args.jobname, args.kernel, args.kmodule, args.lmodule))
 
@@ -427,6 +440,14 @@ def main():
         j['actions'].append(get_config_cmd('kvm'))
         j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
         j['actions'].append(get_kvm_tests_cmd())
+        j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
+    elif test_type is TestType.kvm_fuzzing_tests:
+        if args.ust_commit is None:
+            print('Tests runs need -uc/--ust-commit options. Exiting...')
+            return -1
+        j['actions'].append(get_config_cmd('kvm'))
+        j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
+        j['actions'].append(get_kprobes_test_cmd())
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     else:
         assert False, 'Unknown test type'
