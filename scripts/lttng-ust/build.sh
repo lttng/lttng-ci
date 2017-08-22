@@ -165,7 +165,7 @@ $MAKE -j "$($NPROC)" V=1
 $MAKE install
 
 # Run tests
-$MAKE check
+$MAKE --keep-going check
 
 # Copy tap logs for the jenkins tap parser
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"

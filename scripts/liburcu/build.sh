@@ -210,7 +210,7 @@ $MAKE -j "$($NPROC)" V=1
 $MAKE install
 
 # Run tests
-$MAKE check
+$MAKE --keep-going check
 # Only run regtest for 0.9 and up
 if vergte "$PACKAGE_VERSION" "0.9"; then
    $MAKE regtest

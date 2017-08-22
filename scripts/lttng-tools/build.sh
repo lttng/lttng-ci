@@ -347,7 +347,7 @@ if [ "$RUN_TESTS" = "yes" ]; then
     if [ "$conf" != "no-ust" ]; then
         # Run 'unit_tests', 2.8 and up has a new test suite
         if vergte "$PACKAGE_VERSION" "2.8"; then
-            make check
+            make --keep-going check
             rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*'" $BUILD_PATH/tests/" "$TAPDIR"
         else
             prove --merge -v --exec '' - < "$BUILD_PATH/tests/unit_tests" --archive "$TAPDIR/unit/" || true
