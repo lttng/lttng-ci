@@ -35,6 +35,7 @@ rm -rf "$PREFIX" "$TMPDIR"
 mkdir -p "$PREFIX" "$TMPDIR"
 
 export TMPDIR
+export CFLAGS="-g -O2"
 
 # Set platform variables
 case "$arch" in

@@ -84,6 +84,7 @@ rm -rf "$PREFIX" "$TMPDIR"
 mkdir -p "$PREFIX" "$TMPDIR"
 
 export TMPDIR
+export CFLAGS="-g -O2"
 
 # Set platform variables
 case "$arch" in
@@ -115,7 +116,7 @@ macosx)
     export BISON="bison"
     export YACC="$BISON -y"
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    export CFLAGS="-I/opt/local/include"
+    export CFLAGS="$CFLAGS -I/opt/local/include"
     export LDFLAGS="-L/opt/local/lib"
     ;;
 *)

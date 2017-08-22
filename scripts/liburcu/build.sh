@@ -84,6 +84,7 @@ rm -rf "$PREFIX" "$TMPDIR"
 mkdir -p "$PREFIX" "$TMPDIR"
 
 export TMPDIR
+export CFLAGS="-g -O2"
 
 # Set platform variables
 case "$arch" in
@@ -115,7 +116,7 @@ macosx)
     export BISON="bison"
     export YACC="$BISON -y"
     export LDFLAGS="-L/opt/local/lib"
-    export CFLAGS="-I/opt/local/include"
+    export CFLAGS="$CFLAGS -I/opt/local/include"
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     ;;
 
@@ -154,7 +155,7 @@ debug-rcu)
     if vergte "$PACKAGE_VERSION" "0.10"; then
        CONF_OPTS="--enable-rcu-debug"
     else
-       export CFLAGS="${CFLAGS:} -DDEBUG_RCU"
+       export CFLAGS="$CFLAGS -DDEBUG_RCU"
     fi
     ;;
 

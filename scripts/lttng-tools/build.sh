@@ -85,6 +85,7 @@ rm -rf "$PREFIX" "$TAPDIR"
 mkdir -p "$PREFIX" "$TAPDIR"
 
 #export TMPDIR
+CFLAGS="-g -O2"
 
 # liburcu
 URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
@@ -109,7 +110,7 @@ sol10-i386)
     NPROC=gnproc
     BISON="bison"
     YACC="$BISON -y"
-    CFLAGS="-D_XOPEN_SOURCE=500"
+    CFLAGS="$CFLAGS -D_XOPEN_SOURCE=500"
     RUN_TESTS="no"
 
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
@@ -121,7 +122,7 @@ sol11-i386)
     NPROC=nproc
     BISON="/opt/csw/bin/bison"
     YACC="$BISON -y"
-    CFLAGS="-D_XOPEN_SOURCE=500"
+    CFLAGS="$CFLAGS -D_XOPEN_SOURCE=500"
     RUN_TESTS="no"
 
     export PATH="$PATH:/usr/perl5/bin"
@@ -136,7 +137,7 @@ macosx)
     RUN_TESTS="no"
 
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    CFLAGS="-I/opt/local/include"
+    CFLAGS="$CFLAGS -I/opt/local/include"
     LDFLAGS="-L/opt/local/lib"
     ;;
 
@@ -146,7 +147,7 @@ cygwin|cygwin64|msys32|msys64)
     NPROC=nproc
     BISON="bison"
     YACC="$BISON -y"
-    CFLAGS=""
+    #CFLAGS=""
     RUN_TESTS="no"
     ;;
 
@@ -156,7 +157,7 @@ cygwin|cygwin64|msys32|msys64)
     NPROC=nproc
     BISON="bison"
     YACC="$BISON -y"
-    CFLAGS=""
+    #CFLAGS=""
     RUN_TESTS="yes"
 
     PYTHON2=python2
