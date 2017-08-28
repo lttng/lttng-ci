@@ -11,7 +11,7 @@ install:
                 - python3-numpy
         git-repos:
                 - url: https://github.com/frdeso/syscall-bench-it.git
-                  destination: benchmarks
+                  destination: /tmp/benchmarks
                   branch: master
                 - url: https://github.com/lttng/lttng-ci
                   destination: ci
@@ -24,13 +24,13 @@ install:
 run:
         steps:
                 - source /root/lttngvenv/activate
-                - cd benchmarks
+                - cd /tmp/benchmarks
                 - lava-test-case build-benchmarks --shell "make"
                 - lava-test-case run-benchmarks --shell "./run.sh failing-close sys_close"
                 - lava-test-case-attach run-benchmarks "./results.csv"
                 - cd -
                 - cd ci
-                - python3 ./scripts/lttng-baremetal-tests/parse-results.py ../benchmarks/results.csv
+                - python3 ./scripts/lttng-baremetal-tests/parse-results.py /tmp/benchmarks/results.csv
                 - mv ./processed_results.csv ../processed_results_close.csv
                 - cd -
                 - tar czf coredump.tar.gz coredump
