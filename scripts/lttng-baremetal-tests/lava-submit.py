@@ -262,7 +262,7 @@ def get_kvm_tests_cmd():
                     'testdef': 'lava/baremetal-tests/destructive-tests.yml'
                 }
                 ],
-            'timeout': 3600
+            'timeout': 7200
             }
         })
     return command
