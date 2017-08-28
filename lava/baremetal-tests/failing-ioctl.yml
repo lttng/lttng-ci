@@ -13,9 +13,9 @@ install:
                 - url: https://github.com/frdeso/syscall-bench-it.git
                   destination: benchmarks
                   branch: master
-                - url: https://github.com/frdeso/lttng-ci
+                - url: https://github.com/lttng/lttng-ci
                   destination: ci
-                  branch: baremetal_tests
+                  branch: master
         steps:
                 - export TMPDIR="/tmp"
                 - ulimit -c unlimited
