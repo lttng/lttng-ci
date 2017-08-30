@@ -15,13 +15,13 @@ install:
                   branch: master
         steps:
                 - export TMPDIR="/tmp"
-                - export BENCHMARK_DIR=$(mktemp --directory)
                 - ulimit -c unlimited
                 - mkdir -p coredump
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 run:
         steps:
                 - source /root/lttngvenv/activate
+                - export BENCHMARK_DIR=$(mktemp --directory)/bm
                 - git clone https://github.com/frdeso/syscall-bench-it.git $BENCHMARK_DIR
                 - cd $BENCHMARK_DIR
                 - lava-test-case build-benchmarks --shell "make"
@@ -35,4 +35,3 @@ run:
                 - tar czf coredump.tar.gz coredump
                 - lava-test-case-attach run-benchmarks coredump.tar.gz
                 - lava-test-case-attach run-benchmarks "./processed_results_open_enoent.csv"
-
