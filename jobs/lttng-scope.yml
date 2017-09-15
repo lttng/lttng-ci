@@ -79,11 +79,10 @@
           settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
           properties:
             - maven.test.failure.ignore=true
-            - eclipse.p2.mirrors=false
 
     publishers:
       - archive:
-          artifacts: 'org.lttng.scope.rcp.product/target/repository/**,org.lttng.scope.rcp.product/target/products/*'
+          artifacts: '**/target/*.jar'
           allow-empty: false
           only-if-success: true
       - junit:
@@ -147,11 +146,10 @@
           settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
           properties:
             - maven.test.failure.ignore=true
-            - eclipse.p2.mirrors=false
 
     publishers:
       - archive:
-          artifacts: 'org.lttng.scope.rcp.product/target/repository/**,org.lttng.scope.rcp.product/target/products/*'
+          artifacts: '**/target/*.jar'
           allow-empty: false
           only-if-success: true
       - junit:
@@ -210,11 +208,10 @@
           settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
           properties:
             - maven.test.failure.ignore=true
-            - eclipse.p2.mirrors=false
 
     publishers:
       - archive:
-          artifacts: 'org.lttng.scope.rcp.product/target/repository/**,org.lttng.scope.rcp.product/target/products/*'
+          artifacts: '**/target/*.jar'
           allow-empty: false
           only-if-success: true
       - junit:
