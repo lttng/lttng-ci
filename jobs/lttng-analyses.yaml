@@ -126,7 +126,7 @@
     jobs:
       - 'lttng-analyses_{version}_build':
           arch: !!python/tuple [x86-32, x86-64]
-          babeltrace_version: !!python/tuple [stable-1.4, stable-1.5, master]
+          babeltrace_version: !!python/tuple [stable-1.5, stable-2.0, master]
       - 'lttng-analyses_{version}_pylint':
           babeltrace_version: stable-1.5
 

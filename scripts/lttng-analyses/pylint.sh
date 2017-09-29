@@ -23,7 +23,7 @@ P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
 BABELTRACE_DIR=$WORKSPACE/deps/babeltrace/build
 
 export LD_LIBRARY_PATH="$BABELTRACE_DIR/lib"
-export PYTHONPATH="$BABELTRACE_DIR/lib/python${P3_VERSION}/dist-packages/"
+export PYTHONPATH="$BABELTRACE_DIR/lib/python${P3_VERSION}/site-packages/"
 
 PYENV_HOME=$WORKSPACE/.pyenv/
 
