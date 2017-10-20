@@ -264,7 +264,6 @@
       - stable-2.8
       - stable-2.9
       - stable-2.10
-      - master
     jobs:
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
@@ -286,6 +285,31 @@
           liburcu_version: !!python/tuple [stable-0.8, stable-0.9, stable-0.10, master]
       - 'lttng-ust_{version}_cppcheck'
       - 'lttng-ust_{version}_scan-build'
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: build
+          version: master
+          arch: !!python/tuple [x86-32, x86-64]
+          build: !!python/tuple [std, dist, oot, oot-dist]
+          conf: !!python/tuple [std, agents, debug-rcu]
+          liburcu_version: !!python/tuple [master]
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: portbuild
+          version: master
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, agents]
+          liburcu_version: !!python/tuple [master]
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: slesbuild
+          version: master
+          arch: !!python/tuple [sles12sp2]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          liburcu_version: !!python/tuple [master]
+      - 'lttng-ust_{version}_cppcheck':
+          version: master
+      - 'lttng-ust_{version}_scan-build':
+          version: master
       - 'lttng-ust_{version}_coverity':
           version: master
 
