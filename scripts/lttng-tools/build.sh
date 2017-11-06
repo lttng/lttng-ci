@@ -126,6 +126,8 @@ sol11-i386)
     RUN_TESTS="no"
 
     export PATH="$PATH:/usr/perl5/bin"
+    CFLAGS="$CFLAGS -I/opt/csw/include"
+    LDFLAGS="-L/opt/csw/lib"
     ;;
 
 macosx)
