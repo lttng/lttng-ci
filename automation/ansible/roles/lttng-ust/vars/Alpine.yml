@@ -5,3 +5,4 @@ __lttng_ust_packages:
   - python3
 #  - liblog4j1.2-java
   - openjdk8
+  - numactl-dev

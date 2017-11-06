@@ -6,3 +6,4 @@ __lttng_ust_packages:
   - log4j
   - java-1_8_0-openjdk-headless
   - java-1_8_0-openjdk-devel
+  - libnuma-devel
