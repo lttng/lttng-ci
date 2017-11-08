@@ -84,6 +84,14 @@
           default: 'v2.6.36-rt0-rebase'
           description: 'The lowest kernel version to build.'
       - string:
+          name: 'kverceil'
+          default: '{kverceil}'
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: '{kverfilter}'
+          description: 'Kernel versions list filtering strategy.'
+      - string:
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-rt-devel.git'
           description: 'The linux kernel git repository url.'
@@ -508,6 +516,8 @@
 # RT normal builds
       - 'lttng-modules_{mversion}_build-rt':
           mversion: master
+          kverceil: ''
+          kverfilter: stable-head
 
 # Ubuntu normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
