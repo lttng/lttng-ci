@@ -44,11 +44,6 @@
          type: slave
          name: arch
          values: '{obj:arch}'
-      - axis:
-         type: user-defined
-         name: SWT_GTK3
-         values:
-           - "0"
 
     wrappers:
       - workspace-cleanup
