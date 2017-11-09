@@ -95,6 +95,10 @@
           default: 'v3.12'
           description: 'The lowest kernel version to build.'
       - string:
+          name: 'kverceil'
+          default: ''
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
           name: 'kverfilter'
           default: 'stable-head'
           description: 'Kernel versions list filtering strategy.'
@@ -110,7 +114,7 @@
     builders:
       - system-groovy:
          command:
-           !include-raw-escape: scripts/latency-tracker/master-vanilla.groovy
+           !include-raw-escape: scripts/latency-tracker/master.groovy
 
     publishers:
       - workspace-cleanup
@@ -141,9 +145,17 @@
           default: '20'
           description: 'The maximum number of concurrent child build to run.'
       - string:
-          name: 'uversion'
-          default: '{uversion}'
+          name: 'kverfloor'
+          default: ''
           description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverceil'
+          default: ''
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: 'stable-head'
+          description: 'Kernel versions list filtering strategy.'
       - string:
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/git/ubuntu-{uversion}.git'
@@ -152,11 +164,15 @@
           name: 'kbuildjob'
           default: 'latency-tracker_VERSION_param-build'
           description: 'The parametrized job to use for child builds.'
+      - string:
+          name: 'uversion'
+          default: '{uversion}'
+          description: 'The lowest kernel version to build.'
 
     builders:
       - system-groovy:
          command:
-           !include-raw-escape: scripts/latency-tracker/master-ubuntu.groovy
+           !include-raw-escape: scripts/latency-tracker/master.groovy
 
     publishers:
       - workspace-cleanup
@@ -190,6 +206,14 @@
           name: 'kverfloor'
           default: 'v2.6.36-rt0-rebase'
           description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverceil'
+          default: ''
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: 'stable-head'
+          description: 'Kernel versions list filtering strategy.'
       - string:
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-rt-devel.git'
@@ -236,7 +260,7 @@
           default: 'master'
           description: 'The latency-tracker branch to build.'
       - string:
-          name: 'kversion'
+          name: 'ktag'
           default: ''
           description: 'The linux kernel git tag to build against.'
       - string:
@@ -260,7 +284,7 @@
 
     builders:
       - shell: |
-          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
+          git clone --depth=1 -b "$ktag" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
       - shell:
           !include-raw-escape: scripts/latency-tracker/param-build.sh
 
@@ -294,7 +318,7 @@
           default: 'master'
           description: 'The latency-tracker branch to build.'
       - string:
-          name: 'kversion'
+          name: 'ktag'
           default: ''
           description: 'The linux kernel git tag to build against.'
       - string:
@@ -318,7 +342,7 @@
 
     builders:
       - shell: |
-          git clone --depth=1 -b "$kversion" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
+          git clone --depth=1 -b "$ktag" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
       - shell:
           !include-raw-escape: scripts/latency-tracker/param-build.sh
 

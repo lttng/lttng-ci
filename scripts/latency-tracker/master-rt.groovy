@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 - Michael Jeanson <mjeanson@efficios.com>
+ * Copyright (C) 2016-2017 - Michael Jeanson <mjeanson@efficios.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,18 +23,42 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 
 
-class kVersion implements Comparable<kVersion> {
+class InvalidKVersionException extends Exception {
+  public InvalidKVersionException(String message) {
+    super(message)
+  }
+}
 
-  Integer major = 0;
-  Integer majorB = 0;
-  Integer minor = 0;
-  Integer patch = 0;
-  Integer rt = 0;
+class EmptyKVersionException extends Exception {
+  public EmptyKVersionException(String message) {
+    super(message)
+  }
+}
 
-  kVersion() {}
+class RTKVersion implements Comparable<RTKVersion> {
 
-  kVersion(version) {
+  Integer major = 0
+  Integer majorB = 0
+  Integer minor = 0
+  Integer patch = 0
+  Integer rt = 0
+
+  RTKVersion() {}
+
+  RTKVersion(version) {
     this.parse(version)
+  }
+
+  static RTKVersion minKVersion() {
+    return new RTKVersion("v0.0.0-rt0-rebase")
+  }
+
+  static RTKVersion maxKVersion() {
+    return new RTKVersion("v" + Integer.MAX_VALUE + ".0.0-rt0-rebase")
+  }
+
+  static RTKVersion factory(version) {
+    return new RTKVersion(version)
   }
 
   def parse(version) {
@@ -44,9 +68,13 @@ class kVersion implements Comparable<kVersion> {
     this.patch = 0
     this.rt = 0
 
+    if (!version) {
+      throw new EmptyKVersionException("Empty kernel version")
+    }
+
     def match = version =~ /^v(\d+)\.(\d+)(\.(\d+))?(\.(\d+))?(-rt(\d+)-rebase)$/
     if (!match) {
-      throw new Exception("Invalid kernel version: ${version}")
+      throw new InvalidKVersionException("Invalid kernel version: ${version}")
     }
 
     Integer offset = 0;
@@ -72,21 +100,36 @@ class kVersion implements Comparable<kVersion> {
     this.rt = Integer.parseInt(match.group(8))
   }
 
-  @Override int compareTo(kVersion o) {
+  // Return true if both version are of the same stable branch
+  Boolean isSameStable(RTKVersion o) {
     if (this.major != o.major) {
-      return Integer.compare(this.major, o.major);
+      return false
     }
     if (this.majorB != o.majorB) {
-      return Integer.compare(this.majorB, o.majorB);
+      return false
     }
     if (this.minor != o.minor) {
-      return Integer.compare(this.minor, o.minor);
+      return false
+    }
+
+    return true
+  }
+
+  @Override int compareTo(RTKVersion o) {
+    if (this.major != o.major) {
+      return Integer.compare(this.major, o.major)
+    }
+    if (this.majorB != o.majorB) {
+      return Integer.compare(this.majorB, o.majorB)
+    }
+    if (this.minor != o.minor) {
+      return Integer.compare(this.minor, o.minor)
     }
     if (this.patch != o.patch) {
-      return Integer.compare(this.patch, o.patch);
+      return Integer.compare(this.patch, o.patch)
     }
-    if (this.rt != o.rc) {
-      return Integer.compare(this.rt, o.rt);
+    if (this.rt != o.rt) {
+      return Integer.compare(this.rt, o.rt)
     }
 
     // Same version
@@ -118,9 +161,12 @@ class kVersion implements Comparable<kVersion> {
 def mversion = build.buildVariableResolver.resolve('mversion')
 def maxConcurrentBuild = build.buildVariableResolver.resolve('maxConcurrentBuild')
 def kgitrepo = build.buildVariableResolver.resolve('kgitrepo')
-def kverfloor = new kVersion(build.buildVariableResolver.resolve('kverfloor'))
+def kverfloor_raw = build.buildVariableResolver.resolve('kverfloor')
+def kverceil_raw = build.buildVariableResolver.resolve('kverceil')
+def kverfilter = build.buildVariableResolver.resolve('kverfilter')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
 def currentJobName = build.project.getFullDisplayName()
+
 
 // Get the out variable
 def config = new HashMap()
@@ -128,29 +174,85 @@ def bindings = getBinding()
 config.putAll(bindings.getVariables())
 def out = config['out']
 
-def jlc = new jenkins.model.JenkinsLocationConfiguration()
-def jenkinsUrl = jlc.url
 
 // Get tags from git repository
 def refs = Git.lsRemoteRepository().setTags(true).setRemote(kgitrepo).call();
 
 // Get kernel versions to build
 def kversions = []
+def matchStrs = [
+  ~/^refs\/tags\/(v[\d\.]+(-rt(\d+)-rebase))$/,
+]
+def blacklist = [
+  'v4.11.8-rt5-rebase',
+  'v4.11.9-rt6-rebase',
+  'v4.11.9-rt7-rebase',
+  'v4.11.12-rt8-rebase',
+  'v4.11.12-rt9-rebase',
+  'v4.11.12-rt10-rebase',
+  'v4.11.12-rt11-rebase',
+  'v4.11.12-rt12-rebase',
+  'v4.11.12-rt13-rebase',
+]
+
+def kversionFactory = new RTKVersion()
+
+// Parse kernel versions
+def kverfloor = ""
+try {
+    kverfloor = kversionFactory.factory(kverfloor_raw)
+} catch (EmptyKVersionException e) {
+    kverfloor = kversionFactory.minKVersion()
+}
+
+def kverceil = ""
+try {
+    kverceil = kversionFactory.factory(kverceil_raw)
+} catch (EmptyKVersionException e) {
+    kverceil = kversionFactory.maxKVersion()
+}
+
+// Build a sorted list of versions to build
 for (ref in refs) {
-  def match = ref.getName() =~ /^refs\/tags\/(v[\d\.]+(-rt(\d+)-rebase))$/
+  for (matchStr in matchStrs) {
+    def match = ref.getName() =~ matchStr
+    if (match && !blacklist.contains(match.group(1))) {
+      def v = kversionFactory.factory(match.group(1))
 
-  if (match) {
-    def v = new kVersion(match.group(1))
-
-    if (v >= kverfloor) {
-      kversions.add(v)
+      if ((v >= kverfloor) && (v < kverceil)) {
+        kversions.add(v)
+      }
     }
   }
 }
 
 kversions.sort()
 
-// Debug
+switch (kverfilter) {
+  case 'stable-head':
+    // Keep only the head of each stable branch
+    println('Filter kernel versions to keep only the latest point release of each stable branch.')
+
+    for (i = 0; i < kversions.size(); i++) {
+      def curr = kversions[i]
+      def next = i < kversions.size() - 1 ? kversions[i + 1] : null
+
+      if (next != null) {
+        if (curr.isSameStable(next)) {
+          kversions.remove(i)
+          i--
+        }
+      }
+    }
+    break
+
+  default:
+    // No filtering of kernel versions
+    println('No kernel versions filtering selected.')
+    break
+}
+
+
 println "Building the following kernel versions:"
 for (k in kversions) {
   println k
@@ -165,6 +267,7 @@ def allBuilds = []
 def ongoingBuild = []
 def failedRuns = []
 def isFailed = false
+def similarJobQueued = 0;
 
 // Loop while we have kernel versions remaining or jobs running
 while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
@@ -173,7 +276,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
     def kversion = kversions.pop()
     def job_params = [
       new StringParameterValue('mversion', mversion),
-      new StringParameterValue('kversion', kversion.toString()),
+      new StringParameterValue('ktag', kversion.toString()),
       new StringParameterValue('kgitrepo', kgitrepo),
     ]
 
@@ -188,7 +291,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
 
     println "Waiting... Queued: " + kversions.size() + " Running: " + ongoingBuild.size()
     try {
-      Thread.sleep(5000)
+      Thread.sleep(10000)
     } catch(e) {
       if (e in InterruptedException) {
         build.setResult(hudson.model.Result.ABORTED)
@@ -198,11 +301,9 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
       }
     }
 
-    // Check for queued similar job since we only want to run latest
-    // as Mathieu Desnoyers requirement
+    // Abort job if a newer instance is queued
     similarJobQueued = Hudson.instance.queue.items.count{it.task.getFullDisplayName() == currentJobName}
     if ( similarJobQueued > 0 ) {
-	 // Abort since new build is queued
         build.setResult(hudson.model.Result.ABORTED)
         throw new InterruptedException()
     }
@@ -217,7 +318,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
         // Print results
         def matrixParent = currentBuild.get()
         allBuilds.add(matrixParent)
-        def kernelStr = matrixParent.buildVariableResolver.resolve("kversion")
+        def kernelStr = matrixParent.buildVariableResolver.resolve("ktag")
         println "${matrixParent.fullDisplayName} (${kernelStr}) completed with status ${matrixParent.result}"
 
         // Process child runs of matrixBuild
@@ -243,7 +344,7 @@ for (failedRun in failedRuns) {
 
 println "---Build report---"
 for (b in allBuilds) {
-  def kernelStr = b.buildVariableResolver.resolve("kversion")
+  def kernelStr = b.buildVariableResolver.resolve("ktag")
   println "${b.fullDisplayName} (${kernelStr}) completed with status ${b.result}"
   // Cleanup builds
   try {
