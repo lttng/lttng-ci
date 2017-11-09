@@ -42,7 +42,7 @@ prepare_lnx_sources() {
     if [ "$outdir" = "." ]; then
       koutput=""
     else
-      koutput="O=\"${outdir}\""
+      koutput="O=${outdir}"
     fi
 
     # Generate kernel configuration
