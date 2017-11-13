@@ -110,7 +110,7 @@ sol10-i386)
     NPROC=gnproc
     BISON="bison"
     YACC="$BISON -y"
-    CFLAGS="$CFLAGS -D_XOPEN_SOURCE=500"
+    CFLAGS="${CFLAGS:-} -D_XOPEN_SOURCE=500"
     RUN_TESTS="no"
 
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
@@ -122,11 +122,11 @@ sol11-i386)
     NPROC=nproc
     BISON="/opt/csw/bin/bison"
     YACC="$BISON -y"
-    CFLAGS="$CFLAGS -D_XOPEN_SOURCE=500"
+    CFLAGS="${CFLAGS:-} -D_XOPEN_SOURCE=500"
     RUN_TESTS="no"
 
     export PATH="$PATH:/usr/perl5/bin"
-    CFLAGS="$CFLAGS -I/opt/csw/include"
+    CPPFLAGS="-I/opt/csw/include"
     LDFLAGS="-L/opt/csw/lib"
     ;;
 
@@ -139,7 +139,7 @@ macosx)
     RUN_TESTS="no"
 
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    CFLAGS="$CFLAGS -I/opt/local/include"
+    CPPFLAGS="-I/opt/local/include"
     LDFLAGS="-L/opt/local/lib"
     ;;
 
