@@ -155,7 +155,7 @@ python-bindings)
     CONF_OPTS="--enable-python-bindings"
 
     if vergte "$PACKAGE_VERSION" "2.0"; then
-        CONF_OPTS="${CONF_OPTS} --enable-python-bindings-doc --enable-python-bindings-tests --enable-python-plugins"
+        CONF_OPTS="${CONF_OPTS} --enable-python-bindings-doc --enable-python-plugins"
     fi
     ;;
 *)
