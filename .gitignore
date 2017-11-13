@@ -2,3 +2,4 @@
 /etc/jenkins_jobs.ini
 /.tox
 .venv*/
+*.retry
