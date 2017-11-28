@@ -360,11 +360,6 @@ if [ "$RUN_TESTS" = "yes" ]; then
         echo "Tests disabled for 'no-ust'."
     fi
 
-    # Run 'with_bindings_regression' test suite for 'python-bindings' config
-    if [ "$conf" = "python-bindings" ]; then
-        prove --merge -v --exec '' - < "$BUILD_PATH/tests/with_bindings_regression" --archive "$TAPDIR/with_bindings_regression/" || true
-    fi
-
     # TAP plugin is having a hard time with .yml files.
     find "$TAPDIR" -name "meta.yml" -exec rm -f {} \;
 
