@@ -229,12 +229,6 @@ agents)
     echo "Enable Python agents"
     export PYTHONPATH="$UST_PYTHON2:$UST_PYTHON3"
     CONF_OPTS+=" --enable-test-python-agent-all"
-
-    echo "Enable Python bindings"
-    # We only support bindings built with Python 3
-    export PYTHON="python3"
-    export PYTHON_CONFIG="/usr/bin/python3-config"
-    CONF_OPTS+=" --enable-python-bindings"
     ;;
 
 relayd-only)
@@ -248,8 +242,13 @@ debug-rcu)
     ;;
 
 *)
+    # On a std build always build with python bindings since non-agent specific tests depend on it
     echo "Standard build"
-    CONF_OPTS=""
+    echo "Enable Python bindings"
+    # We only support bindings built with Python 3
+    export PYTHON="python3"
+    export PYTHON_CONFIG="/usr/bin/python3-config"
+    CONF_OPTS+=" --enable-python-bindings"
     ;;
 esac
 
@@ -358,11 +357,6 @@ if [ "$RUN_TESTS" = "yes" ]; then
     else
         # Regression is disabled for now, we need to adjust the testsuite for no ust builds.
         echo "Tests disabled for 'no-ust'."
-    fi
-
-    # Run 'with_bindings_regression' test suite for 'python-bindings' config
-    if [ "$conf" = "python-bindings" ]; then
-        prove --merge -v --exec '' - < "$BUILD_PATH/tests/with_bindings_regression" --archive "$TAPDIR/with_bindings_regression/" || true
     fi
 
     # TAP plugin is having a hard time with .yml files.
