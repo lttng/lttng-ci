@@ -207,17 +207,21 @@ else
     NO_UST="--disable-lttng-ust"
 fi
 
+# Most build configs require the python bindings
+CONF_OPTS="--enable-python-bindings"
+export PYTHON="python3"
+export PYTHON_CONFIG="/usr/bin/python3-config"
+
 # Set configure options for each build configuration
-CONF_OPTS=""
 case "$conf" in
 static)
     echo "Static build"
-    CONF_OPTS="--enable-static --disable-shared"
+    CONF_OPTS+=" --enable-static --disable-shared"
     ;;
 
 no-ust)
     echo "Build without UST support"
-    CONF_OPTS="$NO_UST"
+    CONF_OPTS+=" $NO_UST"
     ;;
 
 agents)
@@ -229,12 +233,6 @@ agents)
     echo "Enable Python agents"
     export PYTHONPATH="$UST_PYTHON2:$UST_PYTHON3"
     CONF_OPTS+=" --enable-test-python-agent-all"
-
-    echo "Enable Python bindings"
-    # We only support bindings built with Python 3
-    export PYTHON="python3"
-    export PYTHON_CONFIG="/usr/bin/python3-config"
-    CONF_OPTS+=" --enable-python-bindings"
     ;;
 
 relayd-only)
@@ -249,7 +247,6 @@ debug-rcu)
 
 *)
     echo "Standard build"
-    CONF_OPTS=""
     ;;
 esac
 
@@ -354,15 +351,11 @@ if [ "$RUN_TESTS" = "yes" ]; then
         else
             prove --merge -v --exec '' - < "$BUILD_PATH/tests/unit_tests" --archive "$TAPDIR/unit/" || true
             prove --merge -v --exec '' - < "$BUILD_PATH/tests/fast_regression" --archive "$TAPDIR/fast_regression/" || true
+            prove --merge -v --exec '' - < "$BUILD_PATH/tests/with_bindings_regression" --archive "$TAPDIR/with_bindings_regression/" || true
         fi
     else
         # Regression is disabled for now, we need to adjust the testsuite for no ust builds.
         echo "Tests disabled for 'no-ust'."
-    fi
-
-    # Run 'with_bindings_regression' test suite for 'python-bindings' config
-    if [ "$conf" = "python-bindings" ]; then
-        prove --merge -v --exec '' - < "$BUILD_PATH/tests/with_bindings_regression" --archive "$TAPDIR/with_bindings_regression/" || true
     fi
 
     # TAP plugin is having a hard time with .yml files.
