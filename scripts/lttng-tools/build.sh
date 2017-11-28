@@ -229,12 +229,6 @@ agents)
     echo "Enable Python agents"
     export PYTHONPATH="$UST_PYTHON2:$UST_PYTHON3"
     CONF_OPTS+=" --enable-test-python-agent-all"
-
-    echo "Enable Python bindings"
-    # We only support bindings built with Python 3
-    export PYTHON="python3"
-    export PYTHON_CONFIG="/usr/bin/python3-config"
-    CONF_OPTS+=" --enable-python-bindings"
     ;;
 
 relayd-only)
@@ -248,8 +242,13 @@ debug-rcu)
     ;;
 
 *)
+    # On a std build always build with python bindings since non-agent specific tests depend on it
     echo "Standard build"
-    CONF_OPTS=""
+    echo "Enable Python bindings"
+    # We only support bindings built with Python 3
+    export PYTHON="python3"
+    export PYTHON_CONFIG="/usr/bin/python3-config"
+    CONF_OPTS+=" --enable-python-bindings"
     ;;
 esac
 
