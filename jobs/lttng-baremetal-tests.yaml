@@ -6,15 +6,16 @@
     triggers:
       - pollscm:
           cron: "H * * * 1-5"
-    logrotate:
-      numToKeep: 10
 
     properties:
+      - build-discarder:
+          num-to-keep: 10
       - throttle:
           max-total: 2
           option: 'category'
           categories:
             - 'baremetal-tests'
+
     project-type: freestyle
     node: 'x86-64'
     wrappers:
@@ -33,6 +34,7 @@
             TOOLS_BRANCH={lttngversion}
             UST_BRANCH={lttngversion}
             BUILD_DEVICE=baremetal
+
     publishers:
       - archive:
           artifacts: '*.png,*.csv'
@@ -45,6 +47,7 @@
           title: Results
           includes: '*.png'
       - workspace-cleanup
+
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
@@ -83,23 +86,26 @@
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/summarize-results.sh
 
+
 - defaults:
     name: vm_tests
     description: |
       Runs baremetal kernel tests over different combination of kernel and lttng configurations.
     project-type: freestyle
     node: 'master'
+
     properties:
+      - build-discarder:
+          num-to-keep: 10
       - throttle:
           max-total: 2
           option: 'category'
           categories:
             - 'kvm-tests'
+
     triggers:
       - pollscm:
           cron: "H * * * 1-5"
-    logrotate:
-      numToKeep: 10
 
     wrappers:
       - workspace-cleanup
@@ -114,6 +120,7 @@
             BUILD_DEVICE=kvm
             TOOLS_BRANCH={lttngversion}
             UST_BRANCH={lttngversion}
+
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
@@ -160,12 +167,15 @@
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-kvm-tests.sh
 
+
 - defaults:
     name: vm_tests_kmainline
     defaults: vm_tests
+
     triggers:
       - pollscm:
           cron: "0 1 * * 1-5"
+
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -205,23 +215,26 @@
           fastpoll: true
           basedir: src/linux
 
+
 - defaults:
     name: baremetal_tests
     description: |
       Runs baremetal kernel tests over different combination of kernel and lttng configurations.
     project-type: freestyle
     node: 'master'
+
     properties:
+      - build-discarder:
+          num-to-keep: 10
       - throttle:
           max-total: 2
           option: 'category'
           categories:
             - 'baremetal-tests'
+
     triggers:
       - pollscm:
           cron: "H * * * 1-5"
-    logrotate:
-      numToKeep: 10
 
     wrappers:
       - workspace-cleanup
@@ -235,6 +248,7 @@
           properties-content: |
             UST_BRANCH={lttngversion}
             BUILD_DEVICE=baremetal
+
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
@@ -281,6 +295,7 @@
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-tests.sh
 
+
 - job-template:
     name: baremetal_benchmarks_k{kversion}_l{lttngversion}
     defaults: baremetal_benchmarks
@@ -290,6 +305,7 @@
 - job-template:
     name: baremetal_tests_k{kversion}_l{lttngversion}
     defaults: baremetal_tests
+
 
 # Canary jobs are made to confirm that the whole Lava pipeline is working.
 # They are scheduled once a day always on the same (LTTng, Kernel) code. If any
@@ -330,9 +346,11 @@
 - job-template:
     name: baremetal_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
     defaults: baremetal_tests
+
     triggers:
       - pollscm:
           cron: "0 1 * * 1-5"
+
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -347,6 +365,7 @@
             MODULES_BRANCH={modulesversion}
             UST_BRANCH={ustversion}
             BUILD_DEVICE=baremetal
+
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
@@ -371,12 +390,16 @@
             - "master"
           fastpoll: true
           basedir: src/linux
+
+
 - job-template:
     name: baremetal_benchmarks_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
     defaults: baremetal_benchmarks
+
     triggers:
       - pollscm:
           cron: "0 1 * * 1-5"
+
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -394,6 +417,7 @@
             MODULES_BRANCH={modulesversion}
             UST_BRANCH={ustversion}
             BUILD_DEVICE=baremetal
+
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
@@ -418,17 +442,18 @@
             - "master"
           fastpoll: true
           basedir: src/linux
+
 
 - job:
     name: build_kernel_PARAM
     description: |
       Builds a Linux Kernel and LTTng Modules if necessary
-    defaults: global
     concurrent: true
-
-    logrotate:
-      numToKeep: 100
     node: 'x86-64'
+
+    properties:
+      - build-discarder:
+          num-to-keep: 100
 
     wrappers:
       - workspace-cleanup
@@ -438,6 +463,7 @@
           - file:
               credential-id: system_tests_storage_key
               variable: identity_file
+
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-slave.sh
       - inject:
@@ -489,8 +515,10 @@
       - string:
           name: 'BUILD_DEVICE'
           description: 'The target device. (kvm or baremetal)'
+
     publishers:
       - workspace-cleanup
+
 
 ## Project
 - project:
