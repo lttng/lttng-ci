@@ -148,6 +148,19 @@
 - babeltrace_build_publishers_prod: &babeltrace_build_publishers_prod
     name: 'babeltrace_build_publishers_prod'
     publishers:
+      - tap:
+          results: 'tap/**/*.log'
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
       - archive:
           artifacts: 'build/**'
           allow-empty: false
@@ -165,7 +178,6 @@
 
     <<: *babeltrace_build_axes_defaults
     <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_defaults
     <<: *babeltrace_build_publishers_prod
 
 - job-template:
@@ -174,7 +186,6 @@
 
     <<: *babeltrace_build_axes_defaults
     <<: *babeltrace_build_builders_win
-    <<: *babeltrace_build_publishers_defaults
     <<: *babeltrace_build_publishers_prod
 
 - job-template:
