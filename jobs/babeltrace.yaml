@@ -128,8 +128,8 @@
                  - scripts/babeltrace/build.sh
 
 
-- babeltrace_build_publishers_defaults: &babeltrace_build_publishers_defaults
-    name: 'babeltrace_build_publishers_defaults'
+- babeltrace_build_publishers_dev: &babeltrace_build_publishers_dev
+    name: 'babeltrace_build_publishers_dev'
     publishers:
       - tap:
           results: 'tap/**/*.log'
@@ -144,6 +144,28 @@
               total-high: 0
               total-normal: 0
               total-low: 0
+      - email-ext:
+          recipients: '{obj:email_to}'
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+
 
 - babeltrace_build_publishers_prod: &babeltrace_build_publishers_prod
     name: 'babeltrace_build_publishers_prod'
@@ -164,11 +186,28 @@
       - archive:
           artifacts: 'build/**'
           allow-empty: false
-      - ircbot:
-          strategy: new-failure-and-fixed
-          matrix-notifier: only-parent
-          channels:
-            - name: '#lttng'
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 ## Templates
 
@@ -194,7 +233,7 @@
 
     <<: *babeltrace_build_axes_defaults
     <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_defaults
+    <<: *babeltrace_build_publishers_dev
 
 - job-template:
     name: babeltrace_{version}_cppcheck
@@ -299,10 +338,28 @@
             min: 10
             max: 999
             unstable: 999
-      - email:
-          recipients: 'ci-notification@lists.lttng.org'
-          notify-every-unstable-build: true
-          send-to-individuals: false
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 # Use - in version number since yaml anchor do not support dot
 - babeltrace_version_glib-2-22-5_anchor: &babeltrace_version_glib-2-22-5_anchor
@@ -336,17 +393,64 @@
       - pollscm:
           cron: "@daily"
     <<: *babeltrace_version_glib-2-22-5_anchor
+    publishers:
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 - job-template:
     name: dev_{user}_babeltrace_{version}_glib-2.22.5
     <<: *babeltrace_version_glib-2-22-5_anchor
 
+    publishers:
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 ## Project
 - project:
     name: babeltrace
     github_user: efficios
     github_name: babeltrace
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     version:
       - stable-1.3
       - stable-1.4
@@ -416,6 +520,7 @@
     user: jgalar
     github_user: jgalar
     github_name: babeltrace
+    email_to: "jgalar@efficios.com"
     version:
       - stable-1.3-staging
       - stable-1.4-staging
