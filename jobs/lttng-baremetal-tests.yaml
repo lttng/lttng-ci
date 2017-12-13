@@ -40,8 +40,28 @@
           artifacts: '*.png,*.csv'
           stable: true
           do-not-fingerprint: true
-      - email:
-          recipients: 'francis.deslauriers@efficios.com'
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
       - image-gallery:
         - gallery-type: archived-images-gallery
           title: Results
@@ -148,13 +168,28 @@
           basedir: src/linux
 
     publishers:
-      - email:
-          recipients: 'francis.deslauriers@efficios.com'
-      - ircbot:
-          strategy: new-failure-and-fixed
-          message-type: summary
-          channels:
-            - name: '#lttng'
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
       - workspace-cleanup
 
     builders:
@@ -276,14 +311,29 @@
           basedir: src/linux
 
     publishers:
-      - email:
-          recipients: 'francis.deslauriers@efficios.com'
-      - ircbot:
-          strategy: new-failure-and-fixed
-          message-type: summary
-          channels:
-            - name: '#lttng'
       - workspace-cleanup
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
@@ -523,6 +573,7 @@
 ## Project
 - project:
     name: lttng-kernel-tests
+    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
       - linux-4.4.y
       - linux-4.9.y
@@ -538,6 +589,7 @@
 
 - project:
     name: lttng-kernel-tests-oldkernel
+    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
       - linux-3.18.y
       - linux-4.4.y
@@ -550,6 +602,7 @@
 
 - project:
     name: lttng-kernel-tests-canary
+    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
       - v4.4.9
     lttngversion:
@@ -563,6 +616,7 @@
     name: lttng-kernel-tests-mainline
     lttngversion:
       - master
+    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     jobs:
       - 'vm_tests_kmainline_l{lttngversion}'
       - 'vm_tests_fuzzing_kmainline_l{lttngversion}'
