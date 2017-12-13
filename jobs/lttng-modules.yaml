@@ -156,6 +156,28 @@
 
     publishers:
       - workspace-cleanup
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 
 ## Templates
@@ -337,6 +359,9 @@
       - shell:
           !include-raw-escape: scripts/lttng-modules/param-build.sh
 
+    publishers:
+      - workspace-cleanup
+
 - job-template:
     name: lttng-modules_VERSION_param-crossbuild
     defaults: lttng-modules
@@ -391,6 +416,8 @@
           git clone --depth=1 -b "$ktag" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
       - shell:
           !include-raw-escape: scripts/lttng-modules/param-build.sh
+    publishers:
+      - workspace-cleanup
 
 - job-template:
     name: lttng-modules_{mversion}_coverity
@@ -475,6 +502,7 @@
     name: lttng-modules
     github_user: lttng
     github_name: lttng-modules
+    email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     jobs:
 
 # Vanilla normal builds
