@@ -93,14 +93,48 @@
               total-low: 0
       - workspace-cleanup
       - email-ext:
-          recipients: alex@voxpopuli.im
-          matrix-trigger: only-parent
-#      - ircbot:
-#          strategy: new-failure-and-fixed
-#          matrix-notifier: only-parent
-#          channels:
-#            - name: '#lttng'
-
+         recipients: '{obj:email_for_all_failure}'
+         always: false
+         unstable: true
+         first-failure: false
+         first-unstable: false
+         not-built: false
+         aborted: false
+         regression: false
+         failure: true
+         second-failure: false
+         improvement: false
+         still-failing: false
+         success: false
+         fixed: false
+         fixed-unhealthy: true
+         still-unstable: false
+         pre-build: false
+         matrix-trigger: only-parent
+         send-to:
+           - recipients
+      - email-ext:
+         recipients: '{obj:email_to}'
+         reply-to: ci-notification@lists.lttng.org
+         always: false
+         unstable: false
+         first-failure: true
+         first-unstable: true
+         not-built: false
+         aborted: false
+         regression: false
+         failure: false
+         second-failure: false
+         improvement: false
+         still-failing: false
+         success: false
+         fixed: false
+         fixed-unhealthy: true
+         still-unstable: false
+         pre-build: false
+         matrix-trigger: only-parent
+         send-to:
+           - recipients
 
 - job-template:
     name: lttng-scope_{version}_winbuild
@@ -160,13 +194,49 @@
               total-low: 0
       - workspace-cleanup
       - email-ext:
-          recipients: alex@voxpopuli.im
-          matrix-trigger: only-parent
-#      - ircbot:
-#          strategy: new-failure-and-fixed
-#          matrix-notifier: only-parent
-#          channels:
-#            - name: '#lttng'
+         recipients: '{obj:email_for_all_failure}'
+         always: false
+         unstable: true
+         first-failure: false
+         first-unstable: false
+         not-built: false
+         aborted: false
+         regression: false
+         failure: true
+         second-failure: false
+         improvement: false
+         still-failing: false
+         success: false
+         fixed: false
+         fixed-unhealthy: true
+         still-unstable: false
+         pre-build: false
+         matrix-trigger: only-parent
+         send-to:
+           - recipients
+      - email-ext:
+         recipients: '{obj:email_to}'
+         reply-to: ci-notification@lists.lttng.org
+         always: false
+         unstable: false
+         first-failure: true
+         first-unstable: true
+         not-built: false
+         aborted: false
+         regression: false
+         failure: false
+         second-failure: false
+         improvement: false
+         still-failing: false
+         success: false
+         fixed: false
+         fixed-unhealthy: true
+         still-unstable: false
+         pre-build: false
+         matrix-trigger: only-parent
+         send-to:
+           - recipients
+
 
 
 - job-template:
@@ -222,13 +292,48 @@
               total-low: 0
       - workspace-cleanup
       - email-ext:
-          recipients: alex@voxpopuli.im
-          matrix-trigger: only-parent
-#      - ircbot:
-#          strategy: new-failure-and-fixed
-#          matrix-notifier: only-parent
-#          channels:
-#            - name: '#lttng'
+         recipients: '{obj:email_for_all_failure}'
+         always: false
+         unstable: true
+         first-failure: false
+         first-unstable: false
+         not-built: false
+         aborted: false
+         regression: false
+         failure: true
+         second-failure: false
+         improvement: false
+         still-failing: false
+         success: false
+         fixed: false
+         fixed-unhealthy: true
+         still-unstable: false
+         pre-build: false
+         matrix-trigger: only-parent
+         send-to:
+           - recipients
+      - email-ext:
+         recipients: '{obj:email_to}'
+         reply-to: ci-notification@lists.lttng.org
+         always: false
+         unstable: false
+         first-failure: true
+         first-unstable: true
+         not-built: false
+         aborted: false
+         regression: false
+         failure: false
+         second-failure: false
+         improvement: false
+         still-failing: false
+         success: false
+         fixed: false
+         fixed-unhealthy: true
+         still-unstable: false
+         pre-build: false
+         matrix-trigger: only-parent
+         send-to:
+           - recipients
 
 - job-template:
     name: lttng-scope_{version}_coverity
@@ -281,6 +386,8 @@
     name: lttng-scope
     github_user: lttng
     github_name: lttng-scope
+    email_to: 'ci-notification@lists.lttng.org, cc:alexmonthy@efficios.com'
+    email_for_all_failure: 'alexmonthy@efficios.com'
     version:
       - master
     jobs:
