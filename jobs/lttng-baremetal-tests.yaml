@@ -186,15 +186,15 @@
               variable: LAVA_JENKINS_TOKEN
       - inject:
           properties-content: |
-            TOOLS_BRANCH={toolsversion}
-            MODULES_BRANCH={modulesversion}
-            UST_BRANCH={ustversion}
+            TOOLS_BRANCH={lttngversion}
+            MODULES_BRANCH={lttngversion}
+            UST_BRANCH={lttngversion}
             BUILD_DEVICE=baremetal
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
           branches:
-            - "{toolsversion}"
+            - "{lttngversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -202,7 +202,7 @@
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
           branches:
-            - "{modulesversion}"
+            - "{lttngversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -326,11 +326,11 @@
     triggers:
       - timed: "0 1 * * 1-5"
 - job-template:
-    name: vm_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
+    name: vm_tests_kmainline_l{lttngversion}
     defaults: vm_tests_kmainline
 
 - job-template:
-    name: vm_tests_fuzzing_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
+    name: vm_tests_fuzzing_kmainline_l{lttngversion}
     defaults: vm_tests_kmainline
 
     builders:
@@ -344,7 +344,7 @@
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-kvm-fuzzing-tests.sh
 
 - job-template:
-    name: baremetal_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
+    name: baremetal_tests_kmainline_l{lttngversion}
     defaults: baremetal_tests
 
     triggers:
@@ -361,16 +361,16 @@
               variable: LAVA_JENKINS_TOKEN
       - inject:
           properties-content: |
-            TOOLS_BRANCH={toolsversion}
-            MODULES_BRANCH={modulesversion}
-            UST_BRANCH={ustversion}
+            TOOLS_BRANCH={lttngversion}
+            MODULES_BRANCH={lttngversion}
+            UST_BRANCH={lttngversion}
             BUILD_DEVICE=baremetal
 
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
           branches:
-            - "{toolsversion}"
+            - "{lttngversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -378,7 +378,7 @@
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
           branches:
-            - "{modulesversion}"
+            - "{lttngversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -393,7 +393,7 @@
 
 
 - job-template:
-    name: baremetal_benchmarks_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}
+    name: baremetal_benchmarks_kmainline_l{lttngversion}
     defaults: baremetal_benchmarks
 
     triggers:
@@ -413,16 +413,16 @@
               variable: identity_file
       - inject:
           properties-content: |
-            TOOLS_BRANCH={toolsversion}
-            MODULES_BRANCH={modulesversion}
-            UST_BRANCH={ustversion}
+            TOOLS_BRANCH={lttngversion}
+            MODULES_BRANCH={lttngversion}
+            UST_BRANCH={lttngversion}
             BUILD_DEVICE=baremetal
 
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
           branches:
-            - "{toolsversion}"
+            - "{lttngversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -430,7 +430,7 @@
       - git:
           url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
           branches:
-            - "{modulesversion}"
+            - "{lttngversion}"
           shallow-clone: true
           skip-tag: true
           fastpoll: true
@@ -561,14 +561,10 @@
 
 - project:
     name: lttng-kernel-tests-mainline
-    toolsversion:
-      - v2.9.3
-    ustversion:
-      - v2.9.0
-    modulesversion:
-      - stable-2.9
+    lttngversion:
+      - master
     jobs:
-      - 'vm_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
-      - 'vm_tests_fuzzing_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
-      - 'baremetal_tests_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
-      - 'baremetal_benchmarks_kmainline_t{toolsversion}_m{modulesversion}_u{ustversion}'
+      - 'vm_tests_kmainline_l{lttngversion}'
+      - 'vm_tests_fuzzing_kmainline_l{lttngversion}'
+      - 'baremetal_tests_kmainline_l{lttngversion}'
+      - 'baremetal_benchmarks_kmainline_l{lttngversion}'
