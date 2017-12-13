@@ -66,6 +66,29 @@
           artifacts: 'build/**'
           allow-empty: false
       - workspace-cleanup
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+
 
 - job-template:
     name: latency-tracker_{mversion}_{buildtype}-vanilla
@@ -119,7 +142,27 @@
     publishers:
       - workspace-cleanup
       - email-ext:
-          recipients: jdesfossez@efficios.com
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 - job-template:
     name: latency-tracker_{mversion}_build-{uversion}
@@ -177,7 +220,28 @@
     publishers:
       - workspace-cleanup
       - email-ext:
-          recipients: jdesfossez@efficios.com
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+
 
 - job-template:
     name: latency-tracker_{mversion}_build-rt
@@ -231,7 +295,27 @@
     publishers:
       - workspace-cleanup
       - email-ext:
-          recipients: jdesfossez@efficios.com
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 - job-template:
     name: latency-tracker_VERSION_param-build
@@ -401,10 +485,28 @@
           allow-empty: false
       - cppcheck:
           pattern: 'cppcheck.xml'
-      - email:
-          recipients: 'ci-notification@lists.lttng.org'
-          notify-every-unstable-build: true
-          send-to-individuals: false
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 - job-template:
     name: latency-tracker_{mversion}_sloccount
@@ -438,6 +540,7 @@
     name: latency-tracker
     github_user: efficios
     github_name: latency-tracker
+    email_to: 'ci-notification@lists.lttng.org, cc:jdesfossez@efficios.com'
     mversion:
       - master
     jobs:
