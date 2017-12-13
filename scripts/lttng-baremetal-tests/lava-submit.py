@@ -40,6 +40,7 @@ def get_job_bundle_content(server, job):
         bundle = server.dashboard.get(bundle_sha)
     except xmlrpc.client.Fault as f:
         print('Error while fetching results bundle', f.faultString)
+        raise f
 
     return json.loads(bundle['content'])
 
