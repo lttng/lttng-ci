@@ -1,0 +1,113 @@
+- defaults:
+    name: lttng-ivc
+    description: |
+      LTTng Inter Version Compatibility test suite.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor:
+          colormap: xterm
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - origin/{version}
+          basedir: src
+          skip-tag: true
+
+    triggers:
+      - timed: "@daily"
+
+    properties:
+      - build-discarder:
+          num-to-keep: 2
+      - github:
+          url: https://github.com/{github_user}/{github_name}
+
+
+## Templates
+- job-template:
+    name: lttng-ivc-{version}
+    defaults: lttng-ivc
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: liburcu_version
+         values: '{obj:liburcu_version}'
+
+    builders:
+      - copyartifact:
+          project: liburcu_${{liburcu_version}}_build/arch=${{arch}},conf=std,build=std
+          which-build: last-successful
+          stable: false
+          filter: 'build/**'
+          target: 'deps/liburcu'
+      - shell:
+         !include-raw-escape: scripts/lttng-ivc/build.sh
+
+    publishers:
+      - archive:
+          artifacts: 'artifacts/**'
+          allow-empty: false
+      - junit:
+          results: result.xml
+      - workspace-cleanup
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+
+## Project
+- project:
+    name: lttng-ivc
+    github_user: lttng
+    github_name: lttng-ivc
+    email_to: "ci-notification@lists.lttng.org, cc:joraj@efficios.com"
+    version:
+      - staging
+      - master
+    jobs:
+      - 'lttng-ivc-{version}':
+          version: master
+          arch: !!python/tuple [x86-32, x86-64]
+          liburcu_version: !!python/tuple [master]
+      - 'lttng-ivc-{version}':
+          # Send only to maintainer
+          email_to: "joraj@efficios.com"
+          version: staging
+          arch: !!python/tuple [x86-32, x86-64]
+          liburcu_version: !!python/tuple [master]
+
