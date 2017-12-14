@@ -24,6 +24,7 @@
     triggers:
       - pollscm:
           cron: "@hourly"
+      - timed: "@daily"
 
     properties:
       - build-discarder:
