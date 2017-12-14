@@ -354,7 +354,7 @@ for (b in allBuilds) {
 
 // Mark this build failed if any child build has failed
 if (isFailed) {
-  build.getExecutor().interrupt(Result.FAILURE)
+  build.setResult(hudson.model.Result.FAILURE)
 }
 
 // EOF
