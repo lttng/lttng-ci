@@ -8,7 +8,7 @@ can be installed directly from github :
 
     $ virtualenv -p python2 .venv
     $ . .venv/bin/activate
-    $ pip install git+git://github.com/psrcode/jenkins-job-builder
+    $ pip install git+git://github.com/lttng/jenkins-job-builder
 
 
 ## Example Usage
