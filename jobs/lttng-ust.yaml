@@ -117,12 +117,28 @@
           artifacts: 'build/**'
           allow-empty: false
       - workspace-cleanup
-      - ircbot:
-          strategy: new-failure-and-fixed
-          matrix-notifier: only-parent
-          channels:
-            - name: '#lttng'
-
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 - job-template:
     name: lttng-ust_{version}_cppcheck
@@ -248,17 +264,34 @@
             min: 10
             max: 999
             unstable: 999
-      - email:
-          recipients: 'ci-notification@lists.lttng.org'
-          notify-every-unstable-build: true
-          send-to-individuals: false
-
+      - email-ext:
+          recipients: '{obj:email_to}'
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 ## Project
 - project:
     name: lttng-ust
     github_user: lttng
     github_name: lttng-ust
+    email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     version:
       - stable-2.7
       - stable-2.8
