@@ -89,6 +89,10 @@
               total-high: 0
               total-normal: 0
               total-low: 0
+          messages-to-ignore: |-
+            No sources found skipping Kotlin compile
+            Ignoring project type pom - supportedProjectTypes = \[jar, bundle\]
+            ^Tests run:.*
       - workspace-cleanup
       - email-ext:
          recipients: '{obj:email_for_all_failure}'
