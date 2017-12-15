@@ -1,4 +1,4 @@
-#!/bin/bash -exu
+#!/bin/bash -xu
 #
 # Copyright (C) 2017 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
@@ -26,12 +26,9 @@ export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
 export CPPFLAGS="${CPPFLAGS:-} -I$URCU_INCS"
 export LDFLAGS="${LDFLAGS:-} -L$URCU_LIBS"
 
-PYENV_HOME=$WORKSPACE/.pyenv/
+# Tox does not support long path venv for whatever reason.
+PYENV_HOME=$(mktemp -d)
 
-# Delete previously built virtualenv if any
-if [ -d "$PYENV_HOME" ]; then
-    rm -rf "$PYENV_HOME"
-fi
 
 # Create virtualenv and install necessary packages
 virtualenv --system-site-packages -p $PYTHON3 "$PYENV_HOME"
@@ -49,9 +46,10 @@ export TOXWORKDIR
 cd src/
 
 # Run test suite via tox
-set +e
 tox -v -- --junit-xml="${WORKSPACE}/result.xml"
-set -e
+
+# Remove base venv
+rm -rf "$PYENV_HOME"
 
 # Save
 cp -r "$TOXWORKDIR" "${WORKSPACE}/artifacts"
