@@ -180,19 +180,21 @@ def refs = Git.lsRemoteRepository().setTags(true).setRemote(kgitrepo).call();
 
 // Get kernel versions to build
 def kversions = []
-def matchStrs = [
+def tagMatchStrs = [
   ~/^refs\/tags\/(v[\d\.]+(-rt(\d+)-rebase))$/,
 ]
 def blacklist = [
-  'v4.11.8-rt5-rebase',
-  'v4.11.9-rt6-rebase',
-  'v4.11.9-rt7-rebase',
-  'v4.11.12-rt8-rebase',
-  'v4.11.12-rt9-rebase',
-  'v4.11.12-rt10-rebase',
-  'v4.11.12-rt11-rebase',
-  'v4.11.12-rt12-rebase',
-  'v4.11.12-rt13-rebase',
+  ~/v4\.11\.8-rt5-rebase/,
+  ~/v4\.11\.9-rt6-rebase/,
+  ~/v4\.11\.9-rt7-rebase/,
+  ~/v4\.11\.12-rt8-rebase/,
+  ~/v4\.11\.12-rt9-rebase/,
+  ~/v4\.11\.12-rt10-rebase/,
+  ~/v4\.11\.12-rt11-rebase/,
+  ~/v4\.11\.12-rt12-rebase/,
+  ~/v4\.11\.12-rt13-rebase/,
+  ~/v3\.6.*-rebase/,
+  ~/v3\.8.*-rebase/,
 ]
 
 def kversionFactory = new RTKVersion()
@@ -214,19 +216,40 @@ try {
 
 // Build a sorted list of versions to build
 for (ref in refs) {
-  for (matchStr in matchStrs) {
-    def match = ref.getName() =~ matchStr
-    if (match && !blacklist.contains(match.group(1))) {
-      def v = kversionFactory.factory(match.group(1))
+  for (tagMatchStr in tagMatchStrs) {
+    def tagMatch = ref.getName() =~ tagMatchStr
 
-      if ((v >= kverfloor) && (v < kverceil)) {
-        kversions.add(v)
+    if (tagMatch) {
+      def kversion_raw = tagMatch.group(1)
+      def blacklisted = false
+
+      // Check if the kversion is blacklisted
+      for (blackMatchStr in blacklist) {
+        def blackMatch = kversion_raw =~ blackMatchStr
+
+        if (blackMatch) {
+          blacklisted = true
+          break;
+        }
+      }
+
+      if (!blacklisted) {
+        def v = kversionFactory.factory(kversion_raw)
+
+        if ((v >= kverfloor) && (v < kverceil)) {
+          kversions.add(v)
+        }
       }
     }
   }
 }
 
 kversions.sort()
+
+//println "Pre filtering kernel versions:"
+//for (k in kversions) {
+//  println k
+//}
 
 switch (kverfilter) {
   case 'stable-head':

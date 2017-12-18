@@ -93,7 +93,7 @@
           description: 'Kernel versions list filtering strategy.'
       - string:
           name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-rt-devel.git'
+          default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-stable-rt.git'
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
