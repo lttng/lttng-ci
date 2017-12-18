@@ -96,6 +96,8 @@
             No sources found skipping Kotlin compile
             Ignoring project type pom - supportedProjectTypes = \[jar, bundle\]
             ^Tests run:.*
+            .*Source root doesn't exist.*
+            Could not transfer metadata.*codehaus-snapshots.*
       - workspace-cleanup
       - email-ext:
          recipients: '{obj:email_for_all_failure}'
@@ -201,6 +203,8 @@
             No sources found skipping Kotlin compile
             Ignoring project type pom - supportedProjectTypes = \[jar, bundle\]
             ^Tests run:.*
+            .*Source root doesn't exist.*
+            Could not transfer metadata.*codehaus-snapshots.*
       - workspace-cleanup
       - email-ext:
          recipients: '{obj:email_for_all_failure}'
@@ -303,6 +307,8 @@
             No sources found skipping Kotlin compile
             Ignoring project type pom - supportedProjectTypes = \[jar, bundle\]
             ^Tests run:.*
+            .*Source root doesn't exist.*
+            Could not transfer metadata.*codehaus-snapshots.*
       - workspace-cleanup
       - email-ext:
          recipients: '{obj:email_for_all_failure}'
