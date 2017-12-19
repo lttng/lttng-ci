@@ -1,4 +1,4 @@
 #!/bin/bash -exu
 
 # Start the lttng-sessiond
-lttng-sessiond -d
+lttng-sessiond -b -vvv 1>lttng-sessiond.log 2>&1

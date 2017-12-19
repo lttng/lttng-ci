@@ -131,6 +131,9 @@
           !include-raw-escape: scripts/lttng-ust-java-tests/stop-sessiond.sh
 
     publishers:
+      - archive:
+          artifacts: 'lttng-sessiond.log'
+          allow-empty: false
       - junit:
           results: 'lttng-ust-java-tests/**/target/failsafe-reports/*.xml'
       - workspace-cleanup
