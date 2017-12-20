@@ -100,9 +100,9 @@ prepare_lnx_sources() {
         make arch/powerpc/lib/crtsavres.o CC="$CC" ${koutput}
     fi
 
-    # On arm64 this object is required to build with ftrace support
+    # On arm64 between 4.13 and 1.15 this object is required to build with ftrace support
     if [ "${karch}" = "arm64" ]; then
-        if vergte "$KVERSION" "4.13-rc1"; then
+        if [ -f "arch/arm64/kernel/ftrace-mod.S" ]; then
             make arch/arm64/kernel/ftrace-mod.o CC="$CC" ${koutput}
         fi
     fi
@@ -334,9 +334,9 @@ if [ "${karch}" = "powerpc" ]; then
     cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LNXHDRDIR}/"
 fi
 
-# On arm64 this object is required to build with ftrace support
+# On arm64 between 4.13 and 1.15 this object is required to build with ftrace support
 if [ "${karch}" = "arm64" ]; then
-    if vergte "$KVERSION" "4.13-rc1"; then
+    if [ -f "arch/arm64/kernel/ftrace-mod.S" ]; then
         cp -a --parents arch/arm64/kernel/ftrace-mod.[So] "${LNXHDRDIR}/"
     fi
 fi
