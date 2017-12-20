@@ -341,6 +341,11 @@ if [ "${karch}" = "arm64" ]; then
     fi
 fi
 
+# Newer kernels need objtool to build modules when CONFIG_STACK_VALIDATION=y
+if [ -f tools/objtool/objtool ]; then
+  cp -a --parents tools/objtool/objtool "${LNXHDRDIR}/"
+fi
+
 # Copy modules related stuff, if available
 if [ -s Module.symvers ]; then
     cp Module.symvers "${LNXHDRDIR}"
