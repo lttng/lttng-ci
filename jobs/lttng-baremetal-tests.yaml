@@ -1,11 +1,77 @@
+---
+## Anchors
+- lttng_baremetal_tests_parameters_defaults: &lttng_baremetal_tests_parameters_defaults
+    name: 'lttng_baremetal_tests_parameters_defaults'
+    parameters:
+      - string:
+          name: 'tools_commit_id'
+          default: ''
+          description: 'The lttng-tools commit id to build.'
+      - string:
+          name: 'modules_commit_id'
+          default: ''
+          description: 'The lttng-modules commit id to build.'
+      - string:
+          name: 'ust_commit_id'
+          default: ''
+          description: 'The lttng-ust commit id to build.'
+      - string:
+          name: 'kernel_tag_id'
+          default: ''
+          description: 'The linux kernel git tag to build against.'
+      - string:
+          name: 'kernel_repo'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          description: 'Linux kernel git repo to checkout the kernel id'
+      - string:
+          name: 'tools_repo'
+          default: 'https://github.com/lttng/lttng-tools.git'
+          description: 'LTTng-Tools git repo to checkout the tools id'
+      - string:
+          name: 'modules_repo'
+          default: 'https://github.com/lttng/lttng-modules.git'
+          description: 'LTTng-Modules git repo to checkout the Modules id'
+      - string:
+          name: 'ust_repo'
+          default: 'https://github.com/lttng/lttng-ust.git'
+          description: 'LTTng-UST git repo to checkout the UST id'
+
+- lttng_baremetal_tests_publisher_defaults: &lttng_baremetal_tests_publisher_defaults
+    name: 'lttng_baremetal_tests_publisher_defaults'
+    publishers:
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+      - workspace-cleanup
+
+## Defaults
 - defaults:
     name: baremetal_benchmarks
     description: |
-      Runs baremetal kernel tests over different combination of kernel and lttng configurations.
+      Runs baremetal kernel benchmarks over different combination of kernel and lttng configurations.
+    project-type: freestyle
+    node: 'x86-64'
 
-    triggers:
-      - pollscm:
-          cron: "H * * * 1-5"
+    <<: *lttng_baremetal_tests_parameters_defaults
 
     properties:
       - build-discarder:
@@ -16,8 +82,6 @@
           categories:
             - 'baremetal-tests'
 
-    project-type: freestyle
-    node: 'x86-64'
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -31,9 +95,19 @@
               variable: identity_file
       - inject:
           properties-content: |
-            TOOLS_BRANCH={lttngversion}
-            UST_BRANCH={lttngversion}
             BUILD_DEVICE=baremetal
+
+    builders:
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/inject-ssh-commands.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/summarize-results.sh
 
     publishers:
       - archive:
@@ -68,51 +142,13 @@
           includes: '*.png'
       - workspace-cleanup
 
-    scm:
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-tools
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-modules
-      - git:
-          url: git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git
-          branches:
-            - "{kversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/linux
-
-    builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/inject-ssh-commands.sh
-      - trigger-builds:
-        - project: "build_kernel_PARAM"
-          property-file: 'properties.txt'
-          block: true
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/summarize-results.sh
-
-
 - defaults:
     name: vm_tests
     description: |
-      Runs baremetal kernel tests over different combination of kernel and lttng configurations.
+      Runs virtual machine kernel tests over different combination of kernel and lttng configurations.
     project-type: freestyle
     node: 'master'
+    <<: *lttng_baremetal_tests_parameters_defaults
 
     properties:
       - build-discarder:
@@ -122,10 +158,6 @@
           option: 'category'
           categories:
             - 'kvm-tests'
-
-    triggers:
-      - pollscm:
-          cron: "H * * * 1-5"
 
     wrappers:
       - workspace-cleanup
@@ -138,59 +170,6 @@
       - inject:
           properties-content: |
             BUILD_DEVICE=kvm
-            TOOLS_BRANCH={lttngversion}
-            UST_BRANCH={lttngversion}
-
-    scm:
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-tools
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-modules
-      - git:
-          url: git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git
-          branches:
-            - "{kversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/linux
-
-    publishers:
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
-      - workspace-cleanup
 
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
@@ -202,61 +181,15 @@
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-kvm-tests.sh
 
+    <<: *lttng_baremetal_tests_publisher_defaults
 
 - defaults:
-    name: vm_tests_kmainline
-    defaults: vm_tests
-
-    triggers:
-      - pollscm:
-          cron: "0 1 * * 1-5"
-
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor
-      - credentials-binding:
-          - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_JENKINS_TOKEN
-      - inject:
-          properties-content: |
-            TOOLS_BRANCH={lttngversion}
-            MODULES_BRANCH={lttngversion}
-            UST_BRANCH={lttngversion}
-            BUILD_DEVICE=baremetal
-    scm:
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-tools
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-modules
-      - git:
-          url: git://git-mirror.internal.efficios.com/kernel/torvalds/linux.git
-          refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
-          branches:
-            - "master"
-          fastpoll: true
-          basedir: src/linux
-
-
-- defaults:
-    name: baremetal_tests
+    name: vm_tests_fuzzing
     description: |
-      Runs baremetal kernel tests over different combination of kernel and lttng configurations.
+      Runs virtual machine fuzzing tests over different combination of kernel and lttng configurations.
     project-type: freestyle
     node: 'master'
+    <<: *lttng_baremetal_tests_parameters_defaults
 
     properties:
       - build-discarder:
@@ -265,11 +198,7 @@
           max-total: 2
           option: 'category'
           categories:
-            - 'baremetal-tests'
-
-    triggers:
-      - pollscm:
-          cron: "H * * * 1-5"
+            - 'kvm-tests'
 
     wrappers:
       - workspace-cleanup
@@ -281,107 +210,7 @@
               variable: LAVA_JENKINS_TOKEN
       - inject:
           properties-content: |
-            UST_BRANCH={lttngversion}
-            BUILD_DEVICE=baremetal
-
-    scm:
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-tools
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-modules
-      - git:
-          url: git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git
-          branches:
-            - "{kversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/linux
-
-    publishers:
-      - workspace-cleanup
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
-
-    builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
-      - trigger-builds:
-        - project: "build_kernel_PARAM"
-          property-file: 'properties.txt'
-          block: true
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-tests.sh
-
-
-- job-template:
-    name: baremetal_benchmarks_k{kversion}_l{lttngversion}
-    defaults: baremetal_benchmarks
-- job-template:
-    name: vm_tests_k{kversion}_l{lttngversion}
-    defaults: vm_tests
-- job-template:
-    name: baremetal_tests_k{kversion}_l{lttngversion}
-    defaults: baremetal_tests
-
-
-# Canary jobs are made to confirm that the whole Lava pipeline is working.
-# They are scheduled once a day always on the same (LTTng, Kernel) code. If any
-# of those jobs fails, it means that there is an issue with the configuration
-- job-template:
-    name: baremetal_tests_k{kversion}_l{lttngversion}_canary
-    defaults: baremetal_tests
-    triggers:
-      - timed: "0 1 * * 1-5"
-- job-template:
-    name: vm_tests_k{kversion}_l{lttngversion}_canary
-    defaults: vm_tests
-    triggers:
-      - timed: "0 1 * * 1-5"
-- job-template:
-    name: baremetal_benchmarks_k{kversion}_l{lttngversion}_canary
-    defaults: baremetal_benchmarks
-    triggers:
-      - timed: "0 1 * * 1-5"
-- job-template:
-    name: vm_tests_kmainline_l{lttngversion}
-    defaults: vm_tests_kmainline
-
-- job-template:
-    name: vm_tests_fuzzing_kmainline_l{lttngversion}
-    defaults: vm_tests_kmainline
+            BUILD_DEVICE=kvm
 
     builders:
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
@@ -393,13 +222,25 @@
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-kvm-fuzzing-tests.sh
 
-- job-template:
-    name: baremetal_tests_kmainline_l{lttngversion}
-    defaults: baremetal_tests
+    <<: *lttng_baremetal_tests_publisher_defaults
 
-    triggers:
-      - pollscm:
-          cron: "0 1 * * 1-5"
+- defaults:
+    name: baremetal_tests
+    description: |
+      Runs baremetal kernel tests over different combination of kernel and lttng configurations.
+    project-type: freestyle
+    node: 'master'
+
+    <<: *lttng_baremetal_tests_parameters_defaults
+
+    properties:
+      - build-discarder:
+          num-to-keep: 10
+      - throttle:
+          max-total: 2
+          option: 'category'
+          categories:
+            - 'baremetal-tests'
 
     wrappers:
       - workspace-cleanup
@@ -411,90 +252,22 @@
               variable: LAVA_JENKINS_TOKEN
       - inject:
           properties-content: |
-            TOOLS_BRANCH={lttngversion}
-            MODULES_BRANCH={lttngversion}
-            UST_BRANCH={lttngversion}
             BUILD_DEVICE=baremetal
 
-    scm:
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-tools
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-modules
-      - git:
-          url: git://git-mirror.internal.efficios.com/kernel/torvalds/linux.git
-          refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
-          branches:
-            - "master"
-          fastpoll: true
-          basedir: src/linux
-
-
-- job-template:
-    name: baremetal_benchmarks_kmainline_l{lttngversion}
-    defaults: baremetal_benchmarks
-
-    triggers:
-      - pollscm:
-          cron: "0 1 * * 1-5"
-
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor
-      - credentials-binding:
-          - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_JENKINS_TOKEN
-          - file:
-              credential-id: system_tests_storage_key
-              variable: identity_file
+    builders:
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
       - inject:
-          properties-content: |
-            TOOLS_BRANCH={lttngversion}
-            MODULES_BRANCH={lttngversion}
-            UST_BRANCH={lttngversion}
-            BUILD_DEVICE=baremetal
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-tests.sh
 
-    scm:
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-tools.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-tools
-      - git:
-          url: git://git-mirror.internal.efficios.com/lttng/lttng-modules.git
-          branches:
-            - "{lttngversion}"
-          shallow-clone: true
-          skip-tag: true
-          fastpoll: true
-          basedir: src/lttng-modules
-      - git:
-          url: git://git-mirror.internal.efficios.com/kernel/torvalds/linux.git
-          refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
-          branches:
-            - "master"
-          fastpoll: true
-          basedir: src/linux
+    <<: *lttng_baremetal_tests_publisher_defaults
 
-
-- job:
+## Templates
+- job-template:
     name: build_kernel_PARAM
     description: |
       Builds a Linux Kernel and LTTng Modules if necessary
@@ -569,15 +342,70 @@
     publishers:
       - workspace-cleanup
 
+- job-template:
+    name: baremetal_ALL_trigger
+    description: |
+      This job will trigger the build of jobs when a new tag is push specific
+      tracked Linux branches and new commits on LTTng tracked branches
+
+    project-type: freestyle
+    node: 'master'
+
+    properties:
+      - build-discarder:
+          num-to-keep: 10
+
+    triggers:
+      - timed: "@daily"
+
+    wrappers:
+      - timestamps
+      - ansicolor
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/lttng-baremetal-tests/baremetal-trigger.groovy
+
+    <<: *lttng_baremetal_tests_publisher_defaults
+
+- job-template:
+    name: baremetal_benchmarks_k{kversion}_l{lttngversion}
+    defaults: baremetal_benchmarks
+- job-template:
+    name: vm_tests_k{kversion}_l{lttngversion}
+    defaults: vm_tests
+- job-template:
+    name: baremetal_tests_k{kversion}_l{lttngversion}
+    defaults: baremetal_tests
+
+- job-template:
+    name: vm_tests_fuzzing_k{kversion}_l{lttngversion}
+    defaults: vm_tests_fuzzing
+
+# Canary jobs are made to confirm that the whole Lava pipeline is working.
+# They are scheduled once a day always on the same (LTTng, Kernel) code. If any
+# of those jobs fails, it means that there is an issue with the configuration
+- job-template:
+    name: baremetal_benchmarks_canary
+    defaults: baremetal_benchmarks
+
+- job-template:
+    name: baremetal_tests_canary
+    defaults: baremetal_tests
+
+- job-template:
+    name: vm_tests_canary
+    defaults: vm_tests
 
 ## Project
 - project:
-    name: lttng-kernel-tests
+    name: lttng-baremetal-tests
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
+      - master
       - linux-4.4.y
       - linux-4.9.y
-      - v4.8.1
     lttngversion:
       - master
       - stable-2.9
@@ -588,7 +416,7 @@
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
 
 - project:
-    name: lttng-kernel-tests-oldkernel
+    name: lttng-baremetal-tests-oldkernel
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
       - linux-3.18.y
@@ -601,24 +429,23 @@
       - 'baremetal_benchmarks_k{kversion}_l{lttngversion}':
 
 - project:
-    name: lttng-kernel-tests-canary
+    name: lttng-baremetal-tests-canary
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
-    kversion:
-      - v4.4.9
-    lttngversion:
-      - v2.8.1
     jobs:
-      - 'vm_tests_k{kversion}_l{lttngversion}_canary'
-      - 'baremetal_tests_k{kversion}_l{lttngversion}_canary'
-      - 'baremetal_benchmarks_k{kversion}_l{lttngversion}_canary'
+      - 'vm_tests_canary'
+      - 'baremetal_tests_canary'
+      - 'baremetal_benchmarks_canary'
 
 - project:
-    name: lttng-kernel-tests-mainline
-    lttngversion:
-      - master
+    name: lttng-baremetal-fuzzing-tests
+    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
+    kversion: master
+    lttngversion: master
+    jobs:
+      - 'vm_tests_fuzzing_k{kversion}_l{lttngversion}'
+- project:
+    name: lttng-baremetal-general
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     jobs:
-      - 'vm_tests_kmainline_l{lttngversion}'
-      - 'vm_tests_fuzzing_kmainline_l{lttngversion}'
-      - 'baremetal_tests_kmainline_l{lttngversion}'
-      - 'baremetal_benchmarks_kmainline_l{lttngversion}'
+      - 'build_kernel_PARAM'
+      - 'baremetal_ALL_trigger'
