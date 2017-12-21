@@ -1,7 +1,7 @@
 ---
 ## Anchors
-- lttng_baremetal_tests_parameters_defaults: &lttng_baremetal_tests_parameters_defaults
-    name: 'lttng_baremetal_tests_parameters_defaults'
+- system_tests_parameters_defaults: &system_tests_parameters_defaults
+    name: 'system_tests_parameters_defaults'
     parameters:
       - string:
           name: 'tools_commit_id'
@@ -36,8 +36,8 @@
           default: 'https://github.com/lttng/lttng-ust.git'
           description: 'LTTng-UST git repo to checkout the UST id'
 
-- lttng_baremetal_tests_publisher_defaults: &lttng_baremetal_tests_publisher_defaults
-    name: 'lttng_baremetal_tests_publisher_defaults'
+- system_tests_publisher_defaults: &system_tests_publisher_defaults
+    name: 'system_tests_publisher_defaults'
     publishers:
       - email-ext:
           recipients: '{obj:email_to}'
@@ -71,7 +71,7 @@
     project-type: freestyle
     node: 'x86-64'
 
-    <<: *lttng_baremetal_tests_parameters_defaults
+    <<: *system_tests_parameters_defaults
 
     properties:
       - build-discarder:
@@ -98,16 +98,16 @@
             BUILD_DEVICE=baremetal
 
     builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/inject-ssh-commands.sh
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
+      - shell: !include-raw-escape: scripts/system-tests/inject-ssh-commands.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
           property-file: 'properties.txt'
           block: true
       - inject:
           properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-benchmarks.sh
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/summarize-results.sh
+      - shell: !include-raw-escape: scripts/system-tests/run-baremetal-benchmarks.sh
+      - shell: !include-raw-escape: scripts/system-tests/summarize-results.sh
 
     publishers:
       - archive:
@@ -148,7 +148,7 @@
       Runs virtual machine kernel tests over different combination of kernel and lttng configurations.
     project-type: freestyle
     node: 'master'
-    <<: *lttng_baremetal_tests_parameters_defaults
+    <<: *system_tests_parameters_defaults
 
     properties:
       - build-discarder:
@@ -172,16 +172,16 @@
             BUILD_DEVICE=kvm
 
     builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
           property-file: 'properties.txt'
           block: true
       - inject:
           properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-kvm-tests.sh
+      - shell: !include-raw-escape: scripts/system-tests/run-kvm-tests.sh
 
-    <<: *lttng_baremetal_tests_publisher_defaults
+    <<: *system_tests_publisher_defaults
 
 - defaults:
     name: vm_tests_fuzzing
@@ -189,7 +189,7 @@
       Runs virtual machine fuzzing tests over different combination of kernel and lttng configurations.
     project-type: freestyle
     node: 'master'
-    <<: *lttng_baremetal_tests_parameters_defaults
+    <<: *system_tests_parameters_defaults
 
     properties:
       - build-discarder:
@@ -213,16 +213,16 @@
             BUILD_DEVICE=kvm
 
     builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
           property-file: 'properties.txt'
           block: true
       - inject:
           properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-kvm-fuzzing-tests.sh
+      - shell: !include-raw-escape: scripts/system-tests/run-kvm-fuzzing-tests.sh
 
-    <<: *lttng_baremetal_tests_publisher_defaults
+    <<: *system_tests_publisher_defaults
 
 - defaults:
     name: baremetal_tests
@@ -231,7 +231,7 @@
     project-type: freestyle
     node: 'master'
 
-    <<: *lttng_baremetal_tests_parameters_defaults
+    <<: *system_tests_parameters_defaults
 
     properties:
       - build-discarder:
@@ -255,16 +255,16 @@
             BUILD_DEVICE=baremetal
 
     builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-master.sh
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
           property-file: 'properties.txt'
           block: true
       - inject:
           properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/run-baremetal-tests.sh
+      - shell: !include-raw-escape: scripts/system-tests/run-baremetal-tests.sh
 
-    <<: *lttng_baremetal_tests_publisher_defaults
+    <<: *system_tests_publisher_defaults
 
 ## Templates
 - job-template:
@@ -288,10 +288,10 @@
               variable: identity_file
 
     builders:
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/generate-properties-slave.sh
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-slave.sh
       - inject:
           properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/lttng-baremetal-tests/check-build-needs.sh
+      - shell: !include-raw-escape: scripts/system-tests/check-build-needs.sh
       - conditional-step:
           condition-kind: not
           condition-operand:
@@ -299,7 +299,7 @@
               condition-filename: kernel-built.txt
               condition-basedir: workspace
           steps:
-              - shell: !include-raw-escape: scripts/lttng-baremetal-tests/build-kernel.sh
+              - shell: !include-raw-escape: scripts/system-tests/build-kernel.sh
       - conditional-step:
           condition-kind: not
           condition-operand:
@@ -307,7 +307,7 @@
               condition-filename: modules-built.txt
               condition-basedir: workspace
           steps:
-              - shell: !include-raw-escape: scripts/lttng-baremetal-tests/build-modules.sh
+              - shell: !include-raw-escape: scripts/system-tests/build-modules.sh
 
     parameters:
       - string:
@@ -343,7 +343,7 @@
       - workspace-cleanup
 
 - job-template:
-    name: baremetal_ALL_trigger
+    name: system_ALL_trigger
     description: |
       This job will trigger the build of jobs when a new tag is push specific
       tracked Linux branches and new commits on LTTng tracked branches
@@ -365,9 +365,9 @@
     builders:
       - system-groovy:
          command:
-           !include-raw-escape: scripts/lttng-baremetal-tests/baremetal-trigger.groovy
+           !include-raw-escape: scripts/system-tests/system-trigger.groovy
 
-    <<: *lttng_baremetal_tests_publisher_defaults
+    <<: *system_tests_publisher_defaults
 
 - job-template:
     name: baremetal_benchmarks_k{kversion}_l{lttngversion}
@@ -400,7 +400,7 @@
 
 ## Project
 - project:
-    name: lttng-baremetal-tests
+    name: system-tests
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
       - master
@@ -416,7 +416,7 @@
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
 
 - project:
-    name: lttng-baremetal-tests-oldkernel
+    name: system-tests-oldkernel
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
       - linux-3.18.y
@@ -429,7 +429,7 @@
       - 'baremetal_benchmarks_k{kversion}_l{lttngversion}':
 
 - project:
-    name: lttng-baremetal-tests-canary
+    name: system-tests-canary
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     jobs:
       - 'vm_tests_canary'
@@ -437,15 +437,15 @@
       - 'baremetal_benchmarks_canary'
 
 - project:
-    name: lttng-baremetal-fuzzing-tests
+    name: system-fuzzing-tests
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion: master
     lttngversion: master
     jobs:
       - 'vm_tests_fuzzing_k{kversion}_l{lttngversion}'
 - project:
-    name: lttng-baremetal-general
+    name: system-general
     email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     jobs:
       - 'build_kernel_PARAM'
-      - 'baremetal_ALL_trigger'
+      - 'system_ALL_trigger'
