@@ -36,8 +36,8 @@
           default: 'https://github.com/lttng/lttng-ust.git'
           description: 'LTTng-UST git repo to checkout the UST id'
 
-- system_tests_publisher_defaults: &system_tests_publisher_defaults
-    name: 'system_tests_publisher_defaults'
+- publisher:
+    name: 'system_tests_email_ext_default'
     publishers:
       - email-ext:
           recipients: '{obj:email_to}'
@@ -61,7 +61,6 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
-      - workspace-cleanup
 
 ## Defaults
 - defaults:
@@ -114,28 +113,7 @@
           artifacts: '*.png,*.csv'
           stable: true
           do-not-fingerprint: true
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
+      - system_tests_email_ext_default
       - image-gallery:
         - gallery-type: archived-images-gallery
           title: Results
@@ -181,7 +159,9 @@
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/system-tests/run-kvm-tests.sh
 
-    <<: *system_tests_publisher_defaults
+    publishers:
+      - system_tests_email_ext_default
+      - workspace-cleanup
 
 - defaults:
     name: vm_tests_fuzzing
@@ -222,7 +202,9 @@
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/system-tests/run-kvm-fuzzing-tests.sh
 
-    <<: *system_tests_publisher_defaults
+    publishers:
+      - system_tests_email_ext_default
+      - workspace-cleanup
 
 - defaults:
     name: baremetal_tests
@@ -264,7 +246,9 @@
           properties-file: properties.txt
       - shell: !include-raw-escape: scripts/system-tests/run-baremetal-tests.sh
 
-    <<: *system_tests_publisher_defaults
+    publishers:
+      - system_tests_email_ext_default
+      - workspace-cleanup
 
 ## Templates
 - job-template:
@@ -367,7 +351,8 @@
          command:
            !include-raw-escape: scripts/system-tests/system-trigger.groovy
 
-    <<: *system_tests_publisher_defaults
+    publishers:
+      - system_tests_email_ext_default
 
 - job-template:
     name: baremetal_benchmarks_k{kversion}_l{lttngversion}
