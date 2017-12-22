@@ -180,7 +180,9 @@ class RunConfiguration {
   }
 
   String toString() {
-    return "${this.linuxBranch}:{${this.linuxTagId}}, ${this.lttngBranch}:{${this.lttngModulesCommitId}, ${this.lttngToolsCommitId}, ${this.lttngUstCommitId}}"
+    return "${this.linuxBranch}:{${this.linuxTagId}}, ${this.lttngBranch}" +
+      ":{${this.lttngModulesCommitId}, ${this.lttngToolsCommitId}," +
+      "${this.lttngUstCommitId}}"
   }
 }
 
@@ -376,8 +378,8 @@ linuxLastTagIds.each { linuxTag ->
   }
 }
 
-// For each top of branch commits that were not seen before, schedule one job
-// for each lttng/linux tracked configurations
+// For each top of branch commits of LTTng-Tools that were not seen before,
+// schedule one job for each lttng/linux tracked configurations
 toolsHeadCommits.each { toolsHead ->
   if (!oldToolsHeadCommits.contains(toolsHead.value)) {
     linuxLastTagIds.each { linuxTag ->
@@ -394,8 +396,8 @@ toolsHeadCommits.each { toolsHead ->
   }
 }
 
-// For each top of branch commits that were not seen before, schedule one job
-// for each lttng/linux tracked configurations
+// For each top of branch commits of LTTng-Modules that were not seen before,
+// schedule one job for each lttng/linux tracked configurations
 modulesHeadCommits.each { modulesHead ->
   if (!oldModulesHeadCommits.contains(modulesHead.value)) {
     linuxLastTagIds.each { linuxTag ->
@@ -412,8 +414,8 @@ modulesHeadCommits.each { modulesHead ->
   }
 }
 
-// For each top of branch commits that were not seen before, schedule one job
-// for each lttng/linux tracked configurations
+// For each top of branch commits of LTTng-UST that were not seen before,
+// schedule one job for each lttng/linux tracked configurations
 ustHeadCommits.each { ustHead ->
   if (!oldUstHeadCommits.contains(ustHead.value)) {
     linuxLastTagIds.each { linuxTag ->
@@ -430,7 +432,8 @@ ustHeadCommits.each { ustHead ->
   }
 }
 
-// Save the tag and commit IDs scheduled in the past and during this run to the workspace
+// Save the tag and commit IDs scheduled in the past and during this run to the
+// workspace
 saveCurrentIdsToWorkspace(newOldLinuxTags, linuxOnDiskPath)
 saveCurrentIdsToWorkspace(newOldToolsHeadCommits, toolsOnDiskPath)
 saveCurrentIdsToWorkspace(newOldModulesHeadCommits, modulesOnDiskPath)
