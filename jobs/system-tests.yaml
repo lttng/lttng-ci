@@ -274,6 +274,36 @@
     concurrent: true
     node: 'x86-64'
 
+    parameters:
+      - string:
+          name: 'LTTNG_MODULES_COMMIT_ID'
+          description: 'The lttng-modules commmit to build.'
+      - string:
+          name: 'LTTNG_MODULES_REPO'
+          description: 'The LTTng Modules git repo to fetch from'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
+      - string:
+          name: 'KERNEL_COMMIT_ID'
+          description: 'The kernel commit to build.'
+      - string:
+          name: 'KGITREPO'
+          description: 'The kernel git repo to fetch from'
+      - string:
+          name: 'STORAGE_KERNEL_FOLDER'
+          description: 'Path to store the Kernel image'
+      - string:
+          name: 'STORAGE_KERNEL_IMAGE'
+          description: 'Path to store the Kernel IMAGE'
+      - string:
+          name: 'STORAGE_LINUX_MODULES'
+          description: 'Path to store the Kernel Modules'
+      - string:
+          name: 'STORAGE_LTTNG_MODULES'
+          description: 'Path to store the LTTng Modules'
+      - string:
+          name: 'BUILD_DEVICE'
+          description: 'The target device. (kvm or baremetal)'
+
     properties:
       - build-discarder:
           num-to-keep: 100
@@ -308,36 +338,6 @@
               condition-basedir: workspace
           steps:
               - shell: !include-raw-escape: scripts/system-tests/build-modules.sh
-
-    parameters:
-      - string:
-          name: 'LTTNG_MODULES_COMMIT_ID'
-          description: 'The lttng-modules commmit to build.'
-      - string:
-          name: 'LTTNG_MODULES_REPO'
-          description: 'The LTTng Modules git repo to fetch from'
-          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
-      - string:
-          name: 'KERNEL_COMMIT_ID'
-          description: 'The kernel commit to build.'
-      - string:
-          name: 'KGITREPO'
-          description: 'The kernel git repo to fetch from'
-      - string:
-          name: 'STORAGE_KERNEL_FOLDER'
-          description: 'Path to store the Kernel image'
-      - string:
-          name: 'STORAGE_KERNEL_IMAGE'
-          description: 'Path to store the Kernel IMAGE'
-      - string:
-          name: 'STORAGE_LINUX_MODULES'
-          description: 'Path to store the Kernel Modules'
-      - string:
-          name: 'STORAGE_LTTNG_MODULES'
-          description: 'Path to store the LTTng Modules'
-      - string:
-          name: 'BUILD_DEVICE'
-          description: 'The target device. (kvm or baremetal)'
 
     publishers:
       - workspace-cleanup
