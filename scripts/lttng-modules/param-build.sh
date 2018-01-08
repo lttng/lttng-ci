@@ -65,6 +65,11 @@ prepare_lnx_sources() {
         cp CONFIGS/"${ubuntu_config}" "${outdir}"/.config
         ;;
       *)
+        # Force 32bit build on x86-32, default is 64bit
+        if [ "$arch" = "x86-32" ]; then
+	  export ARCH="i386"
+        fi
+
         # Que sera sera
         make "${vanilla_config}" CC="$CC" ${koutput}
         ;;
@@ -88,19 +93,18 @@ prepare_lnx_sources() {
         echo "CONFIG_KALLSYMS_ALL=y";
     } >> "${outdir}"/.config
 
+    # Debug
+    #cat "${outdir}"/.config
 
     make "$oldconf_target" CC="$CC" ${koutput}
     make modules_prepare CC="$CC" ${koutput}
-
-    # Debug
-    #cat "${outdir}"/.config
 
     # On powerpc this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
         make arch/powerpc/lib/crtsavres.o CC="$CC" ${koutput}
     fi
 
-    # On arm64 between 4.13 and 1.15 this object is required to build with ftrace support
+    # On arm64 between 4.13 and 4.15 this object is required to build with ftrace support
     if [ "${karch}" = "arm64" ]; then
         if [ -f "arch/arm64/kernel/ftrace-mod.S" ]; then
             make arch/arm64/kernel/ftrace-mod.o CC="$CC" ${koutput}
