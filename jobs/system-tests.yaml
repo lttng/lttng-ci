@@ -113,7 +113,6 @@
           artifacts: '*.png,*.csv'
           stable: true
           do-not-fingerprint: true
-      - system_tests_email_ext_default
       - image-gallery:
         - gallery-type: archived-images-gallery
           title: Results
@@ -160,7 +159,6 @@
       - shell: !include-raw-escape: scripts/system-tests/run-kvm-tests.sh
 
     publishers:
-      - system_tests_email_ext_default
       - workspace-cleanup
 
 - defaults:
@@ -203,7 +201,6 @@
       - shell: !include-raw-escape: scripts/system-tests/run-kvm-fuzzing-tests.sh
 
     publishers:
-      - system_tests_email_ext_default
       - workspace-cleanup
 
 - defaults:
@@ -247,7 +244,6 @@
       - shell: !include-raw-escape: scripts/system-tests/run-baremetal-tests.sh
 
     publishers:
-      - system_tests_email_ext_default
       - workspace-cleanup
 
 ## Templates
