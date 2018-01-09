@@ -324,7 +324,7 @@ def recentLinuxBranchesOfInterest = ['master', 'linux-4.9.y', 'linux-4.4.y']
 def legacyLttngBranchesOfInterest = ['stable-2.7']
 def legacyLinuxBranchesOfInterest = ['linux-3.18.y', 'linux-4.4.y']
 
-// Generate configurations of interest
+// Generate configurations of interest.
 def configurationOfInterest = [] as Set
 
 recentLttngBranchesOfInterest.each { lttngBranch ->
@@ -342,19 +342,19 @@ legacyLttngBranchesOfInterest.each { lttngBranch ->
 def lttngBranchesOfInterest = recentLttngBranchesOfInterest + legacyLttngBranchesOfInterest
 def linuxBranchesOfInterest = recentLinuxBranchesOfInterest + legacyLinuxBranchesOfInterest
 
-// For Linux branches, we look for new non-RC tags
+// For LTTng branches, we look for new commits.
 def toolsHeadCommits = GetHeadCommits(toolsRepo, lttngBranchesOfInterest)
 def modulesHeadCommits = GetHeadCommits(modulesRepo, lttngBranchesOfInterest)
 def ustHeadCommits = GetHeadCommits(ustRepo, lttngBranchesOfInterest)
 
-// For LTTng branches, we look for new commits
+// For Linux branches, we look for new non-RC tags.
 def linuxLastTagIds = GetLastTagIds(linuxRepo, linuxBranchesOfInterest)
 
 // Load previously built Linux tag ids.
 println("Loading Git object IDs of previously built projects from the workspace.");
 def oldLinuxTags = LoadPreviousIdsFromWorkspace(linuxOnDiskPath) as Set
 
-// Load previously built LTTng commit ids
+// Load previously built LTTng commit ids.
 def oldToolsHeadCommits = LoadPreviousIdsFromWorkspace(toolsOnDiskPath) as Set
 def oldModulesHeadCommits = LoadPreviousIdsFromWorkspace(modulesOnDiskPath) as Set
 def oldUstHeadCommits = LoadPreviousIdsFromWorkspace(ustOnDiskPath) as Set
@@ -372,7 +372,7 @@ canaryRunConfigs.add(
 def runConfigs = [] as Set
 
 // For each top of branch kernel tags that were not seen before, schedule one
-// job for each lttng/linux tracked configurations
+// job for each lttng/linux tracked configurations.
 linuxLastTagIds.each { linuxTag ->
   if (!oldLinuxTags.contains(linuxTag.value)) {
     lttngBranchesOfInterest.each { lttngBranch ->
