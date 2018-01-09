@@ -40,7 +40,7 @@
     name: 'system_tests_email_ext_default'
     publishers:
       - email-ext:
-          recipients: '{obj:email_to}'
+          recipients: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
           reply-to: ci-notification@lists.lttng.org
           always: false
           unstable: false
@@ -125,7 +125,7 @@
     description: |
       Runs virtual machine kernel tests over different combination of kernel and lttng configurations.
     project-type: freestyle
-    node: 'master'
+    node: 'x86-64'
     <<: *system_tests_parameters_defaults
 
     properties:
@@ -168,7 +168,7 @@
     description: |
       Runs virtual machine fuzzing tests over different combination of kernel and lttng configurations.
     project-type: freestyle
-    node: 'master'
+    node: 'x86-64'
     <<: *system_tests_parameters_defaults
 
     properties:
@@ -211,7 +211,7 @@
     description: |
       Runs baremetal kernel tests over different combination of kernel and lttng configurations.
     project-type: freestyle
-    node: 'master'
+    node: 'x86-64'
 
     <<: *system_tests_parameters_defaults
 
@@ -327,7 +327,7 @@
       - workspace-cleanup
 
 - job-template:
-    name: system_ALL_trigger
+    name: system_ALL_{test_type}_trigger
     description: |
       This job will trigger the build of jobs when a new tag is push specific
       tracked Linux branches and new commits on LTTng tracked branches
@@ -386,7 +386,6 @@
 ## Project
 - project:
     name: system-tests
-    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
       - master
       - linux-4.4.y
@@ -402,7 +401,6 @@
 
 - project:
     name: system-tests-oldkernel
-    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion:
       - linux-3.18.y
       - linux-4.4.y
@@ -415,7 +413,6 @@
 
 - project:
     name: system-tests-canary
-    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     jobs:
       - 'vm_tests_canary'
       - 'baremetal_tests_canary'
@@ -423,14 +420,16 @@
 
 - project:
     name: system-fuzzing-tests
-    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
     kversion: master
     lttngversion: master
     jobs:
       - 'vm_tests_fuzzing_k{kversion}_l{lttngversion}'
 - project:
     name: system-general
-    email_to: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
+    test_type:
+      - vm_tests
+      - baremetal_tests
+      - baremetal_benchmarks
     jobs:
       - 'build_kernel_PARAM'
-      - 'system_ALL_trigger'
+      - 'system_ALL_{test_type}_trigger'

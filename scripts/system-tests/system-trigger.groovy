@@ -20,6 +20,7 @@ import hudson.model.*
 import java.io.File
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
+import groovy.transform.EqualsAndHashCode
 
 class InvalidKVersionException extends Exception {
   public InvalidKVersionException(String message) {
@@ -162,6 +163,7 @@ class VanillaKVersion implements Comparable<VanillaKVersion> {
   }
 }
 
+@EqualsAndHashCode(includeFields=true)
 class RunConfiguration {
   def linuxBranch
   def linuxTagId
@@ -193,8 +195,8 @@ def LoadPreviousIdsFromWorkspace = { ondiskpath ->
     def input = new ObjectInputStream(new FileInputStream(ondiskpath))
     previousIds = input.readObject()
     input.close()
-  } catch (all) {
-    println("Failed to load previous ids from disk.")
+  } catch (e) {
+    println("Failed to load previous Git object IDs from disk." + e);
   }
   return previousIds
 }
@@ -206,8 +208,8 @@ def saveCurrentIdsToWorkspace = { currentIds, ondiskpath ->
     def out = new ObjectOutputStream(new FileOutputStream(ondiskpath))
     out.writeObject(currentIds)
     out.close()
-  } catch (all) {
-    println("Failed to save previous ids from disk.")
+  } catch (e) {
+    println("Failed to save previous Git object IDs from disk." + e);
   }
 }
 
@@ -295,11 +297,17 @@ def LaunchJob = { jobName, runConfig ->
   params.add(new StringParameterValue('modules_commit_id', runConfig.lttngModulesCommitId))
   params.add(new StringParameterValue('ust_commit_id', runConfig.lttngUstCommitId))
   params.add(new StringParameterValue('kernel_tag_id', runConfig.linuxTagId))
-  job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(params))
-  println "Launching job: ${HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)}"
+  def currBuild = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(params))
+
+  if (currBuild != null ) {
+    println("Launching job: ${HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)}");
+  } else {
+    println("Job ${jobName} not found or deactivated.");
+  }
+
+  return currBuild
 }
 
-def jobTypes = ['baremetal_tests', 'vm_tests', 'baremetal_benchmarks']
 final String toolsRepo = "https://github.com/lttng/lttng-tools.git"
 final String modulesRepo = "https://github.com/lttng/lttng-modules.git"
 final String ustRepo = "https://github.com/lttng/lttng-ust.git"
@@ -342,7 +350,8 @@ def ustHeadCommits = GetHeadCommits(ustRepo, lttngBranchesOfInterest)
 // For LTTng branches, we look for new commits
 def linuxLastTagIds = GetLastTagIds(linuxRepo, linuxBranchesOfInterest)
 
-// Load previously build Linux tag ids
+// Load previously built Linux tag ids.
+println("Loading Git object IDs of previously built projects from the workspace.");
 def oldLinuxTags = LoadPreviousIdsFromWorkspace(linuxOnDiskPath) as Set
 
 // Load previously built LTTng commit ids
@@ -355,6 +364,7 @@ def newOldToolsHeadCommits = oldToolsHeadCommits
 def newOldModulesHeadCommits = oldModulesHeadCommits
 def newOldUstHeadCommits = oldUstHeadCommits
 
+// Canary jobs are run daily to make sure the lava pipeline is working properly.
 def canaryRunConfigs = [] as Set
 canaryRunConfigs.add(
     ['v4.4.9', '1a1a512b983108015ced1e7a7c7775cfeec42d8c', 'v2.8.1','d11e0db', '7fd9215', '514a87f'] as RunConfiguration)
@@ -432,34 +442,149 @@ ustHeadCommits.each { ustHead ->
   }
 }
 
-// Save the tag and commit IDs scheduled in the past and during this run to the
-// workspace
-saveCurrentIdsToWorkspace(newOldLinuxTags, linuxOnDiskPath)
-saveCurrentIdsToWorkspace(newOldToolsHeadCommits, toolsOnDiskPath)
-saveCurrentIdsToWorkspace(newOldModulesHeadCommits, modulesOnDiskPath)
-saveCurrentIdsToWorkspace(newOldUstHeadCommits, ustOnDiskPath)
+def ongoingBuild = [:]
+def failedRuns = []
+def abortedRuns = []
+def isFailed = false
+def isAborted = false
 
-// Launch jobs
+// Check what type of jobs should be triggered.
+triggerJobName = build.project.getFullDisplayName();
+if (triggerJobName.contains("vm_tests")) {
+  jobType = 'vm_tests';
+} else if (triggerJobName.contains("baremetal_tests")) {
+  jobType = 'baremetal_tests';
+} else if (triggerJobName.contains("baremetal_benchmarks")) {
+  jobType = 'baremetal_benchmarks';
+}
+
+// Launch canary jobs.
 println("Schedule canary jobs once a day")
 canaryRunConfigs.each { config ->
-  jobTypes.each { type ->
-    LaunchJob(type + '_canary', config)
+  def jobName = jobType + '_canary';
+  def currBuild = LaunchJob(jobName, config);
+
+  // LaunchJob will return null if the job doesn't exist or is disabled.
+  if (currBuild != null) {
+    ongoingBuild[jobName] = currBuild;
   }
 }
 
+// Launch regular jobs.
 if (runConfigs.size() > 0) {
-  println("Schedule jobs because of code changes.")
+  println("Schedule jobs because of code changes.");
   runConfigs.each { config ->
-    jobTypes.each { type ->
-      LaunchJob(CraftJobName(type, config), config);
+    def jobName = CraftJobName(jobType, config);
+    def currBuild = LaunchJob(jobName, config);
+
+    // LaunchJob will return null if the job doesn't exist or is disabled.
+    if (currBuild != null) {
+      ongoingBuild[jobName] = currBuild;
     }
 
-    // Jobs to run only on master branchs of both linux and lttng
+    // Jobs to run only on master branchs of both Linux and LTTng.
     if (config.linuxBranch.contains('master') &&
         config.lttngBranch.contains('master')) {
-      LaunchJob(CraftJobName('vm_tests_fuzzing', config), config)
+      // vm_tests specific.
+      if (jobType.contains("vm_tests")) {
+        jobName = CraftJobName('vm_tests_fuzzing', config);
+        currBuild = LaunchJob(jobName, config);
+
+        // LaunchJob will return null if the job doesn't exist or is disabled.
+        if (currBuild != null) {
+          ongoingBuild[jobName] = currBuild;
+        }
+      }
     }
   }
 } else {
   println("No new commit or tags, nothing more to do.")
+}
+
+// Save the tag and commit IDs scheduled in the past and during this run to the
+// workspace. We save it at the end to be sure all jobs were launched. We save
+// the object IDs even in case of failure. There is no point of re-running the
+// same job is there are no code changes even in case of failure.
+println("Saving Git object IDs of previously built projects to the workspace.");
+saveCurrentIdsToWorkspace(newOldLinuxTags, linuxOnDiskPath);
+saveCurrentIdsToWorkspace(newOldToolsHeadCommits, toolsOnDiskPath);
+saveCurrentIdsToWorkspace(newOldModulesHeadCommits, modulesOnDiskPath);
+saveCurrentIdsToWorkspace(newOldUstHeadCommits, ustOnDiskPath);
+
+// Iterate over all the running jobs. Record the status of completed jobs.
+while (ongoingBuild.size() > 0) {
+  def ongoingIterator = ongoingBuild.iterator();
+  while (ongoingIterator.hasNext()) {
+    currentBuild = ongoingIterator.next();
+
+    jobName = currentBuild.getKey();
+    job_run = currentBuild.getValue();
+
+    // The isCancelled() method checks if the run was cancelled before
+    // execution. We consider such run as being aborted.
+    if (job_run.isCancelled()) {
+      println("${jobName} was cancelled before launch.")
+      abortedRuns.add(jobName);
+      isAborted = true;
+      ongoingIterator.remove();
+    } else if (job_run.isDone()) {
+
+      job_status = job_run.get();
+      println("${job_status.fullDisplayName} completed with status ${job_status.result}.");
+
+      // If the job didn't succeed, add its name to the right list so it can
+      // be printed at the end of the execution.
+      switch (job_status.result) {
+      case Result.ABORTED:
+        isAborted = true;
+        abortedRuns.add(jobName);
+        break;
+      case Result.FAILURE:
+        isFailed = true;
+        failedRuns.add(jobName);
+        break;
+      case Result.SUCCESS:
+      default:
+        break;
+      }
+
+      ongoingIterator.remove();
+    }
+  }
+
+  // Sleep before the next iteration.
+  try {
+    Thread.sleep(10000)
+  } catch(e) {
+    if (e in InterruptedException) {
+      build.setResult(hudson.model.Result.ABORTED)
+      throw new InterruptedException()
+    } else {
+      throw(e)
+    }
+  }
+}
+
+// Get log of failed runs.
+if (failedRuns.size() > 0) {
+  println("Failed job(s):");
+  for (failedRun in failedRuns) {
+    println("\t" + failedRun)
+  }
+}
+
+// Get log of aborted runs.
+if (abortedRuns.size() > 0) {
+  println("Cancelled job(s):");
+  for (cancelledRun in abortedRuns) {
+    println("\t" + cancelledRun)
+  }
+}
+
+// Mark this build as Failed if atleast one child build has failed and mark as
+// aborted if there was no failure but atleast one job aborted.
+if (isFailed) {
+  build.setResult(hudson.model.Result.FAILURE)
+} else if (isAborted) {
+  build.setResult(hudson.model.Result.ABORTED)
 }
