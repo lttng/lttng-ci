@@ -459,7 +459,7 @@ if (triggerJobName.contains("vm_tests")) {
 }
 
 // Launch canary jobs.
-println("Schedule canary jobs once a day")
+println("\nSchedule canary jobs once a day:")
 canaryRunConfigs.each { config ->
   def jobName = jobType + '_canary';
   def currBuild = LaunchJob(jobName, config);
@@ -472,7 +472,7 @@ canaryRunConfigs.each { config ->
 
 // Launch regular jobs.
 if (runConfigs.size() > 0) {
-  println("Schedule jobs because of code changes.");
+  println("\nSchedule jobs triggered by code changes:");
   runConfigs.each { config ->
     def jobName = CraftJobName(jobType, config);
     def currBuild = LaunchJob(jobName, config);
