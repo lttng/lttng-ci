@@ -16,13 +16,9 @@
 
 touch properties.txt
 
-KERNEL_COMMIT_ID=$kernel_tag_id
-LTTNG_MODULES_COMMIT_ID=$modules_commit_id
-LTTNG_TOOLS_COMMIT_ID=$tools_commit_id
-LTTNG_UST_COMMIT_ID=$ust_commit_id
-
 LTTNG_CI_PATH="$WORKSPACE/src/lttng-ci"
 echo "LTTNG_CI_PATH=$LTTNG_CI_PATH" >> properties.txt
+KERNEL_COMMIT_ID=$KERNEL_TAG_ID
 
 echo "KERNEL_COMMIT_ID=$KERNEL_COMMIT_ID" >> properties.txt
 echo "LTTNG_MODULES_COMMIT_ID=$LTTNG_MODULES_COMMIT_ID" >> properties.txt
@@ -36,8 +32,8 @@ echo "STORAGE_HOST=storage.internal.efficios.com" >> properties.txt
 echo "STORAGE_USER=jenkins-lava" >> properties.txt
 
 echo "BUILD_DEVICE=$BUILD_DEVICE" >> properties.txt
-echo "KGITREPO=$kernel_repo" >> properties.txt
+echo "KGITREPO=$KERNEL_REPO" >> properties.txt
 echo "STORAGE_KERNEL_FOLDER=$BASE_STORAGE_FOLDER/kernel" >> properties.txt
 echo "STORAGE_KERNEL_IMAGE=$BASE_STORAGE_FOLDER/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage" >> properties.txt
 echo "STORAGE_LINUX_MODULES=$BASE_STORAGE_FOLDER/modules/linux/$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz" >> properties.txt
-echo "STORAGE_LTTNG_MODULES=$BASE_STORAGE_FOLDER/modules/lttng/i$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.gz" >> properties.txt
+echo "STORAGE_LTTNG_MODULES=$BASE_STORAGE_FOLDER/modules/lttng/$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.gz" >> properties.txt

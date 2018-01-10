@@ -37,17 +37,7 @@ set -e
 # kernel or modules
 if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
 
-  git clone "$KGITREPO" "$LINUX_PATH"
-  pushd "$LINUX_PATH"
-  git checkout "$KERNEL_COMMIT_ID"
-  popd
-  git clone "$LTTNG_MODULES_GIT" "$LTTNG_MODULES_PATH"
-  pushd "$LTTNG_MODULES_PATH"
-  git checkout "$LTTNG_MODULES_COMMIT_ID"
-  popd
-
-  git clone https://github.com/lttng/lttng-ci "$LTTNG_CI_PATH"
-  cp "$LTTNG_CI_PATH"/lava/kernel/vanilla/x86_64_server.config "$LINUX_PATH/.config"
+  cp src/lttng-ci/lava/kernel/vanilla/x86_64_server.config "$LINUX_PATH/.config"
   make --directory="$LINUX_PATH" olddefconfig
 
   if [ $BUILD_DEVICE = 'kvm' ] ; then

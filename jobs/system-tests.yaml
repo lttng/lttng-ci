@@ -95,6 +95,10 @@
       - inject:
           properties-content: |
             BUILD_DEVICE=baremetal
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
 
     builders:
       - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
@@ -148,6 +152,11 @@
           properties-content: |
             BUILD_DEVICE=kvm
 
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
+
     builders:
       - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
       - trigger-builds:
@@ -189,6 +198,11 @@
       - inject:
           properties-content: |
             BUILD_DEVICE=kvm
+
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
 
     builders:
       - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
@@ -232,6 +246,11 @@
       - inject:
           properties-content: |
             BUILD_DEVICE=baremetal
+
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
 
     builders:
       - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
@@ -296,6 +315,21 @@
           - file:
               credential-id: system_tests_storage_key
               variable: identity_file
+
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
+      - git:
+          url : $KGITREPO
+          basedir: src/linux/
+          branches:
+            - $KERNEL_COMMIT_ID
+      - git:
+          url : $LTTNG_MODULES_REPO
+          basedir: src/lttng-modules/
+          branches:
+            - $LTTNG_MODULES_COMMIT_ID
 
     builders:
       - shell: !include-raw-escape: scripts/system-tests/generate-properties-slave.sh
