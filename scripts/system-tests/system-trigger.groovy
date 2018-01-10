@@ -293,10 +293,10 @@ def LaunchJob = { jobName, runConfig ->
     params += paramdef.getDefaultParameterValue();
   }
 
-  params.add(new StringParameterValue('tools_commit_id', runConfig.lttngToolsCommitId))
-  params.add(new StringParameterValue('modules_commit_id', runConfig.lttngModulesCommitId))
-  params.add(new StringParameterValue('ust_commit_id', runConfig.lttngUstCommitId))
-  params.add(new StringParameterValue('kernel_tag_id', runConfig.linuxTagId))
+  params.add(new StringParameterValue('LTTNG_TOOLS_COMMIT_ID', runConfig.lttngToolsCommitId))
+  params.add(new StringParameterValue('LTTNG_MODULES_COMMIT_ID', runConfig.lttngModulesCommitId))
+  params.add(new StringParameterValue('LTTNG_UST_COMMIT_ID', runConfig.lttngUstCommitId))
+  params.add(new StringParameterValue('KERNEL_TAG_ID', runConfig.linuxTagId))
   def currBuild = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(params))
 
   if (currBuild != null ) {

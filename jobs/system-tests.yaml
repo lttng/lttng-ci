@@ -4,35 +4,35 @@
     name: 'system_tests_parameters_defaults'
     parameters:
       - string:
-          name: 'tools_commit_id'
+          name: 'LTTNG_TOOLS_COMMIT_ID'
           default: ''
           description: 'The lttng-tools commit id to build.'
       - string:
-          name: 'modules_commit_id'
+          name: 'LTTNG_MODULES_COMMIT_ID'
           default: ''
           description: 'The lttng-modules commit id to build.'
       - string:
-          name: 'ust_commit_id'
+          name: 'LTTNG_UST_COMMIT_ID'
           default: ''
           description: 'The lttng-ust commit id to build.'
       - string:
-          name: 'kernel_tag_id'
+          name: 'KERNEL_TAG_ID'
           default: ''
           description: 'The linux kernel git tag to build against.'
       - string:
-          name: 'kernel_repo'
+          name: 'KERNEL_REPO'
           default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
           description: 'Linux kernel git repo to checkout the kernel id'
       - string:
-          name: 'tools_repo'
+          name: 'LTTNG_TOOLS_REPO'
           default: 'https://github.com/lttng/lttng-tools.git'
           description: 'LTTng-Tools git repo to checkout the tools id'
       - string:
-          name: 'modules_repo'
+          name: 'LTTNG_MODULES_REPO'
           default: 'https://github.com/lttng/lttng-modules.git'
           description: 'LTTng-Modules git repo to checkout the Modules id'
       - string:
-          name: 'ust_repo'
+          name: 'LTTNG_UST_REPO'
           default: 'https://github.com/lttng/lttng-ust.git'
           description: 'LTTng-UST git repo to checkout the UST id'
 
