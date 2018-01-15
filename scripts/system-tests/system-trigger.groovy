@@ -458,18 +458,6 @@ if (triggerJobName.contains("vm_tests")) {
   jobType = 'baremetal_benchmarks';
 }
 
-// Launch canary jobs.
-println("\nSchedule canary jobs once a day:")
-canaryRunConfigs.each { config ->
-  def jobName = jobType + '_canary';
-  def currBuild = LaunchJob(jobName, config);
-
-  // LaunchJob will return null if the job doesn't exist or is disabled.
-  if (currBuild != null) {
-    ongoingBuild[jobName] = currBuild;
-  }
-}
-
 // Launch regular jobs.
 if (runConfigs.size() > 0) {
   println("\nSchedule jobs triggered by code changes:");
@@ -499,6 +487,18 @@ if (runConfigs.size() > 0) {
   }
 } else {
   println("No new commit or tags, nothing more to do.")
+}
+
+// Launch canary jobs.
+println("\nSchedule canary jobs once a day:")
+canaryRunConfigs.each { config ->
+  def jobName = jobType + '_canary';
+  def currBuild = LaunchJob(jobName, config);
+
+  // LaunchJob will return null if the job doesn't exist or is disabled.
+  if (currBuild != null) {
+    ongoingBuild[jobName] = currBuild;
+  }
 }
 
 // Save the tag and commit IDs scheduled in the past and during this run to the
