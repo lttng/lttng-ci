@@ -554,7 +554,7 @@ while (ongoingBuild.size() > 0) {
 
   // Sleep before the next iteration.
   try {
-    Thread.sleep(10000)
+    Thread.sleep(30000)
   } catch(e) {
     if (e in InterruptedException) {
       build.setResult(hudson.model.Result.ABORTED)
