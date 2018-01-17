@@ -16,13 +16,14 @@ ci-node-armhf-02
 
 [node-arm64]
 ci-node-arm64-01
+ci-node-arm64-02
 
 [node-powerpc]
 ci-node-powerpc-01
 
 [node-ppc64el]
-140.211.168.84
-140.211.168.85
+ci-node-ppc64el-01
+ci-node-ppc64el-02
 
 [node-i386]
 ci-node-xenial-i386-02-01
