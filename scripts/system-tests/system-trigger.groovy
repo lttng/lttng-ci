@@ -290,7 +290,11 @@ def LaunchJob = { jobName, runConfig ->
   def job = Hudson.instance.getJob(jobName)
   def params = []
   for (paramdef in job.getProperty(ParametersDefinitionProperty.class).getParameterDefinitions()) {
-    params += paramdef.getDefaultParameterValue();
+    // If there is a default value for this parameter, use it. Don't use empty
+    // default value parameters.
+    if (paramdef.getDefaultValue()) {
+      params += paramdef.getDefaultParameterValue();
+    }
   }
 
   params.add(new StringParameterValue('LTTNG_TOOLS_COMMIT_ID', runConfig.lttngToolsCommitId))
