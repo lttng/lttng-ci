@@ -370,8 +370,7 @@
           num-to-keep: 10
 
     triggers:
-      - pollscm:
-          cron: "* * * * 1-5"
+      - timed: "H H * * 1-5"
 
     wrappers:
       - timestamps
