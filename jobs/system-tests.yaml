@@ -434,7 +434,6 @@
     name: system-tests-oldkernel
     kversion:
       - linux-3.18.y
-      - linux-4.4.y
     lttngversion:
       - stable-2.7
     jobs:

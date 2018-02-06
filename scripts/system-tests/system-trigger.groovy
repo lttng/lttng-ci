@@ -322,7 +322,7 @@ def recentLttngBranchesOfInterest = ['master', 'stable-2.10', 'stable-2.9']
 def recentLinuxBranchesOfInterest = ['master', 'linux-4.9.y', 'linux-4.4.y']
 
 def legacyLttngBranchesOfInterest = ['stable-2.7']
-def legacyLinuxBranchesOfInterest = ['linux-3.18.y', 'linux-4.4.y']
+def legacyLinuxBranchesOfInterest = ['linux-3.18.y']
 
 // Generate configurations of interest.
 def configurationOfInterest = [] as Set
