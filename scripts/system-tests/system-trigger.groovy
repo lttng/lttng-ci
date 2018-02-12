@@ -20,7 +20,6 @@ import hudson.model.*
 import java.io.File
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
-import groovy.transform.EqualsAndHashCode
 
 class InvalidKVersionException extends Exception {
   public InvalidKVersionException(String message) {
@@ -163,55 +162,37 @@ class VanillaKVersion implements Comparable<VanillaKVersion> {
   }
 }
 
-@EqualsAndHashCode(includeFields=true)
-class RunConfiguration {
-  def linuxBranch
-  def linuxTagId
-  def lttngBranch
-  def lttngModulesCommitId
-  def lttngToolsCommitId
-  def lttngUstCommitId
-  RunConfiguration(linuxBranch, linuxTagId, lttngBranch, lttngToolsCommitId,
-                  lttngModulesCommitId, lttngUstCommitId) {
-    this.linuxBranch = linuxBranch
-    this.linuxTagId = linuxTagId
-    this.lttngBranch = lttngBranch
-    this.lttngModulesCommitId = lttngModulesCommitId
-    this.lttngToolsCommitId = lttngToolsCommitId
-    this.lttngUstCommitId = lttngUstCommitId
-  }
-
-  String toString() {
-    return "${this.linuxBranch}:{${this.linuxTagId}}, ${this.lttngBranch}" +
-      ":{${this.lttngModulesCommitId}, ${this.lttngToolsCommitId}," +
-      "${this.lttngUstCommitId}}"
-  }
-}
-
-def LoadPreviousIdsFromWorkspace = { ondiskpath ->
-  def previousIds = []
-  try {
-    File myFile = new File(ondiskpath);
-    def input = new ObjectInputStream(new FileInputStream(ondiskpath))
-    previousIds = input.readObject()
-    input.close()
-  } catch (e) {
-    println("Failed to load previous Git object IDs from disk." + e);
-  }
-  return previousIds
-}
-
-def saveCurrentIdsToWorkspace = { currentIds, ondiskpath ->
+// Save the hashmap containing all the jobs and their status to disk. We can do
+// that because this job is configured to always run on the master node on
+// Jenkins.
+def SaveCurrentJobsToWorkspace = { currentJobs, ondiskpath->
   try {
     File myFile = new File(ondiskpath);
     myFile.createNewFile();
     def out = new ObjectOutputStream(new FileOutputStream(ondiskpath))
-    out.writeObject(currentIds)
+    out.writeObject(currentJobs)
     out.close()
   } catch (e) {
-    println("Failed to save previous Git object IDs from disk." + e);
+    println("Failed to save previous Git object IDs to disk." + e);
   }
 }
+
+// Load the hashmap containing all the jobs and their last status from disk.
+// It's possible because this job is configured to always run on the master
+// node on Jenkins
+def LoadPreviousJobsFromWorkspace = { ondiskpath ->
+  def previousJobs = [:]
+  try {
+    File myFile = new File(ondiskpath);
+    def input = new ObjectInputStream(new FileInputStream(ondiskpath))
+    previousJobs = input.readObject()
+    input.close()
+  } catch (e) {
+    println("Failed to load previous runs from disk." + e);
+  }
+  return previousJobs
+}
+
 
 def GetHeadCommits = { remoteRepo, branchesOfInterest ->
   def remoteHeads = [:]
@@ -282,11 +263,11 @@ def GetLastTagIds = { remoteRepo, branchesOfInterest ->
   return remoteLastTagCommit
 }
 
-def CraftJobName = { jobType, runConfig ->
-  return "${jobType}_k${runConfig.linuxBranch}_l${runConfig.lttngBranch}"
+def CraftJobName = { jobType, linuxBranch, lttngBranch ->
+  return "${jobType}_k${linuxBranch}_l${lttngBranch}"
 }
 
-def LaunchJob = { jobName, runConfig ->
+def LaunchJob = { jobName, jobInfo ->
   def job = Hudson.instance.getJob(jobName)
   def params = []
   for (paramdef in job.getProperty(ParametersDefinitionProperty.class).getParameterDefinitions()) {
@@ -297,10 +278,10 @@ def LaunchJob = { jobName, runConfig ->
     }
   }
 
-  params.add(new StringParameterValue('LTTNG_TOOLS_COMMIT_ID', runConfig.lttngToolsCommitId))
-  params.add(new StringParameterValue('LTTNG_MODULES_COMMIT_ID', runConfig.lttngModulesCommitId))
-  params.add(new StringParameterValue('LTTNG_UST_COMMIT_ID', runConfig.lttngUstCommitId))
-  params.add(new StringParameterValue('KERNEL_TAG_ID', runConfig.linuxTagId))
+  params.add(new StringParameterValue('LTTNG_TOOLS_COMMIT_ID', jobInfo['config']['toolsCommit']))
+  params.add(new StringParameterValue('LTTNG_MODULES_COMMIT_ID', jobInfo['config']['modulesCommit']))
+  params.add(new StringParameterValue('LTTNG_UST_COMMIT_ID', jobInfo['config']['ustCommit']))
+  params.add(new StringParameterValue('KERNEL_TAG_ID', jobInfo['config']['linuxTagID']))
   def currBuild = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(params))
 
   if (currBuild != null ) {
@@ -317,10 +298,7 @@ final String modulesRepo = "https://github.com/lttng/lttng-modules.git"
 final String ustRepo = "https://github.com/lttng/lttng-ust.git"
 final String linuxRepo = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
 
-final String toolsOnDiskPath = build.getEnvironment(listener).get('WORKSPACE') + "/on-disk-tools-ref"
-final String modulesOnDiskPath = build.getEnvironment(listener).get('WORKSPACE') + "/on-disk-modules-ref"
-final String ustOnDiskPath = build.getEnvironment(listener).get('WORKSPACE') + "/on-disk-ust-ref"
-final String linuxOnDiskPath = build.getEnvironment(listener).get('WORKSPACE') + "/on-disk-linux-ref"
+final String pastJobsPath = build.getEnvironment(listener).get('WORKSPACE') + "/pastjobs";
 
 def recentLttngBranchesOfInterest = ['master', 'stable-2.10', 'stable-2.9']
 def recentLinuxBranchesOfInterest = ['master', 'linux-4.9.y', 'linux-4.4.y']
@@ -354,103 +332,19 @@ def ustHeadCommits = GetHeadCommits(ustRepo, lttngBranchesOfInterest)
 // For Linux branches, we look for new non-RC tags.
 def linuxLastTagIds = GetLastTagIds(linuxRepo, linuxBranchesOfInterest)
 
-// Load previously built Linux tag ids.
-println("Loading Git object IDs of previously built projects from the workspace.");
-def oldLinuxTags = LoadPreviousIdsFromWorkspace(linuxOnDiskPath) as Set
-
-// Load previously built LTTng commit ids.
-def oldToolsHeadCommits = LoadPreviousIdsFromWorkspace(toolsOnDiskPath) as Set
-def oldModulesHeadCommits = LoadPreviousIdsFromWorkspace(modulesOnDiskPath) as Set
-def oldUstHeadCommits = LoadPreviousIdsFromWorkspace(ustOnDiskPath) as Set
-
-def newOldLinuxTags = oldLinuxTags
-def newOldToolsHeadCommits = oldToolsHeadCommits
-def newOldModulesHeadCommits = oldModulesHeadCommits
-def newOldUstHeadCommits = oldUstHeadCommits
-
-// Canary jobs are run daily to make sure the lava pipeline is working properly.
-def canaryRunConfigs = [] as Set
-canaryRunConfigs.add(
-    ['v4.4.9', '1a1a512b983108015ced1e7a7c7775cfeec42d8c', 'v2.8.1','d11e0db', '7fd9215', '514a87f'] as RunConfiguration)
-
-def runConfigs = [] as Set
-
-// For each top of branch kernel tags that were not seen before, schedule one
-// job for each lttng/linux tracked configurations.
-linuxLastTagIds.each { linuxTag ->
-  if (!oldLinuxTags.contains(linuxTag.value)) {
-    lttngBranchesOfInterest.each { lttngBranch ->
-      if (configurationOfInterest.contains([lttngBranch, linuxTag.key])) {
-        runConfigs.add([linuxTag.key, linuxTag.value,
-                    lttngBranch, toolsHeadCommits[lttngBranch],
-                    modulesHeadCommits[lttngBranch], ustHeadCommits[lttngBranch]]
-                    as RunConfiguration)
-
-        newOldLinuxTags.add(linuxTag.value)
-      }
-    }
-  }
+def CraftConfig = { linuxBr, lttngBr ->
+  def job = [:];
+  job['config'] = [:];
+  job['config']['linuxBranch'] = linuxBr;
+  job['config']['lttngBranch'] = lttngBr;
+  job['config']['linuxTagID'] = linuxLastTagIds[linuxBr];
+  job['config']['toolsCommit'] = toolsHeadCommits[lttngBr];
+  job['config']['modulesCommit'] = modulesHeadCommits[lttngBr];
+  job['config']['ustCommit'] = ustHeadCommits[lttngBr];
+  job['status'] = 'NOT_SET';
+  job['build'] = null;
+  return job;
 }
-
-// For each top of branch commits of LTTng-Tools that were not seen before,
-// schedule one job for each lttng/linux tracked configurations
-toolsHeadCommits.each { toolsHead ->
-  if (!oldToolsHeadCommits.contains(toolsHead.value)) {
-    linuxLastTagIds.each { linuxTag ->
-      def lttngBranch = toolsHead.key
-      if (configurationOfInterest.contains([lttngBranch, linuxTag.key])) {
-        runConfigs.add([linuxTag.key, linuxTag.value,
-                    lttngBranch, toolsHeadCommits[lttngBranch],
-                    modulesHeadCommits[lttngBranch], ustHeadCommits[lttngBranch]]
-                    as RunConfiguration)
-
-        newOldToolsHeadCommits.add(toolsHead.value)
-      }
-    }
-  }
-}
-
-// For each top of branch commits of LTTng-Modules that were not seen before,
-// schedule one job for each lttng/linux tracked configurations
-modulesHeadCommits.each { modulesHead ->
-  if (!oldModulesHeadCommits.contains(modulesHead.value)) {
-    linuxLastTagIds.each { linuxTag ->
-      def lttngBranch = modulesHead.key
-      if (configurationOfInterest.contains([lttngBranch, linuxTag.key])) {
-        runConfigs.add([linuxTag.key, linuxTag.value,
-                    lttngBranch, toolsHeadCommits[lttngBranch],
-                    modulesHeadCommits[lttngBranch], ustHeadCommits[lttngBranch]]
-                    as RunConfiguration)
-
-        newOldModulesHeadCommits.add(modulesHead.value)
-      }
-    }
-  }
-}
-
-// For each top of branch commits of LTTng-UST that were not seen before,
-// schedule one job for each lttng/linux tracked configurations
-ustHeadCommits.each { ustHead ->
-  if (!oldUstHeadCommits.contains(ustHead.value)) {
-    linuxLastTagIds.each { linuxTag ->
-      def lttngBranch = ustHead.key
-      if (configurationOfInterest.contains([lttngBranch, linuxTag.key])) {
-        runConfigs.add([linuxTag.key, linuxTag.value,
-                    lttngBranch, toolsHeadCommits[lttngBranch],
-                    modulesHeadCommits[lttngBranch], ustHeadCommits[lttngBranch]]
-                    as RunConfiguration)
-
-        newOldUstHeadCommits.add(ustHead.value)
-      }
-    }
-  }
-}
-
-def ongoingBuild = [:]
-def failedRuns = []
-def abortedRuns = []
-def isFailed = false
-def isAborted = false
 
 // Check what type of jobs should be triggered.
 triggerJobName = build.project.getFullDisplayName();
@@ -462,97 +356,122 @@ if (triggerJobName.contains("vm_tests")) {
   jobType = 'baremetal_benchmarks';
 }
 
-// Launch regular jobs.
-if (runConfigs.size() > 0) {
-  println("\nSchedule jobs triggered by code changes:");
-  runConfigs.each { config ->
-    def jobName = CraftJobName(jobType, config);
-    def currBuild = LaunchJob(jobName, config);
+// Hashmap containing all the jobs, their configuration (commit id, etc. )and
+// their status (SUCCEEDED, FAILED, etc.). This Hashmap is made of basic strings
+// rather than objects and enums because strings are easily serializable.
+def currentJobs = [:];
 
-    // LaunchJob will return null if the job doesn't exist or is disabled.
-    if (currBuild != null) {
-      ongoingBuild[jobName] = currBuild;
-    }
+// Get an up to date view of all the branches of interest.
+configurationOfInterest.each { lttngBr, linuxBr  ->
+  def jobName = CraftJobName(jobType, linuxBr, lttngBr);
+  currentJobs[jobName] = CraftConfig(linuxBr, lttngBr);
 
-    // Jobs to run only on master branchs of both Linux and LTTng.
-    if (config.linuxBranch.contains('master') &&
-        config.lttngBranch.contains('master')) {
-      // vm_tests specific.
-      if (jobType.contains("vm_tests")) {
-        jobName = CraftJobName('vm_tests_fuzzing', config);
-        currBuild = LaunchJob(jobName, config);
+  // Add fuzzing job in vm_tests on master branches of lttng and linux.
+  if (jobType == 'vm_tests' && lttngBr == 'master' && linuxBr == 'master') {
+    def vmFuzzingJobName = CraftJobName(jobType + '_fuzzing', linuxBr, lttngBr);
+    currentJobs[vmFuzzingJobName] = CraftConfig(linuxBr, lttngBr);
+  }
+}
 
-        // LaunchJob will return null if the job doesn't exist or is disabled.
-        if (currBuild != null) {
-          ongoingBuild[jobName] = currBuild;
-        }
+//Add canary job
+def jobNameCanary = jobType + "_canary";
+currentJobs[jobNameCanary] = [:];
+currentJobs[jobNameCanary]['config'] = [:];
+currentJobs[jobNameCanary]['config']['linuxBranch'] = 'v4.4.9';
+currentJobs[jobNameCanary]['config']['lttngBranch'] = 'v2.8.1';
+currentJobs[jobNameCanary]['config']['linuxTagID'] ='1a1a512b983108015ced1e7a7c7775cfeec42d8c';
+currentJobs[jobNameCanary]['config']['toolsCommit'] = 'd11e0db'
+currentJobs[jobNameCanary]['config']['modulesCommit'] = '7fd9215'
+currentJobs[jobNameCanary]['config']['ustCommit'] = '514a87f'
+currentJobs[jobNameCanary]['status'] = 'NOT_SET';
+currentJobs[jobNameCanary]['build'] = null;
+
+def pastJobs = LoadPreviousJobsFromWorkspace(pastJobsPath);
+
+def failedRuns = []
+def abortedRuns = []
+def isFailed = false
+def isAborted = false
+def ongoingJobs = 0;
+
+currentJobs.each { jobName, jobInfo ->
+  // If the job ran in the past, we check if the IDs changed since.
+  if (pastJobs.containsKey(jobName) && !jobName.contains('_canary')) {
+    pastJob = pastJobs[jobName];
+    // Have the IDs changed?
+    if (pastJob['config'] == jobInfo['config']) {
+      // if the config has not changed, we keep it.
+      // if it's failed, we don't launch a new job and keep it failed.
+      jobInfo['status'] = pastJob['status'];
+      if (pastJob['status'] == 'FAILED') {
+        println("${jobName} as not changed since the last failed run. Don't run it again.");
+        // Marked the umbrella job for failure but still run the jobs that since the
+        // last run.
+        isFailed = true;
+        return;
+      } else if (pastJob['status'] == 'ABORTED') {
+        println("${jobName} as not changed since last aborted run. Run it again.");
+      } else if (pastJob['status'] == 'SUCCEEDED') {
+        println("${jobName} as not changed since the last successful run. Don't run it again.");
+        return;
       }
     }
   }
-} else {
-  println("No new commit or tags, nothing more to do.")
+
+  jobInfo['status'] = 'PENDING';
+  jobInfo['build'] = LaunchJob(jobName, jobInfo);
+  ongoingJobs += 1;
 }
 
-// Launch canary jobs.
-println("\nSchedule canary jobs once a day:")
-canaryRunConfigs.each { config ->
-  def jobName = jobType + '_canary';
-  def currBuild = LaunchJob(jobName, config);
+while (ongoingJobs > 0) {
+  currentJobs.each { jobName, jobInfo ->
 
-  // LaunchJob will return null if the job doesn't exist or is disabled.
-  if (currBuild != null) {
-    ongoingBuild[jobName] = currBuild;
-  }
-}
+    if (jobInfo['status'] != 'PENDING') {
+      return;
+    }
 
-// Save the tag and commit IDs scheduled in the past and during this run to the
-// workspace. We save it at the end to be sure all jobs were launched. We save
-// the object IDs even in case of failure. There is no point of re-running the
-// same job is there are no code changes even in case of failure.
-println("Saving Git object IDs of previously built projects to the workspace.");
-saveCurrentIdsToWorkspace(newOldLinuxTags, linuxOnDiskPath);
-saveCurrentIdsToWorkspace(newOldToolsHeadCommits, toolsOnDiskPath);
-saveCurrentIdsToWorkspace(newOldModulesHeadCommits, modulesOnDiskPath);
-saveCurrentIdsToWorkspace(newOldUstHeadCommits, ustOnDiskPath);
-
-// Iterate over all the running jobs. Record the status of completed jobs.
-while (ongoingBuild.size() > 0) {
-  def ongoingIterator = ongoingBuild.iterator();
-  while (ongoingIterator.hasNext()) {
-    currentBuild = ongoingIterator.next();
-
-    jobName = currentBuild.getKey();
-    job_run = currentBuild.getValue();
+    jobBuild = jobInfo['build']
 
     // The isCancelled() method checks if the run was cancelled before
     // execution. We consider such run as being aborted.
-    if (job_run.isCancelled()) {
+    if (jobBuild.isCancelled()) {
       println("${jobName} was cancelled before launch.")
-      abortedRuns.add(jobName);
       isAborted = true;
-      ongoingIterator.remove();
-    } else if (job_run.isDone()) {
+      abortedRuns.add(jobName);
+      ongoingJobs -= 1;
+      jobInfo['status'] = 'ABORTED'
+      // Invalidate the build field, as it's not serializable and we don't need
+      // it anymore.
+      jobInfo['build'] = null;
+    } else if (jobBuild.isDone()) {
 
-      job_status = job_run.get();
-      println("${job_status.fullDisplayName} completed with status ${job_status.result}.");
+      jobExitStatus = jobBuild.get();
+
+      // Invalidate the build field, as it's not serializable and we don't need
+      // it anymore.
+      jobInfo['build'] = null;
+      println("${jobExitStatus.fullDisplayName} completed with status ${jobExitStatus.result}.");
 
       // If the job didn't succeed, add its name to the right list so it can
       // be printed at the end of the execution.
-      switch (job_status.result) {
+      ongoingJobs -= 1;
+      switch (jobExitStatus.result) {
       case Result.ABORTED:
         isAborted = true;
         abortedRuns.add(jobName);
+        jobInfo['status'] = 'ABORTED'
         break;
       case Result.FAILURE:
         isFailed = true;
         failedRuns.add(jobName);
+        jobInfo['status'] = 'FAILED'
         break;
       case Result.SUCCESS:
+        jobInfo['status'] = 'SUCCEEDED'
+        break;
       default:
         break;
       }
-
-      ongoingIterator.remove();
     }
   }
 
@@ -568,6 +487,9 @@ while (ongoingBuild.size() > 0) {
     }
   }
 }
+
+//All jobs are done running. Save their exit status to disk.
+SaveCurrentJobsToWorkspace(currentJobs, pastJobsPath);
 
 // Get log of failed runs.
 if (failedRuns.size() > 0) {
