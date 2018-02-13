@@ -76,6 +76,10 @@ lttng-scope|ctf-java|libdelorean-java|jabberwocky)
     BUILD_TYPE="maven"
     MVN_BIN="$HOME/tools/hudson.tasks.Maven_MavenInstallation/default/bin/mvn"
     ;;
+linux-rseq)
+    CONF_OPTS=""
+    BUILD_TYPE="linux-rseq"
+    ;;
 *)
     echo "Generic project, no configure options."
     CONF_OPTS=""
@@ -152,12 +156,6 @@ cd "$SRCDIR"
 
 COVERITY_SCAN_VERSION=$(git describe --always | sed 's|-|.|g')
 
-# Prepare build dir for autotools based projects
-if [ -f "./bootstrap" ]; then
-  ./bootstrap
-  ./configure $CONF_OPTS
-fi
-
 # Build
 echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
 case "$BUILD_TYPE" in
@@ -173,7 +171,17 @@ maven)
       clean verify
     ;;
 autotools)
+    # Prepare build dir for autotools based projects
+    if [ -f "./bootstrap" ]; then
+      ./bootstrap
+      ./configure $CONF_OPTS
+    fi
+
     cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" V=1
+    ;;
+linux-rseq)
+    make defconfig
+    cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" kernel/rseq.o kernel/cpu_opv.o V=1
     ;;
 *)
     echo "Unsupported build type: $BUILD_TYPE"
