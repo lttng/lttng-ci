@@ -213,7 +213,7 @@ response=$(curl \
   "$UPLOAD_URL")
 set -x
 status_code=$(echo "$response" | sed -n '$p')
-if [ "$status_code" == "201" ]; then
+if [ "${status_code:0:1}" == "2" ]; then
   echo -e "\033[33;1mCoverity Scan upload successful.\033[0m"
 else
   TEXT=$(echo "$response" | sed '$d')
