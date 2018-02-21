@@ -20,12 +20,10 @@ touch properties.txt
 NPROC=$(nproc)
 echo "NPROC=$NPROC" >> properties.txt
 
-LTTNG_CI_PATH="$WORKSPACE/src/lttng-ci"
 LINUX_PATH="$WORKSPACE/src/linux"
 LTTNG_MODULES_PATH="$WORKSPACE/src/lttng-modules"
 
 echo "LTTNG_MODULES_GIT=$LTTNG_MODULES_REPO" >> properties.txt
-echo "LTTNG_CI_PATH=$LTTNG_CI_PATH" >> properties.txt
 echo "LINUX_PATH=$LINUX_PATH" >> properties.txt
 echo "LTTNG_MODULES_PATH=$LTTNG_MODULES_PATH" >> properties.txt
 

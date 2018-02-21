@@ -1,0 +1,464 @@
+---
+## Anchors
+- system_tests_parameters_defaults: &system_tests_parameters_defaults
+    name: 'system_tests_parameters_defaults'
+    parameters:
+      - string:
+          name: 'LTTNG_TOOLS_COMMIT_ID'
+          default: ''
+          description: 'The lttng-tools commit id to build.'
+      - string:
+          name: 'LTTNG_MODULES_COMMIT_ID'
+          default: ''
+          description: 'The lttng-modules commit id to build.'
+      - string:
+          name: 'LTTNG_UST_COMMIT_ID'
+          default: ''
+          description: 'The lttng-ust commit id to build.'
+      - string:
+          name: 'KERNEL_TAG_ID'
+          default: ''
+          description: 'The linux kernel git tag to build against.'
+      - string:
+          name: 'KERNEL_REPO'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          description: 'Linux kernel git repo to checkout the kernel id'
+      - string:
+          name: 'LTTNG_TOOLS_REPO'
+          default: 'https://github.com/lttng/lttng-tools.git'
+          description: 'LTTng-Tools git repo to checkout the tools id'
+      - string:
+          name: 'LTTNG_MODULES_REPO'
+          default: 'https://github.com/lttng/lttng-modules.git'
+          description: 'LTTng-Modules git repo to checkout the Modules id'
+      - string:
+          name: 'LTTNG_UST_REPO'
+          default: 'https://github.com/lttng/lttng-ust.git'
+          description: 'LTTng-UST git repo to checkout the UST id'
+
+- publisher:
+    name: 'system_tests_email_ext_default'
+    publishers:
+      - email-ext:
+          recipients: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+
+## Defaults
+- defaults:
+    name: baremetal_benchmarks
+    description: |
+      Runs baremetal kernel benchmarks over different combination of kernel and lttng configurations.
+    project-type: freestyle
+    node: 'x86-64'
+
+    <<: *system_tests_parameters_defaults
+
+    properties:
+      - build-discarder:
+          num-to-keep: 10
+      - throttle:
+          max-total: 2
+          option: 'category'
+          categories:
+            - 'baremetal-tests'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_JENKINS_TOKEN
+          - file:
+              credential-id: system_tests_storage_key
+              variable: identity_file
+      - inject:
+          properties-content: |
+            BUILD_DEVICE=baremetal
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
+
+    builders:
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
+      - shell: !include-raw-escape: scripts/system-tests/inject-ssh-commands.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/system-tests/run-baremetal-benchmarks.sh
+      - shell: !include-raw-escape: scripts/system-tests/summarize-results.sh
+
+    publishers:
+      - archive:
+          artifacts: '*.png,*.csv'
+          stable: true
+          do-not-fingerprint: true
+      - image-gallery:
+        - gallery-type: archived-images-gallery
+          title: Results
+          includes: '*.png'
+      - workspace-cleanup
+
+- defaults:
+    name: vm_tests
+    description: |
+      Runs virtual machine kernel tests over different combination of kernel and lttng configurations.
+    project-type: freestyle
+    node: 'x86-64'
+    <<: *system_tests_parameters_defaults
+
+    properties:
+      - build-discarder:
+          num-to-keep: 10
+      - throttle:
+          max-total: 2
+          option: 'category'
+          categories:
+            - 'kvm-tests'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_JENKINS_TOKEN
+      - inject:
+          properties-content: |
+            BUILD_DEVICE=kvm
+
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
+
+    builders:
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/system-tests/run-kvm-tests.sh
+
+    publishers:
+      - workspace-cleanup
+
+- defaults:
+    name: vm_tests_fuzzing
+    description: |
+      Runs virtual machine fuzzing tests over different combination of kernel and lttng configurations.
+    project-type: freestyle
+    node: 'x86-64'
+    <<: *system_tests_parameters_defaults
+
+    properties:
+      - build-discarder:
+          num-to-keep: 10
+      - throttle:
+          max-total: 2
+          option: 'category'
+          categories:
+            - 'kvm-tests'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_JENKINS_TOKEN
+      - inject:
+          properties-content: |
+            BUILD_DEVICE=kvm
+
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
+
+    builders:
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/system-tests/run-kvm-fuzzing-tests.sh
+
+    publishers:
+      - workspace-cleanup
+
+- defaults:
+    name: baremetal_tests
+    description: |
+      Runs baremetal kernel tests over different combination of kernel and lttng configurations.
+    project-type: freestyle
+    node: 'x86-64'
+
+    <<: *system_tests_parameters_defaults
+
+    properties:
+      - build-discarder:
+          num-to-keep: 10
+      - throttle:
+          max-total: 2
+          option: 'category'
+          categories:
+            - 'baremetal-tests'
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava_key
+              variable: LAVA_JENKINS_TOKEN
+      - inject:
+          properties-content: |
+            BUILD_DEVICE=baremetal
+
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
+
+    builders:
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
+      - trigger-builds:
+        - project: "build_kernel_PARAM"
+          property-file: 'properties.txt'
+          block: true
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/system-tests/run-baremetal-tests.sh
+
+    publishers:
+      - workspace-cleanup
+
+## Templates
+- job-template:
+    name: build_kernel_PARAM
+    description: |
+      Builds a Linux Kernel and LTTng Modules if necessary
+    concurrent: true
+    node: 'x86-64'
+
+    parameters:
+      - string:
+          name: 'LTTNG_MODULES_COMMIT_ID'
+          description: 'The lttng-modules commmit to build.'
+      - string:
+          name: 'LTTNG_MODULES_REPO'
+          description: 'The LTTng Modules git repo to fetch from'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
+      - string:
+          name: 'KERNEL_COMMIT_ID'
+          description: 'The kernel commit to build.'
+      - string:
+          name: 'KGITREPO'
+          description: 'The kernel git repo to fetch from'
+      - string:
+          name: 'STORAGE_KERNEL_FOLDER'
+          description: 'Path to store the Kernel image'
+      - string:
+          name: 'STORAGE_KERNEL_IMAGE'
+          description: 'Path to store the Kernel IMAGE'
+      - string:
+          name: 'STORAGE_LINUX_MODULES'
+          description: 'Path to store the Kernel Modules'
+      - string:
+          name: 'STORAGE_LTTNG_MODULES'
+          description: 'Path to store the LTTng Modules'
+      - string:
+          name: 'BUILD_DEVICE'
+          description: 'The target device. (kvm or baremetal)'
+
+    properties:
+      - build-discarder:
+          num-to-keep: 100
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - file:
+              credential-id: system_tests_storage_key
+              variable: identity_file
+
+    scm:
+      - git:
+          url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci/
+      - git:
+          url : $KGITREPO
+          basedir: src/linux/
+          branches:
+            - $KERNEL_COMMIT_ID
+      - git:
+          url : $LTTNG_MODULES_REPO
+          basedir: src/lttng-modules/
+          branches:
+            - $LTTNG_MODULES_COMMIT_ID
+
+    builders:
+      - shell: !include-raw-escape: scripts/system-tests/generate-properties-slave.sh
+      - inject:
+          properties-file: properties.txt
+      - shell: !include-raw-escape: scripts/system-tests/check-build-needs.sh
+      - conditional-step:
+          condition-kind: not
+          condition-operand:
+              condition-kind: file-exists
+              condition-filename: kernel-built.txt
+              condition-basedir: workspace
+          steps:
+              - shell: !include-raw-escape: scripts/system-tests/build-kernel.sh
+      - conditional-step:
+          condition-kind: not
+          condition-operand:
+              condition-kind: file-exists
+              condition-filename: modules-built.txt
+              condition-basedir: workspace
+          steps:
+              - shell: !include-raw-escape: scripts/system-tests/build-modules.sh
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
+    name: system_ALL_{test_type}_trigger
+    description: |
+      This job will trigger the build of jobs when a new tag is push specific
+      tracked Linux branches and new commits on LTTng tracked branches
+
+    project-type: freestyle
+    node: 'master'
+
+    properties:
+      - build-discarder:
+          num-to-keep: 10
+
+    triggers:
+      - timed: "H H * * 1-5"
+
+    wrappers:
+      - timestamps
+      - ansicolor
+
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/system-tests/system-trigger.groovy
+
+    publishers:
+      - system_tests_email_ext_default
+
+- job-template:
+    name: baremetal_benchmarks_k{kversion}_l{lttngversion}
+    defaults: baremetal_benchmarks
+- job-template:
+    name: vm_tests_k{kversion}_l{lttngversion}
+    defaults: vm_tests
+- job-template:
+    name: baremetal_tests_k{kversion}_l{lttngversion}
+    defaults: baremetal_tests
+
+- job-template:
+    name: vm_tests_fuzzing_k{kversion}_l{lttngversion}
+    defaults: vm_tests_fuzzing
+
+# Canary jobs are made to confirm that the whole Lava pipeline is working.
+# They are scheduled once a day always on the same (LTTng, Kernel) code. If any
+# of those jobs fails, it means that there is an issue with the configuration
+- job-template:
+    name: baremetal_benchmarks_canary
+    defaults: baremetal_benchmarks
+
+- job-template:
+    name: baremetal_tests_canary
+    defaults: baremetal_tests
+
+- job-template:
+    name: vm_tests_canary
+    defaults: vm_tests
+
+## Project
+- project:
+    name: system-tests
+    kversion:
+      - master
+      - linux-4.4.y
+      - linux-4.9.y
+    lttngversion:
+      - master
+      - stable-2.9
+      - stable-2.10
+    jobs:
+      - 'vm_tests_k{kversion}_l{lttngversion}'
+      - 'baremetal_benchmarks_k{kversion}_l{lttngversion}'
+      - 'baremetal_tests_k{kversion}_l{lttngversion}'
+
+- project:
+    name: system-tests-oldkernel
+    kversion:
+      - linux-3.18.y
+    lttngversion:
+      - stable-2.7
+    jobs:
+      - 'vm_tests_k{kversion}_l{lttngversion}':
+      - 'baremetal_tests_k{kversion}_l{lttngversion}':
+      - 'baremetal_benchmarks_k{kversion}_l{lttngversion}':
+
+- project:
+    name: system-tests-canary
+    jobs:
+      - 'vm_tests_canary'
+      - 'baremetal_tests_canary'
+      - 'baremetal_benchmarks_canary'
+
+- project:
+    name: system-fuzzing-tests
+    kversion: master
+    lttngversion: master
+    jobs:
+      - 'vm_tests_fuzzing_k{kversion}_l{lttngversion}'
+- project:
+    name: system-general
+    test_type:
+      - vm_tests
+      - baremetal_tests
+      - baremetal_benchmarks
+    jobs:
+      - 'build_kernel_PARAM'
+      - 'system_ALL_{test_type}_trigger'

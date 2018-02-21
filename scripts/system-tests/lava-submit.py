@@ -111,17 +111,18 @@ def print_test_output(server, job):
 
                     # Decode the base64 file and split on newlines to iterate
                     # on list
-                    testoutput = str(base64.b64decode(bytes(attachment['content'], encoding='UTF-8'))).split('\n')
+                    testoutput = str(base64.b64decode(bytes(attachment['content'], encoding='UTF-8')))
+
+                    testoutput = testoutput.replace('\\n', '\n')
 
                     # Create a generator to iterate on the lines and keeping
                     # the state of the iterator across the two loops.
-                    testoutput_iter = iter(testoutput)
+                    testoutput_iter = iter(testoutput.split('\n'))
                     for line in testoutput_iter:
 
                         # Find the header of the test case and start printing
                         # from there
                         if 'LAVA_SIGNAL_STARTTC run-tests' in line:
-                            found = True
                             print('---- TEST SUITE OUTPUT BEGIN ----')
                             for line in testoutput_iter:
                                 if 'LAVA_SIGNAL_ENDTC run-tests' not in line:
@@ -131,7 +132,6 @@ def print_test_output(server, job):
                                     # section
                                     break
 
-                        if found is True:
                             print('----- TEST SUITE OUTPUT END -----')
                             break
 
