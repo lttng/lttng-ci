@@ -35,4 +35,4 @@ set -ux
 pip install pandas
 pip install matplotlib
 
-python3 "$LTTNG_CI_PATH"/scripts/lttng-baremetal-tests/generate-plots.py ./plot-data/
+python3 "$LTTNG_CI_PATH"/scripts/system-tests/generate-plots.py ./plot-data/
