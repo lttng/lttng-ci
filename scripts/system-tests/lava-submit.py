@@ -193,37 +193,37 @@ def get_baremetal_benchmarks_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/failing-close.yml'
+                    'testdef': 'lava/system-tests/failing-close.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/failing-ioctl.yml'
+                    'testdef': 'lava/system-tests/failing-ioctl.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/failing-open-efault.yml'
+                    'testdef': 'lava/system-tests/failing-open-efault.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/success-dup-close.yml'
+                    'testdef': 'lava/system-tests/success-dup-close.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/raw-syscall-getpid.yml'
+                    'testdef': 'lava/system-tests/raw-syscall-getpid.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/failing-open-enoent.yml'
+                    'testdef': 'lava/system-tests/failing-open-enoent.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/lttng-test-filter.yml'
+                    'testdef': 'lava/system-tests/lttng-test-filter.yml'
                 }
                 ],
             'timeout': 7200
@@ -239,7 +239,7 @@ def get_baremetal_tests_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/perf-tests.yml'
+                    'testdef': 'lava/system-tests/perf-tests.yml'
                 }
                 ],
             'timeout': 3600
@@ -255,12 +255,12 @@ def get_kvm_tests_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/kernel-tests.yml'
+                    'testdef': 'lava/system-tests/kernel-tests.yml'
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/destructive-tests.yml'
+                    'testdef': 'lava/system-tests/destructive-tests.yml'
                 }
                 ],
             'timeout': 7200
@@ -275,7 +275,7 @@ def get_kprobes_test_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/baremetal-tests/kprobe-fuzzing-tests.yml'
+                    'testdef': 'lava/system-tests/kprobe-fuzzing-tests.yml'
                 }
                 ],
             'timeout': 7200
