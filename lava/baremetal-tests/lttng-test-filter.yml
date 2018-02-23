@@ -30,7 +30,7 @@ run:
                 - lava-test-case-attach run-benchmarks "./results.csv"
                 - cd -
                 - cd ci
-                - python3 ./scripts/lttng-baremetal-tests/parse-results.py $BENCHMARK_DIR/results.csv
+                - python3 ./scripts/system-tests/parse-results.py $BENCHMARK_DIR/results.csv
                 - mv ./processed_results.csv ../processed_results_lttng_test_filter.csv
                 - cd -
                 - tar czf coredump.tar.gz coredump
