@@ -19,4 +19,4 @@ run:
                 - cd ci/
                 - lava-test-case run-tests --shell "./scripts/system-tests/kprobe-fuzzing.sh"
                 - tar czf coredump.tar.gz coredump
-                - lava-test-case-attach run-benchmarks coredump.tar.gz
+                - lava-test-case-attach run-tests coredump.tar.gz

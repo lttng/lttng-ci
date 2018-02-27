@@ -18,4 +18,4 @@ run:
                 - lava-test-case run-tests --shell "prove --verbose --merge --exec '' - < root_regression"
                 - cd
                 - tar czf coredump.tar.gz coredump
-                - lava-test-case-attach run-benchmarks coredump.tar.gz
+                - lava-test-case-attach run-tests coredump.tar.gz

@@ -21,4 +21,4 @@ run:
                 - lava-test-case run-tests --shell "if [ -e perf_regression ]; then prove --verbose --merge --exec '' - < perf_regression; else echo 'perf_regression not found'; fi"
                 - cd
                 - tar czf coredump.tar.gz coredump
-                - lava-test-case-attach run-benchmarks coredump.tar.gz
+                - lava-test-case-attach run-tests coredump.tar.gz
