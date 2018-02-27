@@ -21,4 +21,4 @@ run:
                 - lava-test-case run-tests --shell "if [ -e root_destructive_tests ]; then prove --verbose --merge --exec '' - < root_destructive_tests; else echo 'root_destructive_tests not found'; fi"
                 - cd
                 - tar czf coredump.tar.gz coredump
-                - lava-test-case-attach run-benchmarks coredump.tar.gz
+                - lava-test-case-attach run-tests coredump.tar.gz
