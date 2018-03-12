@@ -267,6 +267,23 @@ def get_kvm_tests_cmd():
             }
         })
     return command
+
+def get_kprobes_generate_data_cmd():
+    command = OrderedDict({
+        'command': 'lava_test_shell',
+        'parameters': {
+            'testdef_repos': [
+                {
+                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
+                    'revision': 'master',
+                    'testdef': 'lava/system-tests/kprobe-fuzzing-generate-data.yml'
+                }
+                ],
+            'timeout': 60
+            }
+        })
+    return command
+
 def get_kprobes_test_cmd():
     command = OrderedDict({
         'command': 'lava_test_shell',
@@ -447,6 +464,7 @@ def main():
             return -1
         j['actions'].append(get_config_cmd('kvm'))
         j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
+        j['actions'].append(get_kprobes_generate_data_cmd())
         j['actions'].append(get_kprobes_test_cmd())
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     else:

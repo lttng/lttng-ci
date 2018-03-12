@@ -1,0 +1,14 @@
+metadata:
+        format: Lava-Test Test Definition 1.0
+        name: lttng-fuzzing-kprobe-generate-data
+        description: "Run kprobe fuzzing data generation"
+install:
+        git-repos:
+                - url: https://github.com/lttng/lttng-ci
+                  destination: ci
+                  branch: master
+run:
+        steps:
+                - cd ci/
+                - lava-test-case generate-fuzzing-data --shell "python3 ./scripts/system-tests/run-kprobe-generate-instr-points.py $((1 + RANDOM))"
+                - sync
