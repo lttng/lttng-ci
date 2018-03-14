@@ -120,7 +120,7 @@ sol11-i386)
     MAKE=gmake
     TAR=gtar
     NPROC=nproc
-    BISON="/opt/csw/bin/bison"
+    BISON="bison"
     YACC="$BISON -y"
     CFLAGS="${CFLAGS:-} -D_XOPEN_SOURCE=500"
     RUN_TESTS="no"

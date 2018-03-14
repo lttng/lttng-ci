@@ -103,8 +103,6 @@ sol11-i386)
     export MAKE=gmake
     export TAR=gtar
     export NPROC=nproc
-    export BISON="/opt/csw/bin/bison"
-    export YACC="$BISON -y"
     export PATH="$PATH:/usr/perl5/bin"
     #export LD_ALTEXEC=/usr/sfw/bin/gld
     #export LD=/usr/sfw/bin/gld
