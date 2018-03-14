@@ -33,7 +33,7 @@ def load_instr_points(instr_points_archive):
     return [x.decode('utf-8') for x in data.split()]
 
 def enable_kprobe_events(instr_points):
-    print('Enabling events...', end='')
+    print('Enabling events from {} to {}...'.format(instr_points[0], instr_points[-1]), end='')
     sys.stdout.flush()
 
     # Use os module directly, because this is a sysfs file and seeking inside
