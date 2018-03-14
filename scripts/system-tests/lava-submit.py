@@ -463,7 +463,6 @@ def main():
             print('Tests runs need -uc/--ust-commit options. Exiting...')
             return -1
         j['actions'].append(get_config_cmd('kvm'))
-        j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
         j['actions'].append(get_kprobes_generate_data_cmd())
         j['actions'].append(get_kprobes_test_cmd())
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
