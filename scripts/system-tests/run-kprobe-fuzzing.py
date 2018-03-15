@@ -55,15 +55,17 @@ def set_kprobe_tracing_state(state):
     if state not in (0 ,1):
         raise ValueError
 
-    if state == 0:
-        # Clear the content of the trace.
-        open('/sys/kernel/debug/tracing/trace', 'w').close()
-
     try:
         with open('/sys/kernel/debug/tracing/events/kprobes/enable', 'w') as enable_kprobe_file:
             enable_kprobe_file.write('{}\n'.format(state))
     except IOError:
         print('kprobes/enable file does not exist')
+
+    if state == 0:
+        # Clear the content of the trace.
+        open('/sys/kernel/debug/tracing/trace', 'w').close()
+        # Clear all the events.
+        open('/sys/kernel/debug/tracing/kprobe_events', 'w').close()
 
 def run_workload():
     print('Running workload...', end='')
