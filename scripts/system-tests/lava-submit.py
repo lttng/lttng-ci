@@ -284,7 +284,7 @@ def get_kprobes_generate_data_cmd():
         })
     return command
 
-def get_kprobes_test_cmd():
+def get_kprobes_test_cmd(round_nb):
     command = OrderedDict({
         'command': 'lava_test_shell',
         'parameters': {
@@ -292,10 +292,11 @@ def get_kprobes_test_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/kprobe-fuzzing-tests.yml'
+                    'testdef': 'lava/system-tests/kprobe-fuzzing-tests.yml',
+                    'parameters': { 'ROUND_NB': str(round_nb) }
                 }
-                ],
-            'timeout': 7200
+            ],
+            'timeout': 1000
             }
         })
     return command
@@ -464,7 +465,8 @@ def main():
             return -1
         j['actions'].append(get_config_cmd('kvm'))
         j['actions'].append(get_kprobes_generate_data_cmd())
-        j['actions'].append(get_kprobes_test_cmd())
+        for i in range(10):
+            j['actions'].append(get_kprobes_test_cmd(round_nb=i))
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     else:
         assert False, 'Unknown test type'
