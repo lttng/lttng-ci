@@ -21,6 +21,7 @@ import subprocess
 import sys
 
 NB_KPROBES_PER_ITER=500
+NB_KPROBES_PER_ROUND=20000
 
 def load_instr_points(instr_points_archive):
     print('Reading instrumentation points from \'{}\'.'.format(instr_points_archive), end='')
@@ -54,15 +55,17 @@ def set_kprobe_tracing_state(state):
     if state not in (0 ,1):
         raise ValueError
 
-    if state == 0:
-        # Clear the content of the trace.
-        open('/sys/kernel/debug/tracing/trace', 'w').close()
-
     try:
         with open('/sys/kernel/debug/tracing/events/kprobes/enable', 'w') as enable_kprobe_file:
             enable_kprobe_file.write('{}\n'.format(state))
     except IOError:
         print('kprobes/enable file does not exist')
+
+    if state == 0:
+        # Clear the content of the trace.
+        open('/sys/kernel/debug/tracing/trace', 'w').close()
+        # Clear all the events.
+        open('/sys/kernel/debug/tracing/kprobe_events', 'w').close()
 
 def run_workload():
     print('Running workload...', end='')
@@ -87,23 +90,31 @@ def print_dashed_line():
     print('-'*100)
 
 def main():
-    assert(len(sys.argv) == 2)
+    assert(len(sys.argv) == 3)
 
     instr_point_archive = sys.argv[1]
+    round_nb = int(sys.argv[2])
     # Load instrumentation points to disk and attach it to lava test run.
     instrumentation_points = load_instr_points(instr_point_archive)
+
+    # We are past the end of the instrumentation point list.
+    if len(instrumentation_points)/NB_KPROBES_PER_ROUND <= round_nb:
+        print('No instrumentation point for round {}.'.format(round_nb))
+        return
 
     mount_tracingfs()
 
     # Loop over the list by enabling ranges of NB_KPROBES_PER_ITER kprobes.
-    for i in range(int(len(instrumentation_points)/NB_KPROBES_PER_ITER)):
+    for i in range(int(NB_KPROBES_PER_ROUND/NB_KPROBES_PER_ITER)):
         print_dashed_line()
-        print('Time now: {}, {} to {}'.format(datetime.datetime.now(), i*NB_KPROBES_PER_ITER, (i+1)*NB_KPROBES_PER_ITER))
-        set_kprobe_tracing_state(0)
-        enable_kprobe_events(instrumentation_points[i*NB_KPROBES_PER_ITER:(i+1)*NB_KPROBES_PER_ITER])
+        lower_bound = (round_nb * NB_KPROBES_PER_ROUND) + (i * NB_KPROBES_PER_ITER)
+        upper_bound = lower_bound + NB_KPROBES_PER_ITER
+        print('Time now: {}, {} to {}'.format(datetime.datetime.now(), lower_bound , upper_bound))
+        enable_kprobe_events(instrumentation_points[lower_bound:upper_bound])
         set_kprobe_tracing_state(1)
         run_workload()
         print('\n')
+        set_kprobe_tracing_state(0)
 
 if __name__ == "__main__":
     main()
