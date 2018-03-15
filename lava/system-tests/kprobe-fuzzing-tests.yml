@@ -7,17 +7,8 @@ install:
                 - url: https://github.com/lttng/lttng-ci
                   destination: ci
                   branch: master
-        steps:
-                - cd
-                - ulimit -c unlimited
-                - mkdir -p coredump
-                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 params:
   ROUND_NB: 0
 run:
         steps:
-                - cd ci/
-                - lava-test-case run-fuzzing --shell "python3 ./scripts/system-tests/run-kprobe-fuzzing.py /root/instr_points.txt.gz $ROUND_NB"
-                - cd ..
-                - tar czf coredump.tar.gz coredump
-                - lava-test-case-attach run-fuzzing coredump.tar.gz
+                - lava-test-case run-fuzzing --shell "python3 ./ci/scripts/system-tests/run-kprobe-fuzzing.py /root/instr_points.txt.gz $ROUND_NB"
