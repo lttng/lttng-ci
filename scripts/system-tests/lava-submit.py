@@ -18,6 +18,7 @@ import argparse
 import base64
 import json
 import os
+import random
 import sys
 import time
 import xmlrpc.client
@@ -269,6 +270,7 @@ def get_kvm_tests_cmd():
     return command
 
 def get_kprobes_generate_data_cmd():
+    random_seed = random.randint(0, 1000000)
     command = OrderedDict({
         'command': 'lava_test_shell',
         'parameters': {
@@ -276,7 +278,8 @@ def get_kprobes_generate_data_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/kprobe-fuzzing-generate-data.yml'
+                    'testdef': 'lava/system-tests/kprobe-fuzzing-generate-data.yml',
+                    'parameters': { 'RANDOM_SEED': str(random_seed) }
                 }
                 ],
             'timeout': 60
