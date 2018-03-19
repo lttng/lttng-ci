@@ -58,15 +58,19 @@ def main():
         raw_symbol_list = kallsyms_file.readlines()
 
     # Keep only the symbol name.
-    raw_symbol_list = [x.split()[2].strip() for x in raw_symbol_list]
+    symbol_list = []
+    for symbol in raw_symbol_list:
+        symbol = symbol.split()[2].strip()
+        if 'ftrace' not in symbol:
+            symbol_list.append(symbol)
 
     instrumentation_points = []
 
     # Add all symbols.
-    instrumentation_points.extend(raw_symbol_list)
+    instrumentation_points.extend(symbol_list)
 
     # For each symbol, create 2 new instrumentation points by random offsets.
-    for s in raw_symbol_list:
+    for s in symbol_list:
         offsets = rng.sample(range(1, 10), 2)
         for offset in offsets:
             instrumentation_points.append(s + "+" + str(hex(offset)))
