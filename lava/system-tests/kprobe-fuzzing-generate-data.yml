@@ -8,7 +8,7 @@ install:
                   destination: ci
                   branch: master
 params:
-  RANDOM_SEED=12345
+  RANDOM_SEED: 12345
 run:
         steps:
                 - cd ci/
