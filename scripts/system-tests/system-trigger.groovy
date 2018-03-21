@@ -396,9 +396,12 @@ def ongoingJobs = 0;
 
 currentJobs.each { jobName, jobInfo ->
   // If the job ran in the past, we check if the IDs changed since.
-  if (pastJobs.containsKey(jobName) && !jobName.contains('_canary')) {
+  // Fetch past results only if the job is not of type canary or fuzzing.
+  if (!jobName.contains('_canary') && !jobName.contains('_fuzzing') &&
+         pastJobs.containsKey(jobName)) {
     pastJob = pastJobs[jobName];
-    // Have the IDs changed?
+
+    // If the code has not changed report previous status.
     if (pastJob['config'] == jobInfo['config']) {
       // if the config has not changed, we keep it.
       // if it's failed, we don't launch a new job and keep it failed.
