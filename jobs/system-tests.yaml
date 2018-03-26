@@ -370,7 +370,7 @@
           num-to-keep: 10
 
     triggers:
-      - timed: "H H * * 1-5"
+      - timed: "H 0 * * 1-5"
 
     wrappers:
       - timestamps
