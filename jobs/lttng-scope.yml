@@ -14,9 +14,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: https://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -29,8 +29,6 @@
     properties:
       - build-discarder:
           num-to-keep: 7
-      - github:
-          url: https://github.com/{github_user}/{github_name}
 
 
 ## Templates
@@ -73,8 +71,6 @@
           goals: clean install -Dmaven.test.skip=false
           private-repository: true
           settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
-          properties:
-            - maven.test.failure.ignore=true
 
     publishers:
       - archive:
@@ -157,9 +153,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: https://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -180,8 +176,6 @@
           goals: clean install -Dmaven.test.skip=false
           private-repository: true
           settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
-          properties:
-            - maven.test.failure.ignore=true
 
     publishers:
       - archive:
@@ -284,8 +278,6 @@
           goals: clean install -Dmaven.test.skip=false
           private-repository: true
           settings: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig277b7a2d-b7a6-4ae4-a32d-18c02514e9e4'
-          properties:
-            - maven.test.failure.ignore=true
 
     publishers:
       - archive:
@@ -376,9 +368,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: https://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -403,8 +395,8 @@
 ## Project
 - project:
     name: lttng-scope
-    github_user: lttng
-    github_name: lttng-scope
+    gitlab_user: lttng
+    gitlab_project: lttng-scope/lttng-scope
     email_to: 'ci-notification@lists.lttng.org, cc:alexmonthy@efficios.com'
     email_for_all_failure: 'alexmonthy@efficios.com'
     version:

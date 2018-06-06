@@ -22,9 +22,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: https://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -37,8 +37,6 @@
     properties:
       - build-discarder:
           num-to-keep: 2
-      - github:
-          url: https://github.com/{github_user}/{github_name}
 
 - defaults:
     name: libdelorean-java
@@ -56,9 +54,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: https://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -71,8 +69,6 @@
     properties:
       - build-discarder:
           num-to-keep: 2
-      - github:
-          url: https://github.com/{github_user}/{github_name}
 
 
 ## Templates
@@ -163,9 +159,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: https://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -190,8 +186,8 @@
 ## Project
 - project:
     name: libdelorean-java
-    github_user: efficios
-    github_name: libdelorean-java
+    gitlab_user: lttng
+    gitlab_project: lttng-scope/libdelorean-java
     email_to: 'ci-notification@lists.lttng.org, cc:alexmonthy@efficios.com'
     email_for_all_failure: 'alexmonthy@efficios.com'
     version:

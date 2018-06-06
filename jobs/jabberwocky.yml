@@ -19,12 +19,21 @@
       - workspace-cleanup
       - timestamps
       - ansicolor
+      - xvfb:
+          installation-name: "default"
+          auto-display-name: true
+          parallel-build: false
+          screen: 1024x768x24
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: https://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -37,8 +46,6 @@
     properties:
       - build-discarder:
           num-to-keep: 2
-      - github:
-          url: https://github.com/{github_user}/{github_name}
 
 - defaults:
     name: jabberwocky
@@ -56,9 +63,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: hhtps://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -71,8 +78,6 @@
     properties:
       - build-discarder:
           num-to-keep: 2
-      - github:
-          url: https://github.com/{github_user}/{github_name}
 
 
 ## Templates
@@ -163,9 +168,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          url: https://gitlab.com/{gitlab_user}/{gitlab_project}.git
+          browser: gitlab
+          browser-url: https://gitlab.com/{gitlab_user}/{gitlab_project}
           branches:
             - origin/{version}
           skip-tag: true
@@ -190,8 +195,8 @@
 ## Project
 - project:
     name: jabberwocky
-    github_user: efficios
-    github_name: jabberwocky
+    gitlab_user: lttng
+    gitlab_project: lttng-scope/jabberwocky
     email_to: 'ci-notification@lists.lttng.org, cc:alexmonthy@efficios.com'
     email_for_all_failure: 'alexmonthy@efficios.com'
     version:
