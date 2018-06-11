@@ -126,7 +126,7 @@
 - defaults:
     name: vm_tests
     description: |
-      Runs virtual machine kernel tests over different combination of kernel and lttng configurations.
+      Runs root_regression and root_destructive_tests on a virtual machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
     node: 'x86-64'
     <<: *system_tests_parameters_defaults
@@ -220,7 +220,7 @@
 - defaults:
     name: baremetal_tests
     description: |
-      Runs baremetal kernel tests over different combination of kernel and lttng configurations.
+      Runs perf_regression tests on a baremetal machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
     node: 'x86-64'
 
