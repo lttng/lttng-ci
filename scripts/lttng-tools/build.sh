@@ -73,6 +73,7 @@ verne() {
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
+test_type=${test_type:-}
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
 #TMPDIR="$WORKSPACE/tmp"
@@ -173,6 +174,17 @@ cygwin|cygwin64|msys32|msys64)
     ;;
 esac
 
+case "$test_type" in
+base)
+	RUN_TESTS_LONG_REGRESSION="no"
+	;;
+full)
+	RUN_TESTS_LONG_REGRESSION="yes"
+	;;
+*)
+	RUN_TESTS_LONG_REGRESSION="no"
+	;;
+esac
 
 # Enter the source directory
 cd "$SRCDIR"
@@ -337,6 +349,9 @@ if [ "$RUN_TESTS" = "yes" ]; then
     mkdir -p "$TAPDIR/unit"
     mkdir -p "$TAPDIR/fast_regression"
     mkdir -p "$TAPDIR/with_bindings_regression"
+    if [ "$RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
+        mkdir -p "$TAPDIR/long_regression"
+    fi
 
     # Force the lttng-sessiond path to /bin/true to prevent the spawing of a
     # lttng-sessiond --daemonize on "lttng create"
@@ -352,6 +367,9 @@ if [ "$RUN_TESTS" = "yes" ]; then
             prove --merge -v --exec '' - < "$BUILD_PATH/tests/unit_tests" --archive "$TAPDIR/unit/" || true
             prove --merge -v --exec '' - < "$BUILD_PATH/tests/fast_regression" --archive "$TAPDIR/fast_regression/" || true
             prove --merge -v --exec '' - < "$BUILD_PATH/tests/with_bindings_regression" --archive "$TAPDIR/with_bindings_regression/" || true
+        fi
+        if [ "$RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
+            prove --merge -v --exec '' - < "$BUILD_PATH/tests/long_regression" --archive "$TAPDIR/long_regression/" || true
         fi
     else
         # Regression is disabled for now, we need to adjust the testsuite for no ust builds.
