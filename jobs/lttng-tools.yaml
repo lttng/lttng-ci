@@ -690,6 +690,7 @@
           conf: !!python/tuple [std, no-ust, agents, debug-rcu]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.11
@@ -699,6 +700,7 @@
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.11
@@ -708,6 +710,7 @@
           conf: !!python/tuple [std]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: solarisbuild
           version: stable-2.11
@@ -717,6 +720,7 @@
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
       - 'lttng-tools_{version}_{buildtype}':
           buildtype: macosxbuild
           version: stable-2.11
@@ -726,6 +730,7 @@
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
       - 'lttng-tools_{version}_winbuild':
           version: stable-2.11
           ustversion: stable-2.11
@@ -734,6 +739,7 @@
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
 
       # stable-2.10
       - 'lttng-tools_{version}_{buildtype}':
@@ -989,6 +995,7 @@
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: stable-2.10-staging
@@ -1048,6 +1055,7 @@
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.10-staging
