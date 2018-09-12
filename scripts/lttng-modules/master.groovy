@@ -330,11 +330,18 @@ def kversionFactory = ""
 if (uversion != null) {
   kversionFactory = new UbuntuKVersion()
   switch (uversion) {
+    case 'bionic':
+      matchStrs = [
+        ~/^refs\/tags\/(Ubuntu-4\.15\.0-\d{1,3}?\.[\d]+)$/,
+      ]
+      break
+
     case 'xenial':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-4\.4\.0-\d{1,3}?\.[\d]+)$/,
         ~/^refs\/tags\/(Ubuntu-lts-4\.8\.0-.*_16\.04\.\d+)$/,
         ~/^refs\/tags\/(Ubuntu-lts-4\.10\.0-.*_16\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-lts-4\.15\.0-.*_16\.04\.\d+)$/,
       ]
 
       blacklist = [
@@ -350,7 +357,7 @@ if (uversion != null) {
       break
 
     default:
-      println 'Unsupported Ubuntu version: ${uversion}'
+      println "Unsupported Ubuntu version: ${uversion}"
       throw new InterruptedException()
       break
   }
