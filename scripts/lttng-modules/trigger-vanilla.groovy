@@ -27,9 +27,11 @@ def ondiskpath = build.getEnvironment(listener).get('WORKSPACE') + "/ondisk-refs
 
 def trigger_jobs = [
   'lttng-modules_master_build-vanilla',
+  'lttng-modules_stable-2.11_build-vanilla',
   'lttng-modules_stable-2.10_build-vanilla',
   'lttng-modules_stable-2.9_build-vanilla',
   'lttng-modules_master_crossbuild-vanilla',
+  'lttng-modules_stable-2.11_crossbuild-vanilla',
   'lttng-modules_stable-2.10_crossbuild-vanilla',
   'lttng-modules_stable-2.9_crossbuild-vanilla',
 ]
