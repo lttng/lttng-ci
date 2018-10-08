@@ -339,6 +339,13 @@ if [ "$RUN_TESTS" = "yes" ]; then
     # Allow core dumps
     ulimit -c unlimited
 
+    # Kill any LTTng-related process
+    lttng_processes="$("$PGREP" -l 'lttng|gen-ust-.+')"
+    if [ $? -eq 0 ]; then
+        pids="$(cut -d ' ' -f 1 <<< "$lttng_processes" | tr '\n' ' ')"
+        kill -9 $pids
+    fi
+
     # Add 'babeltrace' binary to PATH
     chmod +x "$BABEL_BINS/babeltrace"
     export PATH="$PATH:$BABEL_BINS"
