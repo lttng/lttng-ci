@@ -102,6 +102,8 @@ UST_JAVA="$WORKSPACE/deps/lttng-ust/build/share/java/"
 BABEL_LIBS="$WORKSPACE/deps/babeltrace/build/lib/"
 BABEL_BINS="$WORKSPACE/deps/babeltrace/build/bin/"
 
+# pgrep
+PGREP=pgrep
 
 # Set platform variables
 case "$arch" in
@@ -342,8 +344,11 @@ if [ "$RUN_TESTS" = "yes" ]; then
     # Kill any LTTng-related process
     lttng_processes="$("$PGREP" -l 'lttng|gen-ust-.+')"
     if [ $? -eq 0 ]; then
+        echo "The following LTTng processes were detected running on the system and will be killed:"
+        echo "$lttng_processes"
+
         pids="$(cut -d ' ' -f 1 <<< "$lttng_processes" | tr '\n' ' ')"
-        kill -9 $pids
+        kill -SIGKILL $pids
     fi
 
     # Add 'babeltrace' binary to PATH
