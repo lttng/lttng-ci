@@ -197,8 +197,8 @@
     name: jabberwocky
     gitlab_user: lttng
     gitlab_project: lttng-scope/jabberwocky
-    email_to: 'ci-notification@lists.lttng.org, cc:alexmonthy@efficios.com'
-    email_for_all_failure: 'alexmonthy@efficios.com'
+    email_to: 'ci-notification@lists.lttng.org, cc:pproulx@efficios.com'
+    email_for_all_failure: 'pproulx@efficios.com'
     version:
       - master
     jobs:
