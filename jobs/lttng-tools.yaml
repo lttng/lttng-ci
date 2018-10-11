@@ -281,6 +281,19 @@
 - lttng-tools_build_publishers_dev: &lttng-tools_build_publishers_dev
     name: 'lttng-tools_build_publishers_dev'
     publishers:
+      - postbuildscript:
+          mark-unstable-if-failed: true
+          builders:
+            - role: SLAVE
+              build-on:
+                  - SUCCESS
+                  - UNSTABLE
+                  - NOT_BUILT
+                  - ABORTED
+                  - FAILURE
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
       - tap:
           results: 'tap/**/*.tap'
           failed-tests-mark-build-as-failure: true
@@ -322,6 +335,19 @@
 - lttng-tools_build_publishers_prod: &lttng-tools_build_publishers_prod
     name: 'lttng-tools_build_publishers_prod'
     publishers:
+      - postbuildscript:
+          mark-unstable-if-failed: true
+          builders:
+            - role: SLAVE
+              build-on:
+                  - SUCCESS
+                  - UNSTABLE
+                  - NOT_BUILT
+                  - ABORTED
+                  - FAILURE
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
       - tap:
           results: 'tap/**/*.tap'
           failed-tests-mark-build-as-failure: true

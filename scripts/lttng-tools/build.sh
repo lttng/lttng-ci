@@ -342,8 +342,8 @@ if [ "$RUN_TESTS" = "yes" ]; then
     ulimit -c unlimited
 
     # Kill any LTTng-related process
-    lttng_processes="$("$PGREP" -l 'lttng|gen-ust-.+')"
-    if [ $? -eq 0 ]; then
+    lttng_processes="$("$PGREP" -l 'lttng|gen-ust-.+')" || true
+    if [ ! -z "$lttng_processes" ]; then
         echo "The following LTTng processes were detected running on the system and will be killed:"
         echo "$lttng_processes"
 
