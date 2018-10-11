@@ -186,8 +186,8 @@
     name: lttng-ust-java-tests
     github_user: lttng
     github_name: lttng-ust-java-tests
-    email_to: 'ci-notification@lists.lttng.org, cc:alexmonthy@efficios.com'
-    email_for_all_failure: 'alexmonthy@efficios.com'
+    email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
+    email_for_all_failure: 'mathieu.desnoyers@efficios.com'
     version:
       - master
     liburcu_version:
