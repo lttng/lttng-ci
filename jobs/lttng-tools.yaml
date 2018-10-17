@@ -367,7 +367,7 @@
           clean-if:
             - failure: false
       - archive:
-          artifacts: 'build/**'
+          artifacts: 'build/**, deps/**'
           allow-empty: false
       - email-ext:
           recipients: '{obj:email_to}'
