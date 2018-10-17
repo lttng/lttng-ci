@@ -210,6 +210,8 @@
                 target: 'deps/lttng-ust'
                 do-not-fingerprint: true
       - shell:
+         !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
+      - shell:
          !include-raw-escape: scripts/lttng-tools/build.sh
 
 - lttng-tools_build_builders_win: &lttng-tools_build_builders_win

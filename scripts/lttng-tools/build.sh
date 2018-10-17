@@ -341,16 +341,6 @@ if [ "$RUN_TESTS" = "yes" ]; then
     # Allow core dumps
     ulimit -c unlimited
 
-    # Kill any LTTng-related process
-    lttng_processes="$("$PGREP" -l 'lttng|gen-ust-.+')" || true
-    if [ ! -z "$lttng_processes" ]; then
-        echo "The following LTTng processes were detected running on the system and will be killed:"
-        echo "$lttng_processes"
-
-        pids="$(cut -d ' ' -f 1 <<< "$lttng_processes" | tr '\n' ' ')"
-        kill -SIGKILL $pids
-    fi
-
     # Add 'babeltrace' binary to PATH
     chmod +x "$BABEL_BINS/babeltrace"
     export PATH="$PATH:$BABEL_BINS"
