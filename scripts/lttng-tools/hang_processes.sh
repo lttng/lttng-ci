@@ -25,7 +25,6 @@ lttng_processes="$("$PGREP" -l 'lttng|gen-ust-.+')" || true
 if [ ! -z "$lttng_processes" ]; then
 
     pids="$(cut -d ' ' -f 1 <<< "$lttng_processes" | tr '\n' ' ')"
-    comma_pids=$(tr ' ' ',' <<< "$pids")
     echo "The following LTTng processes were detected running on the system and will be aborted:"
     echo "$lttng_processes"
 
