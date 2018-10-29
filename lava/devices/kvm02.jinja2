@@ -1,0 +1,9 @@
+{% extends 'qemu.jinja2' %}
+{% set mac_addr = 'DE:AD:BE:FF:00:01' %}
+{% set memory = '2096' %}
+{% set netdevice = 'tap' %}
+{% set extra_options = (
+"
+          - -smp 2"
+) %}
+
