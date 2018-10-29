@@ -1,0 +1,11 @@
+[Unit]
+Description=Control and Queueing daemon for PDUs
+
+[Service]
+ExecStart=/bin/bash /home/lava/pdudaemon_service/daemon.sh
+Type=simple
+User=lava
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target
