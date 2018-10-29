@@ -4,3 +4,4 @@
 .venv*/
 *.retry
 lava/pdudaemon/venv/
+lava/pdudaemon/pdudaemon.db
