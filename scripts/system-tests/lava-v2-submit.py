@@ -414,6 +414,7 @@ def main():
     parser.add_argument('-lm', '--lmodule', required=True)
     parser.add_argument('-tc', '--tools-commit', required=True)
     parser.add_argument('-uc', '--ust-commit', required=False)
+    parser.add_argument('-d', '--debug', required=False, action='store_true')
     args = parser.parse_args()
 
     if args.type not in TestType.values:
@@ -425,11 +426,12 @@ def main():
     test_type = TestType.values[args.type]
 
     lava_api_key = None
-    try:
-        lava_api_key = os.environ['LAVA_JENKINS_TOKEN']
-    except Exception as e:
-        print('LAVA_JENKINS_TOKEN not found in the environment variable. Exiting...', e )
-        return -1
+    if not args.debug:
+        try:
+            lava_api_key = os.environ['LAVA_JENKINS_TOKEN']
+        except Exception as e:
+            print('LAVA_JENKINS_TOKEN not found in the environment variable. Exiting...', e )
+            return -1
 
     if test_type is TestType.baremetal_benchmarks:
         j = create_new_job(args.jobname, build_device='x86')
@@ -475,6 +477,10 @@ def main():
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     else:
         assert False, 'Unknown test type'
+
+    if args.debug:
+        print(json.dumps(j, indent=4, separators=(',', ': ')))
+        return 0
 
     server = xmlrpc.client.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME))
 
