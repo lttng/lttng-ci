@@ -16,6 +16,19 @@
 
 touch properties.txt
 
+echo "# Setup endpoint
+host_base = obj.internal.efficios.com
+host_bucket = obj.internal.efficios.com
+bucket_location = us-east-1
+use_https = True
+
+# Setup access keys
+access_key = jenkins
+secret_key = echo123456
+
+# Enable S3 v4 signature APIs
+signature_v2 = False" > "$WORKSPACE/s3cfg"
+
 # Use all CPU cores
 NPROC=$(nproc)
 echo "NPROC=$NPROC" >> properties.txt
@@ -42,9 +55,12 @@ echo "BUILD_DEVICE=$BUILD_DEVICE" >> properties.txt
 
 echo "STORAGE_KERNEL_MODULE_SYMVERS=$STORAGE_KERNEL_FOLDER/symvers/$KERNEL_COMMIT_ID.$BUILD_DEVICE.symvers" >>properties.txt
 echo "STORAGE_KERNEL_CONFIG=$STORAGE_KERNEL_FOLDER/config/$KERNEL_COMMIT_ID.$BUILD_DEVICE.config" >> properties.txt
+echo "S3_STORAGE_KERNEL_MODULE_SYMVERS=$S3_STORAGE_KERNEL_FOLDER/symvers/$KERNEL_COMMIT_ID.$BUILD_DEVICE.symvers" >>properties.txt
+echo "S3_STORAGE_KERNEL_CONFIG=$S3_STORAGE_KERNEL_FOLDER/config/$KERNEL_COMMIT_ID.$BUILD_DEVICE.config" >> properties.txt
 
 echo "STORAGE_HOST=storage.internal.efficios.com" >> properties.txt
 echo "STORAGE_USER=jenkins-lava" >> properties.txt
 
 echo SSH_COMMAND="ssh -oStrictHostKeyChecking=no -i $identity_file" >> properties.txt
 echo SCP_COMMAND="scp -oStrictHostKeyChecking=no -i $identity_file" >> properties.txt
+echo S3_COMMAND="s3cmd -c ${WORKSPACE}/s3cfg" >> properties.txt

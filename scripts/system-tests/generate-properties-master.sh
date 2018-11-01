@@ -16,6 +16,19 @@
 
 touch properties.txt
 
+echo "# Setup endpoint
+host_base = obj.internal.efficios.com
+host_bucket = obj.internal.efficios.com
+bucket_location = us-east-1
+use_https = True
+
+# Setup access keys
+access_key = jenkins
+secret_key = echo123456
+
+# Enable S3 v4 signature APIs
+signature_v2 = False" > "$WORKSPACE/s3cfg"
+
 LTTNG_CI_PATH="$WORKSPACE/src/lttng-ci"
 echo "LTTNG_CI_PATH=$LTTNG_CI_PATH" >> properties.txt
 KERNEL_COMMIT_ID=$KERNEL_TAG_ID
@@ -37,3 +50,11 @@ echo "STORAGE_KERNEL_FOLDER=$BASE_STORAGE_FOLDER/kernel" >> properties.txt
 echo "STORAGE_KERNEL_IMAGE=$BASE_STORAGE_FOLDER/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage" >> properties.txt
 echo "STORAGE_LINUX_MODULES=$BASE_STORAGE_FOLDER/modules/linux/$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz" >> properties.txt
 echo "STORAGE_LTTNG_MODULES=$BASE_STORAGE_FOLDER/modules/lttng/$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.gz" >> properties.txt
+
+BASE_S3_STORAGE="s3://lava"
+
+echo "BASE_S3_STORAGE=$BASE_S3_STORAGE" >> properties.txt
+echo "S3_STORAGE_KERNEL_FOLDER=$BASE_S3_STORAGE/kernel/" >> properties.txt
+echo "S3_STORAGE_KERNEL_IMAGE=$BASE_S3_STORAGE/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage" >> properties.txt
+echo "S3_STORAGE_LINUX_MODULES=$BASE_S3_STORAGE/modules/linux/$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz" >> properties.txt
+echo "S3_STORAGE_LTTNG_MODULES=$BASE_S3_STORAGE/modules/lttng/$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.gz" >> properties.txt

@@ -27,10 +27,23 @@ if [ $? -ne 0 ]; then
   NEED_MODULES_BUILD=1
 fi
 
+$S3_COMMAND info "$S3_STORAGE_KERNEL_IMAGE"
+if [ $? -ne 0 ]; then
+  NEED_KERNEL_BUILD=1
+  # We need to build the lttng modules if the kernel has changed.
+  NEED_MODULES_BUILD=1
+fi
+
 $SSH_COMMAND "$STORAGE_USER@$STORAGE_HOST" ls "$STORAGE_LTTNG_MODULES"
 if [ $? -ne 0 ]; then
   NEED_MODULES_BUILD=1
 fi
+
+$S3_COMMAND info "$S3_STORAGE_LTTNG_MODULES"
+if [ $? -ne 0 ]; then
+  NEED_MODULES_BUILD=1
+fi
+
 set -e
 
 # We need to fetch the kernel source and lttng-modules to build either the

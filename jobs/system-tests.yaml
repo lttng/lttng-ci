@@ -302,6 +302,18 @@
       - string:
           name: 'BUILD_DEVICE'
           description: 'The target device. (kvm or baremetal)'
+      - string:
+          name: 'S3_STORAGE_KERNEL_FOLDER'
+          description: 'Path to store the Kernel image'
+      - string:
+          name: 'S3_STORAGE_KERNEL_IMAGE'
+          description: 'Path to store the Kernel IMAGE'
+      - string:
+          name: 'S3_STORAGE_LINUX_MODULES'
+          description: 'Path to store the Kernel Modules'
+      - string:
+          name: 'S3_STORAGE_LTTNG_MODULES'
+          description: 'Path to store the LTTng Modules'
 
     properties:
       - build-discarder:

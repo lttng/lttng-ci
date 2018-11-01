@@ -16,3 +16,4 @@
 
 echo SSH_COMMAND="ssh -oStrictHostKeyChecking=no -i $identity_file" >> properties.txt
 echo SCP_COMMAND="scp -oStrictHostKeyChecking=no -i $identity_file" >> properties.txt
+echo S3_COMMAND="s3cmd -c ${WORKSPACE}/s3cfg" >> properties.txt
