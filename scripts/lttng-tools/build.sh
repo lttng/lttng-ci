@@ -102,6 +102,8 @@ UST_JAVA="$WORKSPACE/deps/lttng-ust/build/share/java/"
 BABEL_LIBS="$WORKSPACE/deps/babeltrace/build/lib/"
 BABEL_BINS="$WORKSPACE/deps/babeltrace/build/bin/"
 
+# pgrep
+PGREP=pgrep
 
 # Set platform variables
 case "$arch" in
