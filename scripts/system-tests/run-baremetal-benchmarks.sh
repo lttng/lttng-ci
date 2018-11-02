@@ -24,6 +24,14 @@ python3 -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
                           -lm "$STORAGE_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID"
 
+python3 -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
+                          -t baremetal-benchmarks \
+                          -j "$JOB_NAME" \
+                          -k "$S3_URL_KERNEL_IMAGE" \
+                          -km "$S3_URL_LINUX_MODULES" \
+                          -lm "$S3_URL_LTTNG_MODULES" \
+                          -tc "$LTTNG_TOOLS_COMMIT_ID"
+
 # Create a results folder for this job
 RESULT_STORAGE_FOLDER="$BASE_STORAGE_FOLDER/benchmark-results/$JOB_NAME/$BUILD_NUMBER"
 $SSH_COMMAND "$STORAGE_USER@$STORAGE_HOST" mkdir -p "$RESULT_STORAGE_FOLDER"
