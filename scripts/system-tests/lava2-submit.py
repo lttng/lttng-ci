@@ -23,13 +23,12 @@ import sys
 import time
 import yaml
 import xmlrpc.client
-from collections import OrderedDict
-from enum import Enum
+import pprint
+
 from jinja2 import Environment, FileSystemLoader, meta
 
-USERNAME = 'frdeso'
-HOSTNAME = 'lava-master.internal.efficios.com'
-SCP_PATH = 'scp://jenkins-lava@storage.internal.efficios.com'
+USERNAME = 'lava-jenkins'
+HOSTNAME = 'lava-master-02.internal.efficios.com'
 
 class TestType():
     baremetal_benchmarks=1
@@ -206,9 +205,9 @@ def main():
     lava_api_key = None
     if not args.debug:
         try:
-            lava_api_key = os.environ['LAVA_JENKINS_TOKEN']
+            lava_api_key = os.environ['LAVA2_JENKINS_TOKEN']
         except Exception as e:
-            print('LAVA_JENKINS_TOKEN not found in the environment variable. Exiting...', e )
+            print('LAVA2_JENKINS_TOKEN not found in the environment variable. Exiting...', e )
             return -1
 
     jinja_loader = FileSystemLoader(os.path.dirname(os.path.realpath(__file__)))
@@ -253,18 +252,23 @@ def main():
 
     context['kprobe_round_nb'] = 10
 
-    print(context)
-    print(jinja_template.render(context))
+    render = jinja_template.render(context)
+
+    print('Current context:')
+    pprint.pprint(context, indent=4)
+    print('Job to be submitted:')
+
+    print(render)
 
     if args.debug:
         return 0
 
     server = xmlrpc.client.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME))
 
-    jobid = server.scheduler.submit_job(json.dumps(j))
+    jobid = server.scheduler.submit_job(render)
 
     print('Lava jobid:{}'.format(jobid))
-    print('Lava job URL: http://lava-master.internal.efficios.com/scheduler/job/{}/log_file'.format(jobid))
+    print('Lava job URL: http://lava-master-02.internal.efficios.com/scheduler/job/{}/log_file'.format(jobid))
 
     #Check the status of the job every 30 seconds
     jobstatus = server.scheduler.job_status(jobid)['job_status']
@@ -276,10 +280,11 @@ def main():
         time.sleep(30)
         jobstatus = server.scheduler.job_status(jobid)['job_status']
 
-    if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
-        print_test_output(server, jobid)
-    elif test_type is TestType.baremetal_benchmarks:
-        fetch_benchmark_results(server, jobid)
+#    Do not fetch result for now
+#    if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
+#        print_test_output(server, jobid)
+#    elif test_type is TestType.baremetal_benchmarks:
+#        fetch_benchmark_results(server, jobid)
 
     print('Job ended with {} status.'.format(jobstatus))
     if jobstatus not in 'Complete':
