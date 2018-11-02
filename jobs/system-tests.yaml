@@ -89,6 +89,9 @@
           - text:
               credential-id: jenkins_lava_key
               variable: LAVA_JENKINS_TOKEN
+          - text:
+              credential-id: jenkins_lava2_key
+              variable: LAVA2_JENKINS_TOKEN
           - file:
               credential-id: system_tests_storage_key
               variable: identity_file
@@ -148,6 +151,9 @@
           - text:
               credential-id: jenkins_lava_key
               variable: LAVA_JENKINS_TOKEN
+          - text:
+              credential-id: jenkins_lava2_key
+              variable: LAVA2_JENKINS_TOKEN
       - inject:
           properties-content: |
             BUILD_DEVICE=kvm
@@ -195,6 +201,9 @@
           - text:
               credential-id: jenkins_lava_key
               variable: LAVA_JENKINS_TOKEN
+          - text:
+              credential-id: jenkins_lava2_key
+              variable: LAVA2_JENKINS_TOKEN
       - inject:
           properties-content: |
             BUILD_DEVICE=kvm
@@ -243,6 +252,9 @@
           - text:
               credential-id: jenkins_lava_key
               variable: LAVA_JENKINS_TOKEN
+          - text:
+              credential-id: jenkins_lava2_key
+              variable: LAVA2_JENKINS_TOKEN
       - inject:
           properties-content: |
             BUILD_DEVICE=baremetal
