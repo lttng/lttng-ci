@@ -27,7 +27,7 @@ if [ $? -ne 0 ]; then
   NEED_MODULES_BUILD=1
 fi
 
-$S3_COMMAND info "$S3_STORAGE_KERNEL_IMAGE"
+$S3_COMMAND info "s3://$S3_STORAGE_KERNEL_IMAGE"
 if [ $? -ne 0 ]; then
   NEED_KERNEL_BUILD=1
   # We need to build the lttng modules if the kernel has changed.
@@ -39,7 +39,7 @@ if [ $? -ne 0 ]; then
   NEED_MODULES_BUILD=1
 fi
 
-$S3_COMMAND info "$S3_STORAGE_LTTNG_MODULES"
+$S3_COMMAND info "s3://$S3_STORAGE_LTTNG_MODULES"
 if [ $? -ne 0 ]; then
   NEED_MODULES_BUILD=1
 fi

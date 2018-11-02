@@ -51,7 +51,7 @@ echo "STORAGE_KERNEL_IMAGE=$BASE_STORAGE_FOLDER/kernel/$KERNEL_COMMIT_ID.$BUILD_
 echo "STORAGE_LINUX_MODULES=$BASE_STORAGE_FOLDER/modules/linux/$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz" >> properties.txt
 echo "STORAGE_LTTNG_MODULES=$BASE_STORAGE_FOLDER/modules/lttng/$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.gz" >> properties.txt
 
-BASE_S3_STORAGE="s3://lava"
+BASE_S3_STORAGE="lava"
 
 echo "BASE_S3_STORAGE=$BASE_S3_STORAGE" >> properties.txt
 echo "S3_STORAGE_KERNEL_FOLDER=$BASE_S3_STORAGE/kernel/" >> properties.txt
