@@ -5,26 +5,23 @@ timeouts:
     hours: 2
 priority: medium
 visibility: public
-
-{% if device_type is 'qemu' -%}
+{% if device_type == DeviceType.kvm %}
 context:
   # tell the qemu template which architecture is being tested
   # the template uses that to ensure that qemu-system-x86_64 is executed.
   {# Used amd64 as a default #}
   arch: amd64
-{% endif -%}
-
-
-{% if device_type is 'x86' -%}
+{% endif %}
+{% if device_type == DeviceType.x86 %}
 tags:
   - dev-sda1
-{% endif -%}
+{% endif %}
 
 metadata:
-  jenkins_jobname: {{jenkins_job}}
-{% if test_type is 'kvm-fuzzing-tests' -%}
+  jenkins_jobname: {{ job_name }}
+{% if test_type == TestType.kvm_fuzzing_tests %}
   nb_iterations: {{ kprobe_round_nb }}
-{% endif -%}
+{% endif %}
 
 
 actions:
@@ -51,12 +48,12 @@ actions:
 - boot:
     timeout:
       minutes: 10
-{% if device_type is 'x86' -%}
+  {% if device_type == DeviceType.x86 %}
     method: ipxe
     commands: ramdisk
     prompts:
       - 'root@linaro-server:~#'
-{% elif device_type is 'kvm' -%}
+  {% elif device_type == DeviceType.kvm %}
     method: qemu-nfs
     media: nfs
     auto_login:
@@ -64,7 +61,7 @@ actions:
       username: root
     prompts:
       - 'linaro-test'
-{% endif -%}}
+  {% endif %}
 
 - test:
     definitions:
@@ -83,27 +80,27 @@ actions:
                 - cat /etc/resolv.conf
                 - echo nameserver 172.18.0.12 > /etc/resolv.conf
                 - groupadd tracing
-{% if device_type is 'x86' -%}
+              {% if device_type == DeviceType.x86 %}
                 - mount /dev/sda1 /tmp
                 - rm -rf /tmp/*
-{% endif -%}
+              {% endif %}
                 - depmod -a
                 - locale-gen en_US.UTF-8
                 - apt-get update
                 - apt-get upgrade
-                - apt-get install -y {{ packages|join(' ') }}
-{% if test_type is not 'kvm-fuzzing-tests' -%}
+                - apt-get install -y {{ packages|join(" ") }}
+              {% if test_type != TestType.kvm_fuzzing_tests %}
                 - pip3 install --upgrade pip
                 - hash -r
                 - pip3 install vlttng
                 - {{ vlttng_cmd }}
                 - ln -s {{ vlttng_path }} /root/lttngvenv
                 - sync
-{% endif -%}
+              {% endif %}
           from: inline
           name: x86-env-setup-inline
           path: inline/x86-env-setup.yaml
-{% if test_type is 'baremetal-benchmarks' -%}
+      {% if test_type == TestType.baremetal_benchmarks %}
         - repository: https://github.com/lttng/lttng-ci.git
           from: git
           path: lava/system-tests/failing-close.yml
@@ -132,12 +129,12 @@ actions:
           from: git
           path: lava/system-tests/lttng-test-filter.yml
           name: lttng-test-filter
-{% elif test_type is 'baremetal-tests' -%}
+      {% elif test_type == TestType.baremetal_tests %}
         - repository: https://github.com/lttng/lttng-ci.git
           from: git
           path: lava/system-tests/perf-tests.yml
           name: perf-tests
-{% elif test_type is 'kvm-tests' -%}
+      {% elif test_type == TestType.kvm_tests %}
         - repository: https://github.com/lttng/lttng-ci.git
           from: git
           path: lava/system-tests/kernel-tests.yml
@@ -146,19 +143,19 @@ actions:
           from: git
           path: lava/system-tests/destructive-tests.yml
           name: destructive-tests
-{% elif test_type is 'kvm-fuzzing-tests' -%}
+      {% elif test_type == TestType.kvm_fuzzing_tests %}
         - repository: https://github.com/lttng/lttng-ci.git
           from: git
           path: lava/system-tests/kprobe-fuzzing-generate-data.yml
           name: kprobe-fuzzing-generate-data
           params:
             RANDOM_SEED: {{ random_seed }}
-        {% for i in range(kprobe_round_nb) i-%}
+      {% for i in range(kprobe_round_nb) %}
         - repository: https://github.com/lttng/lttng-ci.git
           from: git
           path: lava/system-tests/kprobe-fuzzing-tests.yml
           name: kprobe-fuzzing-tests
           params:
             ROUND_NB: {{ i }}
-        {% endfor %}
-{% endif -%}
+      {% endfor %}
+      {% endif %}

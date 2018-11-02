@@ -21,9 +21,11 @@ import os
 import random
 import sys
 import time
+import yaml
 import xmlrpc.client
 from collections import OrderedDict
 from enum import Enum
+from jinja2 import Environment, FileSystemLoader, meta
 
 USERNAME = 'frdeso'
 HOSTNAME = 'lava-master.internal.efficios.com'
@@ -40,6 +42,20 @@ class TestType():
         'kvm-tests' : kvm_tests,
         'kvm-fuzzin-tests' : kvm_fuzzing_tests,
     }
+
+class DeviceType():
+    x86 = 'x86'
+    kvm = 'kvm'
+    values = {
+        'kvm' : kvm,
+        'x86' : x86,
+    }
+
+def get_packages():
+    return ['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
+            'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
+            'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
+            'libnuma-dev', 'python3-dev', 'swig', 'stress']
 
 def get_job_bundle_content(server, job):
     try:
@@ -142,239 +158,7 @@ def print_test_output(server, job):
                             print('----- TEST SUITE OUTPUT END -----')
                             break
 
-def create_new_job(name, build_device):
-    job = OrderedDict({
-        'health_check': False,
-        'job_name': name,
-        'device_type': build_device,
-        'tags': [ ],
-        'timeout': 7200,
-        'actions': []
-    })
-    if build_device in 'x86':
-        job['tags'].append('dev-sda1')
-
-    return job
-
-def get_boot_cmd():
-    command = OrderedDict({
-        'command': 'boot_image'
-        })
-    return command
-
-def get_config_cmd(build_device):
-    packages=['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
-            'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
-            'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
-            'libnuma-dev', 'python3-dev', 'swig', 'stress']
-    command = OrderedDict({
-        'command': 'lava_command_run',
-        'parameters': {
-            'commands': [
-                'cat /etc/resolv.conf',
-                'echo nameserver 172.18.0.12 > /etc/resolv.conf',
-                'groupadd tracing'
-                ],
-                'timeout':300
-            }
-        })
-    if build_device in 'x86':
-        command['parameters']['commands'].extend([
-                    'mount /dev/sda1 /tmp',
-                    'rm -rf /tmp/*'])
-
-    command['parameters']['commands'].extend([
-                    'depmod -a',
-                    'locale-gen en_US.UTF-8',
-                    'apt-get update',
-                    'apt-get upgrade',
-                    'apt-get install -y {}'.format(' '.join(packages))
-                ])
-    return command
-
-def get_baremetal_benchmarks_cmd():
-    command = OrderedDict({
-        'command': 'lava_test_shell',
-        'parameters': {
-            'testdef_repos': [
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/failing-close.yml'
-                },
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/failing-ioctl.yml'
-                },
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/failing-open-efault.yml'
-                },
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/success-dup-close.yml'
-                },
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/raw-syscall-getpid.yml'
-                },
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/failing-open-enoent.yml'
-                },
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/lttng-test-filter.yml'
-                }
-                ],
-            'timeout': 7200
-            }
-        })
-    return command
-
-def get_baremetal_tests_cmd():
-    command = OrderedDict({
-        'command': 'lava_test_shell',
-        'parameters': {
-            'testdef_repos': [
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/perf-tests.yml'
-                }
-                ],
-            'timeout': 3600
-            }
-        })
-    return command
-
-def get_kvm_tests_cmd():
-    command = OrderedDict({
-        'command': 'lava_test_shell',
-        'parameters': {
-            'testdef_repos': [
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/kernel-tests.yml'
-                },
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/destructive-tests.yml'
-                }
-                ],
-            'timeout': 7200
-            }
-        })
-    return command
-
-def get_kprobes_generate_data_cmd():
-    random_seed = random.randint(0, 1000000)
-    command = OrderedDict({
-        'command': 'lava_test_shell',
-        'parameters': {
-            'testdef_repos': [
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/kprobe-fuzzing-generate-data.yml',
-                    'parameters': { 'RANDOM_SEED': str(random_seed) }
-                }
-                ],
-            'timeout': 60
-            }
-        })
-    return command
-
-def get_kprobes_test_cmd(round_nb):
-    command = OrderedDict({
-        'command': 'lava_test_shell',
-        'parameters': {
-            'testdef_repos': [
-                {
-                    'git-repo': 'https://github.com/lttng/lttng-ci.git',
-                    'revision': 'master',
-                    'testdef': 'lava/system-tests/kprobe-fuzzing-tests.yml',
-                    'parameters': { 'ROUND_NB': str(round_nb) }
-                }
-            ],
-            'timeout': 1000
-            }
-        })
-    return command
-
-def get_results_cmd(stream_name):
-    command = OrderedDict({
-            'command': 'submit_results',
-            'parameters': {
-                'server': 'http://lava-master.internal.efficios.com/RPC2/'
-            }
-        })
-    command['parameters']['stream']='/anonymous/'+stream_name+'/'
-    return command
-
-def get_deploy_cmd_kvm(jenkins_job, kernel_path, linux_modules_path, lttng_modules_path):
-    command = OrderedDict({
-            'command': 'deploy_kernel',
-            'metadata': {},
-            'parameters': {
-                'customize': {},
-                'kernel': None,
-                'target_type': 'ubuntu',
-                'rootfs': 'file:///var/lib/lava-server/default/media/images/xenial.img.gz',
-                'login_prompt': 'kvm02 login:',
-                'username': 'root'
-                }
-            })
-
-    command['parameters']['customize'][SCP_PATH+linux_modules_path]=['rootfs:/','archive']
-    command['parameters']['customize'][SCP_PATH+lttng_modules_path]=['rootfs:/','archive']
-    command['parameters']['kernel'] = str(SCP_PATH+kernel_path)
-    command['metadata']['jenkins_jobname'] = jenkins_job
-
-    return command
-
-def get_deploy_cmd_x86(jenkins_job, kernel_path, linux_modules_path, lttng_modules_path, nb_iter=None):
-    command = OrderedDict({
-            'command': 'deploy_kernel',
-            'metadata': {},
-            'parameters': {
-                'overlays': [],
-                'kernel': None,
-                'nfsrootfs': str(SCP_PATH+'/storage/jenkins-lava/rootfs/rootfs_amd64_trusty_2016-02-23-1134.tar.gz'),
-                'target_type': 'ubuntu'
-                }
-            })
-
-    command['parameters']['overlays'].append( str(SCP_PATH+linux_modules_path))
-    command['parameters']['overlays'].append( str(SCP_PATH+lttng_modules_path))
-    command['parameters']['kernel'] = str(SCP_PATH+kernel_path)
-    command['metadata']['jenkins_jobname'] = jenkins_job
-    if nb_iter is not None:
-        command['metadata']['nb_iterations'] = nb_iter
-
-    return command
-
-
-def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
-    command = OrderedDict({
-        'command': 'lava_command_run',
-        'parameters': {
-            'commands': [
-                'pip3 install --upgrade pip',
-                'hash -r',
-                'pip3 install vlttng',
-                        ],
-            'timeout': 3600
-            }
-        })
+def get_vlttng_cmd(device, lttng_tools_commit, lttng_ust_commit=None):
 
     vlttng_cmd = 'vlttng --jobs=$(nproc) --profile urcu-master' \
                     ' --override projects.babeltrace.build-env.PYTHON=python3' \
@@ -390,19 +174,14 @@ def get_env_setup_cmd(build_device, lttng_tools_commit, lttng_ust_commit=None):
                     ' --override projects.lttng-ust.checkout='+lttng_ust_commit+ \
                     ' --profile lttng-ust-no-man-pages'
 
-    virtenv_path = None
-    if build_device in 'kvm':
-        virtenv_path = '/root/virtenv'
+    if device is DeviceType.kvm:
+        vlttng_path = '/root/virtenv'
     else:
-        virtenv_path = '/tmp/virtenv'
+        vlttng_path = '/tmp/virtenv'
 
-    vlttng_cmd += ' '+virtenv_path
+    vlttng_cmd += ' ' + vlttng_path
 
-    command['parameters']['commands'].append(vlttng_cmd)
-    command['parameters']['commands'].append('ln -s '+virtenv_path+' /root/lttngvenv')
-    command['parameters']['commands'].append('sync')
-
-    return command
+    return vlttng_cmd
 
 def main():
     test_type = None
@@ -423,7 +202,6 @@ def main():
         for k in TestType.values:
             print('\t {}'.format(k))
         return -1
-    test_type = TestType.values[args.type]
 
     lava_api_key = None
     if not args.debug:
@@ -433,53 +211,52 @@ def main():
             print('LAVA_JENKINS_TOKEN not found in the environment variable. Exiting...', e )
             return -1
 
-    if test_type is TestType.baremetal_benchmarks:
-        j = create_new_job(args.jobname, build_device='x86')
-        j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
-    elif test_type is TestType.baremetal_tests:
-        j = create_new_job(args.jobname, build_device='x86')
-        j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
-    elif test_type  is TestType.kvm_tests or test_type is TestType.kvm_fuzzing_tests:
-        j = create_new_job(args.jobname, build_device='kvm')
-        j['actions'].append(get_deploy_cmd_kvm(args.jobname, args.kernel, args.kmodule, args.lmodule))
+    jinja_loader = FileSystemLoader(os.path.dirname(os.path.realpath(__file__)))
+    jinja_env = Environment(loader=jinja_loader, trim_blocks=True,
+            lstrip_blocks= True)
+    jinja_template = jinja_env.get_template('template_lava_job.jinja2')
+    template_source = jinja_env.loader.get_source(jinja_env, 'template_lava_job.jinja2')
+    parsed_content = jinja_env.parse(template_source)
+    undef = meta.find_undeclared_variables(parsed_content)
 
-    j['actions'].append(get_boot_cmd())
+    test_type = TestType.values[args.type]
 
-    if test_type is TestType.baremetal_benchmarks:
-        j['actions'].append(get_config_cmd('x86'))
-        j['actions'].append(get_env_setup_cmd('x86', args.tools_commit))
-        j['actions'].append(get_baremetal_benchmarks_cmd())
-        j['actions'].append(get_results_cmd(stream_name='benchmark-kernel'))
-    elif test_type is TestType.baremetal_tests:
-        if args.ust_commit is None:
-            print('Tests runs need -uc/--ust-commit options. Exiting...')
-            return -1
-        j['actions'].append(get_config_cmd('x86'))
-        j['actions'].append(get_env_setup_cmd('x86', args.tools_commit, args.ust_commit))
-        j['actions'].append(get_baremetal_tests_cmd())
-        j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
-    elif test_type  is TestType.kvm_tests:
-        if args.ust_commit is None:
-            print('Tests runs need -uc/--ust-commit options. Exiting...')
-            return -1
-        j['actions'].append(get_config_cmd('kvm'))
-        j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
-        j['actions'].append(get_kvm_tests_cmd())
-        j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
-    elif test_type is TestType.kvm_fuzzing_tests:
-        if args.ust_commit is None:
-            print('Tests runs need -uc/--ust-commit options. Exiting...')
-            return -1
-        j['actions'].append(get_config_cmd('kvm'))
-        j['actions'].append(get_kprobes_generate_data_cmd())
-        for i in range(10):
-            j['actions'].append(get_kprobes_test_cmd(round_nb=i))
-        j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
+    if test_type in [TestType.baremetal_benchmarks, TestType.baremetal_tests]:
+        device_type = DeviceType.x86
+        vlttng_path = '/tmp/virtenv'
+        nfsrootfs = "/storage/jenkins-lava/rootfs/rootfs_amd64_trusty_2016-02-23-1134.tar.gz"
+
     else:
-        assert False, 'Unknown test type'
+        device_type = DeviceType.kvm
+        vlttng_path = '/root/virtenv'
+        nfsrootfs = "/storage/jenkins-lava/rootfs/rootfs_amd64_trusty_2016-02-23-1134.tar.gz"
+
+    vlttng_cmd = get_vlttng_cmd(device_type, args.tools_commit, args.ust_commit)
+
+    context = dict()
+    context['DeviceType'] = DeviceType
+    context['TestType'] = TestType
+
+    context['job_name'] = args.jobname
+    context['test_type'] = test_type
+    context['packages'] = get_packages()
+    context['random_seed'] = random.randint(0, 1000000)
+    context['device_type'] = device_type
+
+    context['vlttng_cmd'] = vlttng_cmd
+    context['vlttng_path'] = vlttng_path
+
+    context['kernel_url'] = args.kernel
+    context['nfsrootfs_url'] = nfsrootfs
+    context['lttng_modules_url'] = args.lmodule
+    context['linux_modules_url'] = args.kmodule
+
+    context['kprobe_round_nb'] = 10
+
+    print(context)
+    print(jinja_template.render(context))
 
     if args.debug:
-        print(json.dumps(j, indent=4, separators=(',', ': ')))
         return 0
 
     server = xmlrpc.client.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME))
