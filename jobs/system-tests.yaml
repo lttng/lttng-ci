@@ -345,11 +345,6 @@
           url: https://github.com/lttng/lttng-ci
           basedir: src/lttng-ci/
       - git:
-          url : $KGITREPO
-          basedir: src/linux/
-          branches:
-            - $KERNEL_COMMIT_ID
-      - git:
           url : $LTTNG_MODULES_REPO
           basedir: src/lttng-modules/
           branches:

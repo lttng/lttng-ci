@@ -49,6 +49,13 @@ set -e
 # We need to fetch the kernel source and lttng-modules to build either the
 # kernel or modules
 if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
+  mkdir -p "$LINUX_PATH"
+  pushd "$LINUX_PATH"
+  git init
+  git remote add origin "$KGITREPO"
+  git fetch --depth 1 origin "$KERNEL_COMMIT_ID"
+  git checkout FETCH_HEAD
+  popd
 
   cp src/lttng-ci/lava/kernel/vanilla/x86_64_server.config "$LINUX_PATH/.config"
   make --directory="$LINUX_PATH" olddefconfig
