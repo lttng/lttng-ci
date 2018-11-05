@@ -19,7 +19,9 @@ echo 'We can now launch the lava job using those artefacts'
 
 venv=$(mktemp -d)
 virtualenv -p python3 "$venv"
+set +eu
 source "${venv}/bin/activate"
+set -eu
 pip install pyyaml
 
 python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
@@ -39,5 +41,7 @@ python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -lm "$S3_URL_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID" \
                           -uc "$LTTNG_UST_COMMIT_ID"
+set +eu
 deactivate
+set -eu
 rm -rf "$venv"
