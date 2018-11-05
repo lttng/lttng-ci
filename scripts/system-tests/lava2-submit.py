@@ -44,7 +44,7 @@ class TestType():
 
 class DeviceType():
     x86 = 'x86'
-    kvm = 'kvm'
+    kvm = 'qemu'
     values = {
         'kvm' : kvm,
         'x86' : x86,
