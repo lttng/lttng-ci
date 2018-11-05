@@ -25,137 +25,137 @@ metadata:
 
 
 actions:
-- deploy:
-    timeout:
-      minutes: 10
-    to: tftp
-    kernel:
-      url: {{ kernel_url }}
-      type: zimage
-    modules:
-      url: {{ linux_modules_url }}
-      archive: tar
-      compression: gz
-    modules:
-      url: {{ lttng_modules_url }}
-      archive: tar
-      compression: gz
-    nfsrootfs:
-      url: {{ nfsrootfs_url }}
-      compression: gz
-    os: ubuntu
+    - deploy:
+        timeout:
+          minutes: 10
+        to: tftp
+        kernel:
+          url: {{ kernel_url }}
+          type: zimage
+        modules:
+          url: {{ linux_modules_url }}
+          archive: tar
+          compression: gz
+        modules:
+          url: {{ lttng_modules_url }}
+          archive: tar
+          compression: gz
+        nfsrootfs:
+          url: {{ nfsrootfs_url }}
+          compression: gz
+        os: ubuntu
 
-- boot:
-    timeout:
-      minutes: 10
-  {% if device_type == DeviceType.x86 %}
-    method: ipxe
-    commands: ramdisk
-    prompts:
-      - 'root@linaro-server:~#'
-  {% elif device_type == DeviceType.kvm %}
-    method: qemu-nfs
-    media: nfs
-    auto_login:
-      login_prompt: "kvm02 login:"
-      username: root
-    prompts:
-      - 'linaro-test'
-  {% endif %}
-
-- test:
-    definitions:
-        # Base setup of environment #
-        - repository:
-            metadata:
-            format: Lava-Test Test Definition 1.0
-            name: x86-env-setup
-            description: "Basic environment setup for x86 board"
-            os:
-              - ubuntu
-            devices:
-              - x86
-            run:
-              steps:
-                - cat /etc/resolv.conf
-                - echo nameserver 172.18.0.12 > /etc/resolv.conf
-                - groupadd tracing
-              {% if device_type == DeviceType.x86 %}
-                - mount /dev/sda1 /tmp
-                - rm -rf /tmp/*
-              {% endif %}
-                - depmod -a
-                - locale-gen en_US.UTF-8
-                - apt-get update
-                - apt-get upgrade
-                - apt-get install -y {{ packages|join(" ") }}
-              {% if test_type != TestType.kvm_fuzzing_tests %}
-                - pip3 install --upgrade pip
-                - hash -r
-                - pip3 install vlttng
-                - {{ vlttng_cmd }}
-                - ln -s {{ vlttng_path }} /root/lttngvenv
-                - sync
-              {% endif %}
-          from: inline
-          name: x86-env-setup-inline
-          path: inline/x86-env-setup.yaml
-      {% if test_type == TestType.baremetal_benchmarks %}
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/failing-close.yml
-          name: failing-close
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/failing-ioctl.yml
-          name: failing-ioctl
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/failing-open-efault.yml
-          name: failing-open-efault
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/success-dup-close.yml
-          name: success-dup-close
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/raw-syscall-getpid.yml
-          name: raw-syscall-getpid
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/failing-open-enoent.yml
-          name: failing-open-enoent
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/lttng-test-filter.yml
-          name: lttng-test-filter
-      {% elif test_type == TestType.baremetal_tests %}
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/perf-tests.yml
-          name: perf-tests
-      {% elif test_type == TestType.kvm_tests %}
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/kernel-tests.yml
-          name: kernel-tests
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/destructive-tests.yml
-          name: destructive-tests
-      {% elif test_type == TestType.kvm_fuzzing_tests %}
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/kprobe-fuzzing-generate-data.yml
-          name: kprobe-fuzzing-generate-data
-          params:
-            RANDOM_SEED: {{ random_seed }}
-      {% for i in range(kprobe_round_nb) %}
-        - repository: https://github.com/lttng/lttng-ci.git
-          from: git
-          path: lava/system-tests/kprobe-fuzzing-tests.yml
-          name: kprobe-fuzzing-tests
-          params:
-            ROUND_NB: {{ i }}
-      {% endfor %}
+    - boot:
+        timeout:
+          minutes: 10
+      {% if device_type == DeviceType.x86 %}
+        method: ipxe
+        commands: ramdisk
+        prompts:
+          - 'root@linaro-server:~#'
+      {% elif device_type == DeviceType.kvm %}
+        method: qemu-nfs
+        media: nfs
+        auto_login:
+          login_prompt: "kvm02 login:"
+          username: root
+        prompts:
+          - 'linaro-test'
       {% endif %}
+
+    - test:
+        definitions:
+            # Base setup of environment #
+            - repository:
+                metadata:
+                    format: Lava-Test Test Definition 1.0
+                    name: x86-env-setup
+                    description: "Basic environment setup for x86 board"
+                    os:
+                      - ubuntu
+                    devices:
+                      - x86
+                run:
+                  steps:
+                    - cat /etc/resolv.conf
+                    - echo nameserver 172.18.0.12 > /etc/resolv.conf
+                    - groupadd tracing
+                  {% if device_type == DeviceType.x86 %}
+                    - mount /dev/sda1 /tmp
+                    - rm -rf /tmp/*
+                  {% endif %}
+                    - depmod -a
+                    - locale-gen en_US.UTF-8
+                    - apt-get update
+                    - apt-get upgrade
+                    - apt-get install -y {{ packages|join(" ") }}
+                  {% if test_type != TestType.kvm_fuzzing_tests %}
+                    - pip3 install --upgrade pip
+                    - hash -r
+                    - pip3 install vlttng
+                    - {{ vlttng_cmd }}
+                    - ln -s {{ vlttng_path }} /root/lttngvenv
+                    - sync
+                  {% endif %}
+              from: inline
+              name: x86-env-setup-inline
+              path: inline/x86-env-setup.yaml
+          {% if test_type == TestType.baremetal_benchmarks %}
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/failing-close.yml
+              name: failing-close
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/failing-ioctl.yml
+              name: failing-ioctl
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/failing-open-efault.yml
+              name: failing-open-efault
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/success-dup-close.yml
+              name: success-dup-close
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/raw-syscall-getpid.yml
+              name: raw-syscall-getpid
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/failing-open-enoent.yml
+              name: failing-open-enoent
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/lttng-test-filter.yml
+              name: lttng-test-filter
+          {% elif test_type == TestType.baremetal_tests %}
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/perf-tests.yml
+              name: perf-tests
+          {% elif test_type == TestType.kvm_tests %}
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/kernel-tests.yml
+              name: kernel-tests
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/destructive-tests.yml
+              name: destructive-tests
+          {% elif test_type == TestType.kvm_fuzzing_tests %}
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/kprobe-fuzzing-generate-data.yml
+              name: kprobe-fuzzing-generate-data
+              params:
+                RANDOM_SEED: {{ random_seed }}
+          {% for i in range(kprobe_round_nb) %}
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/kprobe-fuzzing-tests.yml
+              name: kprobe-fuzzing-tests
+              params:
+                ROUND_NB: {{ i }}
+          {% endfor %}
+          {% endif %}
