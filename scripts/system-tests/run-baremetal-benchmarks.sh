@@ -16,7 +16,13 @@
 
 echo 'At this point, we built the modules and kernel if we needed to.'
 echo 'We can now launch the lava job using those artefacts'
-python3 -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
+
+venv=$(mktemp -d)
+virtualenv -p python3 "$venv"
+source "${venv}/bin/activate"
+pip install pyyaml
+
+python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
                           -t baremetal-benchmarks \
                           -j "$JOB_NAME" \
                           -k "$STORAGE_KERNEL_IMAGE" \
@@ -24,13 +30,15 @@ python3 -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
                           -lm "$STORAGE_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID"
 
-python3 -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
+python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -t baremetal-benchmarks \
                           -j "$JOB_NAME" \
                           -k "$S3_URL_KERNEL_IMAGE" \
                           -km "$S3_URL_LINUX_MODULES" \
                           -lm "$S3_URL_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID"
+deactivate
+rm -rf "$venv"
 
 # Create a results folder for this job
 RESULT_STORAGE_FOLDER="$BASE_STORAGE_FOLDER/benchmark-results/$JOB_NAME/$BUILD_NUMBER"
