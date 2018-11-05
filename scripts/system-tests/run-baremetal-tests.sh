@@ -23,7 +23,7 @@ virtualenv -p python3 "$venv"
 set +eu
 source "${venv}/bin/activate"
 set -eu
-pip install pyyaml
+pip install pyyaml Jinja2
 
 python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
                           -t baremetal-tests \
