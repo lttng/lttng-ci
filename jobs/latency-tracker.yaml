@@ -476,15 +476,15 @@
 
     builders:
       - shell: |
-          rm -f cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/latency-tracker 2> cppcheck.xml
+          rm -f cppcheck-result.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/latency-tracker 2> cppcheck-result.xml
 
     publishers:
       - archive:
-          artifacts: 'cppcheck.xml'
+          artifacts: 'cppcheck-result.xml'
           allow-empty: false
       - cppcheck:
-          pattern: 'cppcheck.xml'
+          pattern: 'cppcheck-result.xml'
       - email-ext:
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org

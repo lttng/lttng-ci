@@ -459,15 +459,15 @@
 
     builders:
       - shell: |
-          rm -f cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/lttng-modules 2> cppcheck.xml
+          rm -f cppcheck-result.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/lttng-modules 2> cppcheck-result.xml
 
     publishers:
       - archive:
-          artifacts: 'cppcheck.xml'
+          artifacts: 'cppcheck-result.xml'
           allow-empty: false
       - cppcheck:
-          pattern: 'cppcheck.xml'
+          pattern: 'cppcheck-result.xml'
 
 - job-template:
     name: lttng-modules_{mversion}_sloccount

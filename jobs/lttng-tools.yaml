@@ -458,15 +458,15 @@
 
     builders:
       - shell: |
-          rm -f lttng-tools-cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> lttng-tools-cppcheck.xml
+          rm -f cppcheck-result.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> cppcheck-result.xml
 
     publishers:
       - archive:
-          artifacts: 'lttng-tools-cppcheck.xml'
+          artifacts: 'cppcheck-result.xml'
           allow-empty: false
       - cppcheck:
-          pattern: 'lttng-tools-cppcheck.xml'
+          pattern: 'cppcheck-result.xml'
       - email-ext:
           recipients: 'ci-notification@lists.lttng.org'
           reply-to: ci-notification@lists.lttng.org

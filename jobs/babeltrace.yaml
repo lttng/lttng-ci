@@ -245,15 +245,15 @@
 
     builders:
       - shell: |
-          rm -f babeltrace-cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/babeltrace 2> babeltrace-cppcheck.xml
+          rm -f cppcheck-result.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/babeltrace 2> cppcheck-result.xml
 
     publishers:
       - archive:
-          artifacts: 'babeltrace-cppcheck.xml'
+          artifacts: 'cppcheck-result.xml'
           allow-empty: false
       - cppcheck:
-          pattern: 'babeltrace-cppcheck.xml'
+          pattern: 'cppcheck-result.xml'
 
 - job-template:
     name: babeltrace_{version}_scan-build

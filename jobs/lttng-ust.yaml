@@ -150,15 +150,15 @@
 
     builders:
       - shell: |
-          rm -f lttng-ust-cppcheck.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/lttng-ust 2> lttng-ust-cppcheck.xml
+          rm -f cppcheck-result.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/lttng-ust 2> cppcheck-result.xml
 
     publishers:
       - archive:
-          artifacts: 'lttng-ust-cppcheck.xml'
+          artifacts: 'cppcheck-result.xml'
           allow-empty: false
       - cppcheck:
-          pattern: 'lttng-ust-cppcheck.xml'
+          pattern: 'cppcheck-result.xml'
       - email:
           recipients: 'ci-notification@lists.lttng.org'
           notify-every-unstable-build: true
