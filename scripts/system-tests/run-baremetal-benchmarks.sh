@@ -38,7 +38,8 @@ python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -k "$S3_URL_KERNEL_IMAGE" \
                           -km "$S3_URL_LINUX_MODULES" \
                           -lm "$S3_URL_LTTNG_MODULES" \
-                          -tc "$LTTNG_TOOLS_COMMIT_ID"
+                          -tc "$LTTNG_TOOLS_COMMIT_ID" \
+                          --debug
 set +eu
 deactivate
 set -eu
