@@ -1,9 +1,8 @@
-{% extends 'qemu.jinja2' %}
-{% set mac_addr = 'DE:AD:BE:FF:00:01' %}
-{% set memory = '2096' %}
-{% set netdevice = 'tap' %}
-{% set extra_options = (
-"
-          - -smp 2"
-) %}
-
+{% extends 'x86.jinja2' %}
+{% set connection_command = 'virsh console --force kvm2' %}
+{% set hard_reset_command = 'virsh reset kvm2' %}
+{% set power_off_command = 'virsh destroy kvm2' %}
+{% set power_on_command = 'virsh start kvm2'' %}
+{% set soft_reset_command = 'reboot'}
+{% set boot_interface = 'net0'}
+{% set kernel_extra_args = 'cpuidle.off=1'}
