@@ -1,0 +1,3 @@
+#!ipxe
+:retry_prompt
+prompt --key 0x02 --timeout 1000 Press Ctrl-B for the iPXE command line... && shell || goto retry_prompt
