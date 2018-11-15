@@ -1,0 +1,40 @@
+From 77db3e129cebc2d715a8262bd16914404c446370 Mon Sep 17 00:00:00 2001
+From: Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+Date: Thu, 15 Nov 2018 17:17:15 -0500
+Subject: [PATCH] Enable console and reboot command
+
+Signed-off-by: Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+---
+ src/config/console.h | 2 +-
+ src/config/general.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/config/console.h b/src/config/console.h
+index 9f770d09..62a8c792 100644
+--- a/src/config/console.h
++++ b/src/config/console.h
+@@ -34,7 +34,7 @@ FILE_LICENCE ( GPL2_OR_LATER_OR_UBDL );
+  *
+  */
+ 
+-//#define	CONSOLE_SERIAL		/* Serial port console */
++#define	CONSOLE_SERIAL		/* Serial port console */
+ //#define	CONSOLE_FRAMEBUFFER	/* Graphical framebuffer console */
+ //#define	CONSOLE_SYSLOG		/* Syslog console */
+ //#define	CONSOLE_SYSLOGS		/* Encrypted syslog console */
+diff --git a/src/config/general.h b/src/config/general.h
+index 3c14a2cd..cf09d7fe 100644
+--- a/src/config/general.h
++++ b/src/config/general.h
+@@ -142,7 +142,7 @@ FILE_LICENCE ( GPL2_OR_LATER_OR_UBDL );
+ //#define LOTEST_CMD		/* Loopback testing commands */
+ //#define VLAN_CMD		/* VLAN commands */
+ //#define PXE_CMD		/* PXE commands */
+-//#define REBOOT_CMD		/* Reboot command */
++#define REBOOT_CMD		/* Reboot command */
+ //#define POWEROFF_CMD		/* Power off command */
+ //#define IMAGE_TRUST_CMD	/* Image trust management commands */
+ //#define PCI_CMD		/* PCI commands */
+-- 
+2.17.1
+
