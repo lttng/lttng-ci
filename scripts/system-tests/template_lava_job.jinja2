@@ -1,4 +1,4 @@
-device_type: {{ device_type }}
+device_type: x86
 job_name: {{ job_name }}
 timeouts:
   job:
@@ -11,6 +11,8 @@ context:
   # the template uses that to ensure that qemu-system-x86_64 is executed.
   {# Used amd64 as a default #}
   arch: amd64
+tags:
+  - qemu
 {% endif %}
 {% if device_type == DeviceType.x86 %}
 tags:
@@ -48,20 +50,10 @@ actions:
     - boot:
         timeout:
           minutes: 10
-      {% if device_type == DeviceType.x86 %}
         method: ipxe
         commands: ramdisk
         prompts:
           - 'root@linaro-server:~#'
-      {% elif device_type == DeviceType.kvm %}
-        method: qemu-nfs
-        media: nfs
-        auto_login:
-          login_prompt: "kvm02 login:"
-          username: root
-        prompts:
-          - 'linaro-test'
-      {% endif %}
 
     - test:
         definitions:

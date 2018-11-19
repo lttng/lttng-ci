@@ -183,6 +183,7 @@ def get_vlttng_cmd(device, lttng_tools_commit, lttng_ust_commit=None):
     return vlttng_cmd
 
 def main():
+    nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_trusty_2016-02-23-1134.tar.gz"
     test_type = None
     parser = argparse.ArgumentParser(description='Launch baremetal test using Lava')
     parser.add_argument('-t', '--type', required=True)
@@ -223,12 +224,10 @@ def main():
     if test_type in [TestType.baremetal_benchmarks, TestType.baremetal_tests]:
         device_type = DeviceType.x86
         vlttng_path = '/tmp/virtenv'
-        nfsrootfs = "/storage/jenkins-lava/rootfs/rootfs_amd64_trusty_2016-02-23-1134.tar.gz"
 
     else:
         device_type = DeviceType.kvm
         vlttng_path = '/root/virtenv'
-        nfsrootfs = "/storage/jenkins-lava/rootfs/rootfs_amd64_trusty_2016-02-23-1134.tar.gz"
 
     vlttng_cmd = get_vlttng_cmd(device_type, args.tools_commit, args.ust_commit)
 
