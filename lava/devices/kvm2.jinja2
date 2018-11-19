@@ -5,4 +5,4 @@
 {% set power_on_command = 'virsh --connect qemu:///system reset kvm2' %}
 {% set soft_reset_command = 'reboot' %}
 {% set boot_interface = 'net0' %}
-{% set kernel_extra_args = 'cpuidle.off=1' %}
+{% set kernel_extra_args = 'cpuidle.off=1 nfsrootdebug' %}
