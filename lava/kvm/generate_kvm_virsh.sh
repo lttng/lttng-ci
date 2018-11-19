@@ -27,7 +27,9 @@ virt-install --print-xml \
 	--cpu host \
 	--serial pty \
 	--graphics none \
+	--autostart \
 	--check path_in_use=off > "$tmp"
 virsh define --validate "$tmp"
+virsh start "$1"
 rm -rf "$tmp"
 
