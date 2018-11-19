@@ -3,6 +3,6 @@
 {% set hard_reset_command = 'virsh --connect qemu:///system reset kvm1' %}
 {% set power_off_command = 'virsh --connect qemu:///system destroy kvm1' %}
 {% set power_on_command = 'virsh --connect qemu:///system start kvm1' %}
-{% set soft_reset_command = 'reboot'}
-{% set boot_interface = 'net0'}
-{% set kernel_extra_args = 'cpuidle.off=1'}
+{% set soft_reset_command = 'reboot' %}
+{% set boot_interface = 'net0' %}
+{% set kernel_extra_args = 'cpuidle.off=1' %}
