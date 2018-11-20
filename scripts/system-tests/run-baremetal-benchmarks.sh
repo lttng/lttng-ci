@@ -24,14 +24,6 @@ source "${venv}/bin/activate"
 set -eu
 pip install pyyaml Jinja2
 
-python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
-                          -t baremetal-benchmarks \
-                          -j "$JOB_NAME" \
-                          -k "$STORAGE_KERNEL_IMAGE" \
-                          -km "$STORAGE_LINUX_MODULES" \
-                          -lm "$STORAGE_LTTNG_MODULES" \
-                          -tc "$LTTNG_TOOLS_COMMIT_ID"
-
 python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -t baremetal-benchmarks \
                           -j "$JOB_NAME" \
@@ -40,6 +32,15 @@ python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -lm "$S3_URL_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID" \
                           --debug
+
+python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
+                          -t baremetal-benchmarks \
+                          -j "$JOB_NAME" \
+                          -k "$STORAGE_KERNEL_IMAGE" \
+                          -km "$STORAGE_LINUX_MODULES" \
+                          -lm "$STORAGE_LTTNG_MODULES" \
+                          -tc "$LTTNG_TOOLS_COMMIT_ID"
+
 set +eu
 deactivate
 set -eu
