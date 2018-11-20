@@ -314,7 +314,7 @@ def get_results_cmd(stream_name):
     command['parameters']['stream']='/anonymous/'+stream_name+'/'
     return command
 
-def get_deploy_cmd_kvm(jenkins_job, kernel_path, linux_modules_path, lttng_modules_path):
+def get_deploy_cmd_kvm(jenkins_job, kernel_path, lttng_modules_path):
     command = OrderedDict({
             'command': 'deploy_kernel',
             'metadata': {},
@@ -328,14 +328,13 @@ def get_deploy_cmd_kvm(jenkins_job, kernel_path, linux_modules_path, lttng_modul
                 }
             })
 
-    command['parameters']['customize'][SCP_PATH+linux_modules_path]=['rootfs:/','archive']
     command['parameters']['customize'][SCP_PATH+lttng_modules_path]=['rootfs:/','archive']
     command['parameters']['kernel'] = str(SCP_PATH+kernel_path)
     command['metadata']['jenkins_jobname'] = jenkins_job
 
     return command
 
-def get_deploy_cmd_x86(jenkins_job, kernel_path, linux_modules_path, lttng_modules_path, nb_iter=None):
+def get_deploy_cmd_x86(jenkins_job, kernel_path, lttng_modules_path, nb_iter=None):
     command = OrderedDict({
             'command': 'deploy_kernel',
             'metadata': {},
@@ -347,7 +346,6 @@ def get_deploy_cmd_x86(jenkins_job, kernel_path, linux_modules_path, lttng_modul
                 }
             })
 
-    command['parameters']['overlays'].append( str(SCP_PATH+linux_modules_path))
     command['parameters']['overlays'].append( str(SCP_PATH+lttng_modules_path))
     command['parameters']['kernel'] = str(SCP_PATH+kernel_path)
     command['metadata']['jenkins_jobname'] = jenkins_job
@@ -404,7 +402,6 @@ def main():
     parser.add_argument('-t', '--type', required=True)
     parser.add_argument('-j', '--jobname', required=True)
     parser.add_argument('-k', '--kernel', required=True)
-    parser.add_argument('-km', '--kmodule', required=True)
     parser.add_argument('-lm', '--lmodule', required=True)
     parser.add_argument('-tc', '--tools-commit', required=True)
     parser.add_argument('-uc', '--ust-commit', required=False)
@@ -431,13 +428,13 @@ def main():
 
     if test_type is TestType.baremetal_benchmarks:
         j = create_new_job(args.jobname, build_device='x86')
-        j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
+        j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.lmodule))
     elif test_type is TestType.baremetal_tests:
         j = create_new_job(args.jobname, build_device='x86')
-        j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.kmodule, args.lmodule))
+        j['actions'].append(get_deploy_cmd_x86(args.jobname, args.kernel, args.lmodule))
     elif test_type  is TestType.kvm_tests or test_type is TestType.kvm_fuzzing_tests:
         j = create_new_job(args.jobname, build_device='kvm')
-        j['actions'].append(get_deploy_cmd_kvm(args.jobname, args.kernel, args.kmodule, args.lmodule))
+        j['actions'].append(get_deploy_cmd_kvm(args.jobname, args.kernel, args.lmodule))
 
     j['actions'].append(get_boot_cmd())
 

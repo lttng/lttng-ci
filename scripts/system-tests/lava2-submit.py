@@ -189,7 +189,6 @@ def main():
     parser.add_argument('-t', '--type', required=True)
     parser.add_argument('-j', '--jobname', required=True)
     parser.add_argument('-k', '--kernel', required=True)
-    parser.add_argument('-km', '--kmodule', required=True)
     parser.add_argument('-lm', '--lmodule', required=True)
     parser.add_argument('-tc', '--tools-commit', required=True)
     parser.add_argument('-uc', '--ust-commit', required=False)
@@ -247,7 +246,6 @@ def main():
     context['kernel_url'] = args.kernel
     context['nfsrootfs_url'] = nfsrootfs
     context['lttng_modules_url'] = args.lmodule
-    context['linux_modules_url'] = args.kmodule
 
     context['kprobe_round_nb'] = 10
 
