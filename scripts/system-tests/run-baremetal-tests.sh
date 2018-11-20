@@ -29,7 +29,6 @@ python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -t baremetal-tests \
                           -j "$JOB_NAME" \
                           -k "$S3_URL_KERNEL_IMAGE" \
-                          -km "$S3_URL_LINUX_MODULES" \
                           -lm "$S3_URL_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID" \
                           -uc "$LTTNG_UST_COMMIT_ID" \
@@ -39,7 +38,6 @@ python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \
                           -t baremetal-tests \
                           -j "$JOB_NAME" \
                           -k "$STORAGE_KERNEL_IMAGE" \
-                          -km "$STORAGE_LINUX_MODULES" \
                           -lm "$STORAGE_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID" \
                           -uc "$LTTNG_UST_COMMIT_ID"
