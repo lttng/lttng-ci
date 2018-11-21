@@ -18,11 +18,16 @@
 export LIBVIRT_DEFAULT_URI="qemu:///system"
 
 tmp=$(mktemp)
+name=$1
+virsh vol-create-as --pool default --name "${name}.raw" --capacity 2G --format raw
+data_disk_path="$(virsh vol-path ${name}.raw --pool default)"
+sudo mkfs.ext4 "$data_disk_path"
 virt-install --print-xml \
-	--name "$1" \
+	--name "$name" \
 	--memory 2096\
 	--disk /var/lib/libvirt/images/ipxe.iso,device=cdrom \
 	--boot cdrom \
+	--disk "$data_disk_path,format=raw" \
 	--vcpus 2 \
 	--cpu host \
 	--serial pty \
@@ -30,6 +35,6 @@ virt-install --print-xml \
 	--autostart \
 	--check path_in_use=off > "$tmp"
 virsh define --validate "$tmp"
-virsh start "$1"
+virsh start "$name"
 rm -rf "$tmp"
 
