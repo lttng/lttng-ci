@@ -68,10 +68,8 @@ actions:
                     - groupadd tracing
                   {% if device_type == DeviceType.x86 %}
                     - mount /dev/sda1 /tmp
-                  {% elif device_type == DeviceType.kvm %}
-                    - mount /dev/sda /tmp
-                  {% endif %}
                     - rm -rf /tmp/*
+                  {% endif %}
                     - depmod -a
                     - locale-gen en_US.UTF-8
                     - apt-get update
