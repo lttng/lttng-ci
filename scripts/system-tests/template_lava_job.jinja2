@@ -7,10 +7,9 @@ priority: medium
 visibility: public
 {% if device_type == DeviceType.kvm %}
 context:
-  # tell the qemu template which architecture is being tested
-  # the template uses that to ensure that qemu-system-x86_64 is executed.
-  {# Used amd64 as a default #}
-  arch: amd64
+  extra_kernel_args: cpuidle.off=1
+  extra_nfsroot_args: ,nfsver=3 nfsrootdebug
+
 tags:
   - qemu
 {% endif %}
