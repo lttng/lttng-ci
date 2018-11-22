@@ -91,44 +91,64 @@ actions:
               from: git
               path: lava/system-tests/failing-close.yml
               name: failing-close
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/failing-ioctl.yml
               name: failing-ioctl
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/failing-open-efault.yml
               name: failing-open-efault
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/success-dup-close.yml
               name: success-dup-close
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/raw-syscall-getpid.yml
               name: raw-syscall-getpid
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/failing-open-enoent.yml
               name: failing-open-enoent
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/lttng-test-filter.yml
               name: lttng-test-filter
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
           {% elif test_type == TestType.baremetal_tests %}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/perf-tests.yml
               name: perf-tests
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
           {% elif test_type == TestType.kvm_tests %}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/kernel-tests.yml
               name: kernel-tests
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/destructive-tests.yml
               name: destructive-tests
+              params:
+                JENKINS_BUILD_ID: {{ jenkins_build_id }}
           {% elif test_type == TestType.kvm_fuzzing_tests %}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git

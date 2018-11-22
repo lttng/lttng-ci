@@ -191,6 +191,7 @@ def main():
     parser.add_argument('-k', '--kernel', required=True)
     parser.add_argument('-lm', '--lmodule', required=True)
     parser.add_argument('-tc', '--tools-commit', required=True)
+    parser.add_argument('-id', '--build-id', required=True)
     parser.add_argument('-uc', '--ust-commit', required=False)
     parser.add_argument('-d', '--debug', required=False, action='store_true')
     args = parser.parse_args()
@@ -246,6 +247,7 @@ def main():
     context['kernel_url'] = args.kernel
     context['nfsrootfs_url'] = nfsrootfs
     context['lttng_modules_url'] = args.lmodule
+    context['jenkins_build_id'] = args.build_id
 
     context['kprobe_round_nb'] = 10
 

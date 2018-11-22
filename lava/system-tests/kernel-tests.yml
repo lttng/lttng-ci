@@ -2,20 +2,28 @@ metadata:
         format: Lava-Test Test Definition 1.0
         name: lttng-kernel-test
         description: "Run kernel test suite"
+params:
+    JENKINS_BUILD_ID: "invalid_jenkins_build_id"
+
 install:
+        deps:
+                - curl
+        git-repos:
+                - url: https://github.com/lttng/lttng-ci
+                  destination: ci
+                  branch: master
         steps:
                 - export TMPDIR="/tmp"
-                - cd
                 - ulimit -c unlimited
                 - mkdir -p coredump
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 run:
         steps:
                 - source /root/lttngvenv/activate
-                - cd /root/lttngvenv/src/lttng-tools
+                - pushd /root/lttngvenv/src/lttng-tools
                 - lava-test-case build-test-suite --shell "make"
                 - cd tests
                 - lava-test-case run-tests --shell "prove --verbose --merge --exec '' - < root_regression"
-                - cd
+                - popd
                 - tar czf coredump.tar.gz coredump
-                - lava-test-case-attach run-tests coredump.tar.gz
+                - ./ci/lava/upload_artifact.sh coredump.tar.gz coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"

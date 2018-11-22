@@ -31,6 +31,7 @@ python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -lm "$S3_URL_LTTNG_MODULES" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID" \
                           -uc "$LTTNG_UST_COMMIT_ID" \
+                          -id "$BUILD_TAG" \
                           --debug
 
 python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava-submit.py \

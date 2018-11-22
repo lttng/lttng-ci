@@ -22,12 +22,15 @@ import random
 import sys
 import time
 import xmlrpc.client
+from urllib.parse import urljoin
+from urllib.request import urlretrieve
 from collections import OrderedDict
 from enum import Enum
 
 USERNAME = 'frdeso'
 HOSTNAME = 'lava-master.internal.efficios.com'
 SCP_PATH = 'scp://jenkins-lava@storage.internal.efficios.com'
+OBJSTORE_URL = "https://obj.internal.efficios.com/lava/results/"
 
 class TestType(Enum):
     baremetal_benchmarks=1
@@ -71,8 +74,7 @@ def check_job_all_test_cases_state_count(server, job):
 
 # Get the benchmark results from the lava bundle
 # save them as CSV files localy
-def fetch_benchmark_results(server, job):
-    content = get_job_bundle_content(server, job)
+def fetch_benchmark_results(build_id):
     testcases = ['processed_results_close.csv',
             'processed_results_ioctl.csv',
             'processed_results_open_efault.csv',
@@ -80,25 +82,9 @@ def fetch_benchmark_results(server, job):
             'processed_results_dup_close.csv',
             'processed_results_raw_syscall_getpid.csv',
             'processed_results_lttng_test_filter.csv']
-
-    # The result bundle is a large JSON containing the results of every testcase
-    # of the LAVA job as well as the files that were attached during the run.
-    # We need to iterate over this JSON to get the base64 representation of the
-    # benchmark results produced during the run.
-    for run in content['test_runs']:
-        # We only care of the benchmark testcases
-        if 'benchmark-' in run['test_id']:
-            if 'test_results' in run:
-                for res in run['test_results']:
-                    if 'attachments' in res:
-                        for a in res['attachments']:
-                            # We only save the results file
-                            if a['pathname'] in testcases:
-                                with open(a['pathname'],'wb') as f:
-                                    # Convert the b64 representation of the
-                                    # result file and write it to a file
-                                    # in the current working directory
-                                    f.write(base64.b64decode(a['content']))
+    for testcase in testcases:
+        url = urljoin(OBJSTORE_URL, "{:s}/{:s}".format(build_id, testcase))
+        urlretrieve(url, case)
 
 # Parse the attachment of the testcase to fetch the stdout of the test suite
 def print_test_output(server, job):
@@ -186,7 +172,7 @@ def get_config_cmd(build_device):
                 ])
     return command
 
-def get_baremetal_benchmarks_cmd():
+def get_baremetal_benchmarks_cmd(build_id):
     command = OrderedDict({
         'command': 'lava_test_shell',
         'parameters': {
@@ -194,37 +180,44 @@ def get_baremetal_benchmarks_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/failing-close.yml'
+                    'testdef': 'lava/system-tests/failing-close.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/failing-ioctl.yml'
+                    'testdef': 'lava/system-tests/failing-ioctl.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/failing-open-efault.yml'
+                    'testdef': 'lava/system-tests/failing-open-efault.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/success-dup-close.yml'
+                    'testdef': 'lava/system-tests/success-dup-close.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/raw-syscall-getpid.yml'
+                    'testdef': 'lava/system-tests/raw-syscall-getpid.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/failing-open-enoent.yml'
+                    'testdef': 'lava/system-tests/failing-open-enoent.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/lttng-test-filter.yml'
+                    'testdef': 'lava/system-tests/lttng-test-filter.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 }
                 ],
             'timeout': 7200
@@ -232,7 +225,7 @@ def get_baremetal_benchmarks_cmd():
         })
     return command
 
-def get_baremetal_tests_cmd():
+def get_baremetal_tests_cmd(build_id):
     command = OrderedDict({
         'command': 'lava_test_shell',
         'parameters': {
@@ -240,7 +233,8 @@ def get_baremetal_tests_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/perf-tests.yml'
+                    'testdef': 'lava/system-tests/perf-tests.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 }
                 ],
             'timeout': 3600
@@ -248,7 +242,7 @@ def get_baremetal_tests_cmd():
         })
     return command
 
-def get_kvm_tests_cmd():
+def get_kvm_tests_cmd(build_id):
     command = OrderedDict({
         'command': 'lava_test_shell',
         'parameters': {
@@ -256,12 +250,14 @@ def get_kvm_tests_cmd():
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/kernel-tests.yml'
+                    'testdef': 'lava/system-tests/kernel-tests.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 },
                 {
                     'git-repo': 'https://github.com/lttng/lttng-ci.git',
                     'revision': 'master',
-                    'testdef': 'lava/system-tests/destructive-tests.yml'
+                    'testdef': 'lava/system-tests/destructive-tests.yml',
+                    'parameters': { 'JENKINS_BUILD_ID': build_id }
                 }
                 ],
             'timeout': 7200
@@ -404,6 +400,7 @@ def main():
     parser.add_argument('-k', '--kernel', required=True)
     parser.add_argument('-lm', '--lmodule', required=True)
     parser.add_argument('-tc', '--tools-commit', required=True)
+    parser.add_argument('-id', '--build-id', required=True)
     parser.add_argument('-uc', '--ust-commit', required=False)
     args = parser.parse_args()
 
@@ -441,7 +438,7 @@ def main():
     if test_type is TestType.baremetal_benchmarks:
         j['actions'].append(get_config_cmd('x86'))
         j['actions'].append(get_env_setup_cmd('x86', args.tools_commit))
-        j['actions'].append(get_baremetal_benchmarks_cmd())
+        j['actions'].append(get_baremetal_benchmarks_cmd(args.build_id))
         j['actions'].append(get_results_cmd(stream_name='benchmark-kernel'))
     elif test_type is TestType.baremetal_tests:
         if args.ust_commit is None:
@@ -449,7 +446,7 @@ def main():
             return -1
         j['actions'].append(get_config_cmd('x86'))
         j['actions'].append(get_env_setup_cmd('x86', args.tools_commit, args.ust_commit))
-        j['actions'].append(get_baremetal_tests_cmd())
+        j['actions'].append(get_baremetal_tests_cmd(args.build_id))
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     elif test_type  is TestType.kvm_tests:
         if args.ust_commit is None:
@@ -457,7 +454,7 @@ def main():
             return -1
         j['actions'].append(get_config_cmd('kvm'))
         j['actions'].append(get_env_setup_cmd('kvm', args.tools_commit, args.ust_commit))
-        j['actions'].append(get_kvm_tests_cmd())
+        j['actions'].append(get_kvm_tests_cmd(args.build_id))
         j['actions'].append(get_results_cmd(stream_name='tests-kernel'))
     elif test_type is TestType.kvm_fuzzing_tests:
         if args.ust_commit is None:
@@ -491,7 +488,7 @@ def main():
     if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
         print_test_output(server, jobid)
     elif test_type is TestType.baremetal_benchmarks:
-        fetch_benchmark_results(server, jobid)
+        fetch_benchmark_results(args.build_id)
 
     print('Job ended with {} status.'.format(jobstatus))
     if jobstatus not in 'Complete':
