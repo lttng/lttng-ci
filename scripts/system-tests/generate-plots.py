@@ -160,7 +160,7 @@ def create_plots(res_dir):
             tmp['testcase'] = res.split('.')[0]
             list_.append(tmp)
 
-        df = pd.concat(list_)
+        df = pd.concat(list_, sort=true)
         df = convert_us_to_ns(df)
         df = rename_cols(df)
         df.sort_index(inplace=True)
