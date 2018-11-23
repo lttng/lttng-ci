@@ -66,6 +66,7 @@ if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
 
   # Embed everything
   make --directory="$LINUX_PATH" localyesconfig
+  make --directory="$LINUX_PATH" modules_prepare
 fi
 
 #We create files to specify what needs to be built for the subsequent build steps
