@@ -130,7 +130,7 @@ def create_metadata_file(res_dir):
             continue
         list_.append(metadata)
 
-    df = pd.concat(list_)
+    df = pd.concat(list_, sort=True)
     df.index=df.build_id
     df.sort_index(inplace=True)
     df.to_csv('metadata.csv', index=False)
@@ -160,7 +160,7 @@ def create_plots(res_dir):
             tmp['testcase'] = res.split('.')[0]
             list_.append(tmp)
 
-        df = pd.concat(list_, sort=true)
+        df = pd.concat(list_, sort=True)
         df = convert_us_to_ns(df)
         df = rename_cols(df)
         df.sort_index(inplace=True)
