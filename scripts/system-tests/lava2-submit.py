@@ -246,8 +246,6 @@ def main():
 
     render = jinja_template.render(context)
 
-    print('Current context:')
-    pprint.pprint(context, indent=4)
     print('Job to be submitted:')
 
     print(render)
