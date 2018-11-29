@@ -50,12 +50,6 @@ class DeviceType():
         'x86' : x86,
     }
 
-def get_packages():
-    return ['bsdtar', 'psmisc', 'wget', 'python3', 'python3-pip', \
-            'libglib2.0-dev', 'libffi-dev', 'elfutils', 'libdw-dev', \
-            'libelf-dev', 'libmount-dev', 'libxml2', 'libpfm4-dev', \
-            'libnuma-dev', 'python3-dev', 'swig', 'stress']
-
 def get_job_bundle_content(server, job):
     try:
         bundle_sha = server.scheduler.job_status(str(job))['bundle_sha1']
@@ -183,7 +177,7 @@ def get_vlttng_cmd(device, lttng_tools_commit, lttng_ust_commit=None):
     return vlttng_cmd
 
 def main():
-    nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_trusty_2016-02-23-1134.tar.gz"
+    nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_bionic_2018-11-29.tar.gz"
     test_type = None
     parser = argparse.ArgumentParser(description='Launch baremetal test using Lava')
     parser.add_argument('-t', '--type', required=True)
@@ -237,7 +231,6 @@ def main():
 
     context['job_name'] = args.jobname
     context['test_type'] = test_type
-    context['packages'] = get_packages()
     context['random_seed'] = random.randint(0, 1000000)
     context['device_type'] = device_type
 

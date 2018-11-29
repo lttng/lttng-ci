@@ -53,6 +53,11 @@ actions:
           minutes: 10
         method: ipxe
         commands: nfs
+        auto_login:
+          login_prompt: 'login:'
+          username: root
+          password_prompt: 'Password:'
+          password: root
         prompts:
           - 'root@linaro-server:~#'
 
@@ -70,8 +75,8 @@ actions:
                       - x86
                 run:
                   steps:
-                    - cat /etc/resolv.conf
                     - echo nameserver 172.18.0.12 > /etc/resolv.conf
+                    - ip a
                     - groupadd tracing
                   {% if device_type == DeviceType.x86 %}
                     - mount /dev/sda1 /tmp
@@ -81,7 +86,6 @@ actions:
                     - locale-gen en_US.UTF-8
                     - apt-get update
                     - apt-get upgrade
-                    - apt-get install -y {{ packages|join(" ") }}
                   {% if test_type != TestType.kvm_fuzzing_tests %}
                     - pip3 install --upgrade pip
                     - hash -r
