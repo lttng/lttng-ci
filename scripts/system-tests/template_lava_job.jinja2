@@ -3,6 +3,13 @@ job_name: {{ job_name }}
 timeouts:
   job:
     hours: 2
+  action:
+    hours: 2
+  connection:
+    minutes: 4
+  connections:
+    lava-test-shell:
+      minutes: 4
 priority: medium
 visibility: public
 context:
