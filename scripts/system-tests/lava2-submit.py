@@ -130,10 +130,7 @@ def get_vlttng_cmd(device, lttng_tools_commit, lttng_ust_commit=None):
                     ' --override projects.lttng-ust.checkout='+lttng_ust_commit+ \
                     ' --profile lttng-ust-no-man-pages'
 
-    if device is DeviceType.kvm:
-        vlttng_path = '/root/virtenv'
-    else:
-        vlttng_path = '/tmp/virtenv'
+    vlttng_path = '/tmp/virtenv'
 
     vlttng_cmd += ' ' + vlttng_path
 
