@@ -19,6 +19,14 @@ echo 'So we build them against the kernel'
 
 $SCP_COMMAND "$STORAGE_USER@$STORAGE_HOST:$STORAGE_KERNEL_MODULE_SYMVERS" "$LINUX_PATH/Module.symvers"
 
+$S3_COMMAND get "s3://"$S3_STORAGE_LINUX_MODULES/$KERNEL_COMMIT_ID.linux.modules.tar.gz"
+
+# Extract the linux modules to MODULES_INSTALL_FOLDER.
+# The resulting tarball will contain both lttng-modules and linux modules needed
+# for testing
+
+tar -xvzf $KERNEL_COMMIT_ID.linux.modules.tar.gz -C "$MODULES_INSTALL_FOLDER"
+
 KERNELDIR="$LINUX_PATH" make -j"$NPROC" --directory="$LTTNG_MODULES_PATH"
 
 KERNELDIR="$LINUX_PATH" make -j"$NPROC" --directory="$LTTNG_MODULES_PATH" modules_install INSTALL_MOD_PATH="$MODULES_INSTALL_FOLDER"
