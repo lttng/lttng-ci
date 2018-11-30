@@ -64,8 +64,6 @@ if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
     make --directory="$LINUX_PATH" kvmconfig
   fi
 
-  # Embed everything
-  make --directory="$LINUX_PATH" localyesconfig
   make --directory="$LINUX_PATH" modules_prepare
 fi
 
