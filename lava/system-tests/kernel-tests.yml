@@ -23,7 +23,7 @@ run:
                 - pushd /root/lttngvenv/src/lttng-tools
                 - lava-test-case build-test-suite --shell "make"
                 - cd tests
-                - lava-test-case run-tests --shell "prove --verbose --merge --exec '' - < root_regression"
+                - lava-test-case run-tests --shell "prove --nocolor --verbose --merge --exec '' - < root_regression"
                 - popd
                 - tar czf coredump.tar.gz coredump
                 - ./ci/lava/upload_artifact.sh coredump.tar.gz coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"
