@@ -29,6 +29,7 @@ from jinja2 import Environment, FileSystemLoader, meta
 
 USERNAME = 'lava-jenkins'
 HOSTNAME = 'lava-master-02.internal.efficios.com'
+OBJSTORE_URL = "https://obj.internal.efficios.com/lava/results/"
 
 class TestType():
     baremetal_benchmarks=1
@@ -63,31 +64,27 @@ def get_job_bundle_content(server, job):
 # Parse the results bundle to see the run-tests testcase
 # of the lttng-kernel-tests passed successfully
 def check_job_all_test_cases_state_count(server, job):
-    content = get_job_bundle_content(server, job)
-
-    # FIXME:Those tests are part of the boot actions and fail randomly but
-    # doesn't affect the behaviour of the tests. We should update our Lava
-    # installation and try to reproduce it. This error was encountered on
-    # Ubuntu 16.04.
-    tests_known_to_fail=['mount', 'df', 'ls', 'ip', 'wait_for_test_image_prompt']
+    print("Testcase result:")
+    content = server.results.get_testjob_results_yaml(str(job))
+    testcases = yaml.load(content)
 
     passed_tests=0
     failed_tests=0
-    for run in content['test_runs']:
-        for result in run['test_results']:
-            if 'test_case_id' in result :
-                if result['result'] in 'pass':
-                    passed_tests+=1
-                elif result['test_case_id'] in tests_known_to_fail:
-                    pass
-                else:
-                    failed_tests+=1
+    for testcase in testcases:
+        if testcase['result'] != 'pass':
+            print("\tFAILED {}\n\t\t See http://{}{}".format(
+                testcase['name'],
+                HOSTNAME,
+                testcase['url']
+            ))
+            failed_tests+=1
+        else:
+            passed_tests+=1
     return (passed_tests, failed_tests)
 
-# Get the benchmark results from the lava bundle
+# Get the benchmark results from the objstore
 # save them as CSV files localy
-def fetch_benchmark_results(server, job):
-    content = get_job_bundle_content(server, job)
+def fetch_benchmark_results(build_id):
     testcases = ['processed_results_close.csv',
             'processed_results_ioctl.csv',
             'processed_results_open_efault.csv',
@@ -95,61 +92,27 @@ def fetch_benchmark_results(server, job):
             'processed_results_dup_close.csv',
             'processed_results_raw_syscall_getpid.csv',
             'processed_results_lttng_test_filter.csv']
-
-    # The result bundle is a large JSON containing the results of every testcase
-    # of the LAVA job as well as the files that were attached during the run.
-    # We need to iterate over this JSON to get the base64 representation of the
-    # benchmark results produced during the run.
-    for run in content['test_runs']:
-        # We only care of the benchmark testcases
-        if 'benchmark-' in run['test_id']:
-            if 'test_results' in run:
-                for res in run['test_results']:
-                    if 'attachments' in res:
-                        for a in res['attachments']:
-                            # We only save the results file
-                            if a['pathname'] in testcases:
-                                with open(a['pathname'],'wb') as f:
-                                    # Convert the b64 representation of the
-                                    # result file and write it to a file
-                                    # in the current working directory
-                                    f.write(base64.b64decode(a['content']))
+    for testcase in testcases:
+        url = urljoin(OBJSTORE_URL, "{:s}/{:s}".format(build_id, testcase))
+        urlretrieve(url, testcase)
 
 # Parse the attachment of the testcase to fetch the stdout of the test suite
 def print_test_output(server, job):
-    content = get_job_bundle_content(server, job)
-    found = False
-
-    for run in content['test_runs']:
-        if run['test_id'] in 'lttng-kernel-test':
-            for attachment in run['attachments']:
-                if attachment['pathname'] in 'stdout.log':
-
-                    # Decode the base64 file and split on newlines to iterate
-                    # on list
-                    testoutput = str(base64.b64decode(bytes(attachment['content'], encoding='UTF-8')))
-
-                    testoutput = testoutput.replace('\\n', '\n')
-
-                    # Create a generator to iterate on the lines and keeping
-                    # the state of the iterator across the two loops.
-                    testoutput_iter = iter(testoutput.split('\n'))
-                    for line in testoutput_iter:
-
-                        # Find the header of the test case and start printing
-                        # from there
-                        if 'LAVA_SIGNAL_STARTTC run-tests' in line:
-                            print('---- TEST SUITE OUTPUT BEGIN ----')
-                            for line in testoutput_iter:
-                                if 'LAVA_SIGNAL_ENDTC run-tests' not in line:
-                                    print(line)
-                                else:
-                                    # Print until we reach the end of the
-                                    # section
-                                    break
-
-                            print('----- TEST SUITE OUTPUT END -----')
-                            break
+    job_finished, log = server.scheduler.jobs.logs(str(job))
+    logs = yaml.load(log.data.decode('ascii'))
+    print_line = False
+    for line in logs:
+        if line['lvl'] != 'target':
+            continue
+        if line['msg'] == '<LAVA_SIGNAL_STARTTC run-tests>':
+            print('---- TEST SUITE OUTPUT BEGIN ----')
+            print_line = True
+            continue
+        if line['msg'] == '<LAVA_SIGNAL_ENDTC run-tests>':
+            print('----- TEST SUITE OUTPUT END -----')
+            break
+        if print_line:
+            print("{} {}".format(line['dt'], line['msg']))
 
 def get_vlttng_cmd(device, lttng_tools_commit, lttng_ust_commit=None):
 
@@ -258,35 +221,34 @@ def main():
     jobid = server.scheduler.submit_job(render)
 
     print('Lava jobid:{}'.format(jobid))
-    print('Lava job URL: http://lava-master-02.internal.efficios.com/scheduler/job/{}/log_file'.format(jobid))
+    print('Lava job URL: http://lava-master-02.internal.efficios.com/scheduler/job/{}'.format(jobid))
 
     #Check the status of the job every 30 seconds
-    jobstatus = server.scheduler.job_status(jobid)['job_status']
-    not_running = False
-    while jobstatus in 'Submitted' or jobstatus in 'Running':
-        if not_running is False and jobstatus in 'Running':
+    jobstatus = server.scheduler.job_state(jobid)['job_state']
+    running = False
+    while jobstatus in ['Submitted','Scheduling','Scheduled','Running']:
+        if not running and jobstatus == 'Running':
             print('Job started running')
-            not_running = True
+            running = True
         time.sleep(30)
-        jobstatus = server.scheduler.job_status(jobid)['job_status']
-
-#    Do not fetch result for now
-#    if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
-#        print_test_output(server, jobid)
-#    elif test_type is TestType.baremetal_benchmarks:
-#        fetch_benchmark_results(server, jobid)
-
+        jobstatus = server.scheduler.job_state(jobid)['job_state']
     print('Job ended with {} status.'.format(jobstatus))
-    if jobstatus not in 'Complete':
-        return -1
-    else:
-        passed, failed=check_job_all_test_cases_state_count(server, jobid)
-        print('With {} passed and {} failed Lava test cases.'.format(passed, failed))
 
-        if failed == 0:
-            return 0
-        else:
-            return -1
+    if jobstatus != 'Finished':
+        return -1
+
+    if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
+        print_test_output(server, jobid)
+    elif test_type is TestType.baremetal_benchmarks:
+        fetch_benchmark_results(args.build_id)
+
+    passed, failed=check_job_all_test_cases_state_count(server, jobid)
+    print('With {} passed and {} failed Lava test cases.'.format(passed, failed))
+
+    if failed == 0:
+        return 0
+    else:
+        return -1
 
 if __name__ == "__main__":
     sys.exit(main())
