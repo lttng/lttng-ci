@@ -180,11 +180,10 @@ def main():
 
     if test_type in [TestType.baremetal_benchmarks, TestType.baremetal_tests]:
         device_type = DeviceType.x86
-        vlttng_path = '/tmp/virtenv'
-
     else:
         device_type = DeviceType.kvm
-        vlttng_path = '/root/virtenv'
+
+    vlttng_path = '/tmp/virtenv'
 
     vlttng_cmd = get_vlttng_cmd(device_type, args.tools_commit, args.ust_commit)
 
