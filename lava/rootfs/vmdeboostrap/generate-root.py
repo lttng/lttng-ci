@@ -14,17 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import subprocess
 import argparse
-from datetime import datetime
 import gzip
+import os
 import shutil
+import subprocess
+
+from datetime import datetime
 
 
 def compress(filename):
     with open(filename, 'rb') as f_in:
         with gzip.open('{}.gz'.format(filename), 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+    os.remove(filename)
 
 
 packages = [
