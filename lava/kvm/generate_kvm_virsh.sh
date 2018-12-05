@@ -33,6 +33,7 @@ virt-install --print-xml \
 	--serial pty \
 	--graphics none \
 	--autostart \
+	--network bridge=br0 \
 	--check path_in_use=off > "$tmp"
 virsh define --validate "$tmp"
 virsh start "$name"
