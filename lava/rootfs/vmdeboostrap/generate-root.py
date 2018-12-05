@@ -84,7 +84,14 @@ packages = [
 def main():
     parser = argparse.ArgumentParser(description='Generate lava lttng rootfs')
     parser.add_argument("--arch", default='amd64')
-    parser.add_argument("--distribution", default='bionic')
+    # We are using xenial instead of bionic ++ since some syscall test depends
+    # on cat and the libc to use the open syscall. In recent libc openat is
+    # used. See these commit in lttng-tools that helps with the problem:
+    # c8e51d1559c48a12f18053997bbcff0c162691c4
+    # 192bd8fb712659b9204549f29d9a54dc2c57a9e
+    # These are only part of 2.11 and were not backported since they do not
+    # represent a *problem* per se.
+    parser.add_argument("--distribution", default='xenial')
     parser.add_argument("--mirror", default='http://archive.ubuntu.com/ubuntu')
     parser.add_argument(
         "--component", default='universe,multiverse,main,restricted')
