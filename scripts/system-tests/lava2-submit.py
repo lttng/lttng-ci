@@ -137,7 +137,7 @@ def get_vlttng_cmd(device, lttng_tools_commit, lttng_ust_commit=None):
     return vlttng_cmd
 
 def main():
-    nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_bionic_2018-11-29.tar.gz"
+    nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz"
     test_type = None
     parser = argparse.ArgumentParser(description='Launch baremetal test using Lava')
     parser.add_argument('-t', '--type', required=True)
