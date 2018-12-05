@@ -110,7 +110,6 @@ def main():
         "--user={}".format(user),
         "--root-password={}".format(root_password),
         "--no-kernel",
-        "--enable-dhcp",
         "--verbose",
     ]
 
