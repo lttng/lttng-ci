@@ -27,5 +27,6 @@ run:
                 #Need to check if the file is present for branches where the testcase was not backported
                 - lava-test-case run-tests --shell "if [ -e root_destructive_tests ]; then prove --nocolor --verbose --merge --exec '' - < root_destructive_tests; else echo 'root_destructive_tests not found'; fi"
                 - popd
+                - systemctl start systemd-timesyncd.service
                 - tar czf coredump.tar.gz coredump
                 - ./ci/lava/upload_artifact.sh coredump.tar.gz "results/${JENKINS_BUILD_ID}/coredump.tar.gz"
