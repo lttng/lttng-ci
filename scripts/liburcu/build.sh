@@ -155,6 +155,11 @@ debug-rcu)
     else
        export CFLAGS="$CFLAGS -DDEBUG_RCU"
     fi
+
+    echo "Enable iterator sanity validator"
+    if vergte "$PACKAGE_VERSION" "0.11"; then
+       CONF_OPTS+=" --enable-cds-lfht-iter-debug"
+    fi
     ;;
 
 *)
