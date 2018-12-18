@@ -123,8 +123,7 @@ def get_vlttng_cmd(device, lttng_tools_commit, lttng_ust_commit=None):
                     ' --profile babeltrace-python' \
                     ' --profile lttng-tools-master' \
                     ' --override projects.lttng-tools.checkout='+lttng_tools_commit + \
-                    ' --profile lttng-tools-no-man-pages' \
-                    ' --verbose'
+                    ' --profile lttng-tools-no-man-pages'
 
     if lttng_ust_commit is not None:
         vlttng_cmd += ' --profile lttng-ust-master ' \
