@@ -1,10 +1,10 @@
 ---
-- include: hosts.yml
-- include: node-armhf.yml
-- include: node-arm64.yml
-- include: node-powerpc.yml
-- include: node-ppc64el.yml
-- include: node-i386.yml
-- include: node-amd64.yml
-- include: node-standalone.yml
-- include: node-sles.yml
+- import_playbook: hosts.yml
+- import_playbook: node-armhf.yml
+- import_playbook: node-arm64.yml
+- import_playbook: node-powerpc.yml
+- import_playbook: node-ppc64el.yml
+- import_playbook: node-i386.yml
+- import_playbook: node-amd64.yml
+- import_playbook: node-standalone.yml
+- import_playbook: node-sles.yml

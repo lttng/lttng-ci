@@ -4,3 +4,5 @@ __lttng_modules_packages:
   - libelf-dev
   - bc
   - gcc-4.9
+  - s3cmd
+  - u-boot-tools
