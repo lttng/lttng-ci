@@ -3,6 +3,6 @@ __lttng_modules_packages:
   - kernel-wedge
   - libelf-dev
   - bc
-  - gcc-4.9
+  - gcc-4.8
   - s3cmd
   - u-boot-tools
