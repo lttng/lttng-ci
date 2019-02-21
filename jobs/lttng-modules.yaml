@@ -29,7 +29,7 @@
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
-          default: 'lttng-modules_VERSION_param-{parambuildtype}'
+          default: 'lttng-modules_PARAM_{parambuildtype}'
           description: 'The parametrized job to use for child builds.'
 
 - lttng-modules_build_parameters_ubuntu: &lttng-modules_build_parameters_ubuntu
@@ -61,7 +61,7 @@
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
-          default: 'lttng-modules_VERSION_param-{parambuildtype}'
+          default: 'lttng-modules_PARAM_{parambuildtype}'
           description: 'The parametrized job to use for child builds.'
       - string:
           name: 'uversion'
@@ -97,7 +97,7 @@
           description: 'The linux kernel git repository url.'
       - string:
           name: 'kbuildjob'
-          default: 'lttng-modules_VERSION_param-build'
+          default: 'lttng-modules_PARAM_build'
           description: 'The parametrized job to use for child builds.'
 
 - lttng-modules_build_builders_defaults: &lttng-modules_build_builders_defaults
@@ -305,7 +305,7 @@
     <<: *lttng-modules_build_rt_builders_defaults
 
 - job-template:
-    name: lttng-modules_VERSION_param-build
+    name: lttng-modules_PARAM_build
     defaults: lttng-modules
     description: |
       This is a parametrized job used by 'master' jobs to build any combinations
@@ -331,6 +331,10 @@
           default: 'master'
           description: 'The lttng-modules branch to build.'
       - string:
+          name: 'mgitrepo'
+          default: 'git://github.com/lttng/lttng-modules.git'
+          description: 'The lttng-modules git repository url.'
+      - string:
           name: 'ktag'
           default: ''
           description: 'The linux kernel git tag to build against.'
@@ -341,29 +345,20 @@
 
     concurrent: true
 
-    scm:
-      - git:
-          url: git://github.com/lttng/lttng-modules.git
-          browser: githubweb
-          browser-url: https://github.com/lttng/lttng-modules
-          branches:
-            - "${{mversion}}"
-          skip-tag: true
-          basedir: src/lttng-modules
+    scm: []
 
     triggers:
 
     builders:
-      - shell: |
-          git clone --depth=1 -b "$ktag" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
       - shell:
           !include-raw-escape: scripts/lttng-modules/param-build.sh
 
     publishers:
       - workspace-cleanup
 
+
 - job-template:
-    name: lttng-modules_VERSION_param-crossbuild
+    name: lttng-modules_PARAM_crossbuild
     defaults: lttng-modules
     description: |
       This is a parametrized job used by 'master' jobs to build any combinations
@@ -389,6 +384,10 @@
           default: 'master'
           description: 'The lttng-modules branch to build.'
       - string:
+          name: 'mgitrepo'
+          default: 'git://github.com/lttng/lttng-modules.git'
+          description: 'The lttng-modules git repository url.'
+      - string:
           name: 'ktag'
           default: ''
           description: 'The linux kernel git tag to build against.'
@@ -399,23 +398,14 @@
 
     concurrent: true
 
-    scm:
-      - git:
-          url: git://github.com/lttng/lttng-modules.git
-          browser: githubweb
-          browser-url: https://github.com/lttng/lttng-modules
-          branches:
-            - "${{mversion}}"
-          skip-tag: true
-          basedir: src/lttng-modules
+    scm: []
 
     triggers:
 
     builders:
-      - shell: |
-          git clone --depth=1 -b "$ktag" --reference $HOME/gitcache/linux-stable.git/ "$kgitrepo" src/linux
       - shell:
           !include-raw-escape: scripts/lttng-modules/param-build.sh
+
     publishers:
       - workspace-cleanup
 
@@ -508,10 +498,17 @@
 # Vanilla normal builds
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
+            - master
+          buildtype: build
+          parambuildtype: build
+          kverfloor: v3.0
+          kverceil: ''
+          kverfilter: stable-head
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
             - stable-2.9
             - stable-2.10
             - stable-2.11
-            - master
           buildtype: build
           parambuildtype: build
           kverfloor: v2.6.36
@@ -526,10 +523,17 @@
           kverfilter: stable-head
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
+            - master
+          buildtype: build
+          parambuildtype: build
+          kverfloor: v3.0
+          kverceil: ''
+          kverfilter: none
+      - 'lttng-modules_{mversion}_fullbuild-vanilla':
+          mversion:
             - stable-2.9
             - stable-2.10
             - stable-2.11
-            - master
           buildtype: build
           parambuildtype: build
           kverfloor: v2.6.36
@@ -604,9 +608,9 @@
           kverfilter: stable-head
 
 # Parametrized kernel and modules build jobs
-      - 'lttng-modules_VERSION_param-build':
+      - 'lttng-modules_PARAM_build':
           arch: !!python/tuple [x86-32, x86-64]
-      - 'lttng-modules_VERSION_param-crossbuild':
+      - 'lttng-modules_PARAM_crossbuild':
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
 
 # Misc jobs

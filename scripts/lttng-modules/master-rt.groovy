@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2017 - Michael Jeanson <mjeanson@efficios.com>
+ * Copyright (C) 2016-2018 - Michael Jeanson <mjeanson@efficios.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,7 +166,7 @@ def kverceil_raw = build.buildVariableResolver.resolve('kverceil')
 def kverfilter = build.buildVariableResolver.resolve('kverfilter')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
 def currentJobName = build.project.getFullDisplayName()
-
+def gitmodpath = build.getEnvironment(listener).get('WORKSPACE') + "/src/lttng-modules"
 
 // Get the out variable
 def config = new HashMap()
@@ -175,8 +175,12 @@ config.putAll(bindings.getVariables())
 def out = config['out']
 
 
+// Get the lttng-modules git url
+def gitmodrepo = Git.open(new File(gitmodpath))
+def mgitrepo = gitmodrepo.getRepository().getConfig().getString("remote", "origin", "url")
+
 // Get tags from git repository
-def refs = Git.lsRemoteRepository().setTags(true).setRemote(kgitrepo).call();
+def refs = Git.lsRemoteRepository().setTags(true).setRemote(kgitrepo).call()
 
 // Get kernel versions to build
 def kversions = []
@@ -299,6 +303,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
     def kversion = kversions.pop()
     def job_params = [
       new StringParameterValue('mversion', mversion),
+      new StringParameterValue('mgitrepo', mgitrepo),
       new StringParameterValue('ktag', kversion.toString()),
       new StringParameterValue('kgitrepo', kgitrepo),
     ]
