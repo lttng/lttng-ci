@@ -392,6 +392,51 @@
           send-to:
             - recipients
 
+- lttng-tools_build_publishers_win: &lttng-tools_build_publishers_win
+    name: 'lttng-tools_build_publishers_win'
+    publishers:
+      - tap:
+          results: 'tap/**/*.tap'
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+      - archive:
+          artifacts: 'build/**, deps/**'
+          allow-empty: false
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+
 ## Templates
 - job-template:
     name: lttng-tools_{version}_{buildtype}
@@ -438,7 +483,7 @@
 
     <<: *lttng-tools_build_axes_defaults
     <<: *lttng-tools_build_builders_win
-    <<: *lttng-tools_build_publishers_prod
+    <<: *lttng-tools_build_publishers_win
 
 - job-template:
     name: dev_{user}_lttng-tools_{version}_{buildtype}
