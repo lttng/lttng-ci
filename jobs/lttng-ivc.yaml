@@ -162,19 +162,19 @@
     jobs:
       - 'lttng-ivc-{version}':
           version: master
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ivc-{version}':
           # Send only to maintainer
           email_to: "joraj@efficios.com"
           version: staging
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ivc-{version}-modules':
          # Send only to maintainer
          email_to: "joraj@efficios.com"
          version: master
-         arch: !!python/tuple [x86-64]
-         slave: !!python/tuple [x86-64-standalone]
+         arch: !!python/tuple [amd64]
+         slave: !!python/tuple [amd64-standalone]
          liburcu_version: !!python/tuple [master]
 

@@ -28,7 +28,7 @@
 
     properties:
       - build-discarder:
-          num-to-keep: 7
+          num-to-keep: 2
 
 
 ## Templates
@@ -349,7 +349,7 @@
 - job-template:
     name: lttng-scope_{version}_coverity
     defaults: lttng-scope
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -403,7 +403,7 @@
       - master
     jobs:
       - 'lttng-scope_{version}_build':
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [i386, amd64]
       - 'lttng-scope_{version}_winbuild':
           arch: !!python/tuple [win64]
       - 'lttng-scope_{version}_macosxbuild':

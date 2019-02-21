@@ -68,7 +68,7 @@
     description: |
       Runs baremetal kernel benchmarks over different combination of kernel and lttng configurations.
     project-type: freestyle
-    node: 'x86-64'
+    node: 'amd64'
 
     <<: *system_tests_parameters_defaults
 
@@ -131,7 +131,7 @@
     description: |
       Runs root_regression and root_destructive_tests on a virtual machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
-    node: 'x86-64'
+    node: 'amd64'
     <<: *system_tests_parameters_defaults
 
     properties:
@@ -181,7 +181,7 @@
     description: |
       Runs virtual machine fuzzing tests over different combination of kernel and lttng configurations.
     project-type: freestyle
-    node: 'x86-64'
+    node: 'amd64'
     <<: *system_tests_parameters_defaults
 
     properties:
@@ -231,7 +231,7 @@
     description: |
       Runs perf_regression tests on a baremetal machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
-    node: 'x86-64'
+    node: 'amd64'
 
     <<: *system_tests_parameters_defaults
 
@@ -283,7 +283,7 @@
     description: |
       Builds a Linux Kernel and LTTng Modules if necessary
     concurrent: true
-    node: 'x86-64'
+    node: 'amd64'
 
     parameters:
       - string:

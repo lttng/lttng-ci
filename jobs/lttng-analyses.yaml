@@ -96,7 +96,7 @@
 - job-template:
     name: lttng-analyses_{version}_pylint
     defaults: lttng-analyses
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -104,7 +104,7 @@
 
     builders:
        - copyartifact:
-           project: babeltrace_{babeltrace_version}_build/arch=x86-64,build=std,conf=python-bindings
+           project: babeltrace_{babeltrace_version}_build/arch=amd64,build=std,conf=python-bindings
            which-build: last-successful
            stable: false
            filter: 'build/**'
@@ -159,7 +159,7 @@
       - master
     jobs:
       - 'lttng-analyses_{version}_build':
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           babeltrace_version: !!python/tuple [stable-1.5, stable-2.0, master]
       - 'lttng-analyses_{version}_pylint':
           babeltrace_version: stable-1.5

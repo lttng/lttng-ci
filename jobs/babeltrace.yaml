@@ -258,7 +258,7 @@
 - job-template:
     name: babeltrace_{version}_scan-build
     defaults: babeltrace
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -277,7 +277,7 @@
 - job-template:
     name: babeltrace_{version}_coverity
     defaults: babeltrace
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -306,7 +306,7 @@
 - job-template:
     name: babeltrace_{version}_pylint
     defaults: babeltrace
-    node: 'x86-64'
+    node: 'amd64'
 
     scm: []
 
@@ -316,7 +316,7 @@
 
     builders:
        - copyartifact:
-           project: babeltrace_{version}_build/arch=x86-64,build=std,conf=python-bindings
+           project: babeltrace_{version}_build/arch=amd64,build=std,conf=python-bindings
            which-build: last-successful
            stable: false
            filter: 'build/**'
@@ -365,14 +365,14 @@
 - babeltrace_version_glib-2-22-5_anchor: &babeltrace_version_glib-2-22-5_anchor
     name: 'babeltrace_version_glib_anchor'
     defaults: babeltrace
-    node: 'x86-64'
+    node: 'amd64'
 
     builders:
       - inject:
           properties-content: |
             LD_LIBRARY_PATH=$WORKSPACE/glib-2.22.5/BUILD_RESULT/lib
             PKG_CONFIG_PATH=$WORKSPACE/glib-2.22.5/BUILD_RESULT/lib/pkgconfig
-            arch=x86-64
+            arch=amd64
             conf=std
             build=std
       - shell: |
@@ -460,17 +460,17 @@
     jobs:
       - 'babeltrace_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, static, python-bindings]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: clangbuild
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [clang]
           conf: !!python/tuple [std, static]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static, python-bindings]
       - 'babeltrace_{version}_{buildtype}':
@@ -533,7 +533,7 @@
             - master-staging
       - 'dev_{user}_babeltrace_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, static, python-bindings]
       - 'dev_{user}_babeltrace_{version}_{buildtype}':

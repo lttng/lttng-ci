@@ -40,7 +40,7 @@
 - job-template:
     name: linux-rseq_master_coverity
     defaults: linux-rseq
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:

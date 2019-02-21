@@ -146,8 +146,8 @@ build_linux_kernel() {
         cp CONFIGS/"${ubuntu_config}" .config
         ;;
       *)
-        # Force 32bit build on x86-32, default is 64bit
-        if [ "$arch" = "x86-32" ]; then
+        # Force 32bit build on i386, default is 64bit
+        if [ "$arch" = "i386" ]; then
             export ARCH="i386"
         fi
 
@@ -480,13 +480,13 @@ if [ "x${cross_arch}" != "x" ]; then
 elif [ "x${arch}" != "x" ]; then
 
     case "$arch" in
-        "x86-32")
+        "i386")
             karch="x86"
             vanilla_config="allyesconfig"
             ubuntu_config="i386-config.flavour.generic"
             ;;
 
-        "x86-64")
+        "amd64")
             karch="x86"
             vanilla_config="allyesconfig"
             ubuntu_config="amd64-config.flavour.generic"

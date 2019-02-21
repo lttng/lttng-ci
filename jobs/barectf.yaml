@@ -89,7 +89,7 @@
 - job-template:
     name: barectf_{version}_pylint
     defaults: barectf
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -146,6 +146,6 @@
       - master
     jobs:
       - 'barectf_{version}_build':
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [i386, amd64]
       - 'barectf_{version}_pylint'
 

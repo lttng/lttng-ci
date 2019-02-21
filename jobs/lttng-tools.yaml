@@ -459,6 +459,7 @@
     wrappers:
       - ansicolor
       - timeout:
+          timeout: 10
           fail: true
           type: likely-stuck
       - timestamps
@@ -538,7 +539,7 @@
 - job-template:
     name: lttng-tools_{version}_scan-build
     defaults: lttng-tools
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -546,14 +547,14 @@
 
     builders:
       - copyartifact:
-          project: liburcu_{urcuversion}_build/arch=x86-64,conf=std,build=std
+          project: liburcu_{urcuversion}_build/arch=amd64,conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=x86-64,conf=std,build=std
+          project: lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=amd64,conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -571,7 +572,7 @@
 - job-template:
     name: lttng-tools_{version}_coverity
     defaults: lttng-tools
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -590,14 +591,14 @@
 
     builders:
       - copyartifact:
-          project: liburcu_{urcuversion}_build/arch=x86-64,conf=std,build=std
+          project: liburcu_{urcuversion}_build/arch=amd64,conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=x86-64,conf=std,build=std
+          project: lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=amd64,conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -613,7 +614,7 @@
 - job-template:
     name: lttng-tools_{version}_pylint
     defaults: lttng-tools
-    node: 'x86-64'
+    node: 'amd64'
 
     scm: []
 
@@ -623,7 +624,7 @@
 
     builders:
        - copyartifact:
-           project: lttng-tools-{version}/arch=x86-64,build=std,conf=agents
+           project: lttng-tools-{version}/arch=amd64,build=std,conf=agents
            which-build: last-successful
            stable: false
            filter: 'build/**'
@@ -688,7 +689,7 @@
           buildtype: build
           version: master
           ustversion: master
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents, debug-rcu]
           urcuversion: !!python/tuple [master]
@@ -698,7 +699,7 @@
           buildtype: portbuild
           version: master
           ustversion: master
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
@@ -746,7 +747,7 @@
       - 'lttng-tools_{version}_long_regression':
           buildtype: build
           ustversion: master
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
           urcuversion: !!python/tuple [master]
@@ -758,7 +759,7 @@
           buildtype: build
           version: stable-2.11
           ustversion: stable-2.11
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents, debug-rcu]
           urcuversion: !!python/tuple [stable-0.10]
@@ -768,7 +769,7 @@
           buildtype: portbuild
           version: stable-2.11
           ustversion: stable-2.11
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.10]
@@ -819,7 +820,7 @@
           buildtype: build
           version: stable-2.10
           ustversion: stable-2.10
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents, debug-rcu]
           urcuversion: !!python/tuple [stable-0.9]
@@ -829,7 +830,7 @@
           buildtype: portbuild
           version: stable-2.10
           ustversion: stable-2.10
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -880,7 +881,7 @@
           buildtype: build
           version: stable-2.9
           ustversion: stable-2.9
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents, debug-rcu]
           urcuversion: !!python/tuple [stable-0.9]
@@ -890,7 +891,7 @@
           buildtype: portbuild
           version: stable-2.9
           ustversion: stable-2.9
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -941,7 +942,7 @@
           buildtype: build
           version: stable-2.8
           ustversion: stable-2.8
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents, debug-rcu]
           urcuversion: !!python/tuple [stable-0.9]
@@ -951,7 +952,7 @@
           buildtype: portbuild
           version: stable-2.8
           ustversion: stable-2.8
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -983,7 +984,7 @@
           buildtype: build
           version: stable-2.7
           ustversion: stable-2.7
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents, debug-rcu]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1053,7 +1054,7 @@
           buildtype: build
           version: master-staging
           ustversion: master
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
@@ -1063,7 +1064,7 @@
           buildtype: build
           version: stable-2.11-staging
           ustversion: stable-2.11
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.10]
@@ -1073,7 +1074,7 @@
           buildtype: build
           version: stable-2.10-staging
           ustversion: stable-2.10
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1083,7 +1084,7 @@
           buildtype: build
           version: stable-2.9-staging
           ustversion: stable-2.9
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1093,7 +1094,7 @@
           buildtype: build
           version: stable-2.8-staging
           ustversion: stable-2.8
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1103,7 +1104,7 @@
           buildtype: build
           version: stable-2.7-staging
           ustversion: stable-2.7
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1113,7 +1114,7 @@
           buildtype: portbuild
           version: master-staging
           ustversion: master
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
@@ -1123,7 +1124,7 @@
           buildtype: portbuild
           version: stable-2.11-staging
           ustversion: stable-2.11
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.10]
@@ -1133,7 +1134,7 @@
           buildtype: portbuild
           version: stable-2.10-staging
           ustversion: stable-2.10
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1143,7 +1144,7 @@
           buildtype: portbuild
           version: stable-2.9-staging
           ustversion: stable-2.9
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1153,7 +1154,7 @@
           buildtype: portbuild
           version: stable-2.8-staging
           ustversion: stable-2.8
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1163,7 +1164,7 @@
           buildtype: portbuild
           version: stable-2.7-staging
           ustversion: stable-2.7
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]

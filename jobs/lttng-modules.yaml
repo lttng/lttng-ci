@@ -412,7 +412,7 @@
 - job-template:
     name: lttng-modules_{mversion}_coverity
     defaults: lttng-modules
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -609,7 +609,7 @@
 
 # Parametrized kernel and modules build jobs
       - 'lttng-modules_PARAM_build':
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
       - 'lttng-modules_PARAM_crossbuild':
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
 

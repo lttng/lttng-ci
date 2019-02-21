@@ -245,7 +245,7 @@
 - job-template:
     name: liburcu_{version}_scan-build
     defaults: liburcu
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -264,7 +264,7 @@
 - job-template:
     name: liburcu_{version}_coverity
     defaults: liburcu
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -311,12 +311,12 @@
     jobs:
       - 'liburcu_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
       - 'liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
       - 'liburcu_{version}_{buildtype}':

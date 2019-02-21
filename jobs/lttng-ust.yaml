@@ -167,7 +167,7 @@
 - job-template:
     name: lttng-ust_{version}_scan-build
     defaults: lttng-ust
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -175,7 +175,7 @@
 
     builders:
       - copyartifact:
-          project: liburcu_master_build/arch=x86-64,conf=std,build=std
+          project: liburcu_master_build/arch=amd64,conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -193,7 +193,7 @@
 - job-template:
     name: lttng-ust_{version}_coverity
     defaults: lttng-ust
-    node: 'x86-64'
+    node: 'amd64'
 
     triggers:
       - pollscm:
@@ -212,7 +212,7 @@
 
     builders:
       - copyartifact:
-          project: liburcu_master_build/arch=x86-64,conf=std,build=std
+          project: liburcu_master_build/arch=amd64,conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -231,7 +231,7 @@
 - job-template:
     name: lttng-ust_{version}_pylint
     defaults: lttng-ust
-    node: 'x86-64'
+    node: 'amd64'
 
     scm: []
 
@@ -241,7 +241,7 @@
 
     builders:
        - copyartifact:
-           project: lttng-ust-{version}/arch=x86-64,build=std,conf=agents
+           project: lttng-ust-{version}/arch=amd64,build=std,conf=agents
            which-build: last-successful
            stable: false
            filter: 'build/**'
@@ -301,13 +301,13 @@
     jobs:
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu]
           liburcu_version: !!python/tuple [stable-0.8, stable-0.9, stable-0.10, master]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
           liburcu_version: !!python/tuple [stable-0.8, stable-0.9, stable-0.10, master]
@@ -322,14 +322,14 @@
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: master
-          arch: !!python/tuple [x86-32, x86-64]
+          arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: master
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
           liburcu_version: !!python/tuple [master]
