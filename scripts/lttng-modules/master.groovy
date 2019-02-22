@@ -171,6 +171,7 @@ class UbuntuKVersion implements Comparable<UbuntuKVersion> {
   Integer umajor = 0
   Integer uminor = 0
   String suffix = ""
+  String strLTS = ""
   Boolean isLTS = false
 
   UbuntuKVersion() {}
@@ -206,12 +207,15 @@ class UbuntuKVersion implements Comparable<UbuntuKVersion> {
 
     //'Ubuntu-lts-4.8.0-27.29_16.04.1',
     //'Ubuntu-4.4.0-70.91',
-    def match = version =~ /^Ubuntu-(lts-)??(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)(.*)??$/
+    def match = version =~ /^Ubuntu-(lts-|hwe-)??(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)(.*)??$/
     if (!match) {
       throw new InvalidKVersionException("Invalid kernel version: ${version}")
     }
 
-    this.isLTS = match.group(1) != null
+    if (match.group(1) != null) {
+        this.isLTS = true
+        this.strLTS = match.group(1)
+    }
 
     // Major
     this.major = Integer.parseInt(match.group(2))
@@ -288,7 +292,7 @@ class UbuntuKVersion implements Comparable<UbuntuKVersion> {
     String vString = "Ubuntu-"
 
     if (this.isLTS) {
-      vString = vString.concat("lts-")
+      vString = vString.concat("${this.strLTS}")
     }
 
     vString = vString.concat("${this.major}.${this.minor}.${this.patch}-${this.umajor}.${this.uminor}${this.suffix}")
@@ -337,15 +341,17 @@ if (uversion != null) {
     case 'bionic':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-4\.15\.0-\d{1,3}?\.[\d]+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-4\.18\.0-.*_18\.04\.\d+)$/,
       ]
       break
 
     case 'xenial':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-4\.4\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-lts-4\.8\.0-.*_16\.04\.\d+)$/,
-        ~/^refs\/tags\/(Ubuntu-lts-4\.10\.0-.*_16\.04\.\d+)$/,
-        ~/^refs\/tags\/(Ubuntu-lts-4\.15\.0-.*_16\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-4\.8\.0-.*_16\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-4\.10\.0-.*_16\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-4\.13\.0-.*_16\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-4\.15\.0-.*_16\.04\.\d+)$/,
       ]
 
       blacklist = [
