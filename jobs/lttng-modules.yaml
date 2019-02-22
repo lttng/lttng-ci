@@ -561,7 +561,6 @@
             - stable-2.11
             - master
           uversion:
-            - trusty
             - xenial
             - bionic
           buildtype: build
@@ -598,7 +597,6 @@
             - stable-2.11
             - master
           uversion:
-            - trusty
             - xenial
             - bionic
           buildtype: crossbuild
