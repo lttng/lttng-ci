@@ -175,6 +175,6 @@
          email_to: "joraj@efficios.com"
          version: master
          arch: !!python/tuple [amd64]
-         slave: !!python/tuple [amd64-standalone]
+         slave: !!python/tuple [amd64-rootnode]
          liburcu_version: !!python/tuple [master]
 
