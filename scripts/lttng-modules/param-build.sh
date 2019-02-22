@@ -92,7 +92,7 @@ select_compiler() {
 
     set +e
 
-    for cc in gcc-7 gcc-5 gcc-4.9; do
+    for cc in gcc-7 gcc-5 gcc-4.8; do
       if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
         selected_cc="$cc"
         break
@@ -110,13 +110,13 @@ select_compiler() {
     if { vergte "$kversion" "3.2" && verlt "$kversion" "3.3"; } || \
        { vergte "$kversion" "3.4" && verlt "$kversion" "3.5"; } || \
        { vergte "$kversion" "3.17" && verlt "$kversion" "3.18"; }; then
-      selected_cc=gcc-4.9
+      selected_cc=gcc-4.8
     fi
 
     case "$ktag" in
       Ubuntu*)
         if { vergte "$kversion" "3.13" && verlt "$kversion" "3.14"; }; then
-          selected_cc=gcc-4.9
+          selected_cc=gcc-4.8
         fi
       ;;
     esac
@@ -173,7 +173,7 @@ build_linux_kernel() {
     fi
 
     # Fix syntax of inline assembly which is confused with C++11 raw strings on gcc >= 5
-    if [ "$CC" != "gcc-4.9" ]; then
+    if [ "$CC" != "gcc-4.8" ]; then
       if [ -f "arch/x86/kvm/svm.c" ]; then
         sed -i 's/ R"/ R "/g; s/"R"/" R "/g' arch/x86/kvm/svm.c
       fi
