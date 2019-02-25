@@ -21,6 +21,10 @@ dependencies=""
 file_list=$(mktemp)
 ret=0
 
+# WORKSPACE is normally set by Jenkins.  Use the current directory otherwise,
+# like when testing this script manually.
+WORKSPACE=${WORKSPACE:-$PWD}
+
 lttng_processes="$("$PGREP" -l 'lttng|gen-ust-.+')" || true
 if [ ! -z "$lttng_processes" ]; then
 
@@ -58,6 +62,7 @@ if [ ! -z "$core_files" ]; then
         done
     done
 
+    mkdir -p "${WORKSPACE}/build"
     tar cfzh "${WORKSPACE}/build/core.tar.gz" -T "$file_list"
     rm -rf $core_files
     ret=1
