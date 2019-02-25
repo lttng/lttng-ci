@@ -26,3 +26,4 @@ __common_packages:
   - libssl-dev
   - psmisc
   - rsync
+  - pbzip2
