@@ -121,6 +121,14 @@ select_compiler() {
       ;;
     esac
 
+    if [ "$selected_cc" != "gcc-4.8" ]; then
+        # Older kernel Makefiles do not expect the compiler to default to PIE
+        KAFLAGS="-fno-pie"
+        KCFLAGS="-fno-pie -no-pie"
+        KCPPFLAGS="-fno-pie"
+        export KAFLAGS KCFLAGS KCPPFLAGS
+    fi
+
     export CC="${CROSS_COMPILE:-}${selected_cc}"
 
     cd -
@@ -426,12 +434,6 @@ MODULES_OUTPUT_KHDR_DIR="${WORKSPACE}/build/lttng-modules-khdr"
 LINUX_GIT_REF_REPO_DIR="$HOME/gitcache/linux-stable.git/"
 
 OBJ_STORE_URL="s3://jenkins"
-
-# Older kernel Makefiles do not expect the compiler to default to PIE
-KAFLAGS="-fno-pie"
-KCFLAGS="-fno-pie -no-pie"
-KCPPFLAGS="-fno-pie"
-export KAFLAGS KCFLAGS KCPPFLAGS
 
 cd "$WORKSPACE"
 
