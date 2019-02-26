@@ -26,7 +26,7 @@ ret=0
 WORKSPACE=${WORKSPACE:-$PWD}
 
 lttng_processes="$("$PGREP" -l 'lttng|gen-ust-.+')" || true
-if [ ! -z "$lttng_processes" ]; then
+if [ -n "$lttng_processes" ]; then
 
     pids="$(cut -d ' ' -f 1 <<< "$lttng_processes" | tr '\n' ' ')"
     echo "The following LTTng processes were detected running on the system and will be aborted:"
@@ -51,7 +51,7 @@ if [ ! -z "$lttng_processes" ]; then
 fi
 
 core_files=$(find "/tmp" -name "core\.[0-9]*" -type f 2>/dev/null) || true
-if [ ! -z "$core_files" ]; then
+if [ -n "$core_files" ]; then
     echo "$core_files" >> "$file_list"
     echo "$dependencies" >> "$file_list"
 
@@ -64,7 +64,7 @@ if [ ! -z "$core_files" ]; then
 
     mkdir -p "${WORKSPACE}/build"
     tar cfzh "${WORKSPACE}/build/core.tar.gz" -T "$file_list"
-    rm -rf $core_files
+    rm -f "$core_files"
     ret=1
 fi
 
