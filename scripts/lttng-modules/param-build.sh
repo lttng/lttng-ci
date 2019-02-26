@@ -149,8 +149,8 @@ build_linux_kernel() {
             exit 0
           fi
         fi
-        fakeroot debian/rules clean
-        fakeroot debian/rules genconfigs
+        fakeroot debian/rules clean KW_DEFCONFIG_DIR=.
+        fakeroot debian/rules genconfigs KW_DEFCONFIG_DIR=.
         cp CONFIGS/"${ubuntu_config}" .config
         ;;
       *)
