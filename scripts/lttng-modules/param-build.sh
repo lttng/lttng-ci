@@ -1,6 +1,6 @@
 #!/bin/bash -exu
 #
-# Copyright (C) 2016-2018 - Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2016-2019 - Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ select_compiler() {
 
     set +e
 
-    for cc in gcc-7 gcc-5 gcc-4.8; do
+    for cc in gcc-5 gcc-4.8; do
       if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
         selected_cc="$cc"
         break
@@ -106,20 +106,10 @@ select_compiler() {
       exit 1
     fi
 
-    # Force gcc-4 for buggy kernel branches
-    if { vergte "$kversion" "3.2" && verlt "$kversion" "3.3"; } || \
-       { vergte "$kversion" "3.4" && verlt "$kversion" "3.5"; } || \
-       { vergte "$kversion" "3.17" && verlt "$kversion" "3.18"; }; then
+    # Force gcc-4.8 for kernels before 3.18
+    if { verlt "$kversion" "3.18"; }; then
       selected_cc=gcc-4.8
     fi
-
-    case "$ktag" in
-      Ubuntu*)
-        if { vergte "$kversion" "3.13" && verlt "$kversion" "3.14"; }; then
-          selected_cc=gcc-4.8
-        fi
-      ;;
-    esac
 
     if [ "$selected_cc" != "gcc-4.8" ]; then
         # Older kernel Makefiles do not expect the compiler to default to PIE
@@ -130,6 +120,7 @@ select_compiler() {
     fi
 
     export CC="${CROSS_COMPILE:-}${selected_cc}"
+    export HOSTCC="${selected_cc}"
 
     cd -
 }
@@ -215,6 +206,9 @@ build_linux_kernel() {
 
     # Cause problems with inline assembly on i386
     sed -i "s/CONFIG_DEBUG_SECTION_MISMATCH=y/# CONFIG_DEBUG_SECTION_MISMATCH is not set/g" .config
+
+    # Don't build samples, they are broken on some kernel releases
+    sed -i "s/CONFIG_SAMPLES=y/# CONFIG_SAMPLES is not set/g" .config
 
     # IGBVF won't build with recent gcc on 2.6.38.x
     if { vergte "$kversion" "2.6.37" && verlt "$kversion" "2.6.38"; }; then
