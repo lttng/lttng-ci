@@ -309,6 +309,9 @@
               total-high: 0
               total-normal: 0
               total-low: 0
+      - archive:
+          artifacts: 'build/**, deps/**'
+          allow-empty: false
       - workspace-cleanup:
           clean-if:
             - failure: false
