@@ -17,7 +17,6 @@
 
 PGREP=pgrep
 pids=""
-dependencies=""
 file_list=$(mktemp)
 ret=0
 
@@ -34,39 +33,50 @@ if [ -n "$lttng_processes" ]; then
 
     # Stop the processes to make sure everything is frozen
     kill -SIGSTOP $pids
-
-    # Get dependencies for coredump analysis
-    # Use /proc/$PID/exe and ldd to get all shared libs necessary
-    array=(${pids})
-    # Add the /proc/ prefix using parameter expansion
-    array=("${array[@]/#/\/proc\/}")
-    # Add the /exe suffix using parameter expansion
-    array=("${array[@]/%/\/exe}")
-    dependencies=$(ldd "${array[@]}" | grep -v "not found")
-    dependencies=$(awk '/=>/{print$(NF-1)}' <<< "$dependencies" | sort | uniq)
-
     kill -SIGABRT $pids
     kill -SIGCONT $pids
     ret=1
 fi
 
-core_files=$(find "/tmp" -name "core\.[0-9]*" -type f 2>/dev/null) || true
-if [ -n "$core_files" ]; then
-    echo "$core_files" >> "$file_list"
-    echo "$dependencies" >> "$file_list"
+# Add the file passed as $1 to the list of files to collect.
+#
+# If that file is a symlink, follow it and collect the target, recursively.
 
-    # Make sure the coredump is finished using fuser
-    for core in $core_files; do
-        while fuser "$core"; do
-            sleep 1
-        done
+function collect_recursive
+{
+    file_to_collect=$1
+
+    if [ -f "$file_to_collect" ]; then
+        echo "$file_to_collect" >> "$file_list"
+
+        if [ -L "$file_to_collect" ]; then
+            collect_recursive "$(readlink "$file_to_collect")"
+        fi
+    fi
+}
+
+# For each core file...
+while read -r core_file; do
+    # Make sure the coredump is finished using fuser.
+    while fuser "$core_file"; do
+        sleep 1
     done
 
-    mkdir -p "${WORKSPACE}/build"
-    tar cfzh "${WORKSPACE}/build/core.tar.gz" -T "$file_list"
-    rm -f "$core_files"
+    # Collect everything in the core file that looks like a reference to a
+    # shared lib.
+    strings "$core_file" | grep '^/.*\.so.*' | while read -r str; do
+        collect_recursive "$str"
+    done
+
+    rm -f "$core_file"
     ret=1
+done < <(find "/tmp" -maxdepth 1 -name "core\.[0-9]*" -type f 2>/dev/null)
+
+# If we recorded some files to collect, pack them up.
+if [ -s "$file_list" ]; then
+    mkdir -p "${WORKSPACE}/build"
+    tar cfzh "${WORKSPACE}/build/core.tar.gz" -T <(sort "$file_list" | uniq)
 fi
 
-rm -rf "$file_list"
+rm -f "$file_list"
 exit $ret
