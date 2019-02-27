@@ -114,7 +114,7 @@ select_compiler() {
     if [ "$selected_cc" != "gcc-4.8" ]; then
         # Older kernel Makefiles do not expect the compiler to default to PIE
         KAFLAGS="-fno-pie"
-        KCFLAGS="-fno-pie -no-pie"
+        KCFLAGS="-fno-pie -no-pie -fno-stack-protector"
         KCPPFLAGS="-fno-pie"
         export KAFLAGS KCFLAGS KCPPFLAGS
     fi
@@ -144,6 +144,7 @@ build_linux_kernel() {
         fakeroot debian/rules genconfigs KW_DEFCONFIG_DIR=.
         cp CONFIGS/"${ubuntu_config}" .config
         ;;
+
       *)
         # Force 32bit build on i386, default is 64bit
         if [ "$arch" = "i386" ]; then
@@ -209,6 +210,13 @@ build_linux_kernel() {
 
     # Don't build samples, they are broken on some kernel releases
     sed -i "s/CONFIG_SAMPLES=y/# CONFIG_SAMPLES is not set/g" .config
+    sed -i "s/CONFIG_BUILD_DOCSRC=y/# CONFIG_BUILD_DOCSRC is not set/g" .config
+
+    # Disable kcov
+    sed -i "s/CONFIG_KCOV=y/# CONFIG_KCOV is not set/g" .config
+
+    # Broken on some RT kernels
+    sed -i "s/CONFIG_HYPERV=y/# CONFIG_HYPERV is not set/g" .config
 
     # IGBVF won't build with recent gcc on 2.6.38.x
     if { vergte "$kversion" "2.6.37" && verlt "$kversion" "2.6.38"; }; then
@@ -216,13 +224,10 @@ build_linux_kernel() {
     fi
 
     # Set required options
-    {
-        echo "CONFIG_KPROBES=y";
-        echo "CONFIG_FTRACE=y";
-        echo "CONFIG_BLK_DEV_IO_TRACE=y";
-        echo "CONFIG_TRACEPOINTS=y";
-        echo "CONFIG_KALLSYMS_ALL=y";
-    } >> .config
+    sed -i 's/# CONFIG_KPROBES is not set/CONFIG_KPROBES=y/g' .config
+    sed -i 's/# CONFIG_FTRACE is not set/CONFIG_FTRACE=y/g' .config
+    sed -i 's/# CONFIG_BLK_DEV_IO_TRACE is not set/CONFIG_BLK_DEV_IO_TRACE=y/g' .config
+    sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g' .config
 
     # Debug
     #cat .config
@@ -230,7 +235,7 @@ build_linux_kernel() {
     make "$update_conf_target" CC="$CC"
     make -j"$NPROC" CC="$CC"
 
-    krelease=$(make -s kernelrelease)
+    krelease=$(make -s kernelrelease CC="$CC")
 
     # Save the kernel and modules
     mkdir -p "$LINUX_INSTOBJ_DIR/boot"
@@ -546,9 +551,9 @@ secret_key = echo123456
 # Enable S3 v4 signature APIs
 signature_v2 = False" > "$WORKSPACE/.s3cfg"
 
-url_hash="$(echo -n "$kgitrepo/$ktag/$arch/$cross_arch" | md5sum | awk '{ print $1 }')"
+url_hash="$(echo -n "$kgitrepo" | md5sum | awk '{ print $1 }')"
 obj_name="linux.tar.bz2"
-obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash"
+obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/$arch/${cross_arch:-native}"
 obj_url="$obj_url_prefix/$obj_name"
 
 set +e
