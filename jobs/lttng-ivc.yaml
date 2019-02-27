@@ -62,7 +62,7 @@
 
     publishers:
       - archive:
-          artifacts: 'artifacts/**'
+          artifacts: 'artifacts/**, src/lttng_ivc/runtime/projects_cache/**/log/**'
           allow-empty: false
       - junit:
           results: result.xml
@@ -122,7 +122,7 @@
 
     publishers:
       - archive:
-          artifacts: 'artifacts/**'
+          artifacts: 'artifacts/**, src/lttng_ivc/runtime/projects_cache/**/log/**'
           allow-empty: false
       - junit:
           results: result.xml
