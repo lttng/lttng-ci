@@ -384,19 +384,18 @@ build_modules() {
 
         # Build modules
         KERNELDIR="${kdir}" make -j"${NPROC}" V=1 CC="$CC"
+	ret=$?
 
         set -e
 
         # We expect this build to fail, if it doesn't, fail the job.
-        if [ "$?" -eq 0 ]; then
+        if [ "$ret" -eq 0 ]; then
             echo "This build should have failed."
             exit 1
         fi
 
         # We have to publish at least one file or the build will fail
         echo "This kernel is broken, there is a deadlock in the timekeeping subsystem." > "${outdir}/BROKEN.txt.ko"
-
-        set -e
 
         KERNELDIR="${kdir}" make clean
 
