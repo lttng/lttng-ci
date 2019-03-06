@@ -377,6 +377,9 @@ if (uversion != null) {
   matchStrs = [
     ~/^refs\/tags\/(v[\d\.]+(-rc(\d+))?)$/,
   ]
+  blacklist = [
+    'v3.2.3',
+  ]
 }
 
 // Parse kernel versions
