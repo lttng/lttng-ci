@@ -218,6 +218,13 @@ build_linux_kernel() {
     # Broken on some RT kernels
     sed -i "s/CONFIG_HYPERV=y/# CONFIG_HYPERV is not set/g" .config
 
+    # Broken drivers
+    sed -i "s/CONFIG_RAPIDIO_TSI721=y/# CONFIG_RAPIDIO_TSI721 is not set/g" .config
+    sed -i "s/CONFIG_SGI_XP=y/# CONFIG_SGI_XP is not set/g" .config
+    sed -i "s/CONFIG_MFD_WM8994=y/# CONFIG_MFD_WM8994 is not set/g" .config
+    sed -i "s/CONFIG_DRM_RADEON=y/# CONFIG_DRM_RADEON is not set/g" .config
+    sed -i "s/CONFIG_SND_SOC_WM5100=y/# CONFIG_SND_SOC_WM5100 is not set/g" .config
+
     # IGBVF won't build with recent gcc on 2.6.38.x
     if { vergte "$kversion" "2.6.37" && verlt "$kversion" "2.6.38"; }; then
       sed -i "s/CONFIG_IGBVF=y/# CONFIG_IGBVF is not set/g" .config
