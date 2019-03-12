@@ -27,3 +27,4 @@ __common_packages:
   - psmisc
   - rsync
   - pbzip2
+  - lzop
