@@ -160,11 +160,11 @@ build_linux_kernel() {
         ;;
     esac
 
-    # silentoldconfig was renamed in 4.19
+    # oldnoconfig was renamed in 4.19
     if vergte "$kversion" "4.19"; then
-        update_conf_target="syncconfig"
+        update_conf_target="olddefconfig"
     else
-        update_conf_target="silentoldconfig"
+        update_conf_target="oldnoconfig"
     fi
 
     # Fix 'defined(@array)' was removed from recent perl
@@ -173,7 +173,7 @@ build_linux_kernel() {
     fi
 
     # Fix syntax of inline assembly which is confused with C++11 raw strings on gcc >= 5
-    if [ "$CC" != "gcc-4.8" ]; then
+    if [ "$HOSTCC" != "gcc-4.8" ]; then
       if [ -f "arch/x86/kvm/svm.c" ]; then
         sed -i 's/ R"/ R "/g; s/"R"/" R "/g' arch/x86/kvm/svm.c
       fi
@@ -183,9 +183,23 @@ build_linux_kernel() {
       fi
     fi
 
+    # Newer binutils don't accept 3 operand 'cmp' instructions on ppc64
+    # Convert them to 'cmpw' which was previously done silently
+    if verlt "$kversion" "4.9"; then
+	    find arch/powerpc/ -name "*.S" -print0 | xargs -0 sed -i "s/\(cmp\)\(\s\+[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+\)/cmpw\2/"
+	    find arch/powerpc/ -name "*.S" -print0 | xargs -0 sed -i "s/\(cmpli\)\(\s\+[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+\)/cmplwi\2/"
+	    sed -i "s/\$pie \-o \"\$ofile\"/\$pie --no-dynamic-linker -o \"\$ofile\"/" arch/powerpc/boot/wrapper
+    fi
+
     # Fix a typo in v2.6.36.x
     if [ -f "arch/x86/kernel/entry_64.S" ]; then
       sed -i 's/END(do_hypervisor_callback)/END(xen_do_hypervisor_callback)/' arch/x86/kernel/entry_64.S
+    fi
+
+    # Fix compiler switch in vdso Makefile for 2.6.36 to 2.6.36.2
+    if { vergte "$kversion" "2.6.36" && verlte "$kversion" "2.6.36.3"; }; then
+      sed -i 's/-m elf_x86_64/-m64/' arch/x86/vdso/Makefile
+      sed -i 's/-m elf_i386/-m32/' arch/x86/vdso/Makefile
     fi
 
     # Fix kernel < 3.0 with gcc >= 4.7
@@ -197,44 +211,53 @@ build_linux_kernel() {
     fi
 
     # GCC 4.8
-    sed -i "s/CONFIG_CC_STACKPROTECTOR_STRONG=y/# CONFIG_CC_STACKPROTECTOR_STRONG is not set/g" .config
+    if [ "$HOSTCC" == "gcc-4.8" ]; then
+      scripts/config --disable CONFIG_CC_STACKPROTECTOR_STRONG
+    fi
 
     # Don't try to sign modules
-    sed -i "s/CONFIG_MODULE_SIG=y/# CONFIG_MODULE_SIG is not set/g" .config
+    scripts/config --disable CONFIG_MODULE_SIG
 
     # Disable kernel stack frame correctness validation, introduced in 4.6.0 and currently fails
-    sed -i "s/CONFIG_STACK_VALIDATION=y/# CONFIG_STACK_VALIDATION is not set/g" .config
+    scripts/config --disable CONFIG_STACK_VALIDATION
 
     # Cause problems with inline assembly on i386
-    sed -i "s/CONFIG_DEBUG_SECTION_MISMATCH=y/# CONFIG_DEBUG_SECTION_MISMATCH is not set/g" .config
+    scripts/config --disable CONFIG_DEBUG_SECTION_MISMATCH
 
     # Don't build samples, they are broken on some kernel releases
-    sed -i "s/CONFIG_SAMPLES=y/# CONFIG_SAMPLES is not set/g" .config
-    sed -i "s/CONFIG_BUILD_DOCSRC=y/# CONFIG_BUILD_DOCSRC is not set/g" .config
+    scripts/config --disable CONFIG_SAMPLES
+    scripts/config --disable CONFIG_BUILD_DOCSRC
 
     # Disable kcov
-    sed -i "s/CONFIG_KCOV=y/# CONFIG_KCOV is not set/g" .config
+    scripts/config --disable CONFIG_KCOV
 
     # Broken on some RT kernels
-    sed -i "s/CONFIG_HYPERV=y/# CONFIG_HYPERV is not set/g" .config
+    scripts/config --disable CONFIG_HYPERV
 
     # Broken drivers
-    sed -i "s/CONFIG_RAPIDIO_TSI721=y/# CONFIG_RAPIDIO_TSI721 is not set/g" .config
-    sed -i "s/CONFIG_SGI_XP=y/# CONFIG_SGI_XP is not set/g" .config
-    sed -i "s/CONFIG_MFD_WM8994=y/# CONFIG_MFD_WM8994 is not set/g" .config
-    sed -i "s/CONFIG_DRM_RADEON=y/# CONFIG_DRM_RADEON is not set/g" .config
-    sed -i "s/CONFIG_SND_SOC_WM5100=y/# CONFIG_SND_SOC_WM5100 is not set/g" .config
+    scripts/config --disable CONFIG_RAPIDIO_TSI721
+    scripts/config --disable CONFIG_SGI_XP
+    scripts/config --disable CONFIG_MFD_WM8994
+    scripts/config --disable CONFIG_DRM_RADEON
+    scripts/config --disable CONFIG_SND_SOC_WM5100
 
     # IGBVF won't build with recent gcc on 2.6.38.x
     if { vergte "$kversion" "2.6.37" && verlt "$kversion" "2.6.38"; }; then
-      sed -i "s/CONFIG_IGBVF=y/# CONFIG_IGBVF is not set/g" .config
+      scripts/config --disable CONFIG_IGBVF
     fi
 
     # Set required options
-    sed -i 's/# CONFIG_KPROBES is not set/CONFIG_KPROBES=y/g' .config
-    sed -i 's/# CONFIG_FTRACE is not set/CONFIG_FTRACE=y/g' .config
-    sed -i 's/# CONFIG_BLK_DEV_IO_TRACE is not set/CONFIG_BLK_DEV_IO_TRACE=y/g' .config
-    sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g' .config
+    scripts/config --enable CONFIG_TRACEPOINTS
+    scripts/config --enable CONFIG_KALLSYMS
+    scripts/config --enable CONFIG_HIGH_RES_TIMERS
+    scripts/config --enable CONFIG_KPROBES
+    scripts/config --enable CONFIG_FTRACE
+    scripts/config --enable CONFIG_BLK_DEV_IO_TRACE
+    scripts/config --enable CONFIG_KALLSYMS_ALL
+    scripts/config --enable CONFIG_HAVE_SYSCALL_TRACEPOINTS
+    scripts/config --enable CONFIG_PERF_EVENTS
+    scripts/config --enable CONFIG_EVENT_TRACING
+    scripts/config --enable CONFIG_KRETPROBES
 
     # Debug
     #cat .config
@@ -246,8 +269,8 @@ build_linux_kernel() {
 
     # Save the kernel and modules
     mkdir -p "$LINUX_INSTOBJ_DIR/boot"
-    make INSTALL_MOD_PATH="$LINUX_INSTOBJ_DIR" INSTALL_MOD_STRIP=1 modules_install
-    make INSTALL_PATH="$LINUX_INSTOBJ_DIR/boot" install
+    make INSTALL_MOD_PATH="$LINUX_INSTOBJ_DIR" INSTALL_MOD_STRIP=1 modules_install CC="$CC"
+    make INSTALL_PATH="$LINUX_INSTOBJ_DIR/boot" install CC="$CC"
     rm -f "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source" "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/build"
     ln -s ../../../../sources "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source"
     ln -s ../../../../sources "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source"
@@ -454,14 +477,14 @@ if [ "x${cross_arch}" != "x" ]; then
         "armhf")
             karch="arm"
             cross_compile="arm-linux-gnueabihf-"
-            vanilla_config="allyesconfig"
+            vanilla_config="imx_v6_v7_defconfig"
             ubuntu_config="armhf-config.flavour.generic"
             ;;
 
         "arm64")
             karch="arm64"
             cross_compile="aarch64-linux-gnu-"
-            vanilla_config="allyesconfig"
+            vanilla_config="defconfig"
             ubuntu_config="arm64-config.flavour.generic"
             ;;
 
