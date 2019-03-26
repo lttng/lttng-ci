@@ -68,7 +68,7 @@ while read -r core_file; do
         collect_recursive "$str"
     done
 
-    rm -f "$core_file"
+    echo "$core_file" >> $file_list
     ret=1
 done < <(find "/tmp" -maxdepth 1 -name "core\.[0-9]*" -type f 2>/dev/null)
 
@@ -77,6 +77,11 @@ if [ -s "$file_list" ]; then
     mkdir -p "${WORKSPACE}/build"
     tar cfzh "${WORKSPACE}/build/core.tar.gz" -T <(sort "$file_list" | uniq)
 fi
+
+# Remove core file
+while read -r core_file; do
+	rm -rf "$core_file"
+done < <(find "/tmp" -maxdepth 1 -name "core\.[0-9]*" -type f 2>/dev/null)
 
 rm -f "$file_list"
 exit $ret
