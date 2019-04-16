@@ -520,13 +520,6 @@
           kverfloor: v2.6.36
           kverceil: ''
           kverfilter: stable-head
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
-          mversion: stable-2.7
-          buildtype: build
-          parambuildtype: build
-          kverfloor: v2.6.36
-          kverceil: v4.8-rc0
-          kverfilter: stable-head
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
             - master
@@ -544,13 +537,6 @@
           parambuildtype: build
           kverfloor: v2.6.36
           kverceil: ''
-          kverfilter: none
-      - 'lttng-modules_{mversion}_fullbuild-vanilla':
-          mversion: stable-2.7
-          buildtype: build
-          parambuildtype: build
-          kverfloor: v2.6.36
-          kverceil: v4.8-rc0
           kverfilter: none
 
 # RT normal builds
@@ -586,13 +572,6 @@
           parambuildtype: crossbuild
           kverfloor: v3.18
           kverceil: ''
-          kverfilter: stable-head
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
-          mversion: stable-2.7
-          buildtype: crossbuild
-          parambuildtype: crossbuild
-          kverfloor: v3.18
-          kverceil: v4.8-rc0
           kverfilter: stable-head
 
 # Ubuntu cross builds

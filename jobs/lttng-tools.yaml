@@ -987,26 +987,6 @@
 
       # stable-2.7 #
       - 'lttng-tools_{version}_{buildtype}':
-          buildtype: build
-          version: stable-2.7
-          ustversion: stable-2.7
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, no-ust, agents, debug-rcu]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-      - 'lttng-tools_{version}_{buildtype}':
-          buildtype: portbuild
-          version: stable-2.7
-          ustversion: stable-2.7
-          arch: !!python/tuple [armhf, arm64, powerpc]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-      - 'lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.7
           ustversion: stable-2.7

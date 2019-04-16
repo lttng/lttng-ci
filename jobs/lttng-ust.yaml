@@ -293,7 +293,6 @@
     github_name: lttng-ust
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     version:
-      - stable-2.7
       - stable-2.8
       - stable-2.9
       - stable-2.10
@@ -346,4 +345,13 @@
           version: master
       - 'lttng-ust_{version}_coverity':
           version: master
+
+      # stable-2.7
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: slesbuild
+          version: stable-2.7
+          arch: !!python/tuple [sles12sp2]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          liburcu_version: !!python/tuple [stable-0.9]
 
