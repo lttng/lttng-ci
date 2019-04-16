@@ -112,6 +112,28 @@ if [ -d "$WORKSPACE/src/linux" ]; then
 	export KERNELDIR="$WORKSPACE/src/linux"
 fi
 
+# Hack to get coverity with gcc >= 7
+#
+# We have to define the _Float* types as those are not defined by coverity and as result
+# the codes linking agains those (pretty much anything linking against stdlib.h and math.h)
+# won't be covered.
+echo "
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define _Float128 long double
+#define _Float64x long double
+#define _Float64 double
+#define _Float32x double
+#define _Float32 float
+
+#ifdef __cplusplus
+}
+#endif" >> /tmp/coverity.h
+
+export CPPFLAGS="-include /tmp/coverity.h ${CPPFLAGS:-}"
+
 
 # Verify upload is permitted
 set +x

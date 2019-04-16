@@ -431,13 +431,19 @@
 
     builders:
       - shell: |
-         git clone --depth=1 -b v4.10 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+         git clone --depth=1 -b v4.20 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
          cd src/linux
          make defconfig
          sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config
          make modules_prepare
       - shell:
          !include-raw-escape: scripts/common/coverity.sh
+
+    publishers:
+      - archive:
+          artifacts: 'analysis-results.tgz,cov-int/**'
+          allow-empty: false
+      - workspace-cleanup
 
 - job-template:
     name: lttng-modules_{mversion}_cppcheck

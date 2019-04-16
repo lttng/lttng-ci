@@ -611,6 +611,9 @@
           !include-raw-escape: scripts/common/coverity.sh
 
     publishers:
+      - archive:
+          artifacts: 'analysis-results.tgz,cov-int/**'
+          allow-empty: false
       - workspace-cleanup
 
 # TODO
