@@ -136,8 +136,9 @@ export CPPFLAGS="-include /tmp/coverity.h ${CPPFLAGS:-}"
 
 
 # Verify upload is permitted
+#  Added "--insecure" because Coverity can't be bothered to properly install SSL certificate chains
 set +x
-AUTH_RES=$(curl -s --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" $SCAN_URL/api/upload_permitted)
+AUTH_RES=$(curl -s --insecure --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" $SCAN_URL/api/upload_permitted)
 set -x
 if [ "$AUTH_RES" = "Access denied" ]; then
   echo -e "\033[33;1mCoverity Scan API access denied. Check COVERITY_SCAN_PROJECT_NAME and COVERITY_SCAN_TOKEN.\033[0m"
@@ -159,7 +160,7 @@ if [ ! -d "$TOOL_BASE" ]; then
   if [ ! -e "$TOOL_ARCHIVE" ]; then
     echo -e "\033[33;1mDownloading Coverity Scan Analysis Tool...\033[0m"
     set +x
-    wget -nv -O "$TOOL_ARCHIVE" "$TOOL_URL" --post-data "project=$COVERITY_SCAN_PROJECT_NAME&token=$COVERITY_SCAN_TOKEN"
+    curl -s --insecure --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" -o "$TOOL_ARCHIVE" "$TOOL_URL"
     set -x
   fi
 
@@ -224,7 +225,7 @@ tar czf $RESULTS_ARCHIVE $RESULTS_DIR_NAME
 # Upload results
 echo -e "\033[33;1mUploading Coverity Scan Analysis results...\033[0m"
 set +x
-response=$(curl \
+response=$(curl --insecure \
   --silent --write-out "\n%{http_code}\n" \
   --form project="$COVERITY_SCAN_PROJECT_NAME" \
   --form token="$COVERITY_SCAN_TOKEN" \
