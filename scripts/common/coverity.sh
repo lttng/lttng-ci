@@ -119,7 +119,7 @@ fi
 # won't be covered.
 echo "
 #ifdef __cplusplus
-extern "C" {
+extern \"C\" {
 #endif
 
 #define _Float128 long double
