@@ -2,6 +2,7 @@
   roles:
     - common
     - cross-compilers
+    - compilers
     - babeltrace
     - liburcu
     - lttng-ust
