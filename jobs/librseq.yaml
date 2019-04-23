@@ -1,0 +1,304 @@
+# {project}_{version}_{jobtype}
+# librseq_stable-0.8_build
+#
+# jobtypes:
+#   - build
+#   - portbuild
+#   - cppcheck
+#   - coverity
+#   - scan-build
+#   - pylint
+
+- defaults:
+    name: librseq
+    description: |
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    wrappers:
+      - ansicolor
+      - timeout:
+          timeout: 10
+          fail: true
+          type: absolute
+      - timestamps
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - origin/{version}
+          basedir: src/librseq
+          skip-tag: true
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=librseq
+      - build-discarder:
+          num-to-keep: 2
+      - github:
+          url: https://github.com/{github_user}/{github_name}
+
+
+## Anchors
+- librseq_build_axes_defaults: &librseq_build_axes_defaults
+    name: 'librseq_build_axes_defaults'
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: conf
+         values: '{obj:conf}'
+      - axis:
+         type: user-defined
+         name: build
+         values: '{obj:build}'
+
+- librseq_build_axes_cc: &librseq_build_axes_cc
+    name: 'librseq_build_axes_cc'
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: conf
+         values: '{obj:conf}'
+      - axis:
+         type: user-defined
+         name: build
+         values: '{obj:build}'
+      - axis:
+         type: user-defined
+         name: cc
+         values: '{obj:cc}'
+
+- librseq_build_builders_defaults: &librseq_build_builders_defaults
+    name: 'librseq_build_builders_defaults'
+    builders:
+      - shell:
+         !include-raw-escape: scripts/librseq/build.sh
+
+- librseq_build_publishers_defaults: &librseq_build_publishers_defaults
+    name: 'librseq_build_publishers_defaults'
+    publishers:
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - archive:
+          artifacts: 'build/**'
+          allow-empty: false
+      - ircbot:
+          strategy: new-failure-and-fixed
+          matrix-notifier: only-parent
+          channels:
+            - name: '#lttng'
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+
+## Templates
+- job-template:
+    name: librseq_{version}_{buildtype}
+    defaults: librseq
+
+    <<: *librseq_build_axes_defaults
+    <<: *librseq_build_builders_defaults
+    <<: *librseq_build_publishers_defaults
+
+- job-template:
+    name: librseq_{version}_{cctype}
+    defaults: librseq
+
+    <<: *librseq_build_axes_cc
+    <<: *librseq_build_builders_defaults
+    <<: *librseq_build_publishers_defaults
+
+- job-template:
+    name: librseq_{version}_cppcheck
+    defaults: librseq
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    builders:
+      - shell: |
+          rm -f cppcheck-result.xml
+          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/librseq 2> cppcheck-result.xml
+
+    publishers:
+      - archive:
+          artifacts: 'cppcheck-result.xml'
+          allow-empty: false
+      - cppcheck:
+          pattern: 'cppcheck-result.xml'
+      - email-ext:
+          recipients: '{obj:email_to}'
+          reply-to: ci-notification@lists.lttng.org
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: false
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: false
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: true
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
+
+- job-template:
+    name: librseq_{version}_scan-build
+    defaults: librseq
+    node: 'amd64'
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    builders:
+      - shell:
+          !include-raw-escape: scripts/common/scan-build.sh
+
+    publishers:
+      - html-publisher:
+          name: 'HTML Report'
+          dir: 'scan-build-archive/'
+          files: 'index.html'
+
+- job-template:
+    name: librseq_{version}_coverity
+    defaults: librseq
+    node: 'amd64'
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    wrappers:
+      - ansicolor
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
+      - timestamps
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: librseq_coverity_token
+              username: COVERITY_SCAN_PROJECT_NAME
+              password: COVERITY_SCAN_TOKEN
+
+    builders:
+      - shell:
+          !include-raw-escape: scripts/common/coverity.sh
+
+    publishers:
+      - workspace-cleanup
+      - archive:
+          artifacts: 'analysis-results.tgz,cov-int/**'
+          allow-empty: false
+
+- view-template:
+    name: 'rseq'
+    description: 'Restartable sequences'
+    view-type: list
+    regex: 'librseq_.*|linux-rseq_.*'
+
+
+## Project
+- project:
+    name: librseq
+    github_user: compudj
+    github_name: librseq
+    email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
+    version:
+      - master
+    jobs:
+      - 'librseq_{version}_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, static]
+      - 'librseq_{version}_{cctype}':
+          cctype: gccbuild
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, static]
+          cc: !!python/tuple [gcc-4.8, gcc-5, gcc-6, gcc-7, gcc-8]
+      - 'librseq_{version}_{cctype}':
+          cctype: clangbuild
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, static]
+          cc: !!python/tuple [clang-3.9, clang-4.0, clang-6.0, clang-7]
+      - 'librseq_{version}_{buildtype}':
+          buildtype: portbuild
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, static]
+#      - 'librseq_{version}_cppcheck'
+#      - 'librseq_{version}_scan-build'
+#      - 'librseq_{version}_coverity':
+#          version: master
+
+- project:
+    name: librseq-views
+    views:
+      - rseq
