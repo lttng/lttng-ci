@@ -204,7 +204,8 @@ autotools)
     ;;
 linux-rseq)
     make defconfig
-    cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" kernel/rseq.o kernel/cpu_opv.o V=1
+    make -j"$NPROC" prepare
+    cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" kernel/rseq.o kernel/cpu_opv.o V=1 KCPPFLAGS="$CPPFLAGS"
     ;;
 *)
     echo "Unsupported build type: $BUILD_TYPE"
