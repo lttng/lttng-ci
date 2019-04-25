@@ -73,6 +73,7 @@ verne() {
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
+cc=${cc:-}
 
 
 SRCDIR="$WORKSPACE/src/babeltrace"
@@ -85,6 +86,68 @@ mkdir -p "$PREFIX" "$TMPDIR"
 
 export TMPDIR
 export CFLAGS="-g -O2"
+
+# Set compiler variables
+case "$cc" in
+gcc)
+    export CC=gcc
+    export CXX=g++
+    ;;
+gcc-4.8)
+    export CC=gcc-4.8
+    export CXX=g++-4.8
+    ;;
+gcc-5)
+    export CC=gcc-5
+    export CXX=g++-5
+    ;;
+gcc-6)
+    export CC=gcc-6
+    export CXX=g++-6
+    ;;
+gcc-7)
+    export CC=gcc-7
+    export CXX=g++-7
+    ;;
+gcc-8)
+    export CC=gcc-8
+    export CXX=g++-8
+    ;;
+clang)
+    export CC=clang
+    export CXX=clang++
+    ;;
+clang-3.9)
+    export CC=clang-3.9
+    export CXX=clang++-3.9
+    ;;
+clang-4.0)
+    export CC=clang-4.0
+    export CXX=clang++-4.0
+    ;;
+clang-5.0)
+    export CC=clang-5.0
+    export CXX=clang++-5.0
+    ;;
+clang-6.0)
+    export CC=clang-6.0
+    export CXX=clang++-6.0
+    ;;
+clang-7)
+    export CC=clang-7
+    export CXX=clang++-7
+    ;;
+*)
+    if [ "x$cc" != "x" ]; then
+	    export CC="$cc"
+    fi
+    ;;
+esac
+
+if [ "x$CC" != "x" ]; then
+    echo "Selected compiler:"
+    "$CC" -v
+fi
 
 # Set platform variables
 case "$arch" in
@@ -195,12 +258,6 @@ case "$build" in
         "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
         ;;
 
-    clang)
-        echo "LLVM clang build"
-        export CC=clang
-        clang -v
-	"$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
-        ;;
     *)
         echo "Standard in-tree build"
         "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
