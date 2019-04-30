@@ -12,13 +12,13 @@ install:
         steps:
                 - export TMPDIR="/tmp"
                 - systemctl stop systemd-timesyncd.service
-                - ulimit -c unlimited
                 - mkdir -p coredump
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 params:
   JENKINS_BUILD_ID: "invalid_jenkins_build_id"
 run:
         steps:
+                - ulimit -c unlimited
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools
                 - lava-test-case build-test-suite --shell "make"

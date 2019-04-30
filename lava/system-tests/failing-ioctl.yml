@@ -16,11 +16,11 @@ install:
                   branch: master
         steps:
                 - export TMPDIR="/tmp"
-                - ulimit -c unlimited
                 - mkdir -p coredump
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 run:
         steps:
+                - ulimit -c unlimited
                 - source /root/lttngvenv/activate
                 - export BENCHMARK_DIR=$(mktemp --directory)/bm
                 - git clone https://github.com/frdeso/syscall-bench-it.git $BENCHMARK_DIR
