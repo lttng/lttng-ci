@@ -144,7 +144,7 @@ clang-7)
     ;;
 esac
 
-if [ "x$CC" != "x" ]; then
+if [ "x${CC:-}" != "x" ]; then
     echo "Selected compiler:"
     "$CC" -v
 fi
