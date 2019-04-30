@@ -14,11 +14,11 @@ install:
                   branch: master
         steps:
                 - export TMPDIR="/tmp"
-                - ulimit -c unlimited
                 - mkdir -p coredump
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 run:
         steps:
+                - ulimit -c unlimited
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools
                 - lava-test-case build-test-suite --shell "make"
