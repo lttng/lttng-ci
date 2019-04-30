@@ -40,7 +40,7 @@ class TestType():
         'baremetal-benchmarks' : baremetal_benchmarks,
         'baremetal-tests' : baremetal_tests,
         'kvm-tests' : kvm_tests,
-        'kvm-fuzzin-tests' : kvm_fuzzing_tests,
+        'kvm-fuzzing-tests' : kvm_fuzzing_tests,
     }
 
 class DeviceType():
