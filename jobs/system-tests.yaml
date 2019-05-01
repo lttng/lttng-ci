@@ -188,7 +188,7 @@
       - build-discarder:
           num-to-keep: 10
       - throttle:
-          max-total: 2
+          max-total: 4
           option: 'category'
           categories:
             - 'kvm-tests'
