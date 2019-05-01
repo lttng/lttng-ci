@@ -367,10 +367,10 @@ configurationOfInterest.each { lttngBr, linuxBr  ->
   currentJobs[jobName] = CraftConfig(linuxBr, lttngBr);
 
   // Add fuzzing job in vm_tests on master branches of lttng and linux.
-  if (jobType == 'vm_tests' && lttngBr == 'master' && linuxBr == 'master') {
-    def vmFuzzingJobName = CraftJobName(jobType + '_fuzzing', linuxBr, lttngBr);
-    currentJobs[vmFuzzingJobName] = CraftConfig(linuxBr, lttngBr);
-  }
+  //if (jobType == 'vm_tests' && lttngBr == 'master' && linuxBr == 'master') {
+  //  def vmFuzzingJobName = CraftJobName(jobType + '_fuzzing', linuxBr, lttngBr);
+  //  currentJobs[vmFuzzingJobName] = CraftConfig(linuxBr, lttngBr);
+  //}
 }
 
 //Add canary job
