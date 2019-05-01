@@ -398,7 +398,7 @@ currentJobs.each { jobName, jobInfo ->
   // If the job ran in the past, we check if the IDs changed since.
   // Fetch past results only if the job is not of type canary or fuzzing.
   if (!jobName.contains('_canary') && !jobName.contains('_fuzzing') &&
-         pastJobs.containsKey(jobName)) {
+         pastJobs.containsKey(jobName) && !params.FORCE_JOB_RUN) {
     pastJob = pastJobs[jobName];
 
     // If the code has not changed report previous status.

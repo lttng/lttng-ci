@@ -383,6 +383,11 @@
 
     project-type: freestyle
     node: 'master'
+    parameters:
+      - bool:
+          name: 'FORCE_JOB_RUN'
+          default: false
+          description: 'Force the child jobs to run'
 
     properties:
       - build-discarder:
