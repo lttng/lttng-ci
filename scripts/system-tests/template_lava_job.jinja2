@@ -175,7 +175,7 @@ actions:
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/kprobe-fuzzing-tests.yml
-              name: kprobe-fuzzing-tests
+              name: kprobe-fuzzing-tests{{ i }}
               params:
                 ROUND_NB: {{ i }}
           {% endfor %}
