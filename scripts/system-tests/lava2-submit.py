@@ -227,7 +227,10 @@ def main():
             print('Job started running')
             running = True
         time.sleep(30)
-        jobstatus = server.scheduler.job_state(jobid)['job_state']
+        try:
+            jobstatus = server.scheduler.job_state(jobid)['job_state']
+        except xmlrpc.client.ProtocolError as e:
+            print('Protocol error, retring')
     print('Job ended with {} status.'.format(jobstatus))
 
     if jobstatus != 'Finished':
