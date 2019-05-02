@@ -314,7 +314,25 @@
                   branch-pattern: '**'
           trigger-for-unreviewed-patches: true
 
-    <<: *babeltrace_build_axes_defaults
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    execution-strategy:
+      combination-filter: |
+        (build=="std") || (arch=="amd64")
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: conf
+         values: '{obj:conf}'
+      - axis:
+         type: user-defined
+         name: build
+         values: '{obj:build}'
+
     <<: *babeltrace_build_builders_defaults
     <<: *babeltrace_build_publishers_gerrit
 
@@ -648,7 +666,6 @@
     jobs:
       - 'dev_gerrit_babeltrace_{buildtype}':
           buildtype: build
-          #arch: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
-          arch: !!python/tuple [amd64, i386]
-          build: !!python/tuple [std]
+          arch: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, python-bindings]
