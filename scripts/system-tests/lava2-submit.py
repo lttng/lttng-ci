@@ -24,6 +24,8 @@ import time
 import yaml
 import xmlrpc.client
 import pprint
+from urllib.parse import urljoin
+from urllib.request import urlretrieve
 
 from jinja2 import Environment, FileSystemLoader, meta
 
