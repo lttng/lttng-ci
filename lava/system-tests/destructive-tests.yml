@@ -2,22 +2,16 @@ metadata:
         format: Lava-Test Test Definition 1.0
         name: lttng-destructive-tests
         description: "Run root destructive test suite"
-install:
-        deps:
-                - curl
-        git-repos:
-                - url: https://github.com/lttng/lttng-ci
-                  destination: ci
-                  branch: master
-        steps:
-                - export TMPDIR="/tmp"
-                - systemctl stop systemd-timesyncd.service
-                - mkdir -p coredump
-                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 params:
   JENKINS_BUILD_ID: "invalid_jenkins_build_id"
 run:
         steps:
+                - apt install -y curl
+                - git clone https://github.com/lttng/lttng-ci ci
+                - export TMPDIR="/tmp"
+                - systemctl stop systemd-timesyncd.service
+                - mkdir -p coredump
+                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
                 - ulimit -c unlimited
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools

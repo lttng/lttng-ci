@@ -4,20 +4,13 @@ metadata:
         description: "Run kernel test suite"
 params:
     JENKINS_BUILD_ID: "invalid_jenkins_build_id"
-
-install:
-        deps:
-                - curl
-        git-repos:
-                - url: https://github.com/lttng/lttng-ci
-                  destination: ci
-                  branch: master
+run:
         steps:
+                - apt install -y curl
+                - git clone https://github.com/lttng/lttng-ci ci
                 - export TMPDIR="/tmp"
                 - mkdir -p coredump
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
-run:
-        steps:
                 - ulimit -c unlimited
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools

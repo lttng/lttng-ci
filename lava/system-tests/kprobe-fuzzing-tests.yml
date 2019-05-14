@@ -2,13 +2,9 @@ metadata:
         format: Lava-Test Test Definition 1.0
         name: lttng-fuzzing-kprobe-test
         description: "Run kprobe fuzzing test suite"
-install:
-        git-repos:
-                - url: https://github.com/lttng/lttng-ci
-                  destination: ci
-                  branch: master
 params:
   ROUND_NB: 0
 run:
         steps:
+                - git clone https://github.com/lttng/lttng-ci ci
                 - lava-test-case run-fuzzing --shell "python3 ./ci/scripts/system-tests/run-kprobe-fuzzing.py /root/instr_points.txt.gz $ROUND_NB"

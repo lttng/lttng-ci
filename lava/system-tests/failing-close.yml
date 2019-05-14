@@ -4,22 +4,13 @@ metadata:
         description: "Perform syscall tracing benchmark of failing close"
 params:
     JENKINS_BUILD_ID: "invalid_jenkins_build_id"
-
-install:
-        deps:
-                - python3-pandas
-                - python3-numpy
-                - curl
-        git-repos:
-                - url: https://github.com/lttng/lttng-ci
-                  destination: ci
-                  branch: master
+run:
         steps:
+                - apt install -y python3-pandas python3-numpy curl
+                - git clone https://github.com/lttng/lttng-ci ci
                 - export TMPDIR="/tmp"
                 - mkdir -p coredump
                 - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
-run:
-        steps:
                 - ulimit -c unlimited
                 - source /root/lttngvenv/activate
                 - export BENCHMARK_DIR=$(mktemp --directory)/bm
