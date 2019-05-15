@@ -1,0 +1,84 @@
+device_type: x86
+job_name: babeltrace_benchmark
+timeouts:
+  job:
+    hours: 3
+  action:
+    hours: 3
+  connection:
+    minutes: 4
+  connections:
+    lava-test-shell:
+      minutes: 4
+priority: medium
+visibility: public
+context:
+  extra_kernel_args: cpuidle.off=1
+  extra_nfsroot_args: ",nfsvers=3 nfsrootdebug"
+
+tags:
+  - dev-sda1
+
+
+actions:
+    - deploy:
+        timeout:
+          minutes: 10
+        to: tftp
+        kernel:
+          url: {{ kernel_url }}
+          type: zimage
+        modules:
+          url: {{ modules_url }}
+          compression: gz
+        nfsrootfs:
+          url: {{ nfsrootfs_url }}
+          compression: gz
+
+    - boot:
+        timeout:
+          minutes: 10
+        method: ipxe
+        commands: nfs
+        auto_login:
+          login_prompt: 'login:'
+          username: root
+          password_prompt: 'Password:'
+          password: root
+        prompts:
+          - 'root@linaro-server:~#'
+
+    - test:
+        definitions:
+            # Base setup of environment #
+            - repository:
+                metadata:
+                    format: Lava-Test Test Definition 1.0
+                    name: x86-env-setup
+                    description: "Basic environment setup for x86 board"
+                    os:
+                      - ubuntu
+                    devices:
+                      - x86
+                run:
+                  steps:
+                    - chmod 755 /
+                    - systemctl start systemd-timesyncd
+                    - echo nameserver 172.18.0.12 > /etc/resolv.conf
+                    - ip a
+                    - mount /dev/sda /tmp
+                    - rm -rf /tmp/*
+                    - locale-gen en_US.UTF-8
+                    - apt-get update
+                    - apt-get upgrade
+                    - hash -r
+                    - sync
+              from: inline
+              name: x86-env-setup-inline
+              path: inline/x86-env-setup.yaml
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/benchmark/babeltrace/benchmark.yml
+              name: babeltrace-benchmark
+              params:
+                  COMMIT: {{ commit_hash }}

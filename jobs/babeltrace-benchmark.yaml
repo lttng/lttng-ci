@@ -1,0 +1,62 @@
+- job:
+    name: babeltrace-benchmark
+    project-type: freestyle
+    defaults: global
+    description: |
+      This job is responsible for triggering jobs in lava and generate the report
+
+      The Babeltrace project provides trace read and write libraries, as well
+      as a trace converter. Plugins can be created for any trace format to
+      allow its conversion to/from another trace format.
+
+      The main format expected to be converted to/from is the Common Trace
+      Format (CTF). The default input format of the "babeltrace" command is
+      CTF, and its default output format is a human-readable text log. The
+      "babeltrace-log" command converts from a text log to a CTF trace.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    wrappers:
+      - ansicolor
+      - timestamps
+      - workspace-cleanup
+      - credentials-binding:
+          - text:
+              credential-id: jenkins_lava2_key
+              variable: LAVA2_JENKINS_TOKEN
+
+    triggers:
+      - timed: '@daily'
+    builders:
+      - shell:
+          !include-raw: scripts/babeltrace-benchmark/benchmark.sh
+
+    publishers:
+      - archive:
+          artifacts: 'results/**'
+          allow-empty: false
+    scm:
+      - babeltrace
+      - lttng-ci
+
+- scm:
+    name: babeltrace
+    scm:
+      - git:
+          url: git://github.com/efficios/babeltrace.git
+          browser: githubweb
+          browser-url: https://github.com/efficios/babeltrace
+          basedir: src/babeltrace
+          skip-tag: true
+          git-tool: jgit
+- scm:
+    name: lttng-ci
+    scm:
+      - git:
+          url: git://github.com/lttng/lttng-ci.git
+          browser: githubweb
+          browser-url: https://github.com/lttng/lttng-ci
+          basedir: src/lttng-ci
+          skip-tag: true
+          git-tool: jgit
+

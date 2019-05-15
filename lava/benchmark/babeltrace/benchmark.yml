@@ -1,0 +1,37 @@
+metadata:
+        format: Lava-Test Test Definition 1.0
+        name: babeltrace 2.0 benchmark
+        description: "Run benchmark for babeltrace"
+params:
+        TRACE_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace.tar.gz"
+        COMMIT: "invalid"
+        GIT_URL: "https://github.com/efficios/babeltrace.git"
+run:
+        steps:
+                - apt install -y time
+                - git clone ${GIT_URL} babeltrace
+                - pushd babeltrace
+                - git checkout ${COMMIT}
+                - ./bootstrap
+                - ./configure --disable-man-pages
+                - make -j
+                - make install
+                - ldconfig
+                - if [ -a /usr/local/bin/babeltrace ] ; then echo "Running bt1"; else ln -s /usr/local/bin/babeltrace2 /usr/local/bin/babeltrace; fi
+                - popd
+                - apt install -y curl python3
+                - git clone https://github.com/lttng/lttng-ci ci
+                - export TMPDIR="/tmp"
+                - mkdir -p coredump
+                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+                - ulimit -c unlimited
+                - mkdir /tmp/ram_disk
+                - mount -t tmpfs -o size=10024m new_ram_disk /tmp/ram_disk
+                - curl -o /tmp/trace.tar.gz "${TRACE_LOCATION}"
+                - mkdir /tmp/ram_disk/trace
+                - tar xvf /tmp/trace.tar.gz --directory /tmp/ram_disk/trace/
+                - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_dummy_sink --command "babeltrace /tmp/ram_disk/trace/ -o dummy" --iteration 5
+                - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_text_sink --command "babeltrace /tmp/ram_disk/trace/" --iteration 5
+                - ./ci/lava/upload_artifact.sh result_dummy_sink results/benchmarks/babeltrace/dummy/${COMMIT}
+                - ./ci/lava/upload_artifact.sh result_text_sink results/benchmarks/babeltrace/text/${COMMIT}
+
