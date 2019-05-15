@@ -25,13 +25,13 @@ s3_s='echo123456'
 
 resource="/${bucket}/${path}"
 content_type="application/octet-stream"
-date=`date -R`
+date=$(date -R)
 _signature="PUT\n\n${content_type}\n${date}\n${resource}"
-signature=`echo -en ${_signature} | openssl sha1 -hmac ${s3_s} -binary | base64`
+signature=$(echo -en "$_signature" | openssl sha1 -hmac "$s3_s" -binary | base64)
 
 curl -v -k -X PUT -T "${file}" \
           -H "Host: $host" \
           -H "Date: ${date}" \
           -H "Content-Type: ${content_type}" \
           -H "Authorization: AWS ${s3_k}:${signature}" \
-          https://$host${resource}
+          https://"${host}${resource}"
