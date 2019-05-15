@@ -442,6 +442,7 @@
     name: system-tests
     kversion:
       - master
+      - linux-4.9.y
       - linux-4.14.y
       - linux-4.19.y
     lttngversion:
@@ -457,7 +458,6 @@
     name: system-tests-oldkernel
     kversion:
       - linux-4.4.y
-      - linux-4.9.y
     lttngversion:
       - master
       - stable-2.7

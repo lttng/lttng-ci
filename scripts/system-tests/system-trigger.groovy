@@ -301,10 +301,10 @@ final String linuxRepo = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/l
 final String pastJobsPath = build.getEnvironment(listener).get('WORKSPACE') + "/pastjobs";
 
 def recentLttngBranchesOfInterest = ['master', 'stable-2.10', 'stable-2.9']
-def recentLinuxBranchesOfInterest = ['master', 'linux-4.19.y', 'linux-4.14.y']
+def recentLinuxBranchesOfInterest = ['master', 'linux-4.19.y', 'linux-4.14.y', 'linux-4.9.y']
 
 def legacyLttngBranchesOfInterest = ['master', 'stable-2.10', 'stable-2.9', 'stable-2.7']
-def legacyLinuxBranchesOfInterest = ['linux-4.9.y', 'linux-4.4.y']
+def legacyLinuxBranchesOfInterest = ['linux-4.4.y']
 
 // Generate configurations of interest.
 def configurationOfInterest = [] as Set
