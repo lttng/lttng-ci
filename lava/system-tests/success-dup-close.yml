@@ -18,7 +18,6 @@ run:
                 - pushd $BENCHMARK_DIR
                 - lava-test-case build-benchmarks --shell "make"
                 - lava-test-case run-benchmarks --shell "./run.sh success-dup-close sys_close,sys_dup"
-                - lava-test-case-attach run-benchmarks "./results.csv"
                 - popd
                 - python3 ./ci/scripts/system-tests/parse-results.py $BENCHMARK_DIR/results.csv
                 - mv ./processed_results.csv ./processed_results_dup_close.csv

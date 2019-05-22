@@ -99,6 +99,7 @@ def fetch_benchmark_results(build_id):
                  'processed_results_lttng_test_filter.csv']
     for testcase in testcases:
         url = urljoin(OBJSTORE_URL, "{:s}/{:s}".format(build_id, testcase))
+        print('Fetching {}'.format(url))
         urlretrieve(url, testcase)
 
 def print_test_output(server, job):
