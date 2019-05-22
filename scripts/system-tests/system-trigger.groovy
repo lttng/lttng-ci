@@ -306,6 +306,8 @@ def recentLinuxBranchesOfInterest = ['master', 'linux-4.19.y', 'linux-4.14.y', '
 def legacyLttngBranchesOfInterest = ['master', 'stable-2.10', 'stable-2.9', 'stable-2.7']
 def legacyLinuxBranchesOfInterest = ['linux-4.4.y']
 
+def vmLinuxBranchesOfInterest = ['linux-3.18.y']
+
 // Generate configurations of interest.
 def configurationOfInterest = [] as Set
 
@@ -350,6 +352,11 @@ def CraftConfig = { linuxBr, lttngBr ->
 triggerJobName = build.project.getFullDisplayName();
 if (triggerJobName.contains("vm_tests")) {
   jobType = 'vm_tests';
+  recentLttngBranchesOfInterest.each { lttngBranch ->
+    vmLinuxBranchesOfInterest.each { linuxBranch ->
+      configurationOfInterest.add([lttngBranch, linuxBranch])
+    }
+  }
 } else if (triggerJobName.contains("baremetal_tests")) {
   jobType = 'baremetal_tests';
 } else if (triggerJobName.contains("baremetal_benchmarks")) {

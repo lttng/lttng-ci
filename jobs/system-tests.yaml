@@ -467,6 +467,16 @@
       - 'vm_tests_k{kversion}_l{lttngversion}':
       - 'baremetal_tests_k{kversion}_l{lttngversion}':
       - 'baremetal_benchmarks_k{kversion}_l{lttngversion}':
+- project:
+    name: system-tests-vm-only
+    kversion:
+      - linux-3.18.y
+    lttngversion:
+      - master
+      - stable-2.9
+      - stable-2.10
+    jobs:
+      - 'vm_tests_k{kversion}_l{lttngversion}'
 
 - project:
     name: system-tests-canary
