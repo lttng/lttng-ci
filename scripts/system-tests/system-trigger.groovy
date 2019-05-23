@@ -303,8 +303,8 @@ final String pastJobsPath = build.getEnvironment(listener).get('WORKSPACE') + "/
 def recentLttngBranchesOfInterest = ['master', 'stable-2.10', 'stable-2.9']
 def recentLinuxBranchesOfInterest = ['master', 'linux-4.19.y', 'linux-4.14.y', 'linux-4.9.y']
 
-def legacyLttngBranchesOfInterest = ['master', 'stable-2.10', 'stable-2.9', 'stable-2.7']
-def legacyLinuxBranchesOfInterest = ['linux-4.4.y']
+def legacyLttngBranchesOfInterest = []
+def legacyLinuxBranchesOfInterest = []
 
 def vmLinuxBranchesOfInterest = ['linux-3.18.y']
 
