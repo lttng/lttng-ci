@@ -414,7 +414,8 @@ currentJobs.each { jobName, jobInfo ->
       // if the config has not changed, we keep it.
       // if it's failed, we don't launch a new job and keep it failed.
       jobInfo['status'] = pastJob['status'];
-      if (pastJob['status'] == 'FAILED') {
+      if (pastJob['status'] == 'FAILED' &&
+            build.getBuildVariables().get('FORCE_FAILED_JOB_RUN') == 'false') {
         println("${jobName} as not changed since the last failed run. Don't run it again.");
         // Marked the umbrella job for failure but still run the jobs that since the
         // last run.

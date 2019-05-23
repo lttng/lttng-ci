@@ -388,6 +388,10 @@
           name: 'FORCE_JOB_RUN'
           default: false
           description: 'Force the child jobs to run'
+      - bool:
+          name: 'FORCE_FAILED_JOB_RUN'
+          default: false
+          description: 'Force the failed child jobs to run'
 
     properties:
       - build-discarder:
