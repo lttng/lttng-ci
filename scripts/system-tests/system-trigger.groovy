@@ -324,7 +324,7 @@ legacyLttngBranchesOfInterest.each { lttngBranch ->
 }
 
 def lttngBranchesOfInterest = recentLttngBranchesOfInterest + legacyLttngBranchesOfInterest
-def linuxBranchesOfInterest = recentLinuxBranchesOfInterest + legacyLinuxBranchesOfInterest
+def linuxBranchesOfInterest = recentLinuxBranchesOfInterest + legacyLinuxBranchesOfInterest + vmLinuxBranchesOfInterest
 
 // For LTTng branches, we look for new commits.
 def toolsHeadCommits = GetHeadCommits(toolsRepo, lttngBranchesOfInterest)
