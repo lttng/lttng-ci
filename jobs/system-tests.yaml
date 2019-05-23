@@ -450,6 +450,8 @@
       - linux-4.9.y
       - linux-4.14.y
       - linux-4.19.y
+      - linux-5.0.y
+      - linux-5.1.y
     lttngversion:
       - master
       - stable-2.9
