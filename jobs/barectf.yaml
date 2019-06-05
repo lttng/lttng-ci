@@ -87,6 +87,46 @@
            - recipients
 
 - job-template:
+    name: dev_gerrit_barectf_{buildtype}
+    defaults: barectf
+    concurrent: true
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+
+    scm:
+      - git:
+          url: https://review.lttng.org/barectf
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/barectf
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'barectf'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+          trigger-for-unreviewed-patches: true
+
+    builders:
+      - shell:
+         !include-raw-escape: scripts/barectf/build.sh
+
+- job-template:
     name: barectf_{version}_pylint
     defaults: barectf
     node: 'amd64'
@@ -149,3 +189,11 @@
           arch: !!python/tuple [i386, amd64]
       - 'barectf_{version}_pylint'
 
+- project:
+    name: gerrit-barectf
+    github_user: efficios
+    github_name: babeltrace
+    jobs:
+      - 'dev_gerrit_barectf_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [i386, amd64]
