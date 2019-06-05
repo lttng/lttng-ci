@@ -196,6 +196,11 @@ cd "$SRCDIR"
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 
+# Enable dev mode by default for BT 2.0 builds
+export BABELTRACE_DEBUG_MODE=1
+export BABELTRACE_DEV_MODE=1
+export BABELTRACE_MINIMAL_LOG_LEVEL=VERBOSE
+
 # Set configure options for each build configuration
 CONF_OPTS=""
 case "$conf" in
