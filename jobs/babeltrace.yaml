@@ -570,7 +570,17 @@
           buildtype: build
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, static, python-bindings, production]
+          version:
+            - stable-2.0
+            - master
+      - 'babeltrace_{version}_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, static, python-bindings]
+          version:
+            - stable-1.5
       - 'babeltrace_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
