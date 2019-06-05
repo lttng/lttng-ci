@@ -318,7 +318,7 @@
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy:
       combination-filter: |
-        (build=="std") || (arch=="amd64")
+        (build=="std" && conf=="python-bindings") || (arch=="amd64")
     axes:
       - axis:
          type: slave
