@@ -74,7 +74,6 @@ arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
-bt2_mode=${bt2_mode:-}
 
 
 SRCDIR="$WORKSPACE/src/babeltrace"
@@ -198,18 +197,9 @@ cd "$SRCDIR"
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 
 # Enable dev mode by default for BT 2.0 builds
-case "$bt2_mode" in
-dev)
-    echo "Developer mode"
-    export BABELTRACE_DEBUG_MODE=1
-    export BABELTRACE_DEV_MODE=1
-    export BABELTRACE_MINIMAL_LOG_LEVEL=VERBOSE
-    ;;
-*)
-    echo "Production mode (Default)"
-    export BABELTRACE_MINIMAL_LOG_LEVEL=INFO
-    ;;
-esac
+export BABELTRACE_DEBUG_MODE=1
+export BABELTRACE_DEV_MODE=1
+export BABELTRACE_MINIMAL_LOG_LEVEL=VERBOSE
 
 # Set configure options for each build configuration
 CONF_OPTS=""
@@ -231,6 +221,19 @@ python-bindings)
     if vergte "$PACKAGE_VERSION" "2.0"; then
         CONF_OPTS="${CONF_OPTS} --enable-python-bindings-doc --enable-python-plugins"
     fi
+    ;;
+production)
+    echo "Production build"
+
+    # Unset the developper variables
+    unset BABELTRACE_DEBUG_MODE
+    unset BABELTRACE_DEV_MODE
+    unset BABELTRACE_MINIMAL_LOG_LEVEL
+
+    # Enable the python bindings
+    export PYTHON="python3"
+    export PYTHON_CONFIG="/usr/bin/python3-config"
+    CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
     ;;
 *)
     echo "Standard build"
