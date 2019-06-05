@@ -154,7 +154,7 @@
     name: lttng-analyses
     github_user: lttng
     github_name: lttng-analyses
-    email_to: 'ci-notification@lists.lttng.org, cc:jdesfossez@efficios.com'
+    email_to: 'ci-notification@lists.lttng.org'
     version:
       - master
     jobs:
