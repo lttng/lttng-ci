@@ -74,6 +74,7 @@ arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
+bt2_mode=${bt2_mode:-}
 
 
 SRCDIR="$WORKSPACE/src/babeltrace"
@@ -197,9 +198,18 @@ cd "$SRCDIR"
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 
 # Enable dev mode by default for BT 2.0 builds
-export BABELTRACE_DEBUG_MODE=1
-export BABELTRACE_DEV_MODE=1
-export BABELTRACE_MINIMAL_LOG_LEVEL=VERBOSE
+case "$bt2_mode" in
+dev)
+    echo "Developer mode"
+    export BABELTRACE_DEBUG_MODE=1
+    export BABELTRACE_DEV_MODE=1
+    export BABELTRACE_MINIMAL_LOG_LEVEL=VERBOSE
+    ;;
+*)
+    echo "Production mode (Default)"
+    export BABELTRACE_MINIMAL_LOG_LEVEL=INFO
+    ;;
+esac
 
 # Set configure options for each build configuration
 CONF_OPTS=""
