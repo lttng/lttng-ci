@@ -678,4 +678,4 @@
           buildtype: build
           arch: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, python-bindings, production]
+          conf: !!python/tuple [std, static, python-bindings, production]
