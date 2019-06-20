@@ -199,7 +199,7 @@ eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 # Enable dev mode by default for BT 2.0 builds
 export BABELTRACE_DEBUG_MODE=1
 export BABELTRACE_DEV_MODE=1
-export BABELTRACE_MINIMAL_LOG_LEVEL=VERBOSE
+export BABELTRACE_MINIMAL_LOG_LEVEL=TRACE
 
 # Set configure options for each build configuration
 CONF_OPTS=""
