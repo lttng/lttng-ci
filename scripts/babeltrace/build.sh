@@ -215,7 +215,7 @@ python-bindings)
     echo "Build with python bindings"
     # We only support bindings built with Python 3
     export PYTHON="python3"
-    export PYTHON_CONFIG="/usr/bin/python3-config"
+    export PYTHON_CONFIG="python3-config"
     CONF_OPTS="--enable-python-bindings"
 
     if vergte "$PACKAGE_VERSION" "2.0"; then
@@ -232,7 +232,7 @@ production)
 
     # Enable the python bindings
     export PYTHON="python3"
-    export PYTHON_CONFIG="/usr/bin/python3-config"
+    export PYTHON_CONFIG="python3-config"
     CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
     ;;
 *)
