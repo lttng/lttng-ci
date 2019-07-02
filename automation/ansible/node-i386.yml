@@ -1,7 +1,6 @@
 - hosts: node-i386
   roles:
     - common
-    - cross-compilers
     - babeltrace
     - liburcu
     - lttng-ust
