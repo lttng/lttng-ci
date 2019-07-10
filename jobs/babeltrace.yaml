@@ -630,27 +630,27 @@
           buildtype: build
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, static, python-bindings, production]
+          conf: !!python/tuple [std, static, prod, min]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, python-bindings]
+          conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, python-bindings, production]
+          conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, static]
+          conf: !!python/tuple [std, static, prod]
           cc: !!python/tuple [clang-3.9, clang-4.0, clang-6.0, clang-7]
       - 'babeltrace_{version}_winbuild':
           arch: !!python/tuple [cygwin, cygwin64, msys2-mingw32, msys2-mingw64]

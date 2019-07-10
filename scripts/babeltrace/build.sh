@@ -222,7 +222,7 @@ python-bindings)
         CONF_OPTS="${CONF_OPTS} --enable-python-bindings-doc --enable-python-plugins"
     fi
     ;;
-production)
+prod)
     echo "Production build"
 
     # Unset the developper variables
@@ -235,9 +235,21 @@ production)
     export PYTHON_CONFIG="python3-config"
     CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
     ;;
+min)
+    echo "Minimal build"
+    CONF_OPTS=""
+    ;;
 *)
     echo "Standard build"
     CONF_OPTS=""
+
+    # Enable the python bindings / plugins by default with babeltrace2
+    # the test suite is mostly useless without it.
+    if vergte "$PACKAGE_VERSION" "2.0"; then
+        export PYTHON="python3"
+        export PYTHON_CONFIG="python3-config"
+        CONF_OPTS="${CONF_OPTS} --enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
+    fi
     ;;
 esac
 
