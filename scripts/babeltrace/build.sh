@@ -248,7 +248,7 @@ min)
     if vergte "$PACKAGE_VERSION" "2.0"; then
         export PYTHON="python3"
         export PYTHON_CONFIG="python3-config"
-        CONF_OPTS="${CONF_OPTS} --enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
+        CONF_OPTS="${CONF_OPTS} --enable-python-bindings --enable-python-plugins"
     fi
     ;;
 esac
