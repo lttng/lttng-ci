@@ -80,7 +80,10 @@ SRCDIR="$WORKSPACE/src/babeltrace"
 TMPDIR="$WORKSPACE/tmp"
 PREFIX="$WORKSPACE/build"
 
-# Create build and tmp directories
+# The build dir defaults to the source dir
+BUILDDIR="$SRCDIR"
+
+# Create install and tmp directories
 rm -rf "$PREFIX" "$TMPDIR"
 mkdir -p "$PREFIX" "$TMPDIR"
 
@@ -161,6 +164,8 @@ sol10-i386)
     export CPPFLAGS="-I/opt/csw/include"
     export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib"
     export PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 sol11-i386)
     export MAKE=gmake
@@ -169,6 +174,8 @@ sol11-i386)
     export PATH="$PATH:/usr/perl5/bin"
     export LD_ALTEXEC=/usr/bin/gld
     export LD=/usr/bin/gld
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 macosx)
     export MAKE=make
@@ -179,11 +186,15 @@ macosx)
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     export CFLAGS="$CFLAGS -I/opt/local/include"
     export LDFLAGS="-L/opt/local/lib"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 *)
     export MAKE=make
     export TAR=tar
     export NPROC=nproc
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 esac
 
@@ -202,28 +213,30 @@ export BABELTRACE_DEV_MODE=1
 export BABELTRACE_MINIMAL_LOG_LEVEL=TRACE
 
 # Set configure options for each build configuration
-CONF_OPTS=""
+CONF_OPTS=()
 case "$conf" in
 static)
-    echo "Static build"
-    CONF_OPTS="--enable-static --disable-shared"
-    if vergte "$PACKAGE_VERSION" "2.0"; then
-        CONF_OPTS="${CONF_OPTS} --enable-built-in-plugins"
-    fi
-    ;;
-python-bindings)
-    echo "Build with python bindings"
-    # We only support bindings built with Python 3
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
-    CONF_OPTS="--enable-python-bindings"
+    echo "Static lib only configuration"
+
+    CONF_OPTS+=("--enable-static" "--disable-shared")
 
     if vergte "$PACKAGE_VERSION" "2.0"; then
-        CONF_OPTS="${CONF_OPTS} --enable-python-bindings-doc --enable-python-plugins"
+        CONF_OPTS+=("--enable-built-in-plugins")
     fi
     ;;
+
+python-bindings)
+    echo "Python bindings configuration"
+
+    CONF_OPTS+=("--enable-python-bindings")
+
+    if vergte "$PACKAGE_VERSION" "2.0"; then
+        CONF_OPTS+=("--enable-python-bindings-doc" "--enable-python-plugins")
+    fi
+    ;;
+
 prod)
-    echo "Production build"
+    echo "Production configuration"
 
     # Unset the developper variables
     unset BABELTRACE_DEBUG_MODE
@@ -231,24 +244,20 @@ prod)
     unset BABELTRACE_MINIMAL_LOG_LEVEL
 
     # Enable the python bindings
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
-    CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
+    CONF_OPTS+=("--enable-python-bindings" "--enable-python-bindings-doc" "--enable-python-plugins")
     ;;
-min)
-    echo "Minimal build"
-    CONF_OPTS=""
-    ;;
-*)
-    echo "Standard build"
-    CONF_OPTS=""
 
-    # Enable the python bindings / plugins by default with babeltrace2
+min)
+    echo "Minimal configuration"
+    ;;
+
+*)
+    echo "Standard configuration"
+
+    # Enable the python bindings / plugins by default with babeltrace2,
     # the test suite is mostly useless without it.
     if vergte "$PACKAGE_VERSION" "2.0"; then
-        export PYTHON="python3"
-        export PYTHON_CONFIG="python3-config"
-        CONF_OPTS="${CONF_OPTS} --enable-python-bindings --enable-python-plugins"
+        CONF_OPTS+=("--enable-python-bindings" "--enable-python-plugins")
     fi
     ;;
 esac
@@ -258,41 +267,44 @@ esac
 # dist: build via make dist
 # *   : normal tree build
 #
-# Make sure to move to the build_path and configure
-# before continuing
-BUILD_PATH="$SRCDIR"
+# Make sure to move to the build dir and run configure
+# before continuing.
 case "$build" in
     oot)
         echo "Out of tree build"
-        BUILD_PATH="$WORKSPACE/oot"
-        mkdir -p "$BUILD_PATH"
-        cd "$BUILD_PATH"
-        "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+
+        BUILDDIR="$WORKSPACE/oot"
+        mkdir -p "$BUILDDIR"
+        cd "$BUILDDIR"
+
+        "$SRCDIR/configure" --prefix="$PREFIX" "${CONF_OPTS[@]}"
         ;;
 
     dist)
         echo "Distribution out of tree build"
-        BUILD_PATH="$(mktemp -d)"
+        BUILDDIR="$(mktemp -d)"
 
         # Initial configure and generate tarball
         "$SRCDIR/configure"
         $MAKE dist
 
-        mkdir -p "$BUILD_PATH"
-        cp ./*.tar.* "$BUILD_PATH/"
-        cd "$BUILD_PATH"
+        mkdir -p "$BUILDDIR"
+        cp ./*.tar.* "$BUILDDIR/"
+        cd "$BUILDDIR"
 
         # Ignore level 1 of tar
         $TAR xvf ./*.tar.* --strip 1
 
-        "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+        ./configure --prefix="$PREFIX" "${CONF_OPTS[@]}"
         ;;
 
     *)
         echo "Standard in-tree build"
-        "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+        ./configure --prefix="$PREFIX" "${CONF_OPTS[@]}"
         ;;
 esac
+
+# We are now inside a configured build directory
 
 # BUILD!
 $MAKE -j "$($NPROC)" V=1
@@ -304,7 +316,7 @@ $MAKE --keep-going check
 ret=$?
 set -e
 
-# Copy tap logs for the jenkins tap parser
+# Copy tap logs for the jenkins tap parser before cleaning the build dir
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
 # Clean the build directory
@@ -320,7 +332,7 @@ find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 # Clean temp dir for dist build
 if [ "$build" = "dist" ]; then
     cd "$SRCDIR"
-    rm -rf "$BUILD_PATH"
+    rm -rf "$BUILDDIR"
 fi
 
 # Exit with the return code of the test suite
