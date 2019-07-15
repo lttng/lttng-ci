@@ -165,6 +165,9 @@
               total-high: 0
               total-normal: 0
               total-low: 0
+      - archive:
+          artifacts: 'tap/**'
+          allow-empty: false
       - email-ext:
           recipients: '{obj:email_to}'
           always: false
@@ -205,7 +208,7 @@
               total-normal: 0
               total-low: 0
       - archive:
-          artifacts: 'build/**'
+          artifacts: 'build/**,tap/**'
           allow-empty: false
       - email-ext:
           recipients: '{obj:email_to}'
@@ -247,7 +250,7 @@
               total-normal: 0
               total-low: 0
       - archive:
-          artifacts: 'build/**'
+          artifacts: 'build/**,tap/**'
           allow-empty: false
 
 
@@ -515,6 +518,9 @@
           cron: "@daily"
     <<: *babeltrace_version_glib-2-22-5_anchor
     publishers:
+      - archive:
+          artifacts: 'tap/**'
+          allow-empty: false
       - email-ext:
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org

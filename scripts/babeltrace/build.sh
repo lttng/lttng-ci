@@ -1,7 +1,7 @@
 #!/bin/bash -exu
 #
-# Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-#               2016 - Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+#               2016-2019 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -298,8 +298,11 @@ esac
 $MAKE -j "$($NPROC)" V=1
 $MAKE install
 
-# Run tests
+# Run tests, don't fail now, we want to run the archiving steps
+set +e
 $MAKE --keep-going check
+ret=$?
+set -e
 
 # Copy tap logs for the jenkins tap parser
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
@@ -319,5 +322,8 @@ if [ "$build" = "dist" ]; then
     cd "$SRCDIR"
     rm -rf "$BUILD_PATH"
 fi
+
+# Exit with the return code of the test suite
+exit $ret
 
 # EOF
