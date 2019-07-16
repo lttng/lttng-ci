@@ -305,6 +305,6 @@
           liburcu_version: !!python/tuple [stable-0.9]
 
 - project:
-    name: liburcu-views
+    name: lttng-ust-views
     views:
       - LTTng-ust

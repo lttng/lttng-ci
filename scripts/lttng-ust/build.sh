@@ -69,7 +69,9 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
-# Required parameters
+# Required variables
+WORKSPACE=${WORKSPACE:-}
+
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
