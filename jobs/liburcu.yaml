@@ -143,6 +143,10 @@
 - liburcu_build_publishers_defaults: &liburcu_build_publishers_defaults
     name: 'liburcu_build_publishers_defaults'
     publishers:
+      - tap:
+          results: 'tap/**/*.log'
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
       - warnings:
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
@@ -153,7 +157,7 @@
               total-normal: 0
               total-low: 0
       - archive:
-          artifacts: 'build/**'
+          artifacts: 'build/**,tap/**'
           allow-empty: false
       - ircbot:
           strategy: new-failure-and-fixed
@@ -297,7 +301,14 @@
           allow-empty: false
 
 
-## Project
+## Views
+- view-template:
+    name: 'Liburcu'
+    view-type: list
+    regex: 'liburcu[-_].*'
+
+
+## Projects
 - project:
     name: liburcu
     github_user: urcu
@@ -307,6 +318,7 @@
       - stable-0.8
       - stable-0.9
       - stable-0.10
+      - stable-0.11
       - master
     jobs:
       - 'liburcu_{version}_{buildtype}':
@@ -333,6 +345,7 @@
             - master
             - stable-0.9
             - stable-0.10
+            - stable-0.11
       - 'liburcu_{version}_{buildtype}':
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
@@ -342,6 +355,7 @@
             - master
             - stable-0.9
             - stable-0.10
+            - stable-0.11
       - 'liburcu_{version}_winbuild':
           arch: !!python/tuple [cygwin, cygwin64]
           build: !!python/tuple [std]
@@ -350,8 +364,13 @@
             - master
             - stable-0.9
             - stable-0.10
+            - stable-0.11
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
           version: master
 
+- project:
+    name: liburcu-views
+    views:
+      - Liburcu

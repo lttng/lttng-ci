@@ -1,7 +1,7 @@
 #!/bin/bash -exu
 #
-# Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-#               2016 - Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+#               2016-2019 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,6 +78,9 @@ build=${build:-}
 SRCDIR="$WORKSPACE/src/liburcu"
 TMPDIR="$WORKSPACE/tmp"
 PREFIX="$WORKSPACE/build"
+
+# The build dir defaults to the source dir
+BUILDDIR="$SRCDIR"
 
 # Create build and tmp directories
 rm -rf "$PREFIX" "$TMPDIR"
@@ -173,38 +176,40 @@ esac
 # dist: build via make dist
 # *   : normal tree build
 #
-# Make sure to move to the build_path and configure
-# before continuing
-BUILD_PATH=$SRCDIR
+# Make sure to move to the build dir and run configure
+# before continuing.
 case "$build" in
 oot)
     echo "Out of tree build"
-    BUILD_PATH=$WORKSPACE/oot
-    mkdir -p "$BUILD_PATH"
-    cd "$BUILD_PATH"
+
+    BUILDDIR=$WORKSPACE/oot
+    mkdir -p "$BUILDDIR"
+    cd "$BUILDDIR"
+
     "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
     ;;
 
 dist)
     echo "Distribution out of tree build"
-    BUILD_PATH=$(mktemp -d)
 
-    # Initial configure and generate tarball
-    "$SRCDIR/configure"
+    tar_file="userspace-rcu-$PACKAGE_VERSION.tar.bz2"
+
+    # Initial configure in src dir and tarball generation
+    ./configure
     $MAKE dist
 
-    mkdir -p "$BUILD_PATH"
-    cp ./*.tar.* "$BUILD_PATH/"
-    cd "$BUILD_PATH"
+    BUILDDIR=$(mktemp -d)
+    mkdir -p "$BUILDDIR"
+    cd "$BUILDDIR"
 
     # Ignore level 1 of tar
-    $TAR xvf ./*.tar.* --strip 1
+    $TAR xvf "$SRCDIR/$tar_file" --strip 1
 
-    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    ./configure --prefix="$PREFIX" $CONF_OPTS
     ;;
 *)
     echo "Standard in-tree build"
-    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    ./configure --prefix="$PREFIX" $CONF_OPTS
     ;;
 esac
 
@@ -216,14 +221,16 @@ $MAKE install
 $MAKE --keep-going check
 # Only run regtest for 0.9 and up
 if vergte "$PACKAGE_VERSION" "0.9"; then
-   $MAKE regtest
+   $MAKE --keep-going regtest
 fi
+
+# Copy tap logs for the jenkins tap parser
+rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
 # Cleanup
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-#find $WORKSPACE/build/bin -type f -perm -0500 -exec chrpath --delete {} \;
 find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
@@ -232,7 +239,7 @@ find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 # Cleanup temp directory of dist build
 if [ "$build" = "dist" ]; then
     cd "$SRCDIR"
-    rm -rf "$BUILD_PATH"
+    rm -rf "$BUILDDIR"
 fi
 
 # EOF
