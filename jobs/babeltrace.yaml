@@ -332,7 +332,7 @@
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy:
       combination-filter: |
-        (build=="std" && conf=="python-bindings") || (arch=="amd64")
+        (build=="std" && conf=="std") || (arch=="amd64")
     axes:
       - axis:
          type: slave
@@ -584,7 +584,7 @@
       - 'babeltrace_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist]
+          build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static, python-bindings]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: portbuild
@@ -608,7 +608,7 @@
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, python-bindings, production]
+          conf: !!python/tuple [std, python-bindings]
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
           arch: !!python/tuple [amd64]
@@ -635,7 +635,7 @@
       - 'babeltrace_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist]
+          build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static, prod, min]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: portbuild
@@ -688,7 +688,7 @@
       - 'dev_{user}_babeltrace_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist]
+          build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static, python-bindings]
       - 'dev_{user}_babeltrace_{version}_{buildtype}':
           buildtype: macosxbuild
@@ -709,5 +709,5 @@
       - 'dev_gerrit_babeltrace_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, static, python-bindings, production]
+          build: !!python/tuple [std, oot, dist, oot-dist]
+          conf: !!python/tuple [std, static, prod, min]

@@ -80,9 +80,6 @@ SRCDIR="$WORKSPACE/src/babeltrace"
 TMPDIR="$WORKSPACE/tmp"
 PREFIX="$WORKSPACE/build"
 
-# The build dir defaults to the source dir
-BUILDDIR="$SRCDIR"
-
 # Create install and tmp directories
 rm -rf "$PREFIX" "$TMPDIR"
 mkdir -p "$PREFIX" "$TMPDIR"
@@ -270,38 +267,66 @@ esac
 # Make sure to move to the build dir and run configure
 # before continuing.
 case "$build" in
-    oot)
-        echo "Out of tree build"
+oot)
+    echo "Out of tree build"
 
-        BUILDDIR="$WORKSPACE/oot"
-        mkdir -p "$BUILDDIR"
-        cd "$BUILDDIR"
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-        "$SRCDIR/configure" --prefix="$PREFIX" "${CONF_OPTS[@]}"
-        ;;
+    "$SRCDIR/configure" --prefix="$PREFIX" "${CONF_OPTS[@]}"
+    ;;
 
-    dist)
-        echo "Distribution out of tree build"
-        BUILDDIR="$(mktemp -d)"
+dist)
+    echo "Distribution in-tree build"
 
-        # Initial configure and generate tarball
-        "$SRCDIR/configure"
-        $MAKE dist
+    # Run configure and generate the tar file
+    # in the source directory
+    ./configure
+    $MAKE dist
 
-        mkdir -p "$BUILDDIR"
-        cp ./*.tar.* "$BUILDDIR/"
-        cd "$BUILDDIR"
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-        # Ignore level 1 of tar
-        $TAR xvf ./*.tar.* --strip 1
+    # Extract the distribution tar in the build directory,
+    # ignore the first directory level
+    $TAR xvf "$SRCDIR"/*.tar.* --strip 1
 
-        ./configure --prefix="$PREFIX" "${CONF_OPTS[@]}"
-        ;;
+    ./configure --prefix="$PREFIX" "${CONF_OPTS[@]}"
+    ;;
 
-    *)
-        echo "Standard in-tree build"
-        ./configure --prefix="$PREFIX" "${CONF_OPTS[@]}"
-        ;;
+oot-dist)
+    echo "Distribution out of tree build"
+
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
+
+    # Run configure out of tree and generate the tar file
+    "$SRCDIR/configure"
+    $MAKE dist
+
+    dist_srcdir="$(mktemp -d)"
+    cd "$dist_srcdir"
+
+    # Extract the distribution tar in the new source directory,
+    # ignore the first directory level
+    $TAR xvf "$builddir"/*.tar.* --strip 1
+
+    # Create and enter a second temporary build directory
+    builddir="$(mktemp -d)"
+    cd "$builddir"
+
+    # Run configure from the extracted distribution tar,
+    # out of the source tree
+    "$dist_srcdir/configure" --prefix="$PREFIX" "${CONF_OPTS[@]}"
+    ;;
+
+*)
+    echo "Standard in-tree build"
+    ./configure --prefix="$PREFIX" "${CONF_OPTS[@]}"
+    ;;
 esac
 
 # We are now inside a configured build directory
@@ -332,7 +357,7 @@ find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 # Clean temp dir for dist build
 if [ "$build" = "dist" ]; then
     cd "$SRCDIR"
-    rm -rf "$BUILDDIR"
+    rm -rf "$builddir"
 fi
 
 # Exit with the return code of the test suite
