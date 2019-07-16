@@ -79,7 +79,7 @@
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
-                target: 'deps/liburcu'
+                target: 'deps'
                 do-not-fingerprint: true
 
       - conditional-step:
@@ -93,7 +93,7 @@
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
-                target: 'deps/liburcu'
+                target: 'deps'
                 do-not-fingerprint: true
       - shell:
          !include-raw-escape: scripts/lttng-ust/build.sh
@@ -114,7 +114,7 @@
               total-normal: 0
               total-low: 0
       - archive:
-          artifacts: 'build/**'
+          artifacts: 'build/**,tap/**'
           allow-empty: false
       - workspace-cleanup
       - email-ext:
@@ -227,66 +227,15 @@
           artifacts: 'analysis-results.tgz,cov-int/**'
           allow-empty: false
 
-# TODO
-- job-template:
-    name: lttng-ust_{version}_pylint
-    defaults: lttng-ust
-    node: 'amd64'
 
-    scm: []
+## Views
+- view-template:
+    name: 'LTTng-ust'
+    view-type: list
+    regex: 'lttng-ust[-_].*'
 
-    triggers:
-      - pollscm:
-          cron: "@daily"
 
-    builders:
-       - copyartifact:
-           project: lttng-ust-{version}/arch=amd64,build=std,conf=agents
-           which-build: last-successful
-           stable: false
-           filter: 'build/**'
-           target: 'deps/lttng-ust'
-           do-not-fingerprint: true
-       - shell:
-          !include-raw-escape: scripts/lttng-ust/pylint.sh
-
-    publishers:
-      - archive:
-          artifacts: 'pep8.out,pylint.out'
-      - violations:
-          pep8:
-            pattern: pep8.out
-            min: 10
-            max: 999
-            unstable: 999
-          pylint:
-            pattern: pylint.out
-            min: 10
-            max: 999
-            unstable: 999
-      - email-ext:
-          recipients: '{obj:email_to}'
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
-
-## Project
+## Projects
 - project:
     name: lttng-ust
     github_user: lttng
@@ -303,19 +252,19 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu]
-          liburcu_version: !!python/tuple [stable-0.8, stable-0.9, stable-0.10, master]
+          liburcu_version: !!python/tuple [stable-0.8, stable-0.9, stable-0.10, stable-0.11, master]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.8, stable-0.9, stable-0.10, master]
+          liburcu_version: !!python/tuple [stable-0.8, stable-0.9, stable-0.10, stable-0.11, master]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.8, stable-0.9, stable-0.10, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.11, master]
       - 'lttng-ust_{version}_cppcheck'
       - 'lttng-ust_{version}_scan-build'
       - 'lttng-ust_{version}_{buildtype}':
@@ -324,21 +273,21 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu]
-          liburcu_version: !!python/tuple [master]
+          liburcu_version: !!python/tuple [stable-0.11, master]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: master
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [master]
+          liburcu_version: !!python/tuple [stable-0.11, master]
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: master
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [master]
+          liburcu_version: !!python/tuple [stable-0.11, master]
       - 'lttng-ust_{version}_cppcheck':
           version: master
       - 'lttng-ust_{version}_scan-build':
@@ -355,3 +304,7 @@
           conf: !!python/tuple [std]
           liburcu_version: !!python/tuple [stable-0.9]
 
+- project:
+    name: liburcu-views
+    views:
+      - LTTng-ust

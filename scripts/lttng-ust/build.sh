@@ -1,7 +1,7 @@
 #!/bin/bash -exu
 #
-# Copyright (C) 2015, Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-#               2016, Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+#               2016-2019 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,73 +16,154 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Version compare functions
+vercomp () {
+    set +u
+    if [[ "$1" == "$2" ]]; then
+        return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++)); do
+        if [[ -z ${ver2[i]} ]]; then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]})); then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]})); then
+            return 2
+        fi
+    done
+    set -u
+    return 0
+}
+
+verlte() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "2" ]
+}
+
+verlt() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "2" ]
+}
+
+vergte() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "1" ]
+}
+
+vergt() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "1" ]
+}
+
+verne() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -ne "0" ]
+}
+
 # Required parameters
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
+cc=${cc:-}
 
 
-# liburcu
-URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
-URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
+DEPS_INC="$WORKSPACE/deps/build/include"
+DEPS_LIB="$WORKSPACE/deps/build/lib"
+
+export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
+export CPPFLAGS="-I$DEPS_INC"
+export LDFLAGS="-L$DEPS_LIB"
 
 SRCDIR="$WORKSPACE/src/lttng-ust"
 TMPDIR="$WORKSPACE/tmp"
-PREFIX="$WORKSPACE/build"
+PREFIX="/build"
 
-# Create build and tmp directories
-rm -rf "$PREFIX" "$TMPDIR"
-mkdir -p "$PREFIX" "$TMPDIR"
+# Create tmp directory
+rm -rf "$TMPDIR"
+mkdir -p "$TMPDIR"
 
 export TMPDIR
 export CFLAGS="-g -O2"
 
+# Set compiler variables
+case "$cc" in
+gcc)
+    export CC=gcc
+    export CXX=g++
+    ;;
+gcc-4.8)
+    export CC=gcc-4.8
+    export CXX=g++-4.8
+    ;;
+gcc-5)
+    export CC=gcc-5
+    export CXX=g++-5
+    ;;
+gcc-6)
+    export CC=gcc-6
+    export CXX=g++-6
+    ;;
+gcc-7)
+    export CC=gcc-7
+    export CXX=g++-7
+    ;;
+gcc-8)
+    export CC=gcc-8
+    export CXX=g++-8
+    ;;
+clang)
+    export CC=clang
+    export CXX=clang++
+    ;;
+clang-3.9)
+    export CC=clang-3.9
+    export CXX=clang++-3.9
+    ;;
+clang-4.0)
+    export CC=clang-4.0
+    export CXX=clang++-4.0
+    ;;
+clang-5.0)
+    export CC=clang-5.0
+    export CXX=clang++-5.0
+    ;;
+clang-6.0)
+    export CC=clang-6.0
+    export CXX=clang++-6.0
+    ;;
+clang-7)
+    export CC=clang-7
+    export CXX=clang++-7
+    ;;
+*)
+    if [ "x$cc" != "x" ]; then
+	    export CC="$cc"
+    fi
+    ;;
+esac
+
+if [ "x${CC:-}" != "x" ]; then
+    echo "Selected compiler:"
+    "$CC" -v
+fi
+
 # Set platform variables
 case "$arch" in
 *)
-     MAKE=make
-     TAR=tar
-     NPROC=nproc
-     #BISON="bison"
-     #YACC="$BISON -y"
-     #CFLAGS=""
-     ;;
-esac
-
-# Export time env. variables flags
-export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
-
-# Define flags
-CPPFLAGS="-I$URCU_INCS"
-LDFLAGS="-L$URCU_LIBS"
-
-
-# Set configure options for each build configuration
-CONF_OPTS=""
-case "$conf" in
-static)
-    # Unsupported! liblttng-ust can't pull in it's static (.a) dependencies.
-    echo "Static build"
-    CONF_OPTS="--enable-static --disable-shared"
-    ;;
-
-agents)
-    echo "Enable Java agent build"
-    export CLASSPATH="/usr/share/java/log4j-1.2.jar"
-    CONF_OPTS+=" --enable-java-agent-all --enable-jni-interface"
-
-    echo "Enable Python agent build"
-    CONF_OPTS+=" --enable-python-agent"
-    ;;
-
-debug-rcu)
-    echo "Enable RCU sanity checks for debugging"
-    CPPFLAGS="${CPPFLAGS:-} -DDEBUG_RCU"
-    ;;
-
-*)
-    echo "Standard build"
-    CONF_OPTS=""
+    export MAKE=make
+    export TAR=tar
+    export NPROC=nproc
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 esac
 
@@ -92,6 +173,36 @@ cd "$SRCDIR"
 # Run bootstrap in the source directory prior to configure
 ./bootstrap
 
+# Get source version from configure script
+eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+
+# Set configure options and environment variables for each build
+# configuration.
+CONF_OPTS=("--prefix=$PREFIX")
+case "$conf" in
+static)
+    # Unsupported! liblttng-ust can't pull in it's static (.a) dependencies.
+    echo "Static lib only configuration"
+
+    CONF_OPTS+=("--enable-static" "--disable-shared")
+    ;;
+
+agents)
+    echo "Java and Python agents configuration"
+
+    export CLASSPATH="/usr/share/java/log4j-1.2.jar"
+    CONF_OPTS+=("--enable-java-agent-all" "--enable-jni-interface" "--enable-python-agent")
+    ;;
+
+debug-rcu)
+    echo "Enable RCU sanity checks for debugging"
+    export CPPFLAGS="${CPPFLAGS} -DDEBUG_RCU"
+    ;;
+
+*)
+    echo "Standard configuration"
+    ;;
+esac
 
 # Build type
 # oot     : out-of-tree build
@@ -99,90 +210,100 @@ cd "$SRCDIR"
 # oot-dist: build via make dist out-of-tree
 # *       : normal tree build
 #
-# Make sure to move to the build_path and configure
-# before continuing
-BUILD_PATH=$SRCDIR
+# Make sure to move to the build directory and run configure
+# before continuing.
 case "$build" in
 oot)
     echo "Out of tree build"
-    BUILD_PATH=$WORKSPACE/oot
 
-    mkdir -p "$BUILD_PATH"
-    cd "$BUILD_PATH"
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+    "$SRCDIR/configure" "${CONF_OPTS[@]}"
     ;;
 
 dist)
-    echo "Distribution tarball in-tree build"
+    echo "Distribution in-tree build"
 
-    # Initial configure and generate tarball
-    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$SRCDIR/configure"
+    # Run configure and generate the tar file
+    # in the source directory
+    ./configure
     $MAKE dist
 
-    BUILD_PATH="$(mktemp -d)"
-    cp ./*.tar.* "$BUILD_PATH/"
-    cd "$BUILD_PATH"
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-    # Ignore level 1 of tar
-    $TAR xvf ./*.tar.* --strip 1
+    # Extract the distribution tar in the build directory,
+    # ignore the first directory level
+    $TAR xvf "$SRCDIR"/*.tar.* --strip 1
 
     # Build in extracted source tree
-    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    ./configure "${CONF_OPTS[@]}"
     ;;
 
 oot-dist)
-    echo "Distribution tarball out of tree build"
-    BUILD_PATH="$(mktemp -d)"
-    cd "$BUILD_PATH"
+    echo "Distribution out of tree build"
 
-    # Initial configure and generate tarball
-    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$SRCDIR/configure"
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
+
+    # Run configure out of tree and generate the tar file
+    "$SRCDIR/configure"
     $MAKE dist
 
-    NEWSRC_PATH="$(mktemp -d)"
-    cp ./*.tar.* "$NEWSRC_PATH/"
-    cd "$NEWSRC_PATH"
+    dist_srcdir="$(mktemp -d)"
+    cd "$dist_srcdir"
 
-    # Ignore level 1 of tar
-    $TAR xvf ./*.tar.* --strip 1
+    # Extract the distribution tar in the new source directory,
+    # ignore the first directory level
+    $TAR xvf "$builddir"/*.tar.* --strip 1
 
-    BUILD_PATH="$(mktemp -d)"
-    cd "$BUILD_PATH"
+    # Create and enter a second temporary build directory
+    builddir="$(mktemp -d)"
+    cd "$builddir"
 
-    # Build oot from extracted sources
-    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$NEWSRC_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    # Run configure from the extracted distribution tar,
+    # out of the source tree
+    "$dist_srcdir/configure" "${CONF_OPTS[@]}"
     ;;
 
 *)
     echo "Standard in-tree build"
-    CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    ./configure "${CONF_OPTS[@]}"
     ;;
 esac
 
+# We are now inside a configured build directory
+
 # BUILD!
 $MAKE -j "$($NPROC)" V=1
-$MAKE install
 
-# Run tests
+# Install in the workspace
+$MAKE install DESTDIR="$WORKSPACE"
+
+# Run tests, don't fail now, we want to run the archiving steps
+set +e
 $MAKE --keep-going check
+ret=$?
+set -e
 
-# Copy tap logs for the jenkins tap parser
+# Copy tap logs for the jenkins tap parser before cleaning the build dir
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
 # Clean the build directory
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
-# Clean temp dir for dist build
-if [ "$build" = "dist" ]; then
-    cd "$SRCDIR"
-    rm -rf "$BUILD_PATH"
-fi
+# Exit with the return code of the test suite
+exit $ret
 
 # EOF
