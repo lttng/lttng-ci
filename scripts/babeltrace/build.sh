@@ -69,7 +69,9 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
-# Required parameters
+# Required variables
+WORKSPACE=${WORKSPACE:-}
+
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
@@ -78,11 +80,11 @@ cc=${cc:-}
 
 SRCDIR="$WORKSPACE/src/babeltrace"
 TMPDIR="$WORKSPACE/tmp"
-PREFIX="$WORKSPACE/build"
+PREFIX="/build"
 
-# Create install and tmp directories
-rm -rf "$PREFIX" "$TMPDIR"
-mkdir -p "$PREFIX" "$TMPDIR"
+# Create tmp directory
+rm -rf "$TMPDIR"
+mkdir -p "$TMPDIR"
 
 export TMPDIR
 export CFLAGS="-g -O2"
@@ -155,8 +157,6 @@ sol10-i386)
     export MAKE=gmake
     export TAR=gtar
     export NPROC=gnproc
-    export BISON=bison
-    export YACC="$BISON -y"
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
     export CPPFLAGS="-I/opt/csw/include"
     export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib"
@@ -164,6 +164,7 @@ sol10-i386)
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
     ;;
+
 sol11-i386)
     export MAKE=gmake
     export TAR=gtar
@@ -174,18 +175,18 @@ sol11-i386)
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
     ;;
+
 macosx)
     export MAKE=make
     export TAR=tar
     export NPROC="getconf _NPROCESSORS_ONLN"
-    export BISON="bison"
-    export YACC="$BISON -y"
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    export CFLAGS="$CFLAGS -I/opt/local/include"
+    export CPPFLAGS="-I/opt/local/include"
     export LDFLAGS="-L/opt/local/lib"
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
     ;;
+
 *)
     export MAKE=make
     export TAR=tar
@@ -203,14 +204,16 @@ cd "$SRCDIR"
 
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
 # Enable dev mode by default for BT 2.0 builds
 export BABELTRACE_DEBUG_MODE=1
 export BABELTRACE_DEV_MODE=1
 export BABELTRACE_MINIMAL_LOG_LEVEL=TRACE
 
-# Set configure options for each build configuration
-CONF_OPTS=()
+# Set configure options and environment variables for each build
+# configuration.
+CONF_OPTS=("--prefix=$PREFIX")
 case "$conf" in
 static)
     echo "Static lib only configuration"
@@ -260,11 +263,12 @@ min)
 esac
 
 # Build type
-# oot : out-of-tree build
-# dist: build via make dist
-# *   : normal tree build
+# oot     : out-of-tree build
+# dist    : build via make dist
+# oot-dist: build via make dist out-of-tree
+# *       : normal tree build
 #
-# Make sure to move to the build dir and run configure
+# Make sure to move to the build directory and run configure
 # before continuing.
 case "$build" in
 oot)
@@ -274,7 +278,7 @@ oot)
     builddir=$(mktemp -d)
     cd "$builddir"
 
-    "$SRCDIR/configure" --prefix="$PREFIX" "${CONF_OPTS[@]}"
+    "$SRCDIR/configure" "${CONF_OPTS[@]}"
     ;;
 
 dist)
@@ -293,7 +297,8 @@ dist)
     # ignore the first directory level
     $TAR xvf "$SRCDIR"/*.tar.* --strip 1
 
-    ./configure --prefix="$PREFIX" "${CONF_OPTS[@]}"
+    # Build in extracted source tree
+    ./configure "${CONF_OPTS[@]}"
     ;;
 
 oot-dist)
@@ -320,12 +325,12 @@ oot-dist)
 
     # Run configure from the extracted distribution tar,
     # out of the source tree
-    "$dist_srcdir/configure" --prefix="$PREFIX" "${CONF_OPTS[@]}"
+    "$dist_srcdir/configure" "${CONF_OPTS[@]}"
     ;;
 
 *)
     echo "Standard in-tree build"
-    ./configure --prefix="$PREFIX" "${CONF_OPTS[@]}"
+    ./configure "${CONF_OPTS[@]}"
     ;;
 esac
 
@@ -333,7 +338,9 @@ esac
 
 # BUILD!
 $MAKE -j "$($NPROC)" V=1
-$MAKE install
+
+# Install in the workspace
+$MAKE install DESTDIR="$WORKSPACE"
 
 # Run tests, don't fail now, we want to run the archiving steps
 set +e
@@ -348,17 +355,11 @@ rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find "$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
-
-# Clean temp dir for dist build
-if [ "$build" = "dist" ]; then
-    cd "$SRCDIR"
-    rm -rf "$builddir"
-fi
+find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
 # Exit with the return code of the test suite
 exit $ret

@@ -572,7 +572,15 @@
           send-to:
             - recipients
 
-## Project
+
+## Views
+- view-template:
+    name: 'Babeltrace'
+    view-type: list
+    regex: 'babeltrace[-_].*'
+
+
+## Projects
 - project:
     name: babeltrace1
     github_user: efficios
@@ -671,6 +679,18 @@
           version: master
 
 - project:
+    name: gerrit-babeltrace
+    github_user: efficios
+    github_name: babeltrace
+    jobs:
+      - 'dev_gerrit_babeltrace_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std, oot, dist, oot-dist]
+          conf: !!python/tuple [std, static, prod, min]
+
+
+- project:
     name: babeltrace-jgalar-staging
     user: jgalar
     github_user: jgalar
@@ -679,6 +699,28 @@
     version:
       - stable-1.3-staging
       - stable-1.5-staging
+    jobs:
+      - 'dev_{user}_babeltrace_{version}_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist, oot-dist]
+          conf: !!python/tuple [std, static, python-bindings]
+      - 'dev_{user}_babeltrace_{version}_{buildtype}':
+          buildtype: macosxbuild
+          version: # macOS support was introduced in 1.4
+            - stable-1.5-staging
+          arch: !!python/tuple [macosx]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+
+
+- project:
+    name: babeltrace2-jgalar-staging
+    user: jgalar
+    github_user: jgalar
+    github_name: babeltrace
+    email_to: "jgalar@efficios.com"
+    version:
       - stable-2.0-staging
       - master-staging
     jobs:
@@ -689,25 +731,14 @@
           buildtype: build
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist, oot-dist]
-          conf: !!python/tuple [std, static, python-bindings]
+          conf: !!python/tuple [std, static, prod, min]
       - 'dev_{user}_babeltrace_{version}_{buildtype}':
           buildtype: macosxbuild
-          version: # macOS support was introduced in 1.4
-            - stable-1.5-staging
-            - stable-2.0-staging
-            - master-staging
           arch: !!python/tuple [macosx]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-
+          conf: !!python/tuple [std, prod]
 
 - project:
-    name: gerrit-babeltrace
-    github_user: efficios
-    github_name: babeltrace
-    jobs:
-      - 'dev_gerrit_babeltrace_{buildtype}':
-          buildtype: build
-          arch: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std, oot, dist, oot-dist]
-          conf: !!python/tuple [std, static, prod, min]
+    name: babeltrace-views
+    views:
+      - Babeltrace
