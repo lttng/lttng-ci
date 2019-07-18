@@ -274,7 +274,7 @@
       - 'librseq_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist]
+          build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static]
       - 'librseq_{version}_{cctype}':
           cctype: gccbuild
