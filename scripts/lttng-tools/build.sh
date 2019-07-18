@@ -1,7 +1,8 @@
 #!/bin/bash -exu
+# shellcheck disable=SC2103
 #
-# Copyright (C) 2016 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-#                      Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2016 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+#               2016-2019 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -69,100 +70,160 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
-# Required parameters
+# Required variables
+WORKSPACE=${WORKSPACE:-}
+
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
+cc=${cc:-}
 test_type=${test_type:-}
 
+DEPS_INC="$WORKSPACE/deps/build/include"
+DEPS_LIB="$WORKSPACE/deps/build/lib"
+DEPS_BIN="$WORKSPACE/deps/build/bin"
+DEPS_JAVA="$WORKSPACE/deps/build/share/java"
+
+export PATH="$DEPS_BIN:$PATH"
+export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
+export CPPFLAGS="-I$DEPS_INC"
+export LDFLAGS="-L$DEPS_LIB"
+
 SRCDIR="$WORKSPACE/src/lttng-tools"
-#TMPDIR="$WORKSPACE/tmp"
-PREFIX="$WORKSPACE/build"
 TAPDIR="$WORKSPACE/tap"
+PREFIX="/build"
 
 
-# Create build and tmp directories
-rm -rf "$PREFIX" "$TAPDIR"
-mkdir -p "$PREFIX" "$TAPDIR"
+# Create tmp directory
+TMPDIR="$WORKSPACE/tmp"
+mkdir -p "$TMPDIR"
 
-#export TMPDIR
-CFLAGS="-g -O2"
+# Use a symlink in /tmp to point to the the tmp directory
+# inside the workspace, this is to work around the path length
+# limit of unix sockets which are created by the test suite.
+tmpdir="$(mktemp)"
+ln -sf "$TMPDIR" "$tmpdir"
+export TMPDIR="$tmpdir"
 
-# liburcu
-URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
-URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
+export CFLAGS="-g -O2"
 
-# lttng-ust
-UST_INCS="$WORKSPACE/deps/lttng-ust/build/include/"
-UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
-UST_JAVA="$WORKSPACE/deps/lttng-ust/build/share/java/"
+# Set compiler variables
+case "$cc" in
+gcc)
+    export CC=gcc
+    export CXX=g++
+    ;;
+gcc-4.8)
+    export CC=gcc-4.8
+    export CXX=g++-4.8
+    ;;
+gcc-5)
+    export CC=gcc-5
+    export CXX=g++-5
+    ;;
+gcc-6)
+    export CC=gcc-6
+    export CXX=g++-6
+    ;;
+gcc-7)
+    export CC=gcc-7
+    export CXX=g++-7
+    ;;
+gcc-8)
+    export CC=gcc-8
+    export CXX=g++-8
+    ;;
+clang)
+    export CC=clang
+    export CXX=clang++
+    ;;
+clang-3.9)
+    export CC=clang-3.9
+    export CXX=clang++-3.9
+    ;;
+clang-4.0)
+    export CC=clang-4.0
+    export CXX=clang++-4.0
+    ;;
+clang-5.0)
+    export CC=clang-5.0
+    export CXX=clang++-5.0
+    ;;
+clang-6.0)
+    export CC=clang-6.0
+    export CXX=clang++-6.0
+    ;;
+clang-7)
+    export CC=clang-7
+    export CXX=clang++-7
+    ;;
+*)
+    if [ "x$cc" != "x" ]; then
+	    export CC="$cc"
+    fi
+    ;;
+esac
 
-# babeltrace
-#BABEL_INCS="$WORKSPACE/deps/babeltrace/build/include/"
-BABEL_LIBS="$WORKSPACE/deps/babeltrace/build/lib/"
-BABEL_BINS="$WORKSPACE/deps/babeltrace/build/bin/"
-
-# pgrep
-PGREP=pgrep
+if [ "x${CC:-}" != "x" ]; then
+    echo "Selected compiler:"
+    "$CC" -v
+fi
 
 # Set platform variables
 case "$arch" in
 sol10-i386)
-    MAKE=gmake
-    TAR=gtar
-    NPROC=gnproc
-    BISON="bison"
-    YACC="$BISON -y"
-    CFLAGS="${CFLAGS:-} -D_XOPEN_SOURCE=500"
-    RUN_TESTS="no"
-
+    export MAKE=gmake
+    export TAR=gtar
+    export NPROC=gnproc
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
+    export CPPFLAGS="-I/opt/csw/include -D_XOPEN_SOURCE=500 $CPPFLAGS"
+    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib $LDFLAGS"
+    export PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
+
+    RUN_TESTS="no"
     ;;
 
 sol11-i386)
-    MAKE=gmake
-    TAR=gtar
-    NPROC=nproc
-    BISON="bison"
-    YACC="$BISON -y"
-    CFLAGS="${CFLAGS:-} -D_XOPEN_SOURCE=500"
-    RUN_TESTS="no"
-
+    export MAKE=gmake
+    export TAR=gtar
+    export NPROC=nproc
     export PATH="$PATH:/usr/perl5/bin"
-    CPPFLAGS="-I/opt/csw/include"
-    LDFLAGS="-L/opt/csw/lib"
+    export CPPFLAGS="-I/opt/csw/include -D_XOPEN_SOURCE=500 $CPPFLAGS"
+    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib $LDFLAGS"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
+
+    RUN_TESTS="no"
     ;;
 
 macosx)
-    MAKE=make
-    TAR=tar
-    NPROC="getconf _NPROCESSORS_ONLN"
-    BISON="bison"
-    YACC="$BISON -y"
-    RUN_TESTS="no"
+    export MAKE=make
+    export TAR=tar
+    export NPROC="getconf _NPROCESSORS_ONLN"
+    export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+    export CPPFLAGS="-I/opt/local/include $CPPFLAGS"
+    export LDFLAGS="-L/opt/local/lib $LDFLAGS"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
 
-    export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    CPPFLAGS="-I/opt/local/include"
-    LDFLAGS="-L/opt/local/lib"
+    RUN_TESTS="no"
     ;;
 
 cygwin|cygwin64|msys32|msys64)
-    MAKE=make
-    TAR=tar
-    NPROC=nproc
-    BISON="bison"
-    YACC="$BISON -y"
-    #CFLAGS=""
+    export MAKE=make
+    export TAR=tar
+    export NPROC=nproc
+
     RUN_TESTS="no"
     ;;
 
 *)
-    MAKE=make
-    TAR=tar
-    NPROC=nproc
-    BISON="bison"
-    YACC="$BISON -y"
-    #CFLAGS=""
+    export MAKE=make
+    export TAR=tar
+    export NPROC=nproc
+
     RUN_TESTS="yes"
 
     PYTHON2=python2
@@ -171,21 +232,18 @@ cygwin|cygwin64|msys32|msys64)
     P2_VERSION=$($PYTHON2 -c "import sys;print(sys.version[:3])")
     P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
 
-    UST_PYTHON2="$WORKSPACE/deps/lttng-ust/build/lib/python$P2_VERSION/site-packages"
-    UST_PYTHON3="$WORKSPACE/deps/lttng-ust/build/lib/python$P3_VERSION/site-packages"
+    DEPS_PYTHON2="$WORKSPACE/deps/build/lib/python$P2_VERSION/site-packages"
+    DEPS_PYTHON3="$WORKSPACE/deps/build/lib/python$P3_VERSION/site-packages"
     ;;
 esac
 
 case "$test_type" in
-base)
-	RUN_TESTS_LONG_REGRESSION="no"
-	;;
 full)
-	RUN_TESTS_LONG_REGRESSION="yes"
-	;;
+    RUN_TESTS_LONG_REGRESSION="yes"
+    ;;
 *)
-	RUN_TESTS_LONG_REGRESSION="no"
-	;;
+    RUN_TESTS_LONG_REGRESSION="no"
+    ;;
 esac
 
 # Enter the source directory
@@ -196,23 +254,8 @@ cd "$SRCDIR"
 
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
-PACKAGE_VERSION=$(echo "$PACKAGE_VERSION"| sed 's/\-pre$//')
+PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
-
-# Export build flags
-case "$conf" in
-no-ust)
-    CPPFLAGS="${CPPFLAGS:-} -I$URCU_INCS"
-    LDFLAGS="${LDFLAGS:-} -L$URCU_LIBS"
-    export LD_LIBRARY_PATH="$URCU_LIBS:$BABEL_LIBS:${LD_LIBRARY_PATH:-}"
-    ;;
-
-*)
-    CPPFLAGS="${CPPFLAGS:-} -I$URCU_INCS -I$UST_INCS"
-    LDFLAGS="${LDFLAGS:-} -L$URCU_LIBS -L$UST_LIBS"
-    export LD_LIBRARY_PATH="$URCU_LIBS:$UST_LIBS:$BABEL_LIBS:${LD_LIBRARY_PATH:-}"
-    ;;
-esac
 
 # The switch to build without UST changed in 2.8
 if vergte "$PACKAGE_VERSION" "2.8"; then
@@ -222,48 +265,48 @@ else
 fi
 
 # Most build configs require the python bindings
-CONF_OPTS="--enable-python-bindings"
-export PYTHON="python3"
-export PYTHON_CONFIG="/usr/bin/python3-config"
+CONF_OPTS=("--prefix=$PREFIX" "--enable-python-bindings")
 
-# Set configure options for each build configuration
+# Set configure options and environment variables for each build
+# configuration.
 case "$conf" in
 static)
-    echo "Static build"
-    CONF_OPTS+=" --enable-static --disable-shared"
+    echo "Static lib only configuration"
+
+    CONF_OPTS+=("--enable-static" "--disable-shared")
     ;;
 
 no-ust)
     echo "Build without UST support"
-    CONF_OPTS+=" $NO_UST"
+    CONF_OPTS+=("$NO_UST")
     ;;
 
 agents)
-    echo "Enable Java Agents"
-    export JAVA_HOME="/usr/lib/jvm/default-java"
-    export CLASSPATH="$UST_JAVA/*:/usr/share/java/*"
-    CONF_OPTS+=" --enable-test-java-agent-all"
+    echo "Java and Python agents configuration"
 
-    echo "Enable Python agents"
-    export PYTHONPATH="$UST_PYTHON2:$UST_PYTHON3"
-    CONF_OPTS+=" --enable-test-python-agent-all"
+    export JAVA_HOME="/usr/lib/jvm/default-java"
+    export CLASSPATH="$DEPS_JAVA/*:/usr/share/java/*"
+    export PYTHONPATH="$DEPS_PYTHON2:$DEPS_PYTHON3"
+
+    CONF_OPTS+=("--enable-test-java-agent-all" "--enable-test-python-agent-all")
     ;;
 
 relayd-only)
-    echo "Build relayd only"
-    CONF_OPTS="--disable-bin-lttng --disable-bin-lttng-consumerd --disable-bin-lttng-crash --disable-bin-lttng-sessiond --disable-extras --disable-man-pages $NO_UST"
+    echo "Relayd only configuration"
+
+    CONF_OPTS=("--prefix=$PREFIX" "--disable-bin-lttng" "--disable-bin-lttng-consumerd" "--disable-bin-lttng-crash" "--disable-bin-lttng-sessiond" "--disable-extras" "--disable-man-pages" "$NO_UST")
     ;;
 
 debug-rcu)
     echo "Enable RCU sanity checks for debugging"
-    CPPFLAGS="${CPPFLAGS:-} -DDEBUG_RCU"
+
+    export CPPFLAGS="$CPPFLAGS -DDEBUG_RCU"
     ;;
 
 *)
-    echo "Standard build"
+    echo "Standard configuration"
     ;;
 esac
-
 
 # Build type
 # oot     : out-of-tree build
@@ -271,136 +314,132 @@ esac
 # oot-dist: build via make dist out-of-tree
 # *       : normal tree build
 #
-# Make sure to move to the build_path and run configure
-# before continuing
-BUILD_PATH=$SRCDIR
+# Make sure to move to the build directory and run configure
+# before continuing.
 case "$build" in
-    oot)
-        echo "Out of tree build"
-        BUILD_PATH=$WORKSPACE/oot
-        mkdir -p "$BUILD_PATH"
-        cd "$BUILD_PATH"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
-        ;;
+oot)
+    echo "Out of tree build"
 
-    dist)
-        echo "Distribution tarball in-tree build"
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-        # Initial configure and generate tarball
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
-        $MAKE dist
+    "$SRCDIR/configure" "${CONF_OPTS[@]}"
+    ;;
 
-        BUILD_PATH="$(mktemp -d)"
-        cp ./*.tar.* "$BUILD_PATH/"
-        cd "$BUILD_PATH"
+dist)
+    echo "Distribution in-tree build"
 
-        # Ignore level 1 of tar
-        $TAR xvf ./*.tar.* --strip 1
+    # Run configure and generate the tar file
+    # in the source directory
+    ./configure
+    $MAKE dist
 
-        # Build in extracted source tree
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
-        ;;
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-    oot-dist)
-        echo "Distribution tarball out of tree build"
-        BUILD_PATH="$(mktemp -d)"
-        cd "$BUILD_PATH"
+    # Extract the distribution tar in the build directory,
+    # ignore the first directory level
+    $TAR xvf "$SRCDIR"/*.tar.* --strip 1
 
-        # Initial configure and generate tarball
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$SRCDIR/configure" $CONF_OPTS --enable-build-man-pages
-        $MAKE dist
+    # Build in extracted source tree
+    ./configure "${CONF_OPTS[@]}"
+    ;;
 
-        NEWSRC_PATH="$(mktemp -d)"
-        cp ./*.tar.* "$NEWSRC_PATH/"
-        cd "$NEWSRC_PATH"
+oot-dist)
+    echo "Distribution out of tree build"
 
-        # Ignore level 1 of tar
-        $TAR xvf ./*.tar.* --strip 1
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-        BUILD_PATH="$(mktemp -d)"
-        cd "$BUILD_PATH"
+    # Run configure out of tree and generate the tar file
+    "$SRCDIR/configure"
+    $MAKE dist
 
-        # Build oot from extracted sources
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$NEWSRC_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
-        ;;
+    dist_srcdir="$(mktemp -d)"
+    cd "$dist_srcdir"
 
-    *)
-        echo "Standard tree build"
-        MAKE=$MAKE BISON="$BISON" YACC="$YACC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
-        ;;
+    # Extract the distribution tar in the new source directory,
+    # ignore the first directory level
+    $TAR xvf "$builddir"/*.tar.* --strip 1
+
+    # Create and enter a second temporary build directory
+    builddir="$(mktemp -d)"
+    cd "$builddir"
+
+    # Run configure from the extracted distribution tar,
+    # out of the source tree
+    "$dist_srcdir/configure" "${CONF_OPTS[@]}"
+    ;;
+
+*)
+    echo "Standard in-tree build"
+    ./configure "${CONF_OPTS[@]}"
+    ;;
 esac
+
+# We are now inside a configured build directory
 
 # BUILD!
 $MAKE -j "$($NPROC)" V=1
-$MAKE install
 
-# Run tests
-if [ "$RUN_TESTS" = "yes" ]; then
-    cd tests || exit 1
+# Install in the workspace
+$MAKE install DESTDIR="$WORKSPACE"
 
+# Run tests for all configs except 'no-ust'
+failed_tests=0
+if [ "$RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
     # Allow core dumps
     ulimit -c unlimited
-
-    # Add 'babeltrace' binary to PATH
-    chmod +x "$BABEL_BINS/babeltrace"
-    export PATH="$PATH:$BABEL_BINS"
-
-    # Prepare tap output dirs
-    rm -rf "$TAPDIR"
-    mkdir -p "$TAPDIR"
-    mkdir -p "$TAPDIR/unit"
-    mkdir -p "$TAPDIR/fast_regression"
-    mkdir -p "$TAPDIR/with_bindings_regression"
-    if [ "$RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
-        mkdir -p "$TAPDIR/long_regression"
-    fi
 
     # Force the lttng-sessiond path to /bin/true to prevent the spawing of a
     # lttng-sessiond --daemonize on "lttng create"
     export LTTNG_SESSIOND_PATH="/bin/true"
 
-    # Run 'unit_tests' and 'fast_regression' test suites for all configs except 'no-ust'
-    if [ "$conf" != "no-ust" ]; then
-        # Run 'unit_tests', 2.8 and up has a new test suite
-        if vergte "$PACKAGE_VERSION" "2.8"; then
-            make --keep-going check
-            rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*'" $BUILD_PATH/tests/" "$TAPDIR"
-        else
-            prove --merge -v --exec '' - < "$BUILD_PATH/tests/unit_tests" --archive "$TAPDIR/unit/" || true
-            prove --merge -v --exec '' - < "$BUILD_PATH/tests/fast_regression" --archive "$TAPDIR/fast_regression/" || true
-            prove --merge -v --exec '' - < "$BUILD_PATH/tests/with_bindings_regression" --archive "$TAPDIR/with_bindings_regression/" || true
-        fi
-        if [ "$RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
-            prove --merge -v --exec '' - < "$BUILD_PATH/tests/long_regression" --archive "$TAPDIR/long_regression/" || true
-        fi
+    # Run 'unit_tests', 2.8 and up has a new test suite
+    if vergte "$PACKAGE_VERSION" "2.8"; then
+        make --keep-going check || failed_tests=1
+        rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
     else
-        # Regression is disabled for now, we need to adjust the testsuite for no ust builds.
-        echo "Tests disabled for 'no-ust'."
+        cd tests
+        mkdir -p "$TAPDIR/unit"
+        mkdir -p "$TAPDIR/fast_regression"
+        mkdir -p "$TAPDIR/with_bindings_regression"
+        prove --merge -v --exec '' - < unit_tests --archive "$TAPDIR/unit/" || failed_tests=1
+        prove --merge -v --exec '' - < fast_regression --archive "$TAPDIR/fast_regression/" || failed_tests=1
+        prove --merge -v --exec '' - < with_bindings_regression --archive "$TAPDIR/with_bindings_regression/" || failed_tests=1
+	cd ..
+    fi
+
+    if [ "$RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
+        cd tests
+        mkdir -p "$TAPDIR/long_regression"
+        prove --merge -v --exec '' - < long_regression --archive "$TAPDIR/long_regression/" || failed_tests=1
+	cd ..
     fi
 
     # TAP plugin is having a hard time with .yml files.
     find "$TAPDIR" -name "meta.yml" -exec rm -f {} \;
-
-    # And also with files without extension, so rename all result to *.tap
-    find "$TAPDIR/" -type f -exec mv {} {}.tap \;
-
-    cd -
+else
+    # The TAP plugin will fail the job if no test logs are present
+    mkdir -p "$TAPDIR/no-tests"
+    echo "1..1" > "$TAPDIR/no-tests/tests.log"
+    echo "ok 1 - Test suite disabled" >> "$TAPDIR/no-tests/tests.log"
 fi
 
-# Cleanup
+# Clean the build directory
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find "$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
-# Clean temp dir for dist build
-if [ "$build" = "dist" ]; then
-    cd "$SRCDIR"
-    rm -rf "$BUILD_PATH"
-fi
+# Exit with failure if any of the tests failed
+exit $failed_tests
 
 # EOF
