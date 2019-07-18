@@ -80,6 +80,8 @@ cc=${cc:-}
 
 DEPS_INC="$WORKSPACE/deps/build/include"
 DEPS_LIB="$WORKSPACE/deps/build/lib"
+#DEPS_BIN="$WORKSPACE/deps/build/bin"
+#DEPS_JAVA="$WORKSPACE/deps/build/share/java"
 
 export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
 export CPPFLAGS="-I$DEPS_INC"
@@ -177,16 +179,19 @@ cd "$SRCDIR"
 
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
 # Set configure options and environment variables for each build
 # configuration.
 CONF_OPTS=("--prefix=$PREFIX")
 case "$conf" in
 static)
-    # Unsupported! liblttng-ust can't pull in it's static (.a) dependencies.
     echo "Static lib only configuration"
 
     CONF_OPTS+=("--enable-static" "--disable-shared")
+
+    # Unsupported! liblttng-ust can't pull in it's static (.a) dependencies.
+    exit 1
     ;;
 
 agents)
@@ -287,10 +292,8 @@ $MAKE -j "$($NPROC)" V=1
 $MAKE install DESTDIR="$WORKSPACE"
 
 # Run tests, don't fail now, we want to run the archiving steps
-set +e
-$MAKE --keep-going check
-ret=$?
-set -e
+failed_tests=0
+$MAKE --keep-going check || failed_tests=1
 
 # Copy tap logs for the jenkins tap parser before cleaning the build dir
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
@@ -299,13 +302,13 @@ rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+#find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
 find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
 find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
-# Exit with the return code of the test suite
-exit $ret
+# Exit with failure if any of the tests failed
+exit $failed_tests
 
 # EOF

@@ -170,6 +170,8 @@ sol11-i386)
     export TAR=gtar
     export NPROC=nproc
     export PATH="$PATH:/usr/perl5/bin"
+    export CPPFLAGS="-I/opt/csw/include"
+    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib"
     export LD_ALTEXEC=/usr/bin/gld
     export LD=/usr/bin/gld
     export PYTHON="python3"
@@ -343,10 +345,8 @@ $MAKE -j "$($NPROC)" V=1
 $MAKE install DESTDIR="$WORKSPACE"
 
 # Run tests, don't fail now, we want to run the archiving steps
-set +e
-$MAKE --keep-going check
-ret=$?
-set -e
+failed_tests=0
+$MAKE --keep-going check || failed_tests=1
 
 # Copy tap logs for the jenkins tap parser before cleaning the build dir
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
@@ -361,7 +361,7 @@ find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 # Remove libtool .la files
 find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
-# Exit with the return code of the test suite
-exit $ret
+# Exit with failure if any of the tests failed
+exit $failed_tests
 
 # EOF

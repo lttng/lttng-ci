@@ -69,25 +69,87 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
-# Required parameters
+# Required variables
+WORKSPACE=${WORKSPACE:-}
+
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
+cc=${cc:-}
 
 
 SRCDIR="$WORKSPACE/src/liburcu"
 TMPDIR="$WORKSPACE/tmp"
-PREFIX="$WORKSPACE/build"
+PREFIX="/build"
 
-# The build dir defaults to the source dir
-BUILDDIR="$SRCDIR"
-
-# Create build and tmp directories
-rm -rf "$PREFIX" "$TMPDIR"
-mkdir -p "$PREFIX" "$TMPDIR"
+# Create tmp directory
+rm -rf "$TMPDIR"
+mkdir -p "$TMPDIR"
 
 export TMPDIR
 export CFLAGS="-g -O2"
+
+# Set compiler variables
+case "$cc" in
+gcc)
+    export CC=gcc
+    export CXX=g++
+    ;;
+gcc-4.8)
+    export CC=gcc-4.8
+    export CXX=g++-4.8
+    ;;
+gcc-5)
+    export CC=gcc-5
+    export CXX=g++-5
+    ;;
+gcc-6)
+    export CC=gcc-6
+    export CXX=g++-6
+    ;;
+gcc-7)
+    export CC=gcc-7
+    export CXX=g++-7
+    ;;
+gcc-8)
+    export CC=gcc-8
+    export CXX=g++-8
+    ;;
+clang)
+    export CC=clang
+    export CXX=clang++
+    ;;
+clang-3.9)
+    export CC=clang-3.9
+    export CXX=clang++-3.9
+    ;;
+clang-4.0)
+    export CC=clang-4.0
+    export CXX=clang++-4.0
+    ;;
+clang-5.0)
+    export CC=clang-5.0
+    export CXX=clang++-5.0
+    ;;
+clang-6.0)
+    export CC=clang-6.0
+    export CXX=clang++-6.0
+    ;;
+clang-7)
+    export CC=clang-7
+    export CXX=clang++-7
+    ;;
+*)
+    if [ "x$cc" != "x" ]; then
+	    export CC="$cc"
+    fi
+    ;;
+esac
+
+if [ "x${CC:-}" != "x" ]; then
+    echo "Selected compiler:"
+    "$CC" -v
+fi
 
 # Set platform variables
 case "$arch" in
@@ -95,36 +157,42 @@ sol10-i386)
     export MAKE=gmake
     export TAR=gtar
     export NPROC=gnproc
-    export BISON=bison
-    export YACC="$BISON -y"
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
     export CPPFLAGS="-I/opt/csw/include"
     export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib"
     export PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
+
 sol11-i386)
     export MAKE=gmake
     export TAR=gtar
     export NPROC=nproc
     export PATH="$PATH:/usr/perl5/bin"
-    #export LD_ALTEXEC=/usr/sfw/bin/gld
-    #export LD=/usr/sfw/bin/gld
+    export LD_ALTEXEC=/usr/bin/gld
+    export LD=/usr/bin/gld
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
+
 macosx)
     export MAKE=make
     export TAR=tar
     export NPROC="getconf _NPROCESSORS_ONLN"
-    export BISON="bison"
-    export YACC="$BISON -y"
-    export LDFLAGS="-L/opt/local/lib"
-    export CFLAGS="$CFLAGS -I/opt/local/include"
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    export CPPFLAGS="-I/opt/local/include"
+    export LDFLAGS="-L/opt/local/lib"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 
 *)
     export MAKE=make
     export TAR=tar
     export NPROC=nproc
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 esac
 
@@ -136,110 +204,144 @@ cd "$SRCDIR"
 
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
 # Set configure options and environment variables for each build
 # configuration.
-CONF_OPTS=""
+CONF_OPTS=("--prefix=$PREFIX")
 case "$conf" in
 static)
-    echo "Static build"
-    CONF_OPTS="--enable-static --disable-shared"
+    echo "Static lib only configuration"
+
+    CONF_OPTS+=("--enable-static" "--disable-shared")
     ;;
 
 tls_fallback)
     echo  "Using pthread_getspecific() to emulate TLS"
-    CONF_OPTS="--disable-compiler-tls"
+    CONF_OPTS+=("--disable-compiler-tls")
     ;;
 
 debug-rcu)
     echo "Enable RCU sanity checks for debugging"
     if vergte "$PACKAGE_VERSION" "0.10"; then
-       CONF_OPTS="--enable-rcu-debug"
+       CONF_OPTS+=("--enable-rcu-debug")
     else
        export CFLAGS="$CFLAGS -DDEBUG_RCU"
     fi
 
     echo "Enable iterator sanity validator"
     if vergte "$PACKAGE_VERSION" "0.11"; then
-       CONF_OPTS+=" --enable-cds-lfht-iter-debug"
+       CONF_OPTS+=("--enable-cds-lfht-iter-debug")
     fi
     ;;
 
 *)
-    echo "Standard build"
-    CONF_OPTS=""
+    echo "Standard configuration"
     ;;
 esac
 
 # Build type
-# oot : out-of-tree build
-# dist: build via make dist
-# *   : normal tree build
+# oot     : out-of-tree build
+# dist    : build via make dist
+# oot-dist: build via make dist out-of-tree
+# *       : normal tree build
 #
-# Make sure to move to the build dir and run configure
+# Make sure to move to the build directory and run configure
 # before continuing.
 case "$build" in
 oot)
     echo "Out of tree build"
 
-    BUILDDIR=$WORKSPACE/oot
-    mkdir -p "$BUILDDIR"
-    cd "$BUILDDIR"
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-    "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+    "$SRCDIR/configure" "${CONF_OPTS[@]}"
     ;;
 
 dist)
-    echo "Distribution out of tree build"
+    echo "Distribution in-tree build"
 
-    tar_file="userspace-rcu-$PACKAGE_VERSION.tar.bz2"
-
-    # Initial configure in src dir and tarball generation
+    # Run configure and generate the tar file
+    # in the source directory
     ./configure
     $MAKE dist
 
-    BUILDDIR=$(mktemp -d)
-    mkdir -p "$BUILDDIR"
-    cd "$BUILDDIR"
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
 
-    # Ignore level 1 of tar
-    $TAR xvf "$SRCDIR/$tar_file" --strip 1
+    # Extract the distribution tar in the build directory,
+    # ignore the first directory level
+    $TAR xvf "$SRCDIR"/*.tar.* --strip 1
 
-    ./configure --prefix="$PREFIX" $CONF_OPTS
+    # Build in extracted source tree
+    ./configure "${CONF_OPTS[@]}"
     ;;
+
+oot-dist)
+    echo "Distribution out of tree build"
+
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
+
+    # Run configure out of tree and generate the tar file
+    "$SRCDIR/configure"
+    $MAKE dist
+
+    dist_srcdir="$(mktemp -d)"
+    cd "$dist_srcdir"
+
+    # Extract the distribution tar in the new source directory,
+    # ignore the first directory level
+    $TAR xvf "$builddir"/*.tar.* --strip 1
+
+    # Create and enter a second temporary build directory
+    builddir="$(mktemp -d)"
+    cd "$builddir"
+
+    # Run configure from the extracted distribution tar,
+    # out of the source tree
+    "$dist_srcdir/configure" "${CONF_OPTS[@]}"
+    ;;
+
 *)
     echo "Standard in-tree build"
-    ./configure --prefix="$PREFIX" $CONF_OPTS
+    ./configure "${CONF_OPTS[@]}"
     ;;
 esac
 
+# We are now inside a configured build directory
+
 # BUILD!
 $MAKE -j "$($NPROC)" V=1
-$MAKE install
 
-# Run tests
-$MAKE --keep-going check
+# Install in the workspace
+$MAKE install DESTDIR="$WORKSPACE"
+
+# Run tests, don't fail now, we want to run the archiving steps
+failed_tests=0
+$MAKE --keep-going check || failed_tests=1
 # Only run regtest for 0.9 and up
 if vergte "$PACKAGE_VERSION" "0.9"; then
-   $MAKE --keep-going regtest
+   $MAKE --keep-going regtest || failed_tests=1
 fi
 
-# Copy tap logs for the jenkins tap parser
+# Copy tap logs for the jenkins tap parser before cleaning the build dir
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
-# Cleanup
+# Clean the build directory
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+#find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
-# Cleanup temp directory of dist build
-if [ "$build" = "dist" ]; then
-    cd "$SRCDIR"
-    rm -rf "$BUILDDIR"
-fi
+# Exit with failure if any of the tests failed
+exit $failed_tests
 
 # EOF

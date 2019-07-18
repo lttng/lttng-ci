@@ -69,7 +69,9 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
-# Required parameters
+# Required variables
+WORKSPACE=${WORKSPACE:-}
+
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
@@ -78,14 +80,17 @@ cc=${cc:-}
 
 SRCDIR="$WORKSPACE/src/librseq"
 TMPDIR="$WORKSPACE/tmp"
-PREFIX="$WORKSPACE/build"
+PREFIX="/build"
 
-# Create build and tmp directories
-rm -rf "$PREFIX" "$TMPDIR"
-mkdir -p "$PREFIX" "$TMPDIR"
+# Create tmp directory
+rm -rf "$TMPDIR"
+mkdir -p "$TMPDIR"
 
 export TMPDIR
 export CFLAGS="-g -O2"
+
+# Add the convenience headers in extra to the
+# include path.
 export CPPFLAGS="-I$SRCDIR/extra"
 
 # Set compiler variables
@@ -145,12 +150,19 @@ clang-7)
     ;;
 esac
 
+if [ "x${CC:-}" != "x" ]; then
+    echo "Selected compiler:"
+    "$CC" -v
+fi
+
 # Set platform variables
 case "$arch" in
 *)
     export MAKE=make
     export TAR=tar
     export NPROC=nproc
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 esac
 
@@ -162,85 +174,124 @@ cd "$SRCDIR"
 
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
-TARBALL_FILE="librseq-$PACKAGE_VERSION.tar.bz2"
 
 # Set configure options and environment variables for each build
 # configuration.
-CONF_OPTS=""
+CONF_OPTS=("--prefix=$PREFIX")
 case "$conf" in
 static)
-    echo "Static build"
-    CONF_OPTS="--enable-static --disable-shared"
+    echo "Static lib only configuration"
+
+    CONF_OPTS+=("--enable-static" "--disable-shared")
     ;;
 
 *)
-    echo "Standard build"
-    CONF_OPTS=""
+    echo "Standard configuration"
     ;;
 esac
 
 # Build type
-# oot : out-of-tree build
-# dist: build via make dist
-# *   : normal tree build
+# oot     : out-of-tree build
+# dist    : build via make dist
+# oot-dist: build via make dist out-of-tree
+# *       : normal tree build
 #
-# Make sure to move to the build_path and configure
-# before continuing
-BUILD_PATH=$SRCDIR
+# Make sure to move to the build directory and run configure
+# before continuing.
 case "$build" in
 oot)
     echo "Out of tree build"
-    BUILD_PATH=$WORKSPACE/oot
-    mkdir -p "$BUILD_PATH"
-    cd "$BUILD_PATH"
-    "$SRCDIR/configure" --prefix="$PREFIX" $CONF_OPTS
+
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
+
+    "$SRCDIR/configure" "${CONF_OPTS[@]}"
     ;;
 
 dist)
-    echo "Distribution out of tree build"
-    BUILD_PATH=$(mktemp -d)
+    echo "Distribution in-tree build"
 
-    # Initial configure and generate tarball
+    # Run configure and generate the tar file
+    # in the source directory
+    ./configure
+    $MAKE dist
+
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
+
+    # Extract the distribution tar in the build directory,
+    # ignore the first directory level
+    $TAR xvf "$SRCDIR"/*.tar.* --strip 1
+
+    # Build in extracted source tree
+    ./configure "${CONF_OPTS[@]}"
+    ;;
+
+oot-dist)
+    echo "Distribution out of tree build"
+
+    # Create and enter a temporary build directory
+    builddir=$(mktemp -d)
+    cd "$builddir"
+
+    # Run configure out of tree and generate the tar file
     "$SRCDIR/configure"
     $MAKE dist
 
-    mkdir -p "$BUILD_PATH"
-    cp "./$TARBALL_FILE" "$BUILD_PATH/"
-    cd "$BUILD_PATH"
+    dist_srcdir="$(mktemp -d)"
+    cd "$dist_srcdir"
 
-    # Ignore level 1 of tar
-    $TAR xvf "$TARBALL_FILE" --strip 1
+    # Extract the distribution tar in the new source directory,
+    # ignore the first directory level
+    $TAR xvf "$builddir"/*.tar.* --strip 1
 
-    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    # Create and enter a second temporary build directory
+    builddir="$(mktemp -d)"
+    cd "$builddir"
+
+    # Run configure from the extracted distribution tar,
+    # out of the source tree
+    "$dist_srcdir/configure" "${CONF_OPTS[@]}"
     ;;
 
 *)
     echo "Standard in-tree build"
-    "$BUILD_PATH/configure" --prefix="$PREFIX" $CONF_OPTS
+    ./configure "${CONF_OPTS[@]}"
     ;;
 esac
 
+# We are now inside a configured build directory
+
 # BUILD!
 $MAKE -j "$($NPROC)" V=1
-$MAKE install
 
-# Run tests
+# Install in the workspace
+$MAKE install DESTDIR="$WORKSPACE"
+
+# Run tests, don't fail now, we want to run the archiving steps
+set +e
 $MAKE --keep-going check
+ret=$?
+set -e
 
-# Cleanup
+# Copy tap logs for the jenkins tap parser before cleaning the build dir
+rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+
+# Clean the build directory
 $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
-find "$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+#find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find "$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
 
-# Cleanup temp directory of dist build
-if [ "$build" = "dist" ]; then
-    cd "$SRCDIR"
-    rm -rf "$BUILD_PATH"
-fi
+# Exit with the return code of the test suite
+exit $ret
 
 # EOF

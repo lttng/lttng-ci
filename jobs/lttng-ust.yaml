@@ -102,6 +102,7 @@
     publishers:
       - tap:
           results: 'tap/**/*.log'
+          fail-if-no-results: true
           failed-tests-mark-build-as-failure: true
           todo-is-failure: false
       - warnings:
