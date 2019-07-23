@@ -189,6 +189,15 @@ macosx)
     export PYTHON_CONFIG="python3-config"
     ;;
 
+cygwin)
+    export MAKE=make
+    export TAR=tar
+    export NPROC=nproc
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
+    rebase_dll=1
+    ;;
+
 *)
     export MAKE=make
     export TAR=tar
@@ -340,6 +349,11 @@ esac
 
 # BUILD!
 $MAKE -j "$($NPROC)" V=1
+
+# Force rebase DLL address mapping
+if [ "${rebase_dll:-}" == "1" ]; then
+	find . -name "*.dll" | xargs rebase -O -v
+fi
 
 # Install in the workspace
 $MAKE install DESTDIR="$WORKSPACE"
