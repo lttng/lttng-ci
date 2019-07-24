@@ -619,7 +619,7 @@
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, python-bindings]
+          conf: !!python/tuple [std]
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
           arch: !!python/tuple [amd64]
