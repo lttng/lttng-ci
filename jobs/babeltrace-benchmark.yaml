@@ -1,9 +1,9 @@
 - job:
-    name: babeltrace-benchmark
+    name: babeltrace_benchmark
     project-type: freestyle
     defaults: global
     description: |
-      This job is responsible for triggering jobs in lava and generate the report
+      This job is responsible for triggering benchmark jobs in lava and generate the report
 
       The Babeltrace project provides trace read and write libraries, as well
       as a trace converter. Plugins can be created for any trace format to
