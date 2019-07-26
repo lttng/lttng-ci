@@ -179,12 +179,16 @@ def plot_raw_value(branch, benchmark_type, x_data, y_data, labels, latest_values
         )
         if l_result >= ymax:
             ymax = 1.2 * l_result
+    ax = plt.gca()
     plt.ylim(ymin=0, ymax=ymax)
     plt.xticks(x_data, labels, rotation=90, family="monospace")
     plt.title(graph_get_title(branch, benchmark_type), fontweight="bold")
     plt.ylabel("User + system time (s)")
     plt.xlabel("Latest commits")
     plt.legend()
+
+    # Put tick on the right side
+    ax.tick_params(labeltop=False, labelright=True)
 
     plt.tight_layout()
     return
@@ -243,9 +247,11 @@ def plot_ratio(branch, benchmark_type, x_data, y_data, labels, latest_values):
     plt.xlabel("Latest commits")
     plt.legend()
 
+    # Put tick on the right side
+    ax.tick_params(labeltop=False, labelright=True)
+
     plt.tight_layout()
     return
-
 
 def generate_graph(branches, report_name, git_path):
 
