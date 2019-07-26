@@ -193,6 +193,41 @@ def plot_raw_value(branch, benchmark_type, x_data, y_data, labels, latest_values
     plt.tight_layout()
     return
 
+def plot_delta_between_point(branch, benchmark_type, x_data, y_data, labels, latest_values):
+    """
+    Plot the graph of delta between each sequential commit.
+    """
+    local_abs_max = 100
+
+    # Transform y_data to a list of  for which the reference is the first
+    # element.
+    local_y_data = []
+    for pos, y in enumerate(y_data):
+        if pos == 0:
+            local_y_data.append(0.0)
+            continue
+        local_y_data.append(y - y_data[pos - 1])
+
+    plt.plot(x_data, local_y_data, "o", label=branch, color=graph_get_color(branch))
+
+    # Get max absolute value to align the y axis with zero in the middle.
+    if local_y_data:
+        local_abs_max = abs(max(local_y_data, key=abs)) * 1.3
+
+    plt.ylim(ymin=local_abs_max * -1, ymax=local_abs_max)
+
+    ax = plt.gca()
+    plt.xticks(x_data, labels, rotation=90, family="monospace")
+    plt.title(graph_get_title(branch, benchmark_type) + " Delta to previous commit", fontweight="bold")
+    plt.ylabel("Seconds")
+    plt.xlabel("Latest commits")
+    plt.legend()
+
+    # Put tick on the right side
+    ax.tick_params(labeltop=False, labelright=True)
+
+    plt.tight_layout()
+    return
 
 def plot_ratio(branch, benchmark_type, x_data, y_data, labels, latest_values):
     """
@@ -305,11 +340,15 @@ def generate_graph(branches, report_name, git_path):
             plot_raw_value(branch, b_type, x_data, y_data, labels, latest_values)
             pdf_pages.savefig(fig)
 
-            fig = plt.figure(figsize=(width, 8.27), dpi=100)
             # Use the mean of each sanitize dataset here, we do not care for
             # variance for ratio. At least not yet.
             y_data = [mean(sanitize_dataset(c[1][b_type])[0]) for c in results]
+            fig = plt.figure(figsize=(width, 8.27), dpi=100)
             plot_ratio(branch, b_type, x_data, y_data, labels, latest_values)
+            pdf_pages.savefig(fig)
+
+            fig = plt.figure(figsize=(width, 8.27), dpi=100)
+            plot_delta_between_point(branch, b_type, x_data, y_data, labels, latest_values)
             pdf_pages.savefig(fig)
 
     pdf_pages.close()
