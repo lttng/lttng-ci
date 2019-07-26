@@ -164,7 +164,6 @@ def plot_raw_value(branch, benchmark_type, x_data, y_data, labels, latest_values
     )
     plt.plot(outlier_x_data, outlier_y_data, "+", label="outlier", color="black")
 
-    ymin = 0
     ymax = 1
     if y_data:
         ymin = 0.8 * min([item for sublist in y_data for item in sublist])
@@ -178,12 +177,9 @@ def plot_raw_value(branch, benchmark_type, x_data, y_data, labels, latest_values
             label="Latest {}".format(l_branch),
             color=graph_get_color(l_branch),
         )
-        if l_result <= ymin:
-            ymin = 0.8 * l_result
         if l_result >= ymax:
             ymax = 1.2 * l_result
-
-    plt.ylim(ymin=ymin, ymax=ymax)
+    plt.ylim(ymin=0, ymax=ymax)
     plt.xticks(x_data, labels, rotation=90, family="monospace")
     plt.title(graph_get_title(branch, benchmark_type), fontweight="bold")
     plt.ylabel("User + system time (s)")
