@@ -39,6 +39,17 @@ BENCHMARK_TYPES = ["dummy", "text"]
 DEFAULT_BUCKET = "lava"
 
 
+def json_type(string):
+    """
+    Argpase type for json args.
+    We expect a base dictionary.
+    """
+    passed_json = json.loads(string)
+    if not isinstance(passed_json, dict):
+        msg = "%r is not a dict" % string
+        raise argparse.ArgumentTypeError(msg)
+    return passed_json
+
 def graph_get_color(branch):
     """
     Get the color matching the branch.
@@ -410,8 +421,18 @@ def main():
     parser.add_argument(
         "--repo-path", help="The location of the git repo to use.", required=True
     )
+    parser.add_argument(
+        "--overwrite-branches-cutoff",
+        help="A dictionary of the form {"
+        "'branch_name': 'commit_hash_cutoff',...}. Allow custom graphing and"
+        "jobs generation.",
+        required=False, type=json_type
+    )
 
     args = parser.parse_args()
+
+    if args.overwrite_branches_cutoff:
+        bt_branches = args.overwrite_branches_cutoff
 
     if not os.path.exists(args.repo_path):
         print("Repository location does not exists.")
