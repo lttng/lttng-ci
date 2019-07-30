@@ -354,7 +354,7 @@ def generate_graph(branches, report_name, git_path):
     pdf_pages.close()
 
 
-def launch_jobs(branches, git_path, wait_for_completion, debug):
+def launch_jobs(branches, git_path, wait_for_completion, debug, force):
     """
     Lauch jobs for all missing results.
     """
@@ -365,7 +365,7 @@ def launch_jobs(branches, git_path, wait_for_completion, debug):
         with tempfile.TemporaryDirectory() as workdir:
             for commit in commits:
                 b_results = get_benchmark_results(client, commit, workdir)[0]
-                if b_results:
+                if b_results and not force:
                     continue
                 lava_submit.submit(
                     commit, wait_for_completion=wait_for_completion, debug=debug
@@ -385,6 +385,9 @@ def main():
     parser = argparse.ArgumentParser(description="Babeltrace benchmark utility")
     parser.add_argument(
         "--generate-jobs", action="store_true", help="Generate and send jobs"
+    )
+    parser.add_argument(
+        "--force-jobs", action="store_true", help="Force the queueing of jobs to lava"
     )
     parser.add_argument(
         "--do-not-wait-on-completion",
@@ -416,10 +419,16 @@ def main():
 
     if args.generate_jobs:
         print("Launching jobs for:")
+
         for branch, cutoff in bt_branches.items():
             print("\t Branch {} with cutoff {}".format(branch, cutoff))
+
         launch_jobs(
-            bt_branches, args.repo_path, not args.do_not_wait_on_completion, args.debug
+            bt_branches,
+            args.repo_path,
+            not args.do_not_wait_on_completion,
+            args.debug,
+            args.force_jobs,
         )
 
     if args.generate_report:
