@@ -204,7 +204,10 @@ def plot_raw_value(branch, benchmark_type, x_data, y_data, labels, latest_values
     plt.tight_layout()
     return
 
-def plot_delta_between_point(branch, benchmark_type, x_data, y_data, labels, latest_values):
+
+def plot_delta_between_point(
+    branch, benchmark_type, x_data, y_data, labels, latest_values
+):
     """
     Plot the graph of delta between each sequential commit.
     """
@@ -229,7 +232,10 @@ def plot_delta_between_point(branch, benchmark_type, x_data, y_data, labels, lat
 
     ax = plt.gca()
     plt.xticks(x_data, labels, rotation=90, family="monospace")
-    plt.title(graph_get_title(branch, benchmark_type) + " Delta to previous commit", fontweight="bold")
+    plt.title(
+        graph_get_title(branch, benchmark_type) + " Delta to previous commit",
+        fontweight="bold",
+    )
     plt.ylabel("Seconds")
     plt.xlabel("Latest commits")
     plt.legend()
@@ -239,6 +245,7 @@ def plot_delta_between_point(branch, benchmark_type, x_data, y_data, labels, lat
 
     plt.tight_layout()
     return
+
 
 def plot_ratio(branch, benchmark_type, x_data, y_data, labels, latest_values):
     """
@@ -298,6 +305,7 @@ def plot_ratio(branch, benchmark_type, x_data, y_data, labels, latest_values):
 
     plt.tight_layout()
     return
+
 
 def generate_graph(branches, report_name, git_path):
 
@@ -359,7 +367,9 @@ def generate_graph(branches, report_name, git_path):
             pdf_pages.savefig(fig)
 
             fig = plt.figure(figsize=(width, 8.27), dpi=100)
-            plot_delta_between_point(branch, b_type, x_data, y_data, labels, latest_values)
+            plot_delta_between_point(
+                branch, b_type, x_data, y_data, labels, latest_values
+            )
             pdf_pages.savefig(fig)
 
     pdf_pages.close()
