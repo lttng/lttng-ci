@@ -21,31 +21,6 @@ import tempfile
 import json
 from collections import defaultdict
 
-_METRIC = {
-    "User time (seconds)": float,
-    "System time (seconds)": float,
-    "Percent of CPU this job got": percent_parser,
-    "Elapsed (wall clock) time (h:mm:ss or m:ss)": wall_clock_parser,
-    "Average shared text size (kbytes)": int,
-    "Average unshared data size (kbytes)": int,
-    "Average stack size (kbytes)": int,
-    "Average total size (kbytes)": int,
-    "Maximum resident set size (kbytes)": int,
-    "Average resident set size (kbytes)": int,
-    "Major (requiring I/O) page faults": int,
-    "Minor (reclaiming a frame) page faults": int,
-    "Voluntary context switches": int,
-    "Involuntary context switches": int,
-    "Swaps": int,
-    "File system inputs": int,
-    "File system outputs": int,
-    "Socket messages sent": int,
-    "Socket messages received": int,
-    "Signals delivered": int,
-    "Page size (bytes)": int,
-}
-
-
 def wall_clock_parser(value):
     """
     Parse /usr/bin/time wall clock value.
@@ -80,6 +55,32 @@ def percent_parser(value):
     if parsed:
         return float(parsed)
     return 0
+
+
+_METRIC = {
+    "User time (seconds)": float,
+    "System time (seconds)": float,
+    "Percent of CPU this job got": percent_parser,
+    "Elapsed (wall clock) time (h:mm:ss or m:ss)": wall_clock_parser,
+    "Average shared text size (kbytes)": int,
+    "Average unshared data size (kbytes)": int,
+    "Average stack size (kbytes)": int,
+    "Average total size (kbytes)": int,
+    "Maximum resident set size (kbytes)": int,
+    "Average resident set size (kbytes)": int,
+    "Major (requiring I/O) page faults": int,
+    "Minor (reclaiming a frame) page faults": int,
+    "Voluntary context switches": int,
+    "Involuntary context switches": int,
+    "Swaps": int,
+    "File system inputs": int,
+    "File system outputs": int,
+    "Socket messages sent": int,
+    "Socket messages received": int,
+    "Signals delivered": int,
+    "Page size (bytes)": int,
+}
+
 
 
 def parse(path, results):
