@@ -365,6 +365,51 @@
             - 'gerrit'
 
 - job-template:
+    name: dev_gerrit_babeltrace_black
+    defaults: babeltrace
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/babeltrace
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/babeltrace
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'babeltrace'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+          trigger-for-unreviewed-patches: true
+
+    node: 'amd64'
+
+    builders:
+      - shell:
+         !include-raw-escape: scripts/babeltrace/black.sh
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=babeltrace
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit'
+
+- job-template:
     name: babeltrace_{version}_cppcheck
     defaults: babeltrace
 
@@ -700,6 +745,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
           filter: ''
+      - 'dev_gerrit_babeltrace_black'
 
 
 - project:
