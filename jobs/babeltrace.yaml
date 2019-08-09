@@ -335,7 +335,7 @@
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy:
       combination-filter: |
-        (build=="std" && conf=="std") || (arch=="amd64")
+        {filter}
     axes:
       - axis:
          type: slave
@@ -358,9 +358,11 @@
           properties-content: |
             PROJECT_NAME=babeltrace
       - build-discarder:
-          days-to-keep: 2
-      - github:
-          url: https://github.com/{github_user}/{github_name}
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit'
 
 - job-template:
     name: babeltrace_{version}_cppcheck
@@ -691,6 +693,13 @@
           arch: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static, prod, min]
+          filter: '(build=="std" && conf=="std") || (arch=="amd64")'
+      - 'dev_gerrit_babeltrace_{buildtype}':
+          buildtype: macosxbuild
+          arch: !!python/tuple [macosx]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, prod]
+          filter: ''
 
 
 - project:
