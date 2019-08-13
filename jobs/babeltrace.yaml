@@ -404,10 +404,6 @@
             PROJECT_NAME=babeltrace
       - build-discarder:
           days-to-keep: 1
-      - throttle:
-          option: 'category'
-          categories:
-            - 'gerrit'
 
 - job-template:
     name: babeltrace_{version}_cppcheck

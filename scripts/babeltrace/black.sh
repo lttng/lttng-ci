@@ -28,9 +28,9 @@ fi
 # Create virtualenv and install necessary packages
 virtualenv --system-site-packages -p ${PYTHON3} "$PYENV_HOME"
 
-set +u
+set +ux
 . "$PYENV_HOME/bin/activate"
-set -u
+set -ux
 
 pip install --quiet black
 
