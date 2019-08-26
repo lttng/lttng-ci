@@ -197,6 +197,7 @@ def plot_raw_value(branch, benchmark_type, x_data, y_data, labels, latest_values
     plt.ylabel("User + system time (s)")
     plt.xlabel("Latest commits")
     plt.legend()
+    plt.grid(True)
 
     # Put tick on the right side
     ax.tick_params(labeltop=False, labelright=True)
@@ -239,6 +240,7 @@ def plot_delta_between_point(
     plt.ylabel("Seconds")
     plt.xlabel("Latest commits")
     plt.legend()
+    plt.grid(True)
 
     # Put tick on the right side
     ax.tick_params(labeltop=False, labelright=True)
@@ -299,6 +301,7 @@ def plot_ratio(branch, benchmark_type, x_data, y_data, labels, latest_values):
     plt.ylabel("Ratio")
     plt.xlabel("Latest commits")
     plt.legend()
+    plt.grid(True)
 
     # Put tick on the right side
     ax.tick_params(labeltop=False, labelright=True)
