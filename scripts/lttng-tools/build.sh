@@ -105,6 +105,19 @@ tmpdir="$(mktemp)"
 ln -sf "$TMPDIR" "$tmpdir"
 export TMPDIR="$tmpdir"
 
+# Create a symlink to "babeltrace" when the "babeltrace2" executable is found.
+# This is a temporary workaround until lttng-tools either allows the override of
+# the trace reader in its test suite or that we move to only supporting
+# babeltrace2
+if [ -x "$DEPS_BIN/babeltrace2" ]; then
+	ln -s "$DEPS_BIN/babeltrace2" "$DEPS_BIN/babeltrace"
+fi
+
+# When using babeltrace2 make sure that it finds its plugins and
+# plugin-providers.
+export BABELTRACE_PLUGIN_PATH="$DEPS_LIB/babeltrace2/plugins/"
+export LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="$DEPS_LIB/babeltrace2/plugin-providers/"
+
 export CFLAGS="-g -O2"
 
 # Set compiler variables
