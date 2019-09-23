@@ -79,7 +79,6 @@ def submit(
     context = dict()
     context["kernel_url"] = kernel_url
     context["nfsrootfs_url"] = nfsrootfs
-    context["modules_url"] = modules_url
     context["commit_hash"] = commit
 
     render = jinja_template.render(context)
