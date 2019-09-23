@@ -27,11 +27,11 @@ actions:
         to: tftp
         kernel:
           url: {{ kernel_url }}
-          sha256sum: {{ kernel_sha256}}
+          sha256sum: {{ kernel_sha256 }}
           type: zimage
         nfsrootfs:
           url: {{ nfsrootfs_url }}
-          sha256sum: {{ nfsroot_sha256}}
+          sha256sum: {{ nfsrootfs_sha256 }}
           compression: gz
 
     - boot:
