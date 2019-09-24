@@ -24,7 +24,7 @@ from jinja2 import Environment, FileSystemLoader
 
 USERNAME = "lava-jenkins"
 HOSTNAME = "lava-master-02.internal.efficios.com"
-DEFAULT_KERNEL_COMMIT = "1a1a512b983108015ced1e7a7c7775cfeec42d8c"
+DEFAULT_KERNEL_COMMIT = "a227f8436f2b21146fc024d84e6875907475ace2"
 
 
 def wait_on(server, jobid):
@@ -58,7 +58,6 @@ def submit(
     kernel_url = "https://obj.internal.efficios.com/lava/kernel/{}.baremetal.bzImage".format(
         kernel_commit
     )
-    kernel_sha256 = "0da55bad8c780a889ae71e7aa0f4788bc671c598c21369ad4211555088e3d889"
     modules_url = "https://obj.internal.efficios.com/lava/modules/linux/{}.baremetal.linux.modules.tar.gz".format(
         kernel_commit
     )
@@ -80,7 +79,6 @@ def submit(
 
     context = dict()
     context["kernel_url"] = kernel_url
-    context["kernel_sha256"] = kernel_sha256
     context["nfsrootfs_url"] = nfsrootfs
     context["nfsrootfs_sha256"] = nfsrootfs_sha256
     context["commit_hash"] = commit
