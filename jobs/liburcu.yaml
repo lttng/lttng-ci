@@ -338,6 +338,11 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
       - 'liburcu_{version}_{buildtype}':
+          buildtype: elbuild
+          arch: !!python/tuple [el8]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+      - 'liburcu_{version}_{buildtype}':
           buildtype: solarisbuild
           arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]

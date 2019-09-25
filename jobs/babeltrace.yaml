@@ -654,6 +654,11 @@
             - stable-1.3
             - stable-1.5
       - 'babeltrace_{version}_{buildtype}':
+          buildtype: elbuild
+          arch: !!python/tuple [el8]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+      - 'babeltrace_{version}_{buildtype}':
           buildtype: solarisbuild
           arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
@@ -699,6 +704,11 @@
       - 'babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
           arch: !!python/tuple [sles12sp2]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, prod]
+      - 'babeltrace_{version}_{buildtype}':
+          buildtype: elbuild
+          arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{buildtype}':
