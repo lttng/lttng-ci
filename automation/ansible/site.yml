@@ -8,3 +8,4 @@
 - import_playbook: node-amd64.yml
 - import_playbook: node-standalone.yml
 - import_playbook: node-sles.yml
+- import_playbook: node-el8.yml

@@ -1,3 +1,10 @@
 ---
-# TODO
 __babeltrace_packages:
+  - popt-devel
+  - libuuid-devel
+  - python36-devel
+#  - python3-sphinx
+  - swig
+  - glib2-devel
+  - elfutils-devel
+  - chrpath

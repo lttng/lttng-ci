@@ -1,4 +1,30 @@
 ---
-# TODO
 __common_packages:
-  - java-1.7.0-openjdk-headless
+  - openssh-server
+  - sudo
+  - java-1.8.0-openjdk-devel
+  - git
+  - vim
+  - emacs-nox
+  - tree
+  - htop
+#  - build-essential
+  - clang
+#  - clang-tools
+  - automake
+  - autoconf
+  - libtool
+  - bison
+  - flex
+  - perl-Test-Harness
+  - jq
+#  - cppcheck
+#  - cloc
+  - python3-virtualenv
+  - curl
+  - gettext
+  - openssl-devel
+  - psmisc
+  - rsync
+#  - pbzip2
+  - lzop

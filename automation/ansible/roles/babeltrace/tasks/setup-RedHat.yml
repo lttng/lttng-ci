@@ -1,6 +1,6 @@
 ---
 - name: Ensure babeltrace build dependencies are installed.
-  yum:
+  dnf:
     name: "{{ item }}"
     state: installed
   with_items: "{{ babeltrace_packages }}"

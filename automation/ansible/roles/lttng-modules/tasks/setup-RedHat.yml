@@ -1,6 +1,6 @@
 ---
 - name: Ensure lttng-modules build dependencies are installed.
-  yum:
+  dnf:
     name: "{{ item }}"
     state: installed
   with_items: "{{ lttng_modules_packages }}"

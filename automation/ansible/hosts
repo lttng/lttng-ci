@@ -13,9 +13,19 @@ cloud05.internal.efficios.com
 [node-armhf]
 ci-node-bionic-armhf-01
 ci-node-bionic-armhf-02
+lava-armhf-wandboard-01
+lava-armhf-wandboard-02
+ci-node-bionic-armhf-05
+ci-node-bionic-armhf-06
+ci-node-bionic-armhf-07
+ci-node-bionic-armhf-08
 
 [node-arm64]
+ci-node-bionic-arm64-01
 ci-node-bionic-arm64-02
+ci-node-bionic-arm64-03
+ci-node-bionic-arm64-04
+ci-node-bionic-arm64-05
 
 [node-powerpc]
 ci-node-xenial-powerpc-01
@@ -86,6 +96,12 @@ ci-rootnode-bionic-amd64-03
 [node-sles]
 ci-node-sles12sp2-amd64-03-01
 
+[node-el8]
+ci-node-el8-amd64-03-01
+
+[node-el8:vars]
+ansible_python_interpreter=/usr/bin/python3
+
 [node:children]
 node-i386
 node-amd64
@@ -95,3 +111,4 @@ node-powerpc
 node-ppc64el
 node-standalone
 node-sles
+node-el8
