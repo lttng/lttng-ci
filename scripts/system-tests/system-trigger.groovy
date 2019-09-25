@@ -390,12 +390,12 @@ configurationOfInterest.each { lttngBr, linuxBr  ->
 def jobNameCanary = jobType + "_canary";
 currentJobs[jobNameCanary] = [:];
 currentJobs[jobNameCanary]['config'] = [:];
-currentJobs[jobNameCanary]['config']['linuxBranch'] = 'v4.4.9';
-currentJobs[jobNameCanary]['config']['lttngBranch'] = 'v2.8.6';
-currentJobs[jobNameCanary]['config']['linuxTagID'] ='1a1a512b983108015ced1e7a7c7775cfeec42d8c';
-currentJobs[jobNameCanary]['config']['toolsCommit'] = '9f10e482d6cc937acead52951cf69c553cd11e22'
-currentJobs[jobNameCanary]['config']['modulesCommit'] = '7fd9215'
-currentJobs[jobNameCanary]['config']['ustCommit'] = '514a87f'
+currentJobs[jobNameCanary]['config']['linuxBranch'] = 'v4.4.194';
+currentJobs[jobNameCanary]['config']['lttngBranch'] = 'v2.10.7';
+currentJobs[jobNameCanary]['config']['linuxTagID'] ='a227f8436f2b21146fc024d84e6875907475ace2';
+currentJobs[jobNameCanary]['config']['toolsCommit'] = '93fa2c9ff6b52c30173bee80445501ce8677fecc'
+currentJobs[jobNameCanary]['config']['modulesCommit'] = 'fe3ca7a9045221ffbedeac40ba7e09b1fc500e21'
+currentJobs[jobNameCanary]['config']['ustCommit'] = '0172ce8ece2102d46c7785e6bd96163225c59e49'
 currentJobs[jobNameCanary]['status'] = 'NOT_SET';
 currentJobs[jobNameCanary]['build'] = null;
 
