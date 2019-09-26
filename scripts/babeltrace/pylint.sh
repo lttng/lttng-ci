@@ -1,6 +1,7 @@
 #!/bin/sh -exu
 #
-# Copyright (C) 2015 - Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2019 Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2019 Francis Deslauriers <francis.deslauriers@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,12 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-BABELTRACE_DIR="deps/babeltrace/build"
-
 PYTHON3=python3
-P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
-
-BINDINGS_DIR="$BABELTRACE_DIR/lib/python${P3_VERSION}/dist-packages/babeltrace"
 
 PYENV_HOME="$WORKSPACE/.pyenv/"
 
@@ -32,13 +28,18 @@ fi
 # Create virtualenv and install necessary packages
 virtualenv --system-site-packages -p ${PYTHON3} "$PYENV_HOME"
 
-set +u
+set +ux
 . "$PYENV_HOME/bin/activate"
-set -u
+set -ux
 
-pip install --quiet pylint
-pip install --quiet pep8
+pip install --quiet black
+pip install --quiet flake8
 
-pep8 --exclude="nativebt.py" "$BINDINGS_DIR" | tee pep8.out
+exit_code=0
 
-pylint -f parseable --ignore="nativebt.py" "$BINDINGS_DIR" | tee pylint.out
+cd src/babeltrace
+
+black --diff --check . | tee ../../black.out || exit_code=1
+flake8 | tee ../../flake8.out || exit_code=1
+
+exit $exit_code
