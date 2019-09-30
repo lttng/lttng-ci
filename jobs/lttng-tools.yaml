@@ -13,7 +13,7 @@
     wrappers:
       - ansicolor
       - timeout:
-          timeout: 90
+          timeout: 120
           fail: true
           type: absolute
       - timestamps
