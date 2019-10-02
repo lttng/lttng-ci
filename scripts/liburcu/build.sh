@@ -331,6 +331,13 @@ fi
 # Copy tap logs for the jenkins tap parser before cleaning the build dir
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
+# The test suite prior to 0.11 did not produce TAP logs
+if verlt "$PACKAGE_VERSION" "0.11"; then
+    mkdir -p "$WORKSPACE/tap/no-log"
+    echo "1..1" > "$WORKSPACE/tap/no-log/tests.log"
+    echo "ok 1 - Test suite doesn't support logging" >> "$WORKSPACE/tap/no-log/tests.log"
+fi
+
 # Clean the build directory
 $MAKE clean
 
