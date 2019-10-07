@@ -24,6 +24,7 @@
             - origin/rseq/dev
           basedir: src/linux-rseq
           skip-tag: true
+          reference-repo: "$HOME/gitcache/linux-stable.git/"
 
     triggers:
       - pollscm:
