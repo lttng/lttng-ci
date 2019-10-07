@@ -1,4 +1,4 @@
-#!/bin/sh -exu
+#!/bin/bash -exu
 #
 # Copyright (C) 2019 Michael Jeanson <mjeanson@efficios.com>
 # Copyright (C) 2019 Francis Deslauriers <francis.deslauriers@efficios.com>
@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -o pipefail
 
 PYTHON3=python3
 
@@ -40,6 +42,6 @@ exit_code=0
 cd src/babeltrace
 
 black --diff --check . | tee ../../black.out || exit_code=1
-flake8 | tee ../../flake8.out || exit_code=1
+flake8 --output-file=../../flake8.out --tee || exit_code=1
 
 exit $exit_code
