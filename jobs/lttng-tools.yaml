@@ -13,9 +13,9 @@
     wrappers:
       - ansicolor
       - timeout:
-          timeout: 90
-          fail: true
-          type: absolute
+          timeout: 30
+          abort: true
+          type: no-activity
       - timestamps
       - workspace-cleanup:
           clean-if:
