@@ -1,7 +1,7 @@
 #!/bin/bash -exu
 #
-# Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-#               2016 - Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# Copyright (C) 2019 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,45 +22,107 @@ set +e
 
 SRCDIR="$WORKSPACE/src/$PROJECT_NAME"
 TMPDIR="$WORKSPACE/tmp"
-PREFIX="$WORKSPACE/build"
+
+NPROC=$(nproc)
+export CFLAGS="-O0 -g -DDEBUG"
 
 # Directory to archive the scan-build report
 SCAN_BUILD_ARCHIVE="${WORKSPACE}/scan-build-archive"
 
-# Create build and tmp directories
-rm -rf "$PREFIX" "$TMPDIR"
-mkdir -p "$PREFIX" "$TMPDIR"
+# Create tmp directory
+rm -rf "$TMPDIR"
+mkdir -p "$TMPDIR"
 
 export TMPDIR
 
 # temp directory to store the scan-build report
 SCAN_BUILD_TMPDIR=$( mktemp -d )
 
-# liburcu
-URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
-URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
+case "$PROJECT_NAME" in
+babeltrace)
+    export BABELTRACE_DEV_MODE=1
+    CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
+    BUILD_TYPE="autotools"
+    ;;
+liburcu)
+    CONF_OPTS=""
+    BUILD_TYPE="autotools"
+    ;;
+lttng-modules)
+    CONF_OPTS=""
+    BUILD_TYPE="autotools"
+    ;;
+lttng-tools)
+    CONF_OPTS=""
+    BUILD_TYPE="autotools"
+    ;;
+lttng-ust)
+    CONF_OPTS="--enable-java-agent-all --enable-python-agent"
+    BUILD_TYPE="autotools"
+    export CLASSPATH="/usr/share/java/log4j-1.2.jar"
+    ;;
+linux-rseq)
+    CONF_OPTS=""
+    BUILD_TYPE="linux-rseq"
+    ;;
+*)
+    echo "Generic project, no configure options."
+    CONF_OPTS=""
+    BUILD_TYPE="autotools"
+    ;;
+esac
 
-# lttng-ust
-UST_INCS="$WORKSPACE/deps/lttng-ust/build/include/"
-UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
+# liburcu dependency
+if [ -d "$WORKSPACE/deps/liburcu" ]; then
+  URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
+  URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
 
-export CFLAGS="-O0 -g -DDEBUG"
+  export CPPFLAGS="-I$URCU_INCS ${CPPFLAGS:-}"
+  export LDFLAGS="-L$URCU_LIBS ${LDFLAGS:-}"
+  export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
+fi
 
-export CPPFLAGS="-I$URCU_INCS -I$UST_INCS"
-export LDFLAGS="-L$URCU_LIBS -L$UST_LIBS"
-export LD_LIBRARY_PATH="$URCU_LIBS:$UST_LIBS:${LD_LIBRARY_PATH:-}"
+
+# lttng-ust dependency
+if [ -d "$WORKSPACE/deps/lttng-ust" ]; then
+  UST_INCS="$WORKSPACE/deps/lttng-ust/build/include/"
+  UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
+
+  export CPPFLAGS="-I$UST_INCS ${CPPFLAGS:-}"
+  export LDFLAGS="-L$UST_LIBS ${LDFLAGS:-}"
+  export LD_LIBRARY_PATH="$UST_LIBS:${LD_LIBRARY_PATH:-}"
+fi
+
+if [ -d "$WORKSPACE/src/linux" ]; then
+	export KERNELDIR="$WORKSPACE/src/linux"
+fi
 
 # Enter the source directory
 cd "$SRCDIR"
 
-# Run bootstrap in the source directory prior to configure
-./bootstrap
+# Build
+echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
+case "$BUILD_TYPE" in
+autotools)
+    # Prepare build dir for autotools based projects
+    if [ -f "./bootstrap" ]; then
+      ./bootstrap
+      ./configure $CONF_OPTS
+    fi
 
+    scan-build -k -o "${SCAN_BUILD_TMPDIR}" make -j"$NPROC" V=1
+    ;;
+linux-rseq)
+    make defconfig
+    make -j"$NPROC" prepare
+    scan-build -k -o "${SCAN_BUILD_TMPDIR}" make -j"$NPROC" kernel/rseq.o kernel/do_on_cpu/core.o kernel/do_on_cpu/interpreter.o kernel/do_on_cpu/validate.o V=1
+    ;;
+*)
+    echo "Unsupported build type: $BUILD_TYPE"
+    exit 1
+    ;;
+esac
 
-./configure --prefix="$PREFIX"
-
-# generate the scan-build report
-scan-build -k -o "${SCAN_BUILD_TMPDIR}" make -j "$(nproc)"
 
 # get the directory name of the report created by scan-build
 SCAN_BUILD_REPORT=$(find "${SCAN_BUILD_TMPDIR}" -maxdepth 1 -not -empty -not -name "$(basename "${SCAN_BUILD_TMPDIR}")")

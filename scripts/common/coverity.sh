@@ -1,7 +1,7 @@
 #!/bin/bash -exu
 #
-# Copyright (C) 2015 - Michael Jeanson <mjeanson@efficios.com>
-#                      Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# Copyright (C) 2019 Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -112,6 +112,8 @@ if [ -d "$WORKSPACE/src/linux" ]; then
 	export KERNELDIR="$WORKSPACE/src/linux"
 fi
 
+# Enter the source directory
+cd "$SRCDIR"
 
 # Verify upload is permitted
 #  Added "--insecure" because Coverity can't be bothered to properly install SSL certificate chains
@@ -152,8 +154,6 @@ fi
 
 TOOL_DIR=$(find "$TOOL_BASE" -type d -name 'cov-analysis*')
 export PATH=$TOOL_DIR/bin:$PATH
-
-cd "$SRCDIR"
 
 COVERITY_SCAN_VERSION=$(git describe --always | sed 's|-|.|g')
 
