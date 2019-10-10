@@ -41,6 +41,8 @@ SCAN_BUILD_TMPDIR=$( mktemp -d )
 case "$PROJECT_NAME" in
 babeltrace)
     export BABELTRACE_DEV_MODE=1
+    export BABELTRACE_DEBUG_MODE=1
+    export BABELTRACE_MINIMAL_LOG_LEVEL=TRACE
     CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
     BUILD_TYPE="autotools"
     ;;
