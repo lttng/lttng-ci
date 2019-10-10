@@ -365,6 +365,49 @@
             - 'gerrit'
 
 - job-template:
+    name: dev_gerrit_babeltrace_winbuild
+    defaults: babeltrace
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/babeltrace
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/babeltrace
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'babeltrace'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+          trigger-for-unreviewed-patches: true
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=babeltrace
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit'
+
+    <<: *babeltrace_build_axes_defaults
+    <<: *babeltrace_build_builders_win
+    <<: *babeltrace_build_publishers_gerrit
+
+- job-template:
     name: dev_gerrit_babeltrace_pylint
     defaults: babeltrace
     concurrent: true
@@ -731,6 +774,10 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
           filter: ''
+      - 'dev_gerrit_babeltrace_winbuild':
+          arch: !!python/tuple [cygwin64, msys2-mingw64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
       - 'dev_gerrit_babeltrace_pylint'
 
 
