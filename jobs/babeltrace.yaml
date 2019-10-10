@@ -279,18 +279,6 @@
     name: babeltrace_{version}_winbuild
     defaults: babeltrace
 
-    # Use jgit on windows to work around path too long error
-    scm:
-      - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
-          branches:
-            - origin/{version}
-          basedir: src/babeltrace
-          skip-tag: true
-          git-tool: jgit
-
     <<: *babeltrace_build_axes_defaults
     <<: *babeltrace_build_builders_win
     <<: *babeltrace_build_publishers_prod

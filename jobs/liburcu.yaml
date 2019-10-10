@@ -47,7 +47,6 @@
             - origin/{version}
           basedir: src/liburcu
           skip-tag: true
-          git-tool: jgit
 
     triggers:
       - pollscm:

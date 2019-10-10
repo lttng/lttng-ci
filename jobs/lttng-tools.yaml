@@ -30,7 +30,6 @@
             - origin/{version}
           basedir: src/lttng-tools
           skip-tag: true
-          git-tool: jgit
 
     triggers:
       - pollscm:
