@@ -14,7 +14,7 @@
       - ansicolor
       - timeout:
           timeout: 30
-          abort: true
+          fail: true
           type: no-activity
       - timestamps
       - workspace-cleanup:
