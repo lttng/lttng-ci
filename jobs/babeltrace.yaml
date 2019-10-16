@@ -544,7 +544,7 @@
             - recipients
 
 # Use - in version number since yaml anchor do not support dot
-- babeltrace_version_glib-2-22-5_anchor: &babeltrace_version_glib-2-22-5_anchor
+- babeltrace_version_glib-2-28-6_anchor: &babeltrace_version_glib-2-28-6_anchor
     name: 'babeltrace_version_glib_anchor'
     defaults: babeltrace
     node: 'amd64'
@@ -552,17 +552,17 @@
     builders:
       - inject:
           properties-content: |
-            LD_LIBRARY_PATH=$WORKSPACE/glib-2.22.5/BUILD_RESULT/lib
-            PKG_CONFIG_PATH=$WORKSPACE/glib-2.22.5/BUILD_RESULT/lib/pkgconfig
+            LD_LIBRARY_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib
+            PKG_CONFIG_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib/pkgconfig
             arch=amd64
             conf=std
             build=std
       - shell: |
-          wget http://ftp.gnome.org/pub/gnome/sources/glib/2.22/glib-2.22.5.tar.gz
-          tar xvf glib-2.22.5.tar.gz
-          cd glib-2.22.5
+          wget http://ftp.gnome.org/pub/gnome/sources/glib/2.28/glib-2.28.6.tar.gz
+          tar xvf glib-2.28.6.tar.gz
+          cd glib-2.28.6
           mkdir BUILD_RESULT
-          ./configure --prefix=$WORKSPACE/glib-2.22.5/BUILD_RESULT
+          ./configure --prefix=$WORKSPACE/glib-2.28.6/BUILD_RESULT
           make -j `nproc`
           make install
 
@@ -570,11 +570,11 @@
          !include-raw-escape: scripts/babeltrace/build.sh
 
 - job-template:
-    name: babeltrace_{version}_glib-2.22.5
+    name: babeltrace_{version}_glib-2.28.6
     triggers:
       - pollscm:
           cron: "@daily"
-    <<: *babeltrace_version_glib-2-22-5_anchor
+    <<: *babeltrace_version_glib-2-28-6_anchor
     publishers:
       - archive:
           artifacts: 'tap/**'
@@ -603,8 +603,8 @@
             - recipients
 
 - job-template:
-    name: dev_{user}_babeltrace_{version}_glib-2.22.5
-    <<: *babeltrace_version_glib-2-22-5_anchor
+    name: dev_{user}_babeltrace_{version}_glib-2.28.6
+    <<: *babeltrace_version_glib-2-28-6_anchor
 
     publishers:
       - email-ext:
@@ -742,7 +742,7 @@
       - 'babeltrace_{version}_pylint'
       - 'babeltrace_{version}_coverity':
           version: master
-      - 'babeltrace_{version}_glib-2.22.5':
+      - 'babeltrace_{version}_glib-2.28.6':
           version: master
 
 - project:
@@ -803,7 +803,7 @@
       - stable-2.0-staging
       - master-staging
     jobs:
-      - 'dev_{user}_babeltrace_{version}_glib-2.22.5':
+      - 'dev_{user}_babeltrace_{version}_glib-2.28.6':
           version:
             - master-staging
       - 'dev_{user}_babeltrace_{version}_{buildtype}':
