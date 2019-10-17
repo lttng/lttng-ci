@@ -312,9 +312,11 @@ extract_distro_headers() {
     rm -f "${LINUX_HDROBJ_DIR}/scripts/*.o"
     rm -f "${LINUX_HDROBJ_DIR}/scripts/*/*.o"
 
-    # On powerpc this object is required to link modules
+    # On powerpc 32bits this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
-        cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LINUX_HDROBJ_DIR}/"
+        if [ "x$(scripts/config -s CONFIG_PPC64)" = "xn" ]; then
+            cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LINUX_HDROBJ_DIR}/"
+        fi
     fi
 
     # On arm64 between 4.13 and 1.15 this object is required to build with ftrace support
@@ -370,9 +372,11 @@ extract_distro_headers() {
     # And regen the modules support files
     make modules_prepare CC="$CC"
 
-    # On powerpc this object is required to link modules
+    # On powerpc 32bits this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
-        make arch/powerpc/lib/crtsavres.o CC="$CC"
+        if [ "x$(scripts/config -s CONFIG_PPC64)" = "xn" ]; then
+            make arch/powerpc/lib/crtsavres.o CC="$CC"
+        fi
     fi
 
     # On arm64 between 4.13 and 4.15 this object is required to build with ftrace support
@@ -558,7 +562,7 @@ elif [ "x${arch}" != "x" ]; then
             ;;
     esac
 else
-    echo "Not arch or cross_arch specified"
+    echo "No arch or cross_arch specified"
     exit 1
 fi
 
