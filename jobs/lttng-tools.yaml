@@ -711,6 +711,7 @@
           testtype: !!python/tuple [base]
       - 'lttng-tools_{version}_long_regression':
           buildtype: build
+          version: master
           ustversion: master
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std]
@@ -789,6 +790,16 @@
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
+      - 'lttng-tools_{version}_long_regression':
+          buildtype: build
+          version: stable-2.11
+          ustversion: stable-2.11
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          urcuversion: !!python/tuple [stable-0.10]
+          babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [full]
 
       # stable-2.10
       - 'lttng-tools_{version}_{buildtype}':
@@ -860,6 +871,16 @@
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
+      - 'lttng-tools_{version}_long_regression':
+          buildtype: build
+          version: stable-2.10
+          ustversion: stable-2.10
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [full]
 
       # stable-2.9 #
       - 'lttng-tools_{version}_{buildtype}':
@@ -931,6 +952,16 @@
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
+      - 'lttng-tools_{version}_long_regression':
+          buildtype: build
+          version: stable-2.9
+          ustversion: stable-2.9
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [full]
 
       # stable-2.8 #
       - 'lttng-tools_{version}_{buildtype}':
@@ -983,6 +1014,16 @@
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
+      - 'lttng-tools_{version}_long_regression':
+          buildtype: build
+          version: stable-2.8
+          ustversion: stable-2.8
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          urcuversion: !!python/tuple [stable-0.9]
+          babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [full]
 
       # stable-2.7 #
       - 'lttng-tools_{version}_{buildtype}':
