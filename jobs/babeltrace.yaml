@@ -350,7 +350,7 @@
       - throttle:
           option: 'category'
           categories:
-            - 'gerrit'
+            - 'gerrit-{buildtype}'
 
 - job-template:
     name: dev_gerrit_babeltrace_winbuild
@@ -389,7 +389,7 @@
       - throttle:
           option: 'category'
           categories:
-            - 'gerrit'
+            - 'gerrit-winbuild'
 
     <<: *babeltrace_build_axes_defaults
     <<: *babeltrace_build_builders_win
