@@ -314,7 +314,9 @@ extract_distro_headers() {
 
     # On powerpc 32bits this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
-        if [ "x$(scripts/config -s CONFIG_PPC64)" = "xn" ]; then
+        if [ "x$(scripts/config -s CONFIG_PPC64)" = "xy" ] && vergte "${kversion}" "5.4"; then
+            :
+        else
             cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LINUX_HDROBJ_DIR}/"
         fi
     fi
@@ -374,7 +376,9 @@ extract_distro_headers() {
 
     # On powerpc 32bits this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
-        if [ "x$(scripts/config -s CONFIG_PPC64)" = "xn" ]; then
+        if [ "x$(scripts/config -s CONFIG_PPC64)" = "xy" ] && vergte "${kversion}" "5.4"; then
+            :
+        else
             make arch/powerpc/lib/crtsavres.o CC="$CC"
         fi
     fi
