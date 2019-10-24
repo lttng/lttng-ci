@@ -29,6 +29,7 @@ python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -j "$JOB_NAME" \
                           -k "$S3_URL_KERNEL_IMAGE" \
                           -lm "$S3_URL_LTTNG_MODULES" \
+                          -tu "$LTTNG_TOOLS_REPO" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID" \
                           -id "$BUILD_TAG"
 set +eu
