@@ -122,7 +122,7 @@ def print_test_output(server, job):
         if print_line:
             print("{} {}".format(line['dt'], line['msg']))
 
-def get_vlttng_cmd(lttng_tools_commit, lttng_ust_commit=None):
+def get_vlttng_cmd(lttng_tools_url, lttng_tools_commit, lttng_ust_url=None, lttng_ust_commit=None):
     """
     Return vlttng cmd to be used in the job template for setup.
     """
@@ -133,11 +133,13 @@ def get_vlttng_cmd(lttng_tools_commit, lttng_ust_commit=None):
                     ' --profile babeltrace-stable-1.4' \
                     ' --profile babeltrace-python' \
                     ' --profile lttng-tools-master' \
+                    ' --override projects.lttng-tools.source='+lttng_tools_url + \
                     ' --override projects.lttng-tools.checkout='+lttng_tools_commit + \
                     ' --profile lttng-tools-no-man-pages'
 
     if lttng_ust_commit is not None:
         vlttng_cmd += ' --profile lttng-ust-master ' \
+                    ' --override projects.lttng-ust.source='+lttng_ust_url + \
                     ' --override projects.lttng-ust.checkout='+lttng_ust_commit+ \
                     ' --profile lttng-ust-no-man-pages'
 
@@ -155,8 +157,10 @@ def main():
     parser.add_argument('-j', '--jobname', required=True)
     parser.add_argument('-k', '--kernel', required=True)
     parser.add_argument('-lm', '--lmodule', required=True)
+    parser.add_argument('-tu', '--tools-url', required=True)
     parser.add_argument('-tc', '--tools-commit', required=True)
     parser.add_argument('-id', '--build-id', required=True)
+    parser.add_argument('-uu', '--ust-url', required=False)
     parser.add_argument('-uc', '--ust-commit', required=False)
     parser.add_argument('-d', '--debug', required=False, action='store_true')
     args = parser.parse_args()
@@ -191,7 +195,7 @@ def main():
 
     vlttng_path = '/tmp/virtenv'
 
-    vlttng_cmd = get_vlttng_cmd(args.tools_commit, args.ust_commit)
+    vlttng_cmd = get_vlttng_cmd(args.tools_url, args.tools_commit, args.ust_url, args.ust_commit)
 
     context = dict()
     context['DeviceType'] = DeviceType
