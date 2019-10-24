@@ -30,27 +30,29 @@ USERNAME = 'lava-jenkins'
 HOSTNAME = 'lava-master-02.internal.efficios.com'
 OBJSTORE_URL = "https://obj.internal.efficios.com/lava/results/"
 
-class TestType():
+
+class TestType:
     """ Enum like for test type """
+
     baremetal_benchmarks = 1
     baremetal_tests = 2
     kvm_tests = 3
     kvm_fuzzing_tests = 4
     values = {
-        'baremetal-benchmarks' : baremetal_benchmarks,
-        'baremetal-tests' : baremetal_tests,
-        'kvm-tests' : kvm_tests,
-        'kvm-fuzzing-tests' : kvm_fuzzing_tests,
+        'baremetal-benchmarks': baremetal_benchmarks,
+        'baremetal-tests': baremetal_tests,
+        'kvm-tests': kvm_tests,
+        'kvm-fuzzing-tests': kvm_fuzzing_tests,
     }
 
-class DeviceType():
+
+class DeviceType:
     """ Enum like for device type """
+
     x86 = 'x86'
     kvm = 'qemu'
-    values = {
-        'kvm' : kvm,
-        'x86' : x86,
-    }
+    values = {'kvm': kvm, 'x86': x86}
+
 
 def get_job_bundle_content(server, job):
     try:
@@ -61,6 +63,7 @@ def get_job_bundle_content(server, job):
         raise error
 
     return json.loads(bundle['content'])
+
 
 def check_job_all_test_cases_state_count(server, job):
     """
@@ -75,32 +78,36 @@ def check_job_all_test_cases_state_count(server, job):
     failed_tests = 0
     for testcase in testcases:
         if testcase['result'] != 'pass':
-            print("\tFAILED {}\n\t\t See http://{}{}".format(
-                testcase['name'],
-                HOSTNAME,
-                testcase['url']
-            ))
+            print(
+                "\tFAILED {}\n\t\t See http://{}{}".format(
+                    testcase['name'], HOSTNAME, testcase['url']
+                )
+            )
             failed_tests += 1
         else:
             passed_tests += 1
     return (passed_tests, failed_tests)
+
 
 def fetch_benchmark_results(build_id):
     """
     Get the benchmark results from the objstore
     save them as CSV files localy
     """
-    testcases = ['processed_results_close.csv',
-                 'processed_results_ioctl.csv',
-                 'processed_results_open_efault.csv',
-                 'processed_results_open_enoent.csv',
-                 'processed_results_dup_close.csv',
-                 'processed_results_raw_syscall_getpid.csv',
-                 'processed_results_lttng_test_filter.csv']
+    testcases = [
+        'processed_results_close.csv',
+        'processed_results_ioctl.csv',
+        'processed_results_open_efault.csv',
+        'processed_results_open_enoent.csv',
+        'processed_results_dup_close.csv',
+        'processed_results_raw_syscall_getpid.csv',
+        'processed_results_lttng_test_filter.csv',
+    ]
     for testcase in testcases:
         url = urljoin(OBJSTORE_URL, "{:s}/{:s}".format(build_id, testcase))
         print('Fetching {}'.format(url))
         urlretrieve(url, testcase)
+
 
 def print_test_output(server, job):
     """
@@ -122,32 +129,44 @@ def print_test_output(server, job):
         if print_line:
             print("{} {}".format(line['dt'], line['msg']))
 
-def get_vlttng_cmd(lttng_tools_url, lttng_tools_commit, lttng_ust_url=None, lttng_ust_commit=None):
+
+def get_vlttng_cmd(
+    lttng_tools_url, lttng_tools_commit, lttng_ust_url=None, lttng_ust_commit=None
+):
     """
     Return vlttng cmd to be used in the job template for setup.
     """
 
-    vlttng_cmd = 'vlttng --jobs=$(nproc) --profile urcu-master' \
-                    ' --override projects.babeltrace.build-env.PYTHON=python3' \
-                    ' --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config' \
-                    ' --profile babeltrace-stable-1.4' \
-                    ' --profile babeltrace-python' \
-                    ' --profile lttng-tools-master' \
-                    ' --override projects.lttng-tools.source='+lttng_tools_url + \
-                    ' --override projects.lttng-tools.checkout='+lttng_tools_commit + \
-                    ' --profile lttng-tools-no-man-pages'
+    vlttng_cmd = (
+        'vlttng --jobs=$(nproc) --profile urcu-master'
+        ' --override projects.babeltrace.build-env.PYTHON=python3'
+        ' --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config'
+        ' --profile babeltrace-stable-1.4'
+        ' --profile babeltrace-python'
+        ' --profile lttng-tools-master'
+        ' --override projects.lttng-tools.source='
+        + lttng_tools_url
+        + ' --override projects.lttng-tools.checkout='
+        + lttng_tools_commit
+        + ' --profile lttng-tools-no-man-pages'
+    )
 
     if lttng_ust_commit is not None:
-        vlttng_cmd += ' --profile lttng-ust-master ' \
-                    ' --override projects.lttng-ust.source='+lttng_ust_url + \
-                    ' --override projects.lttng-ust.checkout='+lttng_ust_commit+ \
-                    ' --profile lttng-ust-no-man-pages'
+        vlttng_cmd += (
+            ' --profile lttng-ust-master '
+            ' --override projects.lttng-ust.source='
+            + lttng_ust_url
+            + ' --override projects.lttng-ust.checkout='
+            + lttng_ust_commit
+            + ' --profile lttng-ust-no-man-pages'
+        )
 
     vlttng_path = '/tmp/virtenv'
 
     vlttng_cmd += ' ' + vlttng_path
 
     return vlttng_cmd
+
 
 def main():
     nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz"
@@ -177,13 +196,14 @@ def main():
         try:
             lava_api_key = os.environ['LAVA2_JENKINS_TOKEN']
         except Exception as error:
-            print('LAVA2_JENKINS_TOKEN not found in the environment variable. Exiting...',
-                  error)
+            print(
+                'LAVA2_JENKINS_TOKEN not found in the environment variable. Exiting...',
+                error,
+            )
             return -1
 
     jinja_loader = FileSystemLoader(os.path.dirname(os.path.realpath(__file__)))
-    jinja_env = Environment(loader=jinja_loader, trim_blocks=True,
-                            lstrip_blocks=True)
+    jinja_env = Environment(loader=jinja_loader, trim_blocks=True, lstrip_blocks=True)
     jinja_template = jinja_env.get_template('template_lava_job.jinja2')
 
     test_type = TestType.values[args.type]
@@ -195,7 +215,9 @@ def main():
 
     vlttng_path = '/tmp/virtenv'
 
-    vlttng_cmd = get_vlttng_cmd(args.tools_url, args.tools_commit, args.ust_url, args.ust_commit)
+    vlttng_cmd = get_vlttng_cmd(
+        args.tools_url, args.tools_commit, args.ust_url, args.ust_commit
+    )
 
     context = dict()
     context['DeviceType'] = DeviceType
@@ -225,23 +247,32 @@ def main():
     if args.debug:
         return 0
 
-    server = xmlrpc.client.ServerProxy('http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME))
+    server = xmlrpc.client.ServerProxy(
+        'http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME)
+    )
 
     for attempt in range(10):
         try:
             jobid = server.scheduler.submit_job(render)
         except xmlrpc.client.ProtocolError as error:
-            print('Protocol error on submit, sleeping and retrying. Attempt #{}'
-                  .format(attempt))
+            print(
+                'Protocol error on submit, sleeping and retrying. Attempt #{}'.format(
+                    attempt
+                )
+            )
             time.sleep(5)
             continue
         else:
             break
 
     print('Lava jobid:{}'.format(jobid))
-    print('Lava job URL: http://lava-master-02.internal.efficios.com/scheduler/job/{}'.format(jobid))
+    print(
+        'Lava job URL: http://lava-master-02.internal.efficios.com/scheduler/job/{}'.format(
+            jobid
+        )
+    )
 
-    #Check the status of the job every 30 seconds
+    # Check the status of the job every 30 seconds
     jobstatus = server.scheduler.job_state(jobid)['job_state']
     running = False
     while jobstatus in ['Submitted', 'Scheduling', 'Scheduled', 'Running']:
@@ -271,6 +302,7 @@ def main():
         return -1
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
