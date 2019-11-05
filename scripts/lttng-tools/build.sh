@@ -81,11 +81,13 @@ test_type=${test_type:-}
 
 DEPS_INC="$WORKSPACE/deps/build/include"
 DEPS_LIB="$WORKSPACE/deps/build/lib"
+DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
 DEPS_BIN="$WORKSPACE/deps/build/bin"
 DEPS_JAVA="$WORKSPACE/deps/build/share/java"
 
 export PATH="$DEPS_BIN:$PATH"
 export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
+export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
 export CPPFLAGS="-I$DEPS_INC"
 export LDFLAGS="-L$DEPS_LIB"
 
