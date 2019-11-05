@@ -16,9 +16,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Required variables
+WORKSPACE=${WORKSPACE:-}
 
-# do not exit immediately if any command fails
-set +e
+DEPS_INC="$WORKSPACE/deps/build/include"
+DEPS_LIB="$WORKSPACE/deps/build/lib"
+DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
+DEPS_BIN="$WORKSPACE/deps/build/bin"
+
+export PATH="$DEPS_BIN:$PATH"
+export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
+export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
+export CPPFLAGS="-I$DEPS_INC"
+export LDFLAGS="-L$DEPS_LIB"
 
 SRCDIR="$WORKSPACE/src/$PROJECT_NAME"
 TMPDIR="$WORKSPACE/tmp"
@@ -36,7 +46,7 @@ mkdir -p "$TMPDIR"
 export TMPDIR
 
 # temp directory to store the scan-build report
-SCAN_BUILD_TMPDIR=$( mktemp -d )
+SCAN_BUILD_TMPDIR=$(mktemp -d)
 
 case "$PROJECT_NAME" in
 babeltrace)
@@ -74,27 +84,6 @@ linux-rseq)
     ;;
 esac
 
-# liburcu dependency
-if [ -d "$WORKSPACE/deps/liburcu" ]; then
-  URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
-  URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
-
-  export CPPFLAGS="-I$URCU_INCS ${CPPFLAGS:-}"
-  export LDFLAGS="-L$URCU_LIBS ${LDFLAGS:-}"
-  export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
-fi
-
-
-# lttng-ust dependency
-if [ -d "$WORKSPACE/deps/lttng-ust" ]; then
-  UST_INCS="$WORKSPACE/deps/lttng-ust/build/include/"
-  UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
-
-  export CPPFLAGS="-I$UST_INCS ${CPPFLAGS:-}"
-  export LDFLAGS="-L$UST_LIBS ${LDFLAGS:-}"
-  export LD_LIBRARY_PATH="$UST_LIBS:${LD_LIBRARY_PATH:-}"
-fi
-
 if [ -d "$WORKSPACE/src/linux" ]; then
 	export KERNELDIR="$WORKSPACE/src/linux"
 fi
@@ -103,7 +92,6 @@ fi
 cd "$SRCDIR"
 
 # Build
-echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
 case "$BUILD_TYPE" in
 autotools)
     # Prepare build dir for autotools based projects

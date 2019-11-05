@@ -556,14 +556,14 @@
           which-build: last-successful
           stable: false
           filter: 'build/**'
-          target: 'deps/liburcu'
+          target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
           project: lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=amd64,conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
-          target: 'deps/lttng-ust'
+          target: 'deps'
           do-not-fingerprint: true
       - shell:
           !include-raw-escape: scripts/common/scan-build.sh
