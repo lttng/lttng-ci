@@ -216,7 +216,7 @@
           which-build: last-successful
           stable: false
           filter: 'build/**'
-          target: 'deps/liburcu'
+          target: 'deps'
           do-not-fingerprint: true
       - shell:
           !include-raw-escape: scripts/common/coverity.sh

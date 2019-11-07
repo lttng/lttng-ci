@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Required variables
+WORKSPACE=${WORKSPACE:-}
+
 # Coverity settings
 # The project name and token have to be provided trough env variables
 #COVERITY_SCAN_PROJECT_NAME=""
@@ -24,6 +27,17 @@ COVERITY_SCAN_DESCRIPTION="Automated CI build"
 COVERITY_SCAN_NOTIFICATION_EMAIL="ci-notification@lists.lttng.org"
 COVERITY_SCAN_BUILD_OPTIONS=""
 #COVERITY_SCAN_BUILD_OPTIONS="--return-emit-failures 8 --parse-error-threshold 85"
+
+DEPS_INC="$WORKSPACE/deps/build/include"
+DEPS_LIB="$WORKSPACE/deps/build/lib"
+DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
+DEPS_BIN="$WORKSPACE/deps/build/bin"
+
+export PATH="$DEPS_BIN:$PATH"
+export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
+export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
+export CPPFLAGS="-I$DEPS_INC"
+export LDFLAGS="-L$DEPS_LIB"
 
 SRCDIR="$WORKSPACE/src/${COVERITY_SCAN_PROJECT_NAME}"
 TMPDIR="$WORKSPACE/tmp"
@@ -86,27 +100,6 @@ linux-rseq)
     BUILD_TYPE="autotools"
     ;;
 esac
-
-# liburcu dependency
-if [ -d "$WORKSPACE/deps/liburcu" ]; then
-  URCU_INCS="$WORKSPACE/deps/liburcu/build/include/"
-  URCU_LIBS="$WORKSPACE/deps/liburcu/build/lib/"
-
-  export CPPFLAGS="-I$URCU_INCS ${CPPFLAGS:-}"
-  export LDFLAGS="-L$URCU_LIBS ${LDFLAGS:-}"
-  export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
-fi
-
-
-# lttng-ust dependency
-if [ -d "$WORKSPACE/deps/lttng-ust" ]; then
-  UST_INCS="$WORKSPACE/deps/lttng-ust/build/include/"
-  UST_LIBS="$WORKSPACE/deps/lttng-ust/build/lib/"
-
-  export CPPFLAGS="-I$UST_INCS ${CPPFLAGS:-}"
-  export LDFLAGS="-L$UST_LIBS ${LDFLAGS:-}"
-  export LD_LIBRARY_PATH="$UST_LIBS:${LD_LIBRARY_PATH:-}"
-fi
 
 if [ -d "$WORKSPACE/src/linux" ]; then
 	export KERNELDIR="$WORKSPACE/src/linux"
