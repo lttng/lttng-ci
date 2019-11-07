@@ -48,7 +48,6 @@
           browser-url: https://github.com/efficios/babeltrace
           basedir: src/babeltrace
           skip-tag: true
-          git-tool: jgit
 - scm:
     name: lttng-ci
     scm:
@@ -58,5 +57,4 @@
           browser-url: https://github.com/lttng/lttng-ci
           basedir: src/lttng-ci
           skip-tag: true
-          git-tool: jgit
 
