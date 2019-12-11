@@ -193,7 +193,7 @@ sol10-i386)
     export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
     export CPPFLAGS="-I/opt/csw/include -D_XOPEN_SOURCE=500 $CPPFLAGS"
     export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib $LDFLAGS"
-    export PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
+    export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/opt/csw/lib/pkgconfig"
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
 
@@ -204,11 +204,11 @@ sol11-i386)
     export MAKE=gmake
     export TAR=gtar
     export NPROC=nproc
-    export PATH="$PATH:/usr/perl5/bin"
-    export CPPFLAGS="-I/opt/csw/include -D_XOPEN_SOURCE=500 $CPPFLAGS"
-    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib $LDFLAGS"
+    export PATH="/opt/csw/bin:$PATH:/usr/perl5/bin"
+    export CPPFLAGS="-D_XOPEN_SOURCE=500 $CPPFLAGS"
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
+    export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/lib/pkgconfig"
 
     RUN_TESTS="no"
     ;;

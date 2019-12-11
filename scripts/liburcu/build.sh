@@ -169,11 +169,12 @@ sol11-i386)
     export MAKE=gmake
     export TAR=gtar
     export NPROC=nproc
-    export PATH="$PATH:/usr/perl5/bin"
+    export PATH="/opt/csw/bin:$PATH:/usr/perl5/bin"
     export LD_ALTEXEC=/usr/bin/gld
     export LD=/usr/bin/gld
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
+    export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
     ;;
 
 macosx)

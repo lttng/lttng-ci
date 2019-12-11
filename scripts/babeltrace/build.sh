@@ -169,13 +169,12 @@ sol11-i386)
     export MAKE=gmake
     export TAR=gtar
     export NPROC=nproc
-    export PATH="$PATH:/usr/perl5/bin"
-    export CPPFLAGS="-I/opt/csw/include"
-    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib"
+    export PATH="/opt/csw/bin:$PATH:/usr/perl5/bin"
     export LD_ALTEXEC=/usr/bin/gld
     export LD=/usr/bin/gld
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
+    export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
     ;;
 
 macosx)
@@ -352,7 +351,7 @@ $MAKE -j "$($NPROC)" V=1
 
 # Force rebase DLL address mapping
 if [ "${rebase_dll:-}" == "1" ]; then
-	find . -name "*.dll" | xargs rebase -O -v
+	find . -name "*.dll" -print0 | xargs -0 rebase -O -v
 fi
 
 # Install in the workspace
