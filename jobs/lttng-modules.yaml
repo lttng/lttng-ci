@@ -512,7 +512,6 @@
           kverfilter: stable-head
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
-            - stable-2.9
             - stable-2.10
             - stable-2.11
           buildtype: build
@@ -530,7 +529,6 @@
           kverfilter: none
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
-            - stable-2.9
             - stable-2.10
             - stable-2.11
           buildtype: build
@@ -548,7 +546,6 @@
 # Ubuntu normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           mversion:
-            - stable-2.9
             - stable-2.10
             - stable-2.11
             - master
@@ -564,7 +561,6 @@
 # Vanilla crossbuilds
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
-            - stable-2.9
             - stable-2.10
             - stable-2.11
             - master
@@ -577,7 +573,6 @@
 # Ubuntu cross builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           mversion:
-            - stable-2.9
             - stable-2.10
             - stable-2.11
             - master
@@ -600,7 +595,6 @@
       - 'lttng-modules_ALL_trigger-vanilla'
       - 'lttng-modules_{mversion}_cppcheck':
           mversion:
-            - stable-2.9
             - stable-2.10
             - stable-2.11
             - master
