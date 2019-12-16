@@ -1079,7 +1079,7 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-1.5, master]
           testtype: !!python/tuple [base]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           buildtype: build
@@ -1089,7 +1089,7 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.10]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-1.5, master]
           testtype: !!python/tuple [base]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           buildtype: build
