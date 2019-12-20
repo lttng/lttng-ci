@@ -114,7 +114,7 @@ def print_test_output(server, job):
     Parse the attachment of the testcase to fetch the stdout of the test suite
     """
     job_finished, log = server.scheduler.jobs.logs(str(job))
-    logs = yaml.load(log.data.decode('ascii'))
+    logs = yaml.unsafe_load(log.data.decode('ascii'))
     print_line = False
     for line in logs:
         if line['lvl'] != 'target':
