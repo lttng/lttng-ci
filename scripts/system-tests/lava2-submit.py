@@ -72,7 +72,7 @@ def check_job_all_test_cases_state_count(server, job):
     """
     print("Testcase result:")
     content = server.results.get_testjob_results_yaml(str(job))
-    testcases = yaml.load(content)
+    testcases = yaml.unsafe_load(content)
 
     passed_tests = 0
     failed_tests = 0
