@@ -39,11 +39,9 @@
           url: https://github.com/{github_user}/{github_name}
 
 
-## Templates
-- job-template:
-    name: lttng-ust_{version}_{buildtype}
-    defaults: lttng-ust
-
+## Anchors
+- lttng-ust_build_axes_defaults: &lttng-ust_build_axes_defaults
+    name: 'lttng-ust_build_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy:
@@ -66,6 +64,8 @@
          name: build
          values: '{obj:build}'
 
+- lttng-ust_build_builders_defaults: &lttng-ust_build_builders_defaults
+    name: 'lttng-ust_build_builders_defaults'
     builders:
       - conditional-step:
           condition-kind: regex-match
@@ -96,6 +96,15 @@
                 do-not-fingerprint: true
       - shell:
          !include-raw-escape: scripts/lttng-ust/build.sh
+
+
+## Templates
+- job-template:
+    name: lttng-ust_{version}_{buildtype}
+    defaults: lttng-ust
+
+    <<: *lttng-ust_build_axes_defaults
+    <<: *lttng-ust_build_builders_defaults
 
     # TODO: Scan for open tasks
     publishers:
@@ -139,6 +148,57 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
+
+- job-template:
+    name: dev_gerrit_lttng-ust_{buildtype}
+    defaults: lttng-ust
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/lttng-ust
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/lttng-ust
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-ust'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+          trigger-for-unreviewed-patches: true
+
+    <<: *lttng-ust_build_axes_defaults
+    <<: *lttng-ust_build_builders_defaults
+
+    publishers:
+      - tap:
+          results: 'tap/**/*.log'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            failed:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - archive:
+          artifacts: 'build/**,tap/**'
+          allow-empty: false
+      - workspace-cleanup
 
 - job-template:
     name: lttng-ust_{version}_cppcheck
@@ -325,6 +385,19 @@
           conf: !!python/tuple [std]
           liburcu_version: !!python/tuple [stable-0.9]
           filter: ''
+
+- project:
+    name: gerrit-lttng-ust
+    github_user: lttng
+    github_name: lttng-ust
+    jobs:
+      - 'dev_gerrit_lttng-ust_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist, oot-dist]
+          conf: !!python/tuple [std, agents]
+          liburcu_version: !!python/tuple [stable-0.11]
+          filter: '(build=="std" && conf=="std") || (arch=="amd64")'
 
 - project:
     name: lttng-ust-views
