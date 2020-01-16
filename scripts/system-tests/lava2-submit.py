@@ -125,7 +125,8 @@ def print_test_output(server, job):
             continue
         if line['msg'] == '<LAVA_SIGNAL_ENDTC run-tests>':
             print('----- TEST SUITE OUTPUT END -----')
-            break
+            print_line = False
+            continue
         if print_line:
             print("{} {}".format(line['dt'], line['msg']))
 
