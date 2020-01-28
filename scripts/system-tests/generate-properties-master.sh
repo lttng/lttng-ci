@@ -46,6 +46,7 @@ echo "STORAGE_USER=jenkins-lava" >> properties.txt
 
 echo "BUILD_DEVICE=$BUILD_DEVICE" >> properties.txt
 echo "KGITREPO=$KERNEL_REPO" >> properties.txt
+echo "LTTNG_MODULES_REPO=$LTTNG_MODULES_REPO" >> properties.txt
 echo "STORAGE_KERNEL_FOLDER=$BASE_STORAGE_FOLDER/kernel" >> properties.txt
 echo "STORAGE_KERNEL_IMAGE=$BASE_STORAGE_FOLDER/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage" >> properties.txt
 echo "STORAGE_LINUX_MODULES=$BASE_STORAGE_FOLDER/modules/linux/$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz" >> properties.txt
