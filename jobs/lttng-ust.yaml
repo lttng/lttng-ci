@@ -337,6 +337,7 @@
           filter: ''
       - 'lttng-ust_{version}_cppcheck'
       - 'lttng-ust_{version}_scan-build'
+      ## Master ##
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: master
@@ -375,6 +376,43 @@
           version: master
       - 'lttng-ust_{version}_coverity':
           version: master
+      ## Stable 2.12 ##
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: build
+          version: stable-2.12
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, dist, oot, oot-dist]
+          conf: !!python/tuple [std, agents, debug-rcu]
+          liburcu_version: !!python/tuple [stable-0.11, master]
+          filter: '(build=="std") || (liburcu_version=="stable-0.11")'
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.12
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, agents]
+          liburcu_version: !!python/tuple [stable-0.11, master]
+          filter: ''
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: slesbuild
+          version: stable-2.12
+          arch: !!python/tuple [sles12sp2]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          liburcu_version: !!python/tuple [stable-0.11, master]
+          filter: ''
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: elbuild
+          version: stable-2.12
+          arch: !!python/tuple [el8]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          liburcu_version: !!python/tuple [stable-0.11, master]
+          filter: ''
+      - 'lttng-ust_{version}_cppcheck':
+          version: stable-2.12
+      - 'lttng-ust_{version}_scan-build':
+          version: stable-2.12
 
       # stable-2.7
       - 'lttng-ust_{version}_{buildtype}':
