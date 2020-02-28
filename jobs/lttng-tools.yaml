@@ -500,6 +500,72 @@
     <<: *lttng-tools_build_publishers_dev
 
 - job-template:
+    name: dev_gerrit_lttng-tools_{buildtype}
+    defaults: lttng-tools
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/lttng-tools
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/lttng-tools
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-tools'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+          trigger-for-unreviewed-patches: true
+
+    <<: *lttng-tools_build_axes_defaults
+    <<: *lttng-tools_build_builders_defaults
+
+    publishers:
+      - postbuildscript:
+          mark-unstable-if-failed: true
+          builders:
+            - role: SLAVE
+              build-on:
+                  - SUCCESS
+                  - UNSTABLE
+                  - NOT_BUILT
+                  - ABORTED
+                  - FAILURE
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
+      - tap:
+          results: 'tap/**/*.*'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - archive:
+          artifacts: 'build/**,deps/**,tap/**'
+          allow-empty: false
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+
+- job-template:
     name: lttng-tools_{version}_cppcheck
     defaults: lttng-tools
 
@@ -1291,6 +1357,21 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
+
+- project:
+    name: gerrit-lttng-tools
+    github_user: lttng
+    github_name: lttng-tools
+    jobs:
+      - 'dev_gerrit_lttng-tools_{buildtype}':
+          buildtype: build
+          ustversion: master
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist, oot-dist]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.11]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
 
