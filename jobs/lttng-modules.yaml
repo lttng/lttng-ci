@@ -4,10 +4,6 @@
     name: 'lttng-modules_build_parameters_defaults'
     parameters:
       - string:
-          name: 'mversion'
-          default: '{mversion}'
-          description: 'The lttng-modules branch to build.'
-      - string:
           name: 'maxConcurrentBuild'
           default: '20'
           description: 'The maximum number of concurrent child build to run.'
@@ -23,6 +19,10 @@
           name: 'kverfilter'
           default: '{kverfilter}'
           description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'true'
+          description: 'Add latest RC to kernel versions list.'
       - string:
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
@@ -32,13 +32,41 @@
           default: 'lttng-modules_PARAM_{parambuildtype}'
           description: 'The parametrized job to use for child builds.'
 
+- lttng-modules_build_parameters_gerrit: &lttng-modules_build_parameters_gerrit
+    name: 'lttng-modules_build_parameters_defaults'
+    parameters:
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '10'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: '{kverfloor}'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverceil'
+          default: '{kverceil}'
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: '{kverfilter}'
+          description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'false'
+          description: 'Add latest RC to kernel versions list.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_PARAM_build'
+          description: 'The parametrized job to use for child builds.'
+
 - lttng-modules_build_parameters_ubuntu: &lttng-modules_build_parameters_ubuntu
     name: 'lttng-modules_build_parameters_ubuntu'
     parameters:
-      - string:
-          name: 'mversion'
-          default: '{mversion}'
-          description: 'The lttng-modules branch to build.'
       - string:
           name: 'maxConcurrentBuild'
           default: '20'
@@ -55,6 +83,10 @@
           name: 'kverfilter'
           default: '{kverfilter}'
           description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'false'
+          description: 'Add latest RC to kernel versions list.'
       - string:
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/git/ubuntu-{uversion}.git'
@@ -72,10 +104,6 @@
     name: 'lttng-modules_build_parameters_rt'
     parameters:
       - string:
-          name: 'mversion'
-          default: '{mversion}'
-          description: 'The lttng-modules branch to build.'
-      - string:
           name: 'maxConcurrentBuild'
           default: '20'
           description: 'The maximum number of concurrent child build to run.'
@@ -91,6 +119,10 @@
           name: 'kverfilter'
           default: '{kverfilter}'
           description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'false'
+          description: 'Add latest RC to kernel versions list.'
       - string:
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-stable-rt.git'
@@ -137,7 +169,7 @@
           browser: githubweb
           browser-url: https://github.com/{github_user}/{github_name}
           branches:
-            - "{mversion}"
+            - "refs/heads/{mversion}"
           shallow-clone: true
           fastpoll: true
           basedir: src/lttng-modules
@@ -227,6 +259,46 @@
 
     <<: *lttng-modules_build_parameters_defaults
     <<: *lttng-modules_build_builders_defaults
+
+- job-template:
+    name: dev_gerrit_lttng-modules_build
+    defaults: lttng-modules
+    concurrent: true
+
+    node: 'master'
+
+    scm:
+      - git:
+          url: https://review.lttng.org/lttng-modules
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/lttng-modules
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-modules'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+          trigger-for-unreviewed-patches: true
+
+    properties:
+      - build-discarder:
+          num-to-keep: 2
+
+    <<: *lttng-modules_build_parameters_gerrit
+    <<: *lttng-modules_build_builders_defaults
+
+    publishers:
+      - workspace-cleanup
 
 - job-template:
     name: lttng-modules_{mversion}_fullbuild-vanilla
@@ -431,9 +503,9 @@
 
     builders:
       - shell: |
-         git clone --depth=1 -b v4.20 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+         git clone --depth=1 -b v5.5 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
          cd src/linux
-         make defconfig
+         make allyesconfig
          sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config
          make modules_prepare
       - shell:
@@ -609,3 +681,11 @@
           mversion: master
       - 'lttng-modules_{mversion}_coverity':
           mversion: master
+
+- project:
+    name: lttng-modules-gerrit
+    jobs:
+      - 'dev_gerrit_lttng-modules_build':
+          kverfloor: v5.5
+          kverceil: v5.6
+          kverfilter: stable-head

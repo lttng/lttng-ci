@@ -32,6 +32,7 @@ verlte() {
 }
 
 verlt() {
+    # shellcheck disable=SC2015
     [ "$1" = "$2" ] && return 1 || verlte "$1" "$2"
 }
 
@@ -40,13 +41,22 @@ vergte() {
 }
 
 vergt() {
+    # shellcheck disable=SC2015
     [ "$1" = "$2" ] && return 1 || vergte "$1" "$2"
 }
 
 
 git_clone_modules_sources() {
     mkdir -p "$MODULES_GIT_DIR"
-    git clone --depth=1 -b "${mversion}" "${mgitrepo}" "$MODULES_GIT_DIR"
+
+    # If the version starts with "refs/", checkout the specific git ref, otherwise treat it
+    # as a branch name.
+    if [ "${mversion:0:5}" = "refs/" ]; then
+        git clone --no-tags --depth=1 "${mgitrepo}" "$MODULES_GIT_DIR"
+        (cd "$MODULES_GIT_DIR" && git fetch origin "${mversion}" && git checkout FETCH_HEAD)
+    else
+        git clone --no-tags --depth=1 -b "${mversion}" "${mgitrepo}" "$MODULES_GIT_DIR"
+    fi
 }
 
 # Checkout a shallow kernel tree of the specified tag

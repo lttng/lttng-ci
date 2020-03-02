@@ -303,12 +303,13 @@ class UbuntuKVersion implements Comparable<UbuntuKVersion> {
 
 
 // Retrieve parameters of the current build
-def mversion = build.buildVariableResolver.resolve('mversion')
+def mbranch = build.getEnvironment(listener).get('GIT_BRANCH').minus('origin/')
 def maxConcurrentBuild = build.buildVariableResolver.resolve('maxConcurrentBuild')
 def kgitrepo = build.buildVariableResolver.resolve('kgitrepo')
 def kverfloor_raw = build.buildVariableResolver.resolve('kverfloor')
 def kverceil_raw = build.buildVariableResolver.resolve('kverceil')
 def kverfilter = build.buildVariableResolver.resolve('kverfilter')
+def kverrc = build.buildVariableResolver.resolve('kverrc')
 def uversion = build.buildVariableResolver.resolve('uversion')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
 def currentJobName = build.project.getFullDisplayName()
@@ -449,9 +450,11 @@ switch (kverfilter) {
     break
 }
 
-// If the last RC version is newer than the last stable, add it to the build list
-if (kversionsRC.size() > 0 && kversionsRC.last() > kversions.last()) {
-  kversions.add(kversionsRC.last())
+if (kverrc == "true") {
+  // If the last RC version is newer than the last stable, add it to the build list
+  if (kversionsRC.size() > 0 && kversionsRC.last() > kversions.last()) {
+    kversions.add(kversionsRC.last())
+  }
 }
 
 println "Building the following kernel versions:"
@@ -476,7 +479,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
   if(ongoingBuild.size() < maxConcurrentBuild.toInteger() && kversions.size() != 0) {
     def kversion = kversions.pop()
     def job_params = [
-      new StringParameterValue('mversion', mversion),
+      new StringParameterValue('mversion', mbranch),
       new StringParameterValue('mgitrepo', mgitrepo),
       new StringParameterValue('ktag', kversion.toString()),
       new StringParameterValue('kgitrepo', kgitrepo),
@@ -484,7 +487,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
 
     // Launch the parametrized build
     def param_build = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(job_params))
-    println "triggering ${joburl} for the ${mversion} branch on kernel ${kversion}"
+    println "triggering ${joburl} for the ${mbranch} branch on kernel ${kversion}"
 
     // Add it to the ongoing build queue
     ongoingBuild.push(param_build)
