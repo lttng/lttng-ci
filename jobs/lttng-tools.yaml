@@ -213,6 +213,132 @@
       - shell:
          !include-raw-escape: scripts/lttng-tools/build.sh
 
+- lttng-tools_build_builders_gerrit: &lttng-tools_build_builders_gerrit
+    name: 'lttng-tools_build_builders_gerrit'
+    builders:
+      - shell:
+         !include-raw-escape: scripts/lttng-tools/gerrit-depends-on.sh
+      - inject:
+          properties-file: gerrit_custom_dependencies.properties
+      - conditional-step:
+          condition-kind: and
+          on-evaluation-failure: run
+          condition-operands:
+              - condition-kind: shell
+                condition-command: 'test -z "$GERRIT_DEP_LTTNG_UST"'
+              - condition-kind: regex-match
+                label: '$conf'
+                regex: (std|static|agents|debug-rcu)
+          steps:
+            - copyartifact:
+                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (std|static)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+            - copyartifact:
+                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: no-ust
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+            - copyartifact:
+                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+            - copyartifact:
+                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (agents|relayd-only)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+            - copyartifact:
+                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: debug-rcu
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+            - copyartifact:
+                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+      - shell:
+         !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
+      - conditional-step:
+          condition-kind: shell
+          condition-command: 'test ! -z "$GERRIT_DEP_LTTNG_UST"'
+          steps:
+            - shell:
+               !include-raw-escape:
+                   - scripts/lttng-tools/gerrit-build-override.sh
+                   - scripts/lttng-ust/build.sh
+      - shell:
+         !include-raw-escape: scripts/lttng-tools/gerrit-install-deps.sh
+      - shell:
+         !include-raw-escape: scripts/lttng-tools/build.sh
+
 - lttng-tools_build_builders_win: &lttng-tools_build_builders_win
     name: 'lttng-tools_build_builders_win'
     builders:
@@ -528,7 +654,7 @@
           trigger-for-unreviewed-patches: true
 
     <<: *lttng-tools_build_axes_defaults
-    <<: *lttng-tools_build_builders_defaults
+    <<: *lttng-tools_build_builders_gerrit
 
     publishers:
       - postbuildscript:
