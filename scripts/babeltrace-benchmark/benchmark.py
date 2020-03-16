@@ -43,6 +43,11 @@ invalid_commits = {
         "8c99128c640cbce71fb8a6caa15e4c672252b662", # Block on configure
         "f3847c753f1b4f12353c38d97b0577d9993d19fb", # Does not build
         "e0111295f17ddfcc33ec771a8deac505473a06ad", # Does not build
+        "d0d4e0ed487ea23aaf0d023513c0a4d86901b79b", # Does not build
+        "c24f7ab4dd9edeb5e50b0070fd9d9e8691057dde", # Does not build
+        "ce67f5614a4db3b2de4d887eca52135b439b4937", # Does not build
+        "80aff5efc66679fd934cef433c0e698694748385", # Does not build
+        "f4f11e84942d36fcc8a597d226928bce2ccac4b3", # Does not build
         }
 
 def json_type(string):
