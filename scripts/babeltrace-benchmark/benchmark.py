@@ -38,6 +38,12 @@ from minio.error import ResponseError
 BENCHMARK_TYPES = ["dummy", "text"]
 DEFAULT_BUCKET = "lava"
 
+invalid_commits = {
+        "ec9a9794af488a9accce7708a8b0d8188b498789", # Does not build
+        "8c99128c640cbce71fb8a6caa15e4c672252b662", # Block on configure
+        "f3847c753f1b4f12353c38d97b0577d9993d19fb", # Does not build
+        "e0111295f17ddfcc33ec771a8deac505473a06ad", # Does not build
+        }
 
 def json_type(string):
     """
@@ -388,6 +394,8 @@ def launch_jobs(branches, git_path, wait_for_completion, debug, force):
 
         with tempfile.TemporaryDirectory() as workdir:
             for commit in commits:
+                if commit in invalid_commits:
+                    continue
                 b_results = get_benchmark_results(client, commit, workdir)[0]
                 if b_results and not force:
                     continue
