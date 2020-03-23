@@ -292,7 +292,11 @@
 
     properties:
       - build-discarder:
-          num-to-keep: 2
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-build'
 
     <<: *lttng-modules_build_parameters_gerrit
     <<: *lttng-modules_build_builders_defaults
