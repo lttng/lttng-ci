@@ -653,6 +653,17 @@
                   branch-pattern: '**'
           trigger-for-unreviewed-patches: true
 
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=lttng-tools
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
+
     <<: *lttng-tools_build_axes_defaults
     <<: *lttng-tools_build_builders_gerrit
 
