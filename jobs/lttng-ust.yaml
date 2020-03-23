@@ -180,6 +180,17 @@
     <<: *lttng-ust_build_axes_defaults
     <<: *lttng-ust_build_builders_defaults
 
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=lttng-ust
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
+
     publishers:
       - tap:
           results: 'tap/**/*.log'
