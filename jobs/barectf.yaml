@@ -122,6 +122,13 @@
                   branch-pattern: '**'
           trigger-for-unreviewed-patches: true
 
+    properties:
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
     builders:
       - shell:
          !include-raw-escape: scripts/barectf/build.sh
