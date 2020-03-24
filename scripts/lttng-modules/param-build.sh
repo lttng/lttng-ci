@@ -150,6 +150,10 @@ build_linux_kernel() {
             exit 0
           fi
         fi
+
+        # Disable riscv64 config generation, we don't have a toolchain on bionic
+        sed -i 's/riscv64 //' debian.master/etc/kernelconfig
+
         fakeroot debian/rules clean KW_DEFCONFIG_DIR=.
         fakeroot debian/rules genconfigs KW_DEFCONFIG_DIR=.
         cp CONFIGS/"${ubuntu_config}" .config
