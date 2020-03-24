@@ -197,6 +197,7 @@ def blacklist = [
   ~/v4\.11\.12-rt11-rebase/,
   ~/v4\.11\.12-rt12-rebase/,
   ~/v4\.11\.12-rt13-rebase/,
+  ~/v4\.19.*-rebase/,
   ~/v3\.6.*-rebase/,
   ~/v3\.8.*-rebase/,
 ]
