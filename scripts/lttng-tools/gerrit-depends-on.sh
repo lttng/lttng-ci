@@ -36,9 +36,14 @@ touch "$property_file"
 pushd "${WORKSPACE}/src/lttng-tools"
 
 git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
+    # Deactivate debug mode to prevent the gcc warning publisher from picking up
+    # compiler error present in the commit message.
+    set +x
     if ! [[ ${line} =~ ${re} ]]; then
+        set -x
         continue
     fi
+    set -x
 
     project=${BASH_REMATCH[1]}
     gerrit_id=${BASH_REMATCH[2]}
