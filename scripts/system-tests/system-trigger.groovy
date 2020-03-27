@@ -300,7 +300,11 @@ final String linuxRepo = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/l
 
 final String pastJobsPath = build.getEnvironment(listener).get('WORKSPACE') + "/pastjobs";
 
-def recentLttngBranchesOfInterest = ['master', 'stable-2.10', 'stable-2.9']
+def recentLttngBranchesOfInterest = ['master',
+  'stable-2.12',
+  'stable-2.11',
+  'stable-2.10',
+  'stable-2.9']
 def recentLinuxBranchesOfInterest = ['master',
   'linux-5.1.y',
   'linux-5.0.y',
