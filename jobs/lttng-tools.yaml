@@ -360,23 +360,12 @@
           condition-kind: strings-match
           on-evaluation-failure: run
           condition-string1: '${{arch}}'
-          condition-string2: 'cygwin'
-          steps:
-            - shell:
-               !include-raw-escape:
-                 - scripts/common/cygwin-shebang
-                 - scripts/common/cygwin-prefix
-                 - scripts/lttng-tools/build.sh
-      - conditional-step:
-          condition-kind: strings-match
-          on-evaluation-failure: run
-          condition-string1: '${{arch}}'
           condition-string2: 'cygwin64'
           steps:
             - shell:
                !include-raw-escape:
                  - scripts/common/cygwin64-shebang
-                 - scripts/common/cygwin-prefix
+                 - scripts/common/cygpath-prefix
                  - scripts/lttng-tools/build.sh
       - conditional-step:
           condition-kind: strings-match
@@ -389,7 +378,7 @@
             - shell:
                !include-raw-escape:
                  - scripts/common/msys2-shebang
-                 - scripts/common/cygwin-prefix
+                 - scripts/common/cygpath-prefix
                  - scripts/lttng-tools/build.sh
       - conditional-step:
           condition-kind: strings-match
@@ -402,7 +391,7 @@
             - shell:
                !include-raw-escape:
                  - scripts/common/msys2-shebang
-                 - scripts/common/cygwin-prefix
+                 - scripts/common/cygpath-prefix
                  - scripts/lttng-tools/build.sh
 
 - lttng-tools_build_publishers_dev: &lttng-tools_build_publishers_dev
@@ -907,7 +896,7 @@
       - 'lttng-tools_{version}_winbuild':
           version: master
           ustversion: master
-          arch: !!python/tuple [cygwin, cygwin64]
+          arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
@@ -988,7 +977,7 @@
       - 'lttng-tools_{version}_winbuild':
           version: stable-2.12
           ustversion: stable-2.12
-          arch: !!python/tuple [cygwin, cygwin64]
+          arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.11]
@@ -1069,7 +1058,7 @@
       - 'lttng-tools_{version}_winbuild':
           version: stable-2.11
           ustversion: stable-2.11
-          arch: !!python/tuple [cygwin, cygwin64]
+          arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.10]
@@ -1150,7 +1139,7 @@
       - 'lttng-tools_{version}_winbuild':
           version: stable-2.10
           ustversion: stable-2.10
-          arch: !!python/tuple [cygwin, cygwin64]
+          arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1231,7 +1220,7 @@
       - 'lttng-tools_{version}_winbuild':
           version: stable-2.9
           ustversion: stable-2.9
-          arch: !!python/tuple [cygwin, cygwin64]
+          arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]

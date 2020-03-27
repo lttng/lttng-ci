@@ -103,23 +103,12 @@
           condition-kind: strings-match
           on-evaluation-failure: run
           condition-string1: '${{arch}}'
-          condition-string2: 'cygwin'
-          steps:
-            - shell:
-               !include-raw-escape:
-                 - scripts/common/cygwin-shebang
-                 - scripts/common/cygwin-prefix
-                 - scripts/babeltrace/build.sh
-      - conditional-step:
-          condition-kind: strings-match
-          on-evaluation-failure: run
-          condition-string1: '${{arch}}'
           condition-string2: 'cygwin64'
           steps:
             - shell:
                !include-raw-escape:
                  - scripts/common/cygwin64-shebang
-                 - scripts/common/cygwin-prefix
+                 - scripts/common/cygpath-prefix
                  - scripts/babeltrace/build.sh
       - conditional-step:
           condition-kind: strings-match
@@ -132,7 +121,7 @@
             - shell:
                !include-raw-escape:
                  - scripts/common/msys2-shebang
-                 - scripts/common/cygwin-prefix
+                 - scripts/common/cygpath-prefix
                  - scripts/babeltrace/build.sh
       - conditional-step:
           condition-kind: strings-match
@@ -145,7 +134,7 @@
             - shell:
                !include-raw-escape:
                  - scripts/common/msys2-shebang
-                 - scripts/common/cygwin-prefix
+                 - scripts/common/cygpath-prefix
                  - scripts/babeltrace/build.sh
 
 
@@ -687,7 +676,7 @@
           conf: !!python/tuple [std, static]
           cc: !!python/tuple [clang-3.9, clang-4.0, clang-6.0, clang-7]
       - 'babeltrace_{version}_winbuild':
-          arch: !!python/tuple [cygwin, cygwin64]
+          arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
       - 'babeltrace_{version}_cppcheck'
@@ -734,7 +723,7 @@
           conf: !!python/tuple [std, static, prod]
           cc: !!python/tuple [clang-3.9, clang-4.0, clang-6.0, clang-7]
       - 'babeltrace_{version}_winbuild':
-          arch: !!python/tuple [cygwin, cygwin64, msys2-mingw32, msys2-mingw64]
+          arch: !!python/tuple [cygwin64, msys2-mingw32, msys2-mingw64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
       - 'babeltrace_{version}_cppcheck'

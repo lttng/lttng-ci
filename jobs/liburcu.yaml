@@ -94,49 +94,12 @@
           condition-kind: strings-match
           on-evaluation-failure: run
           condition-string1: '${{arch}}'
-          condition-string2: 'cygwin'
-          steps:
-            - shell:
-               !include-raw-escape:
-                 - scripts/common/cygwin-shebang
-                 - scripts/common/cygwin-prefix
-                 - scripts/liburcu/build.sh
-      - conditional-step:
-          condition-kind: strings-match
-          on-evaluation-failure: run
-          condition-string1: '${{arch}}'
           condition-string2: 'cygwin64'
           steps:
             - shell:
                !include-raw-escape:
                  - scripts/common/cygwin64-shebang
-                 - scripts/common/cygwin-prefix
-                 - scripts/liburcu/build.sh
-      - conditional-step:
-          condition-kind: strings-match
-          on-evaluation-failure: run
-          condition-string1: '${{arch}}'
-          condition-string2: 'msys2-mingw32'
-          steps:
-            - inject:
-               properties-content: 'MSYSTEM=MINGW32'
-            - shell:
-               !include-raw-escape:
-                 - scripts/common/msys2-shebang
-                 - scripts/common/cygwin-prefix
-                 - scripts/liburcu/build.sh
-      - conditional-step:
-          condition-kind: strings-match
-          on-evaluation-failure: run
-          condition-string1: '${{arch}}'
-          condition-string2: 'msys2-mingw64'
-          steps:
-            - inject:
-               properties-content: 'MSYSTEM=MINGW64'
-            - shell:
-               !include-raw-escape:
-                 - scripts/common/msys2-shebang
-                 - scripts/common/cygwin-prefix
+                 - scripts/common/cygpath-prefix
                  - scripts/liburcu/build.sh
 
 - liburcu_build_publishers_defaults: &liburcu_build_publishers_defaults
@@ -362,7 +325,7 @@
             - stable-0.10
             - stable-0.11
       - 'liburcu_{version}_winbuild':
-          arch: !!python/tuple [cygwin, cygwin64]
+          arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
           version:
