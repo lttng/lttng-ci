@@ -604,7 +604,13 @@ signature_v2 = False" > "$WORKSPACE/.s3cfg"
 
 url_hash="$(echo -n "$kgitrepo" | md5sum | awk '{ print $1 }')"
 obj_name="linux.tar.bz2"
-obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/$arch/${cross_arch:-native}"
+
+if [ "x${cross_arch}" = "x" ]; then
+	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/$arch/native"
+else
+	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/${cross_arch}"
+fi
+
 obj_url="$obj_url_prefix/$obj_name"
 
 set +e
