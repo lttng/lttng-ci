@@ -282,6 +282,11 @@ fi
 # Most build configs require the python bindings
 CONF_OPTS=("--prefix=$PREFIX" "--enable-python-bindings")
 
+# Turn on SDT userspace-probe testing
+if vergte "$PACKAGE_VERSION" "2.11"; then
+    CONF_OPTS+=("--enable-test-sdt-uprobe")
+fi
+
 # Set configure options and environment variables for each build
 # configuration.
 case "$conf" in
