@@ -385,7 +385,7 @@ configurationOfInterest.each { lttngBr, linuxBr  ->
 }
 
 //Add canary job
-def jobNameCanary = jobType + "_canary";
+def jobNameCanary = jobType + "_kcanary_lcanary";
 currentJobs[jobNameCanary] = [:];
 currentJobs[jobNameCanary]['config'] = [:];
 currentJobs[jobNameCanary]['config']['linuxBranch'] = 'v4.4.194';
@@ -408,7 +408,7 @@ def ongoingJobs = 0;
 currentJobs.each { jobName, jobInfo ->
   // If the job ran in the past, we check if the IDs changed since.
   // Fetch past results only if the job is not of type canary.
-  if (!jobName.contains('_canary') && pastJobs.containsKey(jobName) &&
+  if (!jobName.contains('_kcanary_lcanary') && pastJobs.containsKey(jobName) &&
          build.getBuildVariables().get('FORCE_JOB_RUN') == 'false') {
     pastJob = pastJobs[jobName];
 
