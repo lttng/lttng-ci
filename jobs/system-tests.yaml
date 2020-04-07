@@ -62,9 +62,9 @@
           send-to:
             - recipients
 
-## Defaults
-- defaults:
-    name: baremetal_benchmarks
+## Templates
+- job-template:
+    name: baremetal_benchmarks_k{kversion}_l{lttngversion}
     description: |
       Runs baremetal kernel benchmarks over different combination of kernel and lttng configurations.
     project-type: freestyle
@@ -126,8 +126,8 @@
           includes: '*.png'
       - workspace-cleanup
 
-- defaults:
-    name: vm_tests
+- job-template:
+    name: vm_tests_k{kversion}_l{lttngversion}
     description: |
       Runs root_regression and root_destructive_tests on a virtual machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
@@ -176,8 +176,8 @@
     publishers:
       - workspace-cleanup
 
-- defaults:
-    name: baremetal_tests
+- job-template:
+    name: baremetal_tests_k{kversion}_l{lttngversion}
     description: |
       Runs perf_regression tests on a baremetal machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
@@ -227,7 +227,6 @@
     publishers:
       - workspace-cleanup
 
-## Templates
 - job-template:
     name: build_kernel_PARAM
     description: |
@@ -362,35 +361,16 @@
     publishers:
       - system_tests_email_ext_default
 
-- job-template:
-    name: baremetal_benchmarks_k{kversion}_l{lttngversion}
-    defaults: baremetal_benchmarks
-- job-template:
-    name: vm_tests_k{kversion}_l{lttngversion}
-    defaults: vm_tests
-- job-template:
-    name: baremetal_tests_k{kversion}_l{lttngversion}
-    defaults: baremetal_tests
+## Project
 
 # Canary jobs are made to confirm that the whole Lava pipeline is working.
 # They are scheduled once a day always on the same (LTTng, Kernel) code. If any
 # of those jobs fails, it means that there is an issue with the configuration
-- job-template:
-    name: baremetal_benchmarks_canary
-    defaults: baremetal_benchmarks
 
-- job-template:
-    name: baremetal_tests_canary
-    defaults: baremetal_tests
-
-- job-template:
-    name: vm_tests_canary
-    defaults: vm_tests
-
-## Project
 - project:
     name: system-tests
     kversion:
+      - canary
       - master
       - linux-4.4.y
       - linux-4.9.y
@@ -399,6 +379,7 @@
       - linux-5.0.y
       - linux-5.1.y
     lttngversion:
+      - canary
       - master
       - stable-2.9
       - stable-2.10
@@ -420,13 +401,6 @@
       - stable-2.12
     jobs:
       - 'vm_tests_k{kversion}_l{lttngversion}'
-
-- project:
-    name: system-tests-canary
-    jobs:
-      - 'vm_tests_canary'
-      - 'baremetal_tests_canary'
-      - 'baremetal_benchmarks_canary'
 
 - project:
     name: system-general
