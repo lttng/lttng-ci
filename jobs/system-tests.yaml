@@ -98,6 +98,7 @@
       - inject:
           properties-content: |
             BUILD_DEVICE=baremetal
+            LTTNG_VERSION={lttngversion}
     scm:
       - git:
           url: https://github.com/lttng/lttng-ci
@@ -157,6 +158,7 @@
       - inject:
           properties-content: |
             BUILD_DEVICE=kvm
+            LTTNG_VERSION={lttngversion}
 
     scm:
       - git:
@@ -208,6 +210,7 @@
       - inject:
           properties-content: |
             BUILD_DEVICE=baremetal
+            LTTNG_VERSION={lttngversion}
 
     scm:
       - git:

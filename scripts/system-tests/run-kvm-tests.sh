@@ -26,6 +26,7 @@ pip install pyyaml Jinja2
 
 python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -t kvm-tests \
+                          -lv "$LTTNG_VERSION" \
                           -j "$JOB_NAME" \
                           -k "$S3_URL_KERNEL_IMAGE" \
                           -lm "$S3_URL_LTTNG_MODULES" \
