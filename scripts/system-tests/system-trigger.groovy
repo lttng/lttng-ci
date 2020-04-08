@@ -382,12 +382,6 @@ def currentJobs = [:];
 configurationOfInterest.each { lttngBr, linuxBr  ->
   def jobName = CraftJobName(jobType, linuxBr, lttngBr);
   currentJobs[jobName] = CraftConfig(linuxBr, lttngBr);
-
-  // Add fuzzing job in vm_tests on master branches of lttng and linux.
-  //if (jobType == 'vm_tests' && lttngBr == 'master' && linuxBr == 'master') {
-  //  def vmFuzzingJobName = CraftJobName(jobType + '_fuzzing', linuxBr, lttngBr);
-  //  currentJobs[vmFuzzingJobName] = CraftConfig(linuxBr, lttngBr);
-  //}
 }
 
 //Add canary job
@@ -413,9 +407,8 @@ def ongoingJobs = 0;
 
 currentJobs.each { jobName, jobInfo ->
   // If the job ran in the past, we check if the IDs changed since.
-  // Fetch past results only if the job is not of type canary or fuzzing.
-  if (!jobName.contains('_canary') && !jobName.contains('_fuzzing') &&
-         pastJobs.containsKey(jobName) &&
+  // Fetch past results only if the job is not of type canary.
+  if (!jobName.contains('_canary') && pastJobs.containsKey(jobName) &&
          build.getBuildVariables().get('FORCE_JOB_RUN') == 'false') {
     pastJob = pastJobs[jobName];
 

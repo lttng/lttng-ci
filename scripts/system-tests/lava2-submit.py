@@ -37,12 +37,10 @@ class TestType:
     baremetal_benchmarks = 1
     baremetal_tests = 2
     kvm_tests = 3
-    kvm_fuzzing_tests = 4
     values = {
         'baremetal-benchmarks': baremetal_benchmarks,
         'baremetal-tests': baremetal_tests,
         'kvm-tests': kvm_tests,
-        'kvm-fuzzing-tests': kvm_fuzzing_tests,
     }
 
 
