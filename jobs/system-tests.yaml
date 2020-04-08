@@ -177,56 +177,6 @@
       - workspace-cleanup
 
 - defaults:
-    name: vm_tests_fuzzing
-    description: |
-      Runs virtual machine fuzzing tests over different combination of kernel and lttng configurations.
-    project-type: freestyle
-    node: 'amd64'
-    <<: *system_tests_parameters_defaults
-
-    properties:
-      - build-discarder:
-          num-to-keep: 10
-      - throttle:
-          max-total: 4
-          option: 'category'
-          categories:
-            - 'kvm-tests'
-
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor
-      - credentials-binding:
-          - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_JENKINS_TOKEN
-          - text:
-              credential-id: jenkins_lava2_key
-              variable: LAVA2_JENKINS_TOKEN
-      - inject:
-          properties-content: |
-            BUILD_DEVICE=kvm
-
-    scm:
-      - git:
-          url: https://github.com/lttng/lttng-ci
-          basedir: src/lttng-ci/
-
-    builders:
-      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
-      - trigger-builds:
-        - project: "build_kernel_PARAM"
-          property-file: 'properties.txt'
-          block: true
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/system-tests/run-kvm-fuzzing-tests.sh
-
-    publishers:
-      - workspace-cleanup
-
-- defaults:
     name: baremetal_tests
     description: |
       Runs perf_regression tests on a baremetal machine over different combinations of kernel and lttng configurations.
@@ -422,10 +372,6 @@
     name: baremetal_tests_k{kversion}_l{lttngversion}
     defaults: baremetal_tests
 
-- job-template:
-    name: vm_tests_fuzzing_k{kversion}_l{lttngversion}
-    defaults: vm_tests_fuzzing
-
 # Canary jobs are made to confirm that the whole Lava pipeline is working.
 # They are scheduled once a day always on the same (LTTng, Kernel) code. If any
 # of those jobs fails, it means that there is an issue with the configuration
@@ -482,12 +428,6 @@
       - 'baremetal_tests_canary'
       - 'baremetal_benchmarks_canary'
 
-- project:
-    name: system-fuzzing-tests
-    kversion: master
-    lttngversion: master
-    jobs:
-      - 'vm_tests_fuzzing_k{kversion}_l{lttngversion}'
 - project:
     name: system-general
     test_type:
