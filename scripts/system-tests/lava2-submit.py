@@ -18,6 +18,7 @@ import argparse
 import json
 import os
 import random
+import re
 import sys
 import time
 import xmlrpc.client
@@ -130,7 +131,7 @@ def print_test_output(server, job):
 
 
 def get_vlttng_cmd(
-    lttng_tools_url, lttng_tools_commit, lttng_ust_url=None, lttng_ust_commit=None
+    lttng_version, lttng_tools_url, lttng_tools_commit, lttng_ust_url=None, lttng_ust_commit=None
 ):
     """
     Return vlttng cmd to be used in the job template for setup.
@@ -160,6 +161,23 @@ def get_vlttng_cmd(
             + ' --profile lttng-ust-no-man-pages'
         )
 
+
+    # Get the major and minor version numbers from the lttng version string.
+    version_match = re.search('stable-(\d).(\d\d)', lttng_version)
+
+    if version_match is not None:
+        major_version = int(version_match.group(1))
+        minor_version = int(version_match.group(2))
+    else:
+        # Setting to zero to make the comparison below easier.
+        major_version = 0
+        minor_version = 0
+
+    if lttng_version == 'master' or (major_version >= 2 and minor_version >= 11):
+        vlttng_cmd += (
+            ' --override projects.lttng-tools.configure+=--enable-test-sdt-uprobe'
+        )
+
     vlttng_path = '/tmp/virtenv'
 
     vlttng_cmd += ' ' + vlttng_path
@@ -172,6 +190,7 @@ def main():
     test_type = None
     parser = argparse.ArgumentParser(description='Launch baremetal test using Lava')
     parser.add_argument('-t', '--type', required=True)
+    parser.add_argument('-lv', '--lttng-version', required=True)
     parser.add_argument('-j', '--jobname', required=True)
     parser.add_argument('-k', '--kernel', required=True)
     parser.add_argument('-lm', '--lmodule', required=True)
@@ -215,7 +234,7 @@ def main():
     vlttng_path = '/tmp/virtenv'
 
     vlttng_cmd = get_vlttng_cmd(
-        args.tools_url, args.tools_commit, args.ust_url, args.ust_commit
+        args.lttng_version, args.tools_url, args.tools_commit, args.ust_url, args.ust_commit
     )
 
     context = dict()

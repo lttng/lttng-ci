@@ -45,6 +45,7 @@ echo "STORAGE_HOST=storage.internal.efficios.com" >> properties.txt
 echo "STORAGE_USER=jenkins-lava" >> properties.txt
 
 echo "BUILD_DEVICE=$BUILD_DEVICE" >> properties.txt
+echo "LTTNG_VERSION=$LTTNG_VERSION" >> properties.txt
 echo "KGITREPO=$KERNEL_REPO" >> properties.txt
 echo "LTTNG_MODULES_REPO=$LTTNG_MODULES_REPO" >> properties.txt
 echo "STORAGE_KERNEL_FOLDER=$BASE_STORAGE_FOLDER/kernel" >> properties.txt
