@@ -282,6 +282,7 @@
       - stable-0.9
       - stable-0.10
       - stable-0.11
+      - stable-0.12
       - master
     jobs:
       - 'liburcu_{version}_{buildtype}':
@@ -314,6 +315,7 @@
             - stable-0.9
             - stable-0.10
             - stable-0.11
+            - stable-0.12
       - 'liburcu_{version}_{buildtype}':
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
@@ -324,6 +326,7 @@
             - stable-0.9
             - stable-0.10
             - stable-0.11
+            - stable-0.12
       - 'liburcu_{version}_winbuild':
           arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
@@ -333,6 +336,7 @@
             - stable-0.9
             - stable-0.10
             - stable-0.11
+            - stable-0.12
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
