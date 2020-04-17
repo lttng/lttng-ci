@@ -231,7 +231,7 @@
                 regex: (std|static|agents|debug-rcu)
           steps:
             - copyartifact:
-                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
+                project: lttng-ust_${{GERRIT_BRANCH}}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -278,7 +278,7 @@
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=std,build=std
+                project: lttng-ust_${{GERRIT_BRANCH}}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=std,build=std
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -1493,7 +1493,6 @@
     jobs:
       - 'dev_gerrit_lttng-tools_{buildtype}':
           buildtype: build
-          ustversion: master
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, no-ust, agents]
