@@ -1496,7 +1496,7 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.11]
+          urcuversion: !!python/tuple [stable-0.12]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
 
