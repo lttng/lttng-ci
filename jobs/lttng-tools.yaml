@@ -857,7 +857,7 @@
           ustversion: master
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
@@ -938,7 +938,7 @@
           ustversion: stable-2.12
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.12]
           babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
@@ -1019,7 +1019,7 @@
           ustversion: stable-2.11
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
@@ -1100,7 +1100,7 @@
           ustversion: stable-2.10
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
@@ -1161,7 +1161,7 @@
           ustversion: stable-2.9
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
@@ -1173,7 +1173,7 @@
           ustversion: stable-2.8
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]

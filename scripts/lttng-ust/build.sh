@@ -197,7 +197,7 @@ static)
 agents)
     echo "Java and Python agents configuration"
 
-    export CLASSPATH="/usr/share/java/log4j-1.2.jar"
+    export CLASSPATH='/usr/share/java/*'
     CONF_OPTS+=("--enable-java-agent-all" "--enable-jni-interface" "--enable-python-agent")
     ;;
 

@@ -334,7 +334,7 @@
           buildtype: slesbuild
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
@@ -369,7 +369,7 @@
           version: master
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           liburcu_version: !!python/tuple [stable-0.12, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
@@ -409,7 +409,7 @@
           version: stable-2.12
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           liburcu_version: !!python/tuple [stable-0.12, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
@@ -431,7 +431,7 @@
           version: stable-2.9
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
           filter: ''
 
@@ -441,7 +441,7 @@
           version: stable-2.8
           arch: !!python/tuple [sles12sp2]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          conf: !!python/tuple [agents]
           liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
           filter: ''
 
