@@ -165,7 +165,7 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
+          url: git://git-mirror.internal.efficios.com/{github_user}/{github_name}.git
           browser: githubweb
           browser-url: https://github.com/{github_user}/{github_name}
           branches:
@@ -408,7 +408,7 @@
           description: 'The lttng-modules branch to build.'
       - string:
           name: 'mgitrepo'
-          default: 'git://github.com/lttng/lttng-modules.git'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
           description: 'The lttng-modules git repository url.'
       - string:
           name: 'ktag'
@@ -461,7 +461,7 @@
           description: 'The lttng-modules branch to build.'
       - string:
           name: 'mgitrepo'
-          default: 'git://github.com/lttng/lttng-modules.git'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
           description: 'The lttng-modules git repository url.'
       - string:
           name: 'ktag'
