@@ -425,16 +425,6 @@
       - 'lttng-ust_{version}_scan-build':
           version: stable-2.12
 
-      # stable-2.7
-      - 'lttng-ust_{version}_{buildtype}':
-          buildtype: slesbuild
-          version: stable-2.7
-          arch: !!python/tuple [sles12sp2]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.9]
-          filter: ''
-
 - project:
     name: gerrit-lttng-ust
     github_user: lttng

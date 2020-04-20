@@ -1299,18 +1299,6 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [full]
 
-      # stable-2.7 #
-      - 'lttng-tools_{version}_{buildtype}':
-          buildtype: slesbuild
-          version: stable-2.7
-          ustversion: stable-2.7
-          arch: !!python/tuple [sles12sp2]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-
       - 'lttng-tools_{version}_cppcheck'
       - 'lttng-tools_{version}_scan-build':
           version: master
