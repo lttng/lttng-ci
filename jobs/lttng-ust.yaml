@@ -313,7 +313,6 @@
     github_name: lttng-ust
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     version:
-      - stable-2.8
       - stable-2.9
       - stable-2.10
       - stable-2.11
@@ -348,6 +347,7 @@
           filter: ''
       - 'lttng-ust_{version}_cppcheck'
       - 'lttng-ust_{version}_scan-build'
+
       ## Master ##
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
@@ -387,6 +387,7 @@
           version: master
       - 'lttng-ust_{version}_coverity':
           version: master
+
       ## Stable 2.12 ##
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
@@ -424,6 +425,17 @@
           version: stable-2.12
       - 'lttng-ust_{version}_scan-build':
           version: stable-2.12
+
+      ## Stable 2.8 ##
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: slesbuild
+          version: stable-2.8
+          arch: !!python/tuple [sles12sp2]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
+          filter: ''
+
 
 - project:
     name: gerrit-lttng-ust
