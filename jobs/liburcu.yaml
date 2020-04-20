@@ -309,33 +309,15 @@
           arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
-          version: # Solaris support was introduced in 0.9
-            - master
-            - stable-0.9
-            - stable-0.10
-            - stable-0.11
-            - stable-0.12
       - 'liburcu_{version}_{buildtype}':
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
-          version:
-            - master
-            - stable-0.9
-            - stable-0.10
-            - stable-0.11
-            - stable-0.12
       - 'liburcu_{version}_winbuild':
           arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          version:
-            - master
-            - stable-0.9
-            - stable-0.10
-            - stable-0.11
-            - stable-0.12
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
