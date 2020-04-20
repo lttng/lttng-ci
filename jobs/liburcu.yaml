@@ -278,7 +278,6 @@
     github_name: userspace-rcu
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     version:
-      - stable-0.8
       - stable-0.9
       - stable-0.10
       - stable-0.11

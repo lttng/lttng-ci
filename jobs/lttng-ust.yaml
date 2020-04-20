@@ -323,14 +323,14 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu]
-          liburcu_version: !!python/tuple [stable-0.8, stable-0.10, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
           filter: '(build=="std") || (liburcu_version=="master")'
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.8, stable-0.10, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
