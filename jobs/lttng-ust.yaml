@@ -457,7 +457,14 @@
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, agents]
           liburcu_version: !!python/tuple [stable-0.12]
-          filter: '(build=="std" && conf=="std") || (arch=="amd64")'
+          filter: ''
+      - 'dev_gerrit_lttng-ust_{buildtype}':
+          buildtype: portbuild
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          liburcu_version: !!python/tuple [stable-0.12]
+          filter: ''
 
 - project:
     name: lttng-ust-views
