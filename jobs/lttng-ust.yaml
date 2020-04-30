@@ -94,6 +94,19 @@
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (tls_fallback)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=tls_fallback,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
       - shell:
          !include-raw-escape: scripts/lttng-ust/build.sh
 
@@ -320,9 +333,9 @@
           buildtype: build
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
-          conf: !!python/tuple [std, agents, debug-rcu]
+          conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
-          filter: '(build=="std") || (liburcu_version=="master")'
+          filter: '(build=="std") || ((liburcu_version=="stable-0.12" && (conf=="std" || conf=="agents")))'
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
@@ -353,9 +366,9 @@
           version: master
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
-          conf: !!python/tuple [std, agents, debug-rcu]
+          conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_version: !!python/tuple [stable-0.12, master]
-          filter: '(build=="std") || (liburcu_version=="master")'
+          filter: '(build=="std") || ((liburcu_version=="master" && (conf=="std" || conf=="agents")))'
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: master
@@ -393,9 +406,9 @@
           version: stable-2.12
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
-          conf: !!python/tuple [std, agents, debug-rcu]
+          conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_version: !!python/tuple [stable-0.12, master]
-          filter: '(build=="std") || (liburcu_version=="stable-0.12")'
+          filter: '(build=="std") || ((liburcu_version=="stable-0.12" && (conf=="std" || conf=="agents")))'
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.12
