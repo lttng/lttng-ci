@@ -589,12 +589,19 @@
           kverfilter: stable-head
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
-            - stable-2.10
             - stable-2.11
           buildtype: build
           parambuildtype: build
           kverfloor: v2.6.36
           kverceil: ''
+          kverfilter: stable-head
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - stable-2.10
+          buildtype: build
+          parambuildtype: build
+          kverfloor: v2.6.36
+          kverceil: v5.7
           kverfilter: stable-head
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
@@ -607,12 +614,19 @@
           kverfilter: none
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
-            - stable-2.10
             - stable-2.11
           buildtype: build
           parambuildtype: build
           kverfloor: v2.6.36
           kverceil: ''
+          kverfilter: none
+      - 'lttng-modules_{mversion}_fullbuild-vanilla':
+          mversion:
+            - stable-2.10
+          buildtype: build
+          parambuildtype: build
+          kverfloor: v2.6.36
+          kverceil: v5.7
           kverfilter: none
 
 # RT normal builds
@@ -641,7 +655,6 @@
 # Vanilla crossbuilds
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
-            - stable-2.10
             - stable-2.11
             - stable-2.12
             - master
@@ -677,7 +690,6 @@
       - 'lttng-modules_ALL_trigger-vanilla'
       - 'lttng-modules_{mversion}_cppcheck':
           mversion:
-            - stable-2.10
             - stable-2.11
             - stable-2.12
             - master
