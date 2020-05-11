@@ -504,10 +504,13 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
     }
 
     // Abort job if a newer instance is queued
-    similarJobQueued = Hudson.instance.queue.items.count{it.task.getFullDisplayName() == currentJobName}
-    if ( similarJobQueued > 0 ) {
+    if (!currentJobName.contains("gerrit")) {
+      similarJobQueued = Hudson.instance.queue.items.count{it.task.getFullDisplayName() == currentJobName}
+      if (similarJobQueued > 0) {
+        println "Abort, a newer instance of the job was queued"
         build.setResult(hudson.model.Result.ABORTED)
         throw new InterruptedException()
+      }
     }
 
     def i = ongoingBuild.iterator()
