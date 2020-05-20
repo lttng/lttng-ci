@@ -721,6 +721,81 @@
             - failure: false
 
 - job-template:
+    name: lttng-tools_{version}_release
+    defaults: lttng-tools
+    node: 'amd64'
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - '*/tags/{version}.*'
+          basedir: src/lttng-tools
+
+    builders:
+      - copyartifact:
+          project: liburcu_{urcuversion}_build/arch=amd64,conf=std,build=std
+          which-build: last-successful
+          stable: false
+          filter: 'build/**'
+          target: 'deps'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: babeltrace_{babelversion}_build/arch=amd64,conf=std,build=std
+          which-build: last-successful
+          stable: false
+          filter: 'build/**'
+          target: 'deps'
+          do-not-fingerprint: true
+      - copyartifact:
+          project: lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=amd64,conf=agents,build=std
+          which-build: last-successful
+          stable: false
+          filter: 'build/**'
+          target: 'deps'
+          do-not-fingerprint: true
+      - shell:
+          !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
+      - shell:
+          !include-raw-escape: scripts/lttng-tools/release.sh
+
+    publishers:
+      - postbuildscript:
+          mark-unstable-if-failed: true
+          builders:
+            - role: SLAVE
+              build-on:
+                  - SUCCESS
+                  - UNSTABLE
+                  - NOT_BUILT
+                  - ABORTED
+                  - FAILURE
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+      - archive:
+          artifacts: 'out/**'
+          allow-empty: false
+
+- job-template:
     name: lttng-tools_{version}_cppcheck
     defaults: lttng-tools
 
@@ -1036,6 +1111,11 @@
           babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [full]
           filter: ''
+      - 'lttng-tools_{version}_release':
+          version: v2.12
+          ustversion: stable-2.12
+          urcuversion: stable-0.12
+          babelversion: stable-2.0
 
       # stable-2.11
       - 'lttng-tools_{version}_{buildtype}':
@@ -1125,6 +1205,11 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [full]
           filter: ''
+      - 'lttng-tools_{version}_release':
+          version: v2.11
+          ustversion: stable-2.11
+          urcuversion: stable-0.10
+          babelversion: stable-1.5
 
       # stable-2.10
       - 'lttng-tools_{version}_{buildtype}':
@@ -1214,6 +1299,11 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [full]
           filter: ''
+      - 'lttng-tools_{version}_release':
+          version: v2.10
+          ustversion: stable-2.10
+          urcuversion: stable-0.9
+          babelversion: stable-1.5
 
       # stable-2.9 #
       - 'lttng-tools_{version}_{buildtype}':
