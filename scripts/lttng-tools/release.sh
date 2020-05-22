@@ -71,6 +71,9 @@ verne() {
 
 export TERM="xterm-256color"
 
+# Required variables
+WORKSPACE=${WORKSPACE:-}
+
 DEPS_INC="$WORKSPACE/deps/build/include"
 DEPS_LIB="$WORKSPACE/deps/build/lib"
 DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
@@ -87,8 +90,10 @@ export JAVA_HOME="/usr/lib/jvm/default-java"
 export CLASSPATH="$DEPS_JAVA/*:/usr/share/java/*"
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
+OUTDIR="$WORKSPACE/out"
 TAPDIR="$WORKSPACE/tap"
-PREFIX="$WORKSPACE/out"
+
+failed_tests=0
 
 # Create tmp directory
 TMPDIR="$WORKSPACE/tmp"
@@ -132,8 +137,8 @@ export PYTHONPATH="$UST_PYTHON2:$UST_PYTHON3"
 
 
 # Create build and tmp directories
-rm -rf "$PREFIX"
-mkdir -p "$PREFIX"
+rm -rf "$OUTDIR" "$TAPDIR"
+mkdir -p "$OUTDIR" "$TAPDIR"
 
 
 
@@ -146,11 +151,14 @@ cd "$SRCDIR"
 
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
+PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
+
+CONF_OPTS=("--enable-python-bindings" "--enable-test-java-agent-all" "--enable-test-python-agent-all")
 
 TARBALL_FILE="lttng-tools-$PACKAGE_VERSION.tar.bz2"
 
 # Make sure the reported version matches the current git tag
-GIT_TAG="$(git describe --exact-match --tags $(git log -n1 --pretty='%h')|| echo 'undefined')"
+GIT_TAG="$(git describe --exact-match --tags "$(git log -n1 --pretty='%h')" || echo 'undefined')"
 
 if [ "v$PACKAGE_VERSION" != "$GIT_TAG" ]; then
   echo "Git checkout is not tagged or doesn't match the reported version."
@@ -160,7 +168,7 @@ fi
 # Generate release tarball
 ./configure
 make dist
-cp "./$TARBALL_FILE" "$PREFIX/"
+cp "./$TARBALL_FILE" "$OUTDIR/"
 
 
 # Allow core dumps
@@ -171,27 +179,54 @@ ulimit -c unlimited
 export LTTNG_SESSIOND_PATH="/bin/true"
 
 
-# Do an in-tree test build
+## Do an in-tree test build
 mkdir "$WORKSPACE/intree"
 cd "$WORKSPACE/intree" || exit 1
-tar xvf "$PREFIX/$TARBALL_FILE" --strip 1
-./configure --prefix="$(mktemp -d)" --enable-python-bindings --enable-test-java-agent-all --enable-test-python-agent-all
+
+tar xvf "$OUTDIR/$TARBALL_FILE" --strip 1
+./configure --prefix="$(mktemp -d)" "${CONF_OPTS[@]}"
+
+# BUILD!
 make -j "$(nproc)" V=1
-make check
+
 make install
+
+# Run tests, don't fail now, we want to run the archiving steps
+make --keep-going check || failed_tests=1
+
+# Copy tap logs for the jenkins tap parser before cleaning the build dir
+rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR/intree"
+
+# Clean the build directory
 make clean
 
-# do an out-of-tree test build
+
+## Do an out-of-tree test build
 mkdir "$WORKSPACE/oot"
 mkdir "$WORKSPACE/oot/src"
 mkdir "$WORKSPACE/oot/build"
 cd "$WORKSPACE/oot/src" || exit 1
-tar xvf "$PREFIX/$TARBALL_FILE" --strip 1
+
+tar xvf "$OUTDIR/$TARBALL_FILE" --strip 1
 cd "$WORKSPACE/oot/build" || exit 1
-"$WORKSPACE/oot/src/configure" --prefix="$(mktemp -d)" --enable-python-bindings --enable-test-java-agent-all --enable-test-python-agent-all
+"$WORKSPACE/oot/src/configure" --prefix="$(mktemp -d)" "${CONF_OPTS[@]}"
+
+# BUILD!
 make -j "$(nproc)" V=1
-make check
+
 make install
+
+# Run tests, don't fail now, we want to run the archiving steps
+make --keep-going check || failed_tests=1
+
+# Copy tap logs for the jenkins tap parser before cleaning the build dir
+rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR/oot"
+
+# Clean the build directory
 make clean
+
+
+# Exit with failure if any of the tests failed
+exit $failed_tests
 
 # EOF
