@@ -116,7 +116,7 @@ TARBALL_FILE="$BASENAME-$PACKAGE_VERSION.tar.bz2"
 
 
 # Make sure the reported version matches the current git tag
-GIT_TAG="$(git describe --exact-match --tags $(git log -n1 --pretty='%h')|| echo 'undefined')"
+GIT_TAG="$(git describe --exact-match --tags "$(git log -n1 --pretty='%h')" || echo 'undefined')"
 
 if [ "v$PACKAGE_VERSION" != "$GIT_TAG" ]; then
   echo "Git checkout is not tagged or doesn't match the reported version."
@@ -124,7 +124,7 @@ if [ "v$PACKAGE_VERSION" != "$GIT_TAG" ]; then
 fi
 
 # Generate release tarball
-./configure "${CONF_OPTS[@]}"
+./configure
 make dist
 cp "./$TARBALL_FILE" "$OUTDIR/"
 
