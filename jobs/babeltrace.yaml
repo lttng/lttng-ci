@@ -385,6 +385,51 @@
     <<: *babeltrace_build_publishers_gerrit
 
 - job-template:
+    name: babeltrace_{version}_release
+    defaults: babeltrace
+    node: 'amd64'
+
+    triggers:
+      - pollscm:
+          cron: "@daily"
+
+    scm:
+      - git:
+          url: git://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          refspec: '+refs/tags/*:refs/remotes/origin/tags/*'
+          branches:
+            - '*/tags/{version}.*'
+          basedir: src/babeltrace
+
+    builders:
+      - shell:
+          !include-raw-escape: scripts/babeltrace/release.sh
+
+    publishers:
+      - tap:
+          results: 'tap/**/*.log'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+      - archive:
+          artifacts: 'out/**,tap/**'
+          allow-empty: false
+
+- job-template:
     name: dev_gerrit_babeltrace_pylint
     defaults: babeltrace
     concurrent: true
@@ -676,6 +721,8 @@
           arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
+      - 'babeltrace_{version}_release':
+          version: v1.5
       - 'babeltrace_{version}_cppcheck'
       - 'babeltrace_{version}_scan-build'
 
@@ -723,6 +770,8 @@
           arch: !!python/tuple [cygwin64, msys2-mingw32, msys2-mingw64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
+      - 'babeltrace_{version}_release':
+          version: v2.0
       - 'babeltrace_{version}_cppcheck'
       - 'babeltrace_{version}_scan-build'
       - 'babeltrace_{version}_pylint'
