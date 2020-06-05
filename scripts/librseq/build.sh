@@ -279,7 +279,7 @@ ret=$?
 set -e
 
 # Copy tap logs for the jenkins tap parser before cleaning the build dir
-rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+#rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
 # Clean the build directory
 $MAKE clean
