@@ -2,6 +2,7 @@
 __lttng_tools_packages:
   - libpopt-dev
   - libxml2-dev
+  - libmsgpack-dev
   - bash-completion
 
 __lttng_tools_packages_no_recommends:
