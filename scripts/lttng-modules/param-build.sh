@@ -284,7 +284,7 @@ build_linux_kernel() {
     # Save the kernel and modules
     mkdir -p "$LINUX_INSTOBJ_DIR/boot"
     make INSTALL_MOD_PATH="$LINUX_INSTOBJ_DIR" INSTALL_MOD_STRIP=1 modules_install CC="$CC"
-    make INSTALL_PATH="$LINUX_INSTOBJ_DIR/boot" install CC="$CC"
+    make INSTALL_MOD_PATH="$LINUX_INSTOBJ_DIR" INSTALL_PATH="$LINUX_INSTOBJ_DIR/boot" install CC="$CC"
     rm -f "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source" "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/build"
     ln -s ../../../../sources "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source"
     ln -s ../../../../sources "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source"
