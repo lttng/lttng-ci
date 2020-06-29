@@ -177,6 +177,27 @@
 
     publishers:
       - workspace-cleanup
+      - email-ext:
+          recipients: '{obj:email_to}'
+          always: false
+          unstable: false
+          first-failure: true
+          first-unstable: true
+          not-built: false
+          aborted: false
+          regression: false
+          failure: false
+          second-failure: false
+          improvement: false
+          still-failing: true
+          success: false
+          fixed: false
+          fixed-unhealthy: true
+          still-unstable: false
+          pre-build: false
+          matrix-trigger: only-parent
+          send-to:
+            - recipients
 
 - job-template:
     name: baremetal_tests_k{kversion}_l{lttngversion}
@@ -372,6 +393,7 @@
 
 - project:
     name: system-tests
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     kversion:
       - canary
       - master
@@ -393,6 +415,7 @@
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
 - project:
     name: system-tests-vm-only
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     kversion:
       - linux-3.18.y
     lttngversion:
