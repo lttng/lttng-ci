@@ -45,6 +45,10 @@ mkdir -p "$TMPDIR"
 
 export TMPDIR
 
+# Builds configured with '-Werror=missing-include-dirs' if this directory
+# doesn't exist
+mkdir -p "$DEPS_INC"
+
 # temp directory to store the scan-build report
 SCAN_BUILD_TMPDIR=$(mktemp -d)
 
