@@ -62,71 +62,6 @@
           send-to:
             - recipients
 
-## Templates
-- job-template:
-    name: baremetal_benchmarks_k{kversion}_l{lttngversion}
-    description: |
-      Runs baremetal kernel benchmarks over different combination of kernel and lttng configurations.
-    project-type: freestyle
-    node: 'amd64'
-
-    <<: *system_tests_parameters_defaults
-
-    properties:
-      - build-discarder:
-          num-to-keep: 10
-      - throttle:
-          max-total: 2
-          option: 'category'
-          categories:
-            - 'baremetal-tests'
-
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor
-      - credentials-binding:
-          - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_JENKINS_TOKEN
-          - text:
-              credential-id: jenkins_lava2_key
-              variable: LAVA2_JENKINS_TOKEN
-          - file:
-              credential-id: system_tests_storage_key
-              variable: identity_file
-      - inject:
-          properties-content: |
-            BUILD_DEVICE=baremetal
-            LTTNG_VERSION={lttngversion}
-    scm:
-      - git:
-          url: https://github.com/lttng/lttng-ci
-          basedir: src/lttng-ci/
-
-    builders:
-      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
-      - shell: !include-raw-escape: scripts/system-tests/inject-ssh-commands.sh
-      - trigger-builds:
-        - project: "build_kernel_PARAM"
-          property-file: 'properties.txt'
-          block: true
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/system-tests/run-baremetal-benchmarks.sh
-      - shell: !include-raw-escape: scripts/system-tests/summarize-results.sh
-
-    publishers:
-      - archive:
-          artifacts: '*.png,*.csv'
-          stable: true
-          do-not-fingerprint: true
-      - image-gallery:
-        - gallery-type: archived-images-gallery
-          title: Results
-          includes: '*.png'
-      - workspace-cleanup
-
 - job-template:
     name: vm_tests_k{kversion}_l{lttngversion}
     description: |
@@ -404,7 +339,6 @@
       - stable-2.12
     jobs:
       - 'vm_tests_k{kversion}_l{lttngversion}'
-      - 'baremetal_benchmarks_k{kversion}_l{lttngversion}'
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
 
 # Test against particular linux version.
@@ -428,7 +362,6 @@
       - stable-2.12
     jobs:
       - 'vm_tests_k{kversion}_l{lttngversion}'
-      - 'baremetal_benchmarks_k{kversion}_l{lttngversion}'
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
 - project:
     name: system-tests-vm-only
@@ -448,7 +381,6 @@
     test_type:
       - vm_tests
       - baremetal_tests
-      - baremetal_benchmarks
     jobs:
       - 'build_kernel_PARAM'
       - 'system_ALL_{test_type}_trigger'
