@@ -35,11 +35,9 @@ OBJSTORE_URL = "https://obj.internal.efficios.com/lava/results/"
 class TestType:
     """ Enum like for test type """
 
-    baremetal_benchmarks = 1
-    baremetal_tests = 2
-    kvm_tests = 3
+    baremetal_tests = 1
+    kvm_tests = 2
     values = {
-        'baremetal-benchmarks': baremetal_benchmarks,
         'baremetal-tests': baremetal_tests,
         'kvm-tests': kvm_tests,
     }
@@ -86,26 +84,6 @@ def check_job_all_test_cases_state_count(server, job):
         else:
             passed_tests += 1
     return (passed_tests, failed_tests)
-
-
-def fetch_benchmark_results(build_id):
-    """
-    Get the benchmark results from the objstore
-    save them as CSV files localy
-    """
-    testcases = [
-        'processed_results_close.csv',
-        'processed_results_ioctl.csv',
-        'processed_results_open_efault.csv',
-        'processed_results_open_enoent.csv',
-        'processed_results_dup_close.csv',
-        'processed_results_raw_syscall_getpid.csv',
-        'processed_results_lttng_test_filter.csv',
-    ]
-    for testcase in testcases:
-        url = urljoin(OBJSTORE_URL, "{:s}/{:s}".format(build_id, testcase))
-        print('Fetching {}'.format(url))
-        urlretrieve(url, testcase)
 
 
 def print_test_output(server, job):
@@ -226,7 +204,7 @@ def main():
 
     test_type = TestType.values[args.type]
 
-    if test_type in [TestType.baremetal_benchmarks, TestType.baremetal_tests]:
+    if test_type is TestType.baremetal_tests:
         device_type = DeviceType.x86
     else:
         device_type = DeviceType.kvm
@@ -310,8 +288,6 @@ def main():
 
     if test_type is TestType.kvm_tests or test_type is TestType.baremetal_tests:
         print_test_output(server, jobid)
-    elif test_type is TestType.baremetal_benchmarks:
-        fetch_benchmark_results(args.build_id)
 
     passed, failed = check_job_all_test_cases_state_count(server, jobid)
     print('With {} passed and {} failed Lava test cases.'.format(passed, failed))

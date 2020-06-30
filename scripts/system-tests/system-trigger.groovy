@@ -368,8 +368,6 @@ if (triggerJobName.contains("vm_tests")) {
   }
 } else if (triggerJobName.contains("baremetal_tests")) {
   jobType = 'baremetal_tests';
-} else if (triggerJobName.contains("baremetal_benchmarks")) {
-  jobType = 'baremetal_benchmarks';
 }
 
 // Hashmap containing all the jobs, their configuration (commit id, etc. )and
