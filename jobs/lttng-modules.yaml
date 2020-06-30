@@ -601,7 +601,7 @@
           buildtype: build
           parambuildtype: build
           kverfloor: v2.6.36
-          kverceil: v5.7
+          kverceil: v5.7-rc1
           kverfilter: stable-head
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
@@ -626,7 +626,7 @@
           buildtype: build
           parambuildtype: build
           kverfloor: v2.6.36
-          kverceil: v5.7
+          kverceil: v5.7-rc1
           kverfilter: none
 
 # RT normal builds
