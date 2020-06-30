@@ -382,21 +382,20 @@
 
 
 ## Project
-- project:
-    name: lttng-scope
-    github_user: lttng
-    github_project: lttng-scope
-    email_to: 'ci-notification@lists.lttng.org, cc:pproulx@efficios.com'
-    email_for_all_failure: 'pproulx@efficios.com'
-    version:
-      - master
-    jobs:
-      - 'lttng-scope_{version}_build':
-          arch: !!python/tuple [i386, amd64]
-      - 'lttng-scope_{version}_winbuild':
-          arch: !!python/tuple [win64]
-      - 'lttng-scope_{version}_macosxbuild':
-          arch: !!python/tuple [macosx]
-      - 'lttng-scope_{version}_coverity':
-          version: master
-
+#- project:
+#    name: lttng-scope
+#    github_user: lttng
+#    github_project: lttng-scope
+#    email_to: 'ci-notification@lists.lttng.org, cc:pproulx@efficios.com'
+#    email_for_all_failure: 'pproulx@efficios.com'
+#    version:
+#      - master
+#    jobs:
+#      - 'lttng-scope_{version}_build':
+#          arch: !!python/tuple [i386, amd64]
+#      - 'lttng-scope_{version}_winbuild':
+#          arch: !!python/tuple [win64]
+#      - 'lttng-scope_{version}_macosxbuild':
+#          arch: !!python/tuple [macosx]
+#      - 'lttng-scope_{version}_coverity':
+#          version: master
