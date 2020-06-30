@@ -419,6 +419,7 @@
       - linux-4.19.y
       - linux-5.0.y
       - linux-5.1.y
+      - linux-5.4.y
     lttngversion:
       - canary
       - master
