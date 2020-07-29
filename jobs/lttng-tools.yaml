@@ -1415,7 +1415,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-1.5, master]
           testtype: !!python/tuple [base]
           filter: ''
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
