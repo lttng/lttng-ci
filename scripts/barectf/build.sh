@@ -37,15 +37,14 @@ set +u
 set -u
 
 # install setuptools first
-pip install setuptools
+pip install tox poetry
 
 cd "$SRCDIR"
 
 # install barectf in virtual environment
-./setup.py install
+poetry config virtualenvs.create false
 
 # test
-cd tests
-./test.bash
+tox -v
 
 # EOF
