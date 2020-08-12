@@ -378,13 +378,6 @@
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
-      - copyartifact:
-          project: babeltrace_${{babeltrace_version}}_winbuild/arch=${{arch}},conf=std,build=std
-          which-build: last-successful
-          stable: false
-          filter: 'build/**'
-          target: 'deps'
-          do-not-fingerprint: true
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
