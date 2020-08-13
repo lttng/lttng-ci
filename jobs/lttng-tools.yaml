@@ -1,26 +1,38 @@
+---
 ## SCM Anchors
-- lttng-tools_git:
-    name: 'lttng-tools_git'
+- lttng-tools_default_git:
+    name: 'lttng-tools_default_git'
     scm:
-      - git: &lttng-tools_git
+      - git: &lttng-tools_default_git
           url: git://github.com/{github_user}/lttng-tools.git
           browser: githubweb
           browser-url: https://github.com/{github_user}/lttng-tools
           branches:
-            - origin/{version}
+            - '{version}'
           basedir: src/lttng-tools
           skip-tag: true
 
-- lttng-modules_git:
-    name: 'lttng-modules_git'
+- lttng-modules_default_git:
+    name: 'lttng-modules_default_git'
     scm:
-      - git: &lttng-modules_git
+      - git: &lttng-modules_default_git
           url: git://github.com/{github_user}/lttng-modules.git
           browser: githubweb
           browser-url: https://github.com/{github_user}/lttng-modules
           branches:
-            - origin/{version}
+            - '{version}'
           basedir: src/lttng-modules
+          skip-tag: true
+
+- lttng-tools_gerrit_git:
+    name: 'lttng-tools_gerrit_git'
+    scm:
+      - git: &lttng-tools_gerrit_git
+          url: https://review.lttng.org/lttng-tools
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/lttng-tools
           skip-tag: true
 
 
@@ -49,7 +61,7 @@
             - failure: false
 
     scm:
-      - git: *lttng-tools_git
+      - git: *lttng-tools_default_git
 
     triggers:
       - pollscm:
@@ -76,6 +88,43 @@
     axes:
       - axis:
          type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: conf
+         values: '{obj:conf}'
+      - axis:
+         type: user-defined
+         name: liburcu_version
+         values: '{obj:urcuversion}'
+      - axis:
+         type: user-defined
+         name: babeltrace_version
+         values: '{obj:babelversion}'
+      - axis:
+         type: user-defined
+         name: build
+         values: '{obj:build}'
+      - axis:
+         type: user-defined
+         name: test_type
+         values: '{obj:testtype}'
+
+- lttng-tools_build_axes_rootbuild: &lttng-tools_build_axes_rootbuild
+    name: 'lttng-tools_build_axes_rootbuild'
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    execution-strategy:
+      combination-filter: '{filter}'
+    axes:
+      - axis:
+         type: slave
+         name: node
+         values:
+           - 'amd64-rootnode'
+      - axis:
+         type: user-defined
          name: arch
          values: '{obj:arch}'
       - axis:
@@ -146,13 +195,6 @@
                 do-not-fingerprint: true
             - copyartifact:
                 project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
-            - copyartifact:
-                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=std,build=std
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -328,13 +370,6 @@
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
-            - copyartifact:
-                project: lttng-ust_${{GERRIT_BRANCH}}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=std,build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
       - conditional-step:
           condition-kind: regex-match
           label: '$conf'
@@ -383,7 +418,7 @@
           steps:
             - shell:
                !include-raw-escape:
-                   - scripts/lttng-tools/gerrit-build-override.sh
+                   - scripts/common/override-build-std.sh
                    - scripts/lttng-ust/build.sh
       - shell:
          !include-raw-escape: scripts/lttng-tools/gerrit-install-deps.sh
@@ -645,44 +680,10 @@
 - job-template:
     name: lttng-tools_{version}_rootbuild
     defaults: lttng-tools
-    project-type: matrix
-    node: 'master' # Applies only to matrix flyweight task
-    execution-strategy:
-      combination-filter: '{filter}'
-    axes:
-      - axis:
-         type: slave
-         name: node
-         values:
-           - 'amd64-rootnode'
-      - axis:
-         type: user-defined
-         name: arch
-         values: '{obj:arch}'
-      - axis:
-         type: user-defined
-         name: conf
-         values: '{obj:conf}'
-      - axis:
-         type: user-defined
-         name: liburcu_version
-         values: '{obj:urcuversion}'
-      - axis:
-         type: user-defined
-         name: babeltrace_version
-         values: '{obj:babelversion}'
-      - axis:
-         type: user-defined
-         name: build
-         values: '{obj:build}'
-      - axis:
-         type: user-defined
-         name: test_type
-         values: '{obj:testtype}'
 
     scm:
-      - git: *lttng-tools_git
-      - git: *lttng-modules_git
+      - git: *lttng-tools_default_git
+      - git: *lttng-modules_default_git
 
     wrappers:
       - ansicolor
@@ -692,6 +693,7 @@
           type: no-activity
       - timestamps
 
+    <<: *lttng-tools_build_axes_rootbuild
     <<: *lttng-tools_build_builders_defaults
     <<: *lttng-tools_build_publishers_prod
 
@@ -724,13 +726,7 @@
     concurrent: true
 
     scm:
-      - git:
-          url: https://review.lttng.org/lttng-tools
-          refspec: 'refs/changes/*:refs/changes/*'
-          branches:
-            - '$GERRIT_REFSPEC'
-          basedir: src/lttng-tools
-          skip-tag: true
+      - git: *lttng-tools_gerrit_git
 
     triggers:
       - gerrit:
@@ -774,6 +770,68 @@
               build-steps:
                   - shell:
                       !include-raw-escape: scripts/lttng-tools/hang_processes.sh
+      - tap:
+          results: 'tap/**/*.*'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - archive:
+          artifacts: 'build/**,deps/**,tap/**'
+          allow-empty: false
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+
+- job-template:
+    name: dev_gerrit_lttng-tools_rootbuild
+    defaults: lttng-tools
+    concurrent: true
+
+    scm:
+      - git: *lttng-tools_gerrit_git
+      - git:
+          <<: *lttng-modules_default_git
+          branches:
+            - '$GERRIT_BRANCH'
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-tools'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+          trigger-for-unreviewed-patches: true
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=lttng-tools
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
+
+    <<: *lttng-tools_build_axes_rootbuild
+    <<: *lttng-tools_build_builders_gerrit
+
+    publishers:
       - tap:
           results: 'tap/**/*.*'
           fail-if-no-results: true
@@ -1591,6 +1649,15 @@
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [stable-0.12]
           babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'dev_gerrit_lttng-tools_rootbuild':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
 

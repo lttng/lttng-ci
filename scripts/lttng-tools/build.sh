@@ -290,6 +290,8 @@ fi
 # Most build configs require the python bindings
 CONF_OPTS=("--prefix=$PREFIX" "--enable-python-bindings")
 
+DIST_CONF_OPTS=()
+
 # Set configure options and environment variables for each build
 # configuration.
 case "$conf" in
@@ -302,6 +304,7 @@ static)
 no-ust)
     echo "Build without UST support"
     CONF_OPTS+=("$NO_UST")
+    DIST_CONF_OPTS+=("$NO_UST")
     ;;
 
 agents)
@@ -355,7 +358,7 @@ dist)
 
     # Run configure and generate the tar file
     # in the source directory
-    ./configure
+    ./configure "${DIST_CONF_OPTS[@]}"
     $MAKE dist
 
     # Create and enter a temporary build directory
@@ -378,7 +381,7 @@ oot-dist)
     cd "$builddir"
 
     # Run configure out of tree and generate the tar file
-    "$SRCDIR/configure"
+    "$SRCDIR/configure" "${DIST_CONF_OPTS[@]}"
     $MAKE dist
 
     dist_srcdir="$(mktemp -d)"

@@ -25,7 +25,7 @@ gerrit_url="https://${GERRIT_NAME}"
 gerrit_query="?o=CURRENT_REVISION&o=DOWNLOAD_COMMANDS"
 gerrit_json_query=".revisions[.current_revision].ref"
 
-possible_depends_on="lttng-ust"
+possible_depends_on="lttng-ust|lttng-modules"
 re="Depends-on: (${possible_depends_on}): ([^'$'\n'']*)"
 property_file="${WORKSPACE}/gerrit_custom_dependencies.properties"
 
@@ -53,6 +53,17 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
     if [ "$conf" = "no-ust" ] && [ "$project" = "lttng-ust" ]; then
         # No need to checkout lttng-ust for this configuration axis
         continue
+    fi
+
+    if [ "$project" = "lttng-modules" ]; then
+        if [ -d "$WORKSPACE/src/lttng-modules" ]; then
+            # Remove the regular modules sources to replace them with those
+	    # from the gerrit change
+            rm -rf "$WORKSPACE/src/lttng-modules"
+        else
+            # This job does not require modules sources
+            continue
+	fi
     fi
 
     # Export the GERRIT_DEP_... into the property file for further jenkins usage
