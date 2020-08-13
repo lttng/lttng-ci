@@ -2,7 +2,7 @@
 # shellcheck disable=SC2103
 #
 # Copyright (C) 2016 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-#               2016-2019 Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2016-2020 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -260,6 +260,14 @@ full)
     RUN_TESTS_LONG_REGRESSION="no"
     ;;
 esac
+
+# If we have modules, build them
+if [ -d "$WORKSPACE/src/lttng-modules" ]; then
+    cd "$WORKSPACE/src/lttng-modules"
+    $MAKE -j"$($NPROC)" V=1
+    $MAKE modules_install V=1
+    depmod
+fi
 
 # Enter the source directory
 cd "$SRCDIR"

@@ -1,3 +1,30 @@
+## SCM Anchors
+- lttng-tools_git:
+    name: 'lttng-tools_git'
+    scm:
+      - git: &lttng-tools_git
+          url: git://github.com/{github_user}/lttng-tools.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/lttng-tools
+          branches:
+            - origin/{version}
+          basedir: src/lttng-tools
+          skip-tag: true
+
+- lttng-modules_git:
+    name: 'lttng-modules_git'
+    scm:
+      - git: &lttng-modules_git
+          url: git://github.com/{github_user}/lttng-modules.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/lttng-modules
+          branches:
+            - origin/{version}
+          basedir: src/lttng-modules
+          skip-tag: true
+
+
+## Defaults
 - defaults:
     name: lttng-tools
     description: |
@@ -22,14 +49,7 @@
             - failure: false
 
     scm:
-      - git:
-          url: git://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
-          branches:
-            - origin/{version}
-          basedir: src/lttng-tools
-          skip-tag: true
+      - git: *lttng-tools_git
 
     triggers:
       - pollscm:
@@ -40,13 +60,13 @@
           properties-content: |
             PROJECT_NAME=lttng-tools
       - github:
-          url: https://github.com/{github_user}/{github_name}
+          url: https://github.com/{github_user}/lttng-tools
       - build-discarder:
           num-to-keep: 20
           artifact-num-to-keep: 2
 
 
-## Anchors
+## Axis Anchors
 - lttng-tools_build_axes_defaults: &lttng-tools_build_axes_defaults
     name: 'lttng-tools_build_axes_defaults'
     project-type: matrix
@@ -79,6 +99,8 @@
          name: test_type
          values: '{obj:testtype}'
 
+
+## Builders Anchors
 - lttng-tools_build_builders_defaults: &lttng-tools_build_builders_defaults
     name: 'lttng-tools_build_builders_defaults'
     builders:
@@ -603,7 +625,7 @@
       - timeout:
           timeout: 10
           fail: true
-          type: likely-stuck
+          type: no-activity
       - timestamps
       - workspace-cleanup:
           clean-if:
@@ -618,6 +640,66 @@
           cron: "@hourly"
       - reverse:
             jobs: 'lttng-ust_{version}_{buildtype}'
+            result: 'success'
+
+- job-template:
+    name: lttng-tools_{version}_rootbuild
+    defaults: lttng-tools
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    execution-strategy:
+      combination-filter: '{filter}'
+    axes:
+      - axis:
+         type: slave
+         name: node
+         values:
+           - 'amd64-rootnode'
+      - axis:
+         type: user-defined
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: conf
+         values: '{obj:conf}'
+      - axis:
+         type: user-defined
+         name: liburcu_version
+         values: '{obj:urcuversion}'
+      - axis:
+         type: user-defined
+         name: babeltrace_version
+         values: '{obj:babelversion}'
+      - axis:
+         type: user-defined
+         name: build
+         values: '{obj:build}'
+      - axis:
+         type: user-defined
+         name: test_type
+         values: '{obj:testtype}'
+
+    scm:
+      - git: *lttng-tools_git
+      - git: *lttng-modules_git
+
+    wrappers:
+      - ansicolor
+      - timeout:
+          timeout: 10
+          fail: true
+          type: no-activity
+      - timestamps
+
+    <<: *lttng-tools_build_builders_defaults
+    <<: *lttng-tools_build_publishers_prod
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+      - reverse:
+            jobs: 'lttng-ust_{version}_build'
             result: 'success'
 
 - job-template:
@@ -724,9 +806,9 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/{github_name}.git
+          url: git://github.com/{github_user}/lttng-tools.git
           browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          browser-url: https://github.com/{github_user}/lttng-tools
           refspec: '+refs/tags/*:refs/remotes/origin/tags/*'
           branches:
             - '*/tags/{version}.*'
@@ -925,7 +1007,6 @@
 - project:
     name: lttng-tools
     github_user: lttng
-    github_name: lttng-tools
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     version:
       - stable-2.10
@@ -1021,6 +1102,17 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [full]
           filter: ''
+      - 'lttng-tools_{version}_rootbuild':
+          buildtype: build
+          version: master
+          ustversion: master
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: ''
 
       # stable-2.12
       - 'lttng-tools_{version}_{buildtype}':
@@ -1109,6 +1201,17 @@
           urcuversion: !!python/tuple [stable-0.12]
           babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [full]
+          filter: ''
+      - 'lttng-tools_{version}_rootbuild':
+          buildtype: build
+          version: stable-2.12
+          ustversion: stable-2.12
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_release':
           version: v2.12
@@ -1203,6 +1306,17 @@
           urcuversion: !!python/tuple [stable-0.10]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [full]
+          filter: ''
+      - 'lttng-tools_{version}_rootbuild':
+          buildtype: build
+          version: stable-2.11
+          ustversion: stable-2.11
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          urcuversion: !!python/tuple [stable-0.10]
+          babelversion: !!python/tuple [stable-1.5]
+          testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_release':
           version: v2.11
@@ -1353,7 +1467,6 @@
     name: dev_jgalar_lttng-tools
     user: jgalar
     github_user: jgalar
-    github_name: lttng-tools
     email_to: 'jgalar@efficios.com'
     jobs:
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -1470,7 +1583,6 @@
 - project:
     name: gerrit-lttng-tools
     github_user: lttng
-    github_name: lttng-tools
     jobs:
       - 'dev_gerrit_lttng-tools_{buildtype}':
           buildtype: build
