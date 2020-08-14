@@ -1,6 +1,6 @@
 #!/bin/sh -exu
 #
-# Copyright (C) 2015 - Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2015-2020 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,13 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Has to be set in the environment
-#CODECOV_TOKEN=""
-
 SRCDIR="src/barectf"
 
 PYTHON3="python3"
-P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
 PYENV_HOME=$WORKSPACE/.pyenv/
 
 # Delete previously built virtualenv
@@ -30,14 +26,14 @@ if [ -d "$PYENV_HOME" ]; then
 fi
 
 # Create virtualenv and install necessary packages
-virtualenv --system-site-packages -p $PYTHON3 "$PYENV_HOME"
+virtualenv -p $PYTHON3 "$PYENV_HOME"
 
 set +u
+# shellcheck disable=SC1090
 . "$PYENV_HOME/bin/activate"
 set -u
 
-# install setuptools first
-pip install tox poetry
+pip install --quiet tox poetry
 
 cd "$SRCDIR"
 

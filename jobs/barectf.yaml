@@ -1,3 +1,5 @@
+---
+## Defaults ##
 - defaults:
     name: barectf
     description: |
@@ -14,11 +16,6 @@
       - timestamps
       - ansicolor:
           colormap: xterm
-  #      - credentials-binding:
-  #          - username-password-separated:
-  #              credential-id: barectf_codecov_token
-  #              username: CODECOV_PROJECT_NAME
-  #              password: CODECOV_TOKEN
 
     scm:
       - git:
@@ -42,7 +39,7 @@
           url: https://github.com/{github_user}/{github_name}
 
 
-## Templates
+## Templates ##
 - job-template:
     name: barectf_{version}_build
     defaults: barectf
@@ -60,9 +57,6 @@
          !include-raw-escape: scripts/barectf/build.sh
 
     publishers:
-#      - archive:
-#          artifacts: 'build/**'
-#          allow-empty: false
       - email-ext:
          recipients: '{obj:email_to}'
          reply-to: ci-notification@lists.lttng.org
@@ -133,57 +127,15 @@
       - shell:
          !include-raw-escape: scripts/barectf/build.sh
 
-- job-template:
-    name: barectf_{version}_pylint
-    defaults: barectf
-    node: 'amd64'
 
-    triggers:
-      - pollscm:
-          cron: "@daily"
+## Views ##
+- view-template:
+    name: 'Barectf'
+    view-type: list
+    regex: 'barectf[-_].*'
 
-    builders:
-       - shell:
-          !include-raw-escape: scripts/barectf/pylint.sh
 
-    publishers:
-      - archive:
-          artifacts: 'pep8.out,pylint.out'
-      - violations:
-          pep8:
-            pattern: pep8.out
-            min: 10
-            max: 999
-            unstable: 999
-          pylint:
-            pattern: pylint.out
-            min: 10
-            max: 999
-            unstable: 999
-      - email-ext:
-         recipients: '{obj:email_to}'
-         reply-to: ci-notification@lists.lttng.org
-         always: false
-         unstable: false
-         first-failure: true
-         first-unstable: true
-         not-built: false
-         aborted: false
-         regression: false
-         failure: false
-         second-failure: false
-         improvement: false
-         still-failing: false
-         success: false
-         fixed: false
-         fixed-unhealthy: true
-         still-unstable: false
-         pre-build: false
-         matrix-trigger: only-parent
-         send-to:
-           - recipients
-
-## Project
+## Projects ##
 - project:
     name: barectf
     github_user: efficios
@@ -194,13 +146,17 @@
     jobs:
       - 'barectf_{version}_build':
           arch: !!python/tuple [i386, amd64]
-      - 'barectf_{version}_pylint'
 
 - project:
     name: gerrit-barectf
     github_user: efficios
-    github_name: babeltrace
+    github_name: barectf
     jobs:
       - 'dev_gerrit_barectf_{buildtype}':
           buildtype: build
           arch: !!python/tuple [i386, amd64]
+
+- project:
+    name: barectf-views
+    views:
+      - Barectf
