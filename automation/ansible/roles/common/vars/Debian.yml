@@ -13,7 +13,7 @@ __common_packages:
   - clang-tools
   - automake
   - autoconf
-  - libtool
+  - libtool-bin
   - bison
   - flex
   - libtap-harness-archive-perl
