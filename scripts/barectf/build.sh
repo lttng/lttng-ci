@@ -37,9 +37,6 @@ pip install --quiet tox poetry
 
 cd "$SRCDIR"
 
-# install barectf in virtual environment
-poetry config virtualenvs.create false
-
 # test
 tox -v
 
