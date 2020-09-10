@@ -20,6 +20,7 @@ set -o pipefail
 
 PYTHON3=python3
 
+SRCDIR="$WORKSPACE/src/babeltrace"
 PYENV_HOME="$WORKSPACE/.pyenv/"
 
 # Delete previously built virtualenv
@@ -31,15 +32,20 @@ fi
 virtualenv --system-site-packages -p ${PYTHON3} "$PYENV_HOME"
 
 set +ux
+# shellcheck disable=SC1090
 . "$PYENV_HOME/bin/activate"
 set -ux
 
-pip install --quiet black
-pip install --quiet flake8
+if [ -f "$SRCDIR/dev-requirements.txt" ]; then
+    pip install -r "$SRCDIR/dev-requirements.txt"
+else
+    pip install --quiet black
+    pip install --quiet flake8
+fi
 
 exit_code=0
 
-cd src/babeltrace
+cd "$SRCDIR"
 
 black --diff --check . | tee ../../black.out || exit_code=1
 flake8 --output-file=../../flake8.out --tee || exit_code=1
