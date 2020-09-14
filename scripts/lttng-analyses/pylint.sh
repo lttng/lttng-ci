@@ -1,6 +1,6 @@
 #!/bin/bash -exu
 #
-# Copyright (C) 2015 - Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2020 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,15 +35,16 @@ fi
 # Create virtualenv and install necessary packages
 virtualenv --system-site-packages -p $PYTHON3 "$PYENV_HOME"
 
-set +u
+set +ux
+# shellcheck disable=SC1090
 . "$PYENV_HOME/bin/activate"
-set -u
+set -ux
 
 pip install --quiet pylint
 pip install --quiet pep8
 
+
 cd "$SRCDIR"
 
 pep8 lttnganalyses | tee "$WORKSPACE/pep8.out"
-
 pylint -f parseable --ignore="_version.py" --disable=C0111 lttnganalyses | tee "$WORKSPACE/pylint.out"

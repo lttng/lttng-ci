@@ -115,17 +115,6 @@
     publishers:
       - archive:
           artifacts: 'pep8.out,pylint.out'
-      - violations:
-          pep8:
-            pattern: pep8.out
-            min: 10
-            max: 999
-            unstable: 999
-          pylint:
-            pattern: pylint.out
-            min: 10
-            max: 999
-            unstable: 999
       - email-ext:
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
