@@ -296,7 +296,8 @@ class UbuntuKVersion implements Comparable<UbuntuKVersion> {
       vString = vString.concat("${this.strLTS}")
     }
 
-    if (this.major >= 5 && this.minor >= 8) {
+    // The tag pattern changed for HWE kernels >= 5.0
+    if (this.isLTS && this.major >= 5) {
       vString = vString.concat("${this.major}.${this.minor}-${this.major}.${this.minor}.${this.patch}-${this.umajor}.${this.uminor}${this.suffix}")
     } else {
       vString = vString.concat("${this.major}.${this.minor}.${this.patch}-${this.umajor}.${this.uminor}${this.suffix}")
@@ -347,15 +348,15 @@ if (uversion != null) {
     case 'focal':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-5\.4\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-5\.8-.*_20\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-5\.8-5\.8\.0-.*_20\.04\.\d+)$/,
       ]
       break
 
     case 'bionic':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-4\.15\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-5\.0\.0-.*_18\.04\.\d+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-5\.3\.0-.*_18\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-5\.0-5\.0\.0-.*_18\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-5\.4-5\.4\.0-.*_18\.04\.\d+)$/,
       ]
       break
 
@@ -363,17 +364,6 @@ if (uversion != null) {
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-4\.4\.0-\d{1,3}?\.[\d]+)$/,
         ~/^refs\/tags\/(Ubuntu-hwe-4\.15\.0-.*_16\.04\.\d+)$/,
-      ]
-
-      blacklist = [
-        'Ubuntu-lts-4.10.0-7.9_16.04.1',
-      ]
-      break
-
-    case 'trusty':
-      matchStrs = [
-        ~/^refs\/tags\/(Ubuntu-3\.13\.0-[\d\.]+)$/,
-        ~/^refs\/tags\/(Ubuntu-lts-.*_14\.04\.\d+)$/,
       ]
       break
 
