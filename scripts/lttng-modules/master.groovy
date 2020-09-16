@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2018 - Michael Jeanson <mjeanson@efficios.com>
+ * Copyright (C) 2016-2020 Michael Jeanson <mjeanson@efficios.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -205,9 +205,10 @@ class UbuntuKVersion implements Comparable<UbuntuKVersion> {
       throw new EmptyKVersionException("Empty kernel version")
     }
 
+    //'Ubuntu-hwe-5.8-5.8.0-19.20_20.04.3',
     //'Ubuntu-lts-4.8.0-27.29_16.04.1',
     //'Ubuntu-4.4.0-70.91',
-    def match = version =~ /^Ubuntu-(lts-|hwe-)??(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)(.*)??$/
+    def match = version =~ /^Ubuntu-(lts-|hwe-)??(?:\d+\.\d+-)??(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)(.*)??$/
     if (!match) {
       throw new InvalidKVersionException("Invalid kernel version: ${version}")
     }
@@ -295,7 +296,11 @@ class UbuntuKVersion implements Comparable<UbuntuKVersion> {
       vString = vString.concat("${this.strLTS}")
     }
 
-    vString = vString.concat("${this.major}.${this.minor}.${this.patch}-${this.umajor}.${this.uminor}${this.suffix}")
+    if (this.major >= 5 && this.minor >= 8) {
+      vString = vString.concat("${this.major}.${this.minor}-${this.major}.${this.minor}.${this.patch}-${this.umajor}.${this.uminor}${this.suffix}")
+    } else {
+      vString = vString.concat("${this.major}.${this.minor}.${this.patch}-${this.umajor}.${this.uminor}${this.suffix}")
+    }
 
     return vString
   }
@@ -342,6 +347,7 @@ if (uversion != null) {
     case 'focal':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-5\.4\.0-\d{1,3}?\.[\d]+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-5\.8-.*_20\.04\.\d+)$/,
       ]
       break
 
