@@ -658,7 +658,7 @@
     wrappers:
       - ansicolor
       - timeout:
-          timeout: 10
+          timeout: 45
           fail: true
           type: no-activity
       - timestamps
