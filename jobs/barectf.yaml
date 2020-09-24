@@ -143,6 +143,7 @@
     email_to: 'ci-notification@lists.lttng.org, cc:pproulx@efficios.com'
     version:
       - master
+      - stable-3.0
     jobs:
       - 'barectf_{version}_build':
           arch: !!python/tuple [i386, amd64]
