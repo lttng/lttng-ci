@@ -306,7 +306,6 @@
               branches:
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
-          trigger-for-unreviewed-patches: true
 
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -367,7 +366,6 @@
               branches:
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
-          trigger-for-unreviewed-patches: true
 
     properties:
       - inject:
@@ -455,7 +453,6 @@
               branches:
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
-          trigger-for-unreviewed-patches: true
 
     node: 'amd64'
 

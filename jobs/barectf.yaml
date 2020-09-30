@@ -114,7 +114,6 @@
               branches:
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
-          trigger-for-unreviewed-patches: true
 
     properties:
       - build-discarder:

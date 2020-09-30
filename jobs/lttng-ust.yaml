@@ -188,7 +188,6 @@
               branches:
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
-          trigger-for-unreviewed-patches: true
 
     <<: *lttng-ust_build_axes_defaults
     <<: *lttng-ust_build_builders_defaults
