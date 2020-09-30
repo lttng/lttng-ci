@@ -14,7 +14,7 @@ cloud05.internal.efficios.com
 ci-node-bionic-armhf-01
 ci-node-bionic-armhf-02
 lava-armhf-wandboard-01
-lava-armhf-wandboard-02
+#lava-armhf-wandboard-02
 ci-node-bionic-armhf-05
 ci-node-bionic-armhf-06
 ci-node-bionic-armhf-07
@@ -29,7 +29,8 @@ ci-node-bionic-arm64-05
 
 [node-powerpc]
 ci-node-xenial-powerpc-01
-ci-node-xenial-powerpc-02
+#ci-node-xenial-powerpc-02
+ci-node-xenial-powerpc-03
 
 [node-ppc64el]
 ci-node-bionic-ppc64el-01
