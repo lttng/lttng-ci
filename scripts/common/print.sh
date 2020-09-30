@@ -108,7 +108,7 @@ print_tooling() {
     ${TAR:-tar} --version | head -n1
 
     print_blue "Selected python version"
-    ${PYTHON} --version
+    ${PYTHON:-python} --version
 
     if command -v "${PYTHON2:-python2}" >/dev/null 2>&1; then
         print_blue "python2 version"
