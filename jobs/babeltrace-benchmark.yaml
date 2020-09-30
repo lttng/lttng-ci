@@ -43,7 +43,7 @@
     name: babeltrace
     scm:
       - git:
-          url: git://github.com/efficios/babeltrace.git
+          url: https://github.com/efficios/babeltrace.git
           browser: githubweb
           browser-url: https://github.com/efficios/babeltrace
           basedir: src/babeltrace
@@ -52,7 +52,7 @@
     name: lttng-ci
     scm:
       - git:
-          url: git://github.com/lttng/lttng-ci.git
+          url: https://github.com/lttng/lttng-ci.git
           browser: githubweb
           browser-url: https://github.com/lttng/lttng-ci
           basedir: src/lttng-ci

@@ -4,7 +4,7 @@
     name: 'lttng-tools_default_git'
     scm:
       - git: &lttng-tools_default_git
-          url: git://github.com/{github_user}/lttng-tools.git
+          url: https://github.com/{github_user}/lttng-tools.git
           browser: githubweb
           browser-url: https://github.com/{github_user}/lttng-tools
           branches:
@@ -16,7 +16,7 @@
     name: 'lttng-modules_default_git'
     scm:
       - git: &lttng-modules_default_git
-          url: git://github.com/{github_user}/lttng-modules.git
+          url: https://github.com/{github_user}/lttng-modules.git
           browser: githubweb
           browser-url: https://github.com/{github_user}/lttng-modules
           branches:
@@ -862,7 +862,7 @@
 
     scm:
       - git:
-          url: git://github.com/{github_user}/lttng-tools.git
+          url: https://github.com/{github_user}/lttng-tools.git
           browser: githubweb
           browser-url: https://github.com/{github_user}/lttng-tools
           refspec: '+refs/tags/*:refs/remotes/origin/tags/*'

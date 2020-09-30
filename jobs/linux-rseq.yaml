@@ -19,7 +19,7 @@
 
     scm:
       - git:
-          url: git://git-mirror.internal.efficios.com/kernel/rseq/linux-rseq.git
+          url: https://git-mirror.internal.efficios.com/kernel/rseq/linux-rseq.git
           branches:
             - origin/rseq/dev
           basedir: src/linux-rseq
