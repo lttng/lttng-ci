@@ -1,4 +1,4 @@
-#!/bin/bash -exu
+#!/bin/bash
 #
 # Copyright (C) 2015 - Alexandre Montplaisir <alexmonthy@efficios.com>
 #
@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -exu
 
 # Required parameters
 #wm=${wm:-}

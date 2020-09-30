@@ -1,6 +1,6 @@
-#!/bin/bash -exu
+#!/bin/bash
 #
-# Copyright (C) 2019 Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2020 Michael Jeanson <mjeanson@efficios.com>
 # Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -exu
 
 # Required variables
 WORKSPACE=${WORKSPACE:-}

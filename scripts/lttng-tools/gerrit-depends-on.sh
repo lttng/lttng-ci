@@ -1,4 +1,4 @@
-#!/bin/bash -exu
+#!/bin/bash
 # shellcheck disable=SC2103
 #
 # Copyright (C) 2020 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -exu
 
 #Required variables
 GERRIT_NAME=${GERRIT_NAME:-}

@@ -1,4 +1,4 @@
-#!/bin/sh -exu
+#!/bin/sh
 #
 # Copyright (C) 2015-2020 Michael Jeanson <mjeanson@efficios.com>
 #
@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -exu
 
 SRCDIR="src/barectf"
 

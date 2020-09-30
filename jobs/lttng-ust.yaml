@@ -108,7 +108,9 @@
                 target: 'deps'
                 do-not-fingerprint: true
       - shell:
-         !include-raw-escape: scripts/lttng-ust/build.sh
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/lttng-ust/build.sh
 
 
 ## Templates

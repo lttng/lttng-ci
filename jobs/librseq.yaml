@@ -97,7 +97,9 @@
     name: 'librseq_build_builders_defaults'
     builders:
       - shell:
-         !include-raw-escape: scripts/librseq/build.sh
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/librseq/build.sh
 
 - librseq_build_publishers_defaults: &librseq_build_publishers_defaults
     name: 'librseq_build_publishers_defaults'

@@ -304,7 +304,9 @@
       - shell:
          !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
       - shell:
-         !include-raw-escape: scripts/lttng-tools/build.sh
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/lttng-tools/build.sh
 
 - lttng-tools_build_builders_gerrit: &lttng-tools_build_builders_gerrit
     name: 'lttng-tools_build_builders_gerrit'
@@ -419,11 +421,14 @@
             - shell:
                !include-raw-escape:
                    - scripts/common/override-build-std.sh
+                   - scripts/common/print.sh
                    - scripts/lttng-ust/build.sh
       - shell:
          !include-raw-escape: scripts/lttng-tools/gerrit-install-deps.sh
       - shell:
-         !include-raw-escape: scripts/lttng-tools/build.sh
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/lttng-tools/build.sh
 
 - lttng-tools_build_builders_win: &lttng-tools_build_builders_win
     name: 'lttng-tools_build_builders_win'
@@ -445,6 +450,7 @@
                !include-raw-escape:
                  - scripts/common/cygwin64-shebang
                  - scripts/common/cygpath-prefix
+                 - scripts/common/print.sh
                  - scripts/lttng-tools/build.sh
       - conditional-step:
           condition-kind: strings-match
@@ -458,6 +464,7 @@
                !include-raw-escape:
                  - scripts/common/msys2-shebang
                  - scripts/common/cygpath-prefix
+                 - scripts/common/print.sh
                  - scripts/lttng-tools/build.sh
       - conditional-step:
           condition-kind: strings-match
@@ -471,6 +478,7 @@
                !include-raw-escape:
                  - scripts/common/msys2-shebang
                  - scripts/common/cygpath-prefix
+                 - scripts/common/print.sh
                  - scripts/lttng-tools/build.sh
 
 - lttng-tools_build_publishers_dev: &lttng-tools_build_publishers_dev

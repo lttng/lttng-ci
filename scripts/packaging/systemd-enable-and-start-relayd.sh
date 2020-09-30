@@ -1,4 +1,6 @@
-#!/bin/sh -exu
+#!/bin/sh
+
+set -exu
 
 systemctl enable lttng-relayd
 

@@ -1,4 +1,4 @@
-#!/bin/bash -exu
+#!/bin/bash
 #
 # Copyright (C) 2020 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
@@ -17,6 +17,8 @@
 
 # This file should be used as a jenkins job builder RAW import allowing the
 # override of the "build" variable on shell builder execution.
+
+set -exu
 
 # shellcheck disable=SC2034
 build=std

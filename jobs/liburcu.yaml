@@ -85,7 +85,9 @@
     name: 'liburcu_build_builders_defaults'
     builders:
       - shell:
-         !include-raw-escape: scripts/liburcu/build.sh
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/liburcu/build.sh
 
 - liburcu_build_builders_win: &liburcu_build_builders_win
     name: 'liburcu_build_builders_win'
@@ -100,6 +102,7 @@
                !include-raw-escape:
                  - scripts/common/cygwin64-shebang
                  - scripts/common/cygpath-prefix
+                 - scripts/common/print.sh
                  - scripts/liburcu/build.sh
 
 - liburcu_build_publishers_defaults: &liburcu_build_publishers_defaults

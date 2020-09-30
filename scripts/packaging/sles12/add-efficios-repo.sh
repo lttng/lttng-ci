@@ -1,4 +1,6 @@
-#/bin/sh -exu
+#!/bin/sh
+
+set -exu
 
 zypper --non-interactive addrepo https://packages.efficios.com/repo.files/EfficiOS-SLE12-x86-64.repo
 

@@ -94,7 +94,9 @@
     name: 'babeltrace_build_builders_defaults'
     builders:
       - shell:
-         !include-raw-escape: scripts/babeltrace/build.sh
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/babeltrace/build.sh
 
 - babeltrace_build_builders_win: &babeltrace_build_builders_win
     name: 'babeltrace_build_builders_win'
@@ -109,6 +111,7 @@
                !include-raw-escape:
                  - scripts/common/cygwin64-shebang
                  - scripts/common/cygpath-prefix
+                 - scripts/common/print.sh
                  - scripts/babeltrace/build.sh
       - conditional-step:
           condition-kind: strings-match
@@ -122,6 +125,7 @@
                !include-raw-escape:
                  - scripts/common/msys2-shebang
                  - scripts/common/cygpath-prefix
+                 - scripts/common/print.sh
                  - scripts/babeltrace/build.sh
       - conditional-step:
           condition-kind: strings-match
@@ -135,6 +139,7 @@
                !include-raw-escape:
                  - scripts/common/msys2-shebang
                  - scripts/common/cygpath-prefix
+                 - scripts/common/print.sh
                  - scripts/babeltrace/build.sh
 
 
@@ -598,7 +603,9 @@
           make install
 
       - shell:
-         !include-raw-escape: scripts/babeltrace/build.sh
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/babeltrace/build.sh
 
 - job-template:
     name: babeltrace_{version}_glib-2.28.6

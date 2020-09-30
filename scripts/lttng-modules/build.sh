@@ -1,4 +1,4 @@
-#!/bin/sh -exu
+#!/bin/sh
 #
 # Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #                      Michael Jeanson <mjeanson@efficios.com>
@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -exu
 
 # Kernel version compare functions
 verlte() {

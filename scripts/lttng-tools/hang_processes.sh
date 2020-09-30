@@ -1,4 +1,4 @@
-#!/bin/bash -exu
+#!/bin/bash
 #
 # Copyright (C) 2018 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -exu
 
 PGREP=pgrep
 pids=""

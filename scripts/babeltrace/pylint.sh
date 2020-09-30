@@ -1,4 +1,4 @@
-#!/bin/bash -exu
+#!/bin/bash
 #
 # Copyright (C) 2019 Michael Jeanson <mjeanson@efficios.com>
 # Copyright (C) 2019 Francis Deslauriers <francis.deslauriers@efficios.com>
@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -exu
 
 set -o pipefail
 

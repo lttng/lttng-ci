@@ -1,7 +1,7 @@
-#!/bin/bash -exu
+#!/bin/bash
 #
 # Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-#               2016-2019 Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2016-2020 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -exu
 
 # Version compare functions
 vercomp () {
@@ -67,6 +69,16 @@ vergt() {
 verne() {
     vercomp "$1" "$2"; local res="$?"
     [ "$res" -ne "0" ]
+}
+
+failed_configure() {
+    # Assume we are in the configured build directory
+    echo "#################### BEGIN config.log ####################"
+    cat config.log
+    echo "#################### END config.log ####################"
+
+    # End the build with failure
+    exit 1
 }
 
 # Required variables
@@ -197,6 +209,10 @@ macosx)
     ;;
 esac
 
+# Print build env details
+print_os || true
+print_tooling || true
+
 # Enter the source directory
 cd "$SRCDIR"
 
@@ -257,7 +273,7 @@ oot)
     builddir=$(mktemp -d)
     cd "$builddir"
 
-    "$SRCDIR/configure" "${CONF_OPTS[@]}"
+    "$SRCDIR/configure" "${CONF_OPTS[@]}" || failed_configure
     ;;
 
 dist)
@@ -265,7 +281,7 @@ dist)
 
     # Run configure and generate the tar file
     # in the source directory
-    ./configure
+    ./configure || failed_configure
     $MAKE dist
 
     # Create and enter a temporary build directory
@@ -277,7 +293,7 @@ dist)
     $TAR xvf "$SRCDIR"/*.tar.* --strip 1
 
     # Build in extracted source tree
-    ./configure "${CONF_OPTS[@]}"
+    ./configure "${CONF_OPTS[@]}" || failed_configure
     ;;
 
 oot-dist)
@@ -288,7 +304,7 @@ oot-dist)
     cd "$builddir"
 
     # Run configure out of tree and generate the tar file
-    "$SRCDIR/configure"
+    "$SRCDIR/configure" || failed_configure
     $MAKE dist
 
     dist_srcdir="$(mktemp -d)"
@@ -304,12 +320,12 @@ oot-dist)
 
     # Run configure from the extracted distribution tar,
     # out of the source tree
-    "$dist_srcdir/configure" "${CONF_OPTS[@]}"
+    "$dist_srcdir/configure" "${CONF_OPTS[@]}" || failed_configure
     ;;
 
 *)
     echo "Standard in-tree build"
-    ./configure "${CONF_OPTS[@]}"
+    ./configure "${CONF_OPTS[@]}" || failed_configure
     ;;
 esac
 
