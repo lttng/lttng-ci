@@ -321,6 +321,14 @@
           arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
+      - 'liburcu_{version}_{buildtype}':
+          buildtype: freebsdbuild
+          arch: !!python/tuple [freebsd]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          version:
+            - stable-0.12
+            - master
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':

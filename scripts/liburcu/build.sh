@@ -200,6 +200,16 @@ macosx)
     export PYTHON_CONFIG="python3-config"
     ;;
 
+freebsd)
+    export MAKE=gmake
+    export TAR=tar
+    export NPROC="getconf _NPROCESSORS_ONLN"
+    export CPPFLAGS="-I/usr/local/include"
+    export LDFLAGS="-L/usr/local/lib"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
+    ;;
+
 *)
     export MAKE=make
     export TAR=tar
