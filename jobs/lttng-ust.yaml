@@ -394,6 +394,14 @@
           conf: !!python/tuple [std]
           liburcu_version: !!python/tuple [stable-0.12, master]
           filter: ''
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: freebsdbuild
+          version: master
+          arch: !!python/tuple [freebsd]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          liburcu_version: !!python/tuple [stable-0.12, master]
+          filter: ''
       - 'lttng-ust_{version}_cppcheck':
           version: master
       - 'lttng-ust_{version}_scan-build':

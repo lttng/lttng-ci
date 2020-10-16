@@ -176,12 +176,24 @@ fi
 
 # Set platform variables
 case "$arch" in
+freebsd)
+    export MAKE=gmake
+    export TAR=tar
+    export NPROC="getconf _NPROCESSORS_ONLN"
+    export CPPFLAGS="-I/usr/local/include $CPPFLAGS"
+    export LDFLAGS="-L/usr/local/lib $LDFLAGS"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
+    export CLASSPATH='/usr/local/share/java/classes/*'
+    ;;
+
 *)
     export MAKE=make
     export TAR=tar
     export NPROC=nproc
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
+    export CLASSPATH='/usr/share/java/*'
     ;;
 esac
 
@@ -215,7 +227,6 @@ static)
 agents)
     echo "Java and Python agents configuration"
 
-    export CLASSPATH='/usr/share/java/*'
     CONF_OPTS+=("--enable-java-agent-all" "--enable-jni-interface" "--enable-python-agent")
     ;;
 
