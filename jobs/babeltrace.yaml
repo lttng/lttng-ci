@@ -715,6 +715,11 @@
           arch: !!python/tuple [macosx]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
+      - 'babeltrace_{version}_{buildtype}':
+          buildtype: freebsdbuild
+          arch: !!python/tuple [freebsd]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
           arch: !!python/tuple [amd64]
@@ -762,6 +767,11 @@
       - 'babeltrace_{version}_{buildtype}':
           buildtype: macosxbuild
           arch: !!python/tuple [macosx]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, prod]
+      - 'babeltrace_{version}_{buildtype}':
+          buildtype: freebsdbuild
+          arch: !!python/tuple [freebsd]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{cctype}':
