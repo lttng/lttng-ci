@@ -26,6 +26,7 @@ conf=${conf:-}
 gerrit_url="https://${GERRIT_NAME}"
 gerrit_query="?o=CURRENT_REVISION&o=DOWNLOAD_COMMANDS"
 gerrit_json_query=".revisions[.current_revision].ref"
+gerrit_json_query_status=".status"
 
 possible_depends_on="lttng-ust|lttng-modules"
 re="Depends-on: (${possible_depends_on}): ([^'$'\n'']*)"
@@ -73,6 +74,18 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
 
     # Get the change latest ref
     ref=$(curl "${gerrit_url}/changes/${gerrit_id}${gerrit_query}" | tail -n+2 | jq -r "$gerrit_json_query")
+    change_status=$(curl "${gerrit_url}/changes/${gerrit_id}${gerrit_query}" | tail -n+2 | jq -r "$gerrit_json_query_status")
+    if [ "$change_status" == "MERGED" ]; then
+	    # When the change we depends on is merged use master as the ref.
+	    # This is not ideal CI time wise since we do not reuse artifacts.
+	    # This solve a tricky situation where we actually want to use master
+	    # instead of the change available on gerrit. Intermediary changes
+	    # present in master could have an impact on the change under test.
+	    ref="refs/heads/master"
+    elif [ "$change_status" == "ABANDONED" ]; then
+	    exit 1
+    fi
+
     git clone "${gerrit_url}/${project}" "$WORKSPACE/src/$project"
     pushd "$WORKSPACE/src/$project"
     git fetch "${gerrit_url}/${project}" "$ref"
