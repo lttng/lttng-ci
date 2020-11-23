@@ -213,6 +213,52 @@
             - recipients
 
 - job-template:
+    name: dev_gerrit_liburcu_{buildtype}
+    defaults: liburcu
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/userspace-rcu
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/liburcu
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'userspace-rcu'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+
+    <<: *liburcu_build_axes_defaults
+    <<: *liburcu_build_builders_defaults
+
+    publishers:
+      - tap:
+          results: 'tap/**/*.log'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            unstable:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+
+- job-template:
     name: liburcu_{version}_scan-build
     defaults: liburcu
     node: 'amd64'
@@ -333,6 +379,23 @@
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
           version: master
+
+- project:
+    name: gerrit-liburcu
+    github_user: urcu
+    github_name: userspace-rcu
+    jobs:
+      - 'dev_gerrit_liburcu_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          buildtype: build
+      - 'dev_gerrit_liburcu_{buildtype}':
+          buildtype: portbuild
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
 
 - project:
     name: liburcu-views
