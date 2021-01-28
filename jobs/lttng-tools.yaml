@@ -1124,10 +1124,10 @@
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
-          buildtype: macosxbuild
+          buildtype: macosbuild
           version: master
           ustversion: master
-          arch: !!python/tuple [macosx]
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
@@ -1235,10 +1235,10 @@
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
-          buildtype: macosxbuild
+          buildtype: macosbuild
           version: stable-2.12
           ustversion: stable-2.12
-          arch: !!python/tuple [macosx]
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.12]
@@ -1340,10 +1340,10 @@
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
-          buildtype: macosxbuild
+          buildtype: macosbuild
           version: stable-2.11
           ustversion: stable-2.11
-          arch: !!python/tuple [macosx]
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.10]
@@ -1445,10 +1445,10 @@
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
-          buildtype: macosxbuild
+          buildtype: macosbuild
           version: stable-2.10
           ustversion: stable-2.10
-          arch: !!python/tuple [macosx]
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1622,10 +1622,10 @@
           testtype: !!python/tuple [base]
           filter: ''
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          buildtype: macosxbuild
+          buildtype: macosbuild
           version: master-staging
           ustversion: master
-          arch: !!python/tuple [macosx]
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]

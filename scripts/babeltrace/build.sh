@@ -188,7 +188,7 @@ sol11-i386)
     export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
     ;;
 
-macosx)
+macos*)
     export MAKE=make
     export TAR=tar
     export NPROC="getconf _NPROCESSORS_ONLN"
@@ -252,6 +252,13 @@ export BABELTRACE_MINIMAL_LOG_LEVEL=TRACE
 # Set configure options and environment variables for each build
 # configuration.
 CONF_OPTS=("--prefix=$PREFIX")
+
+# -Werror is enabled by default in stable-2.0 but won't be in 2.1
+# Explicitly disable it for consistency.
+if vergte "$PACKAGE_VERSION" "2.0"; then
+	CONF_OPTS+=("--disable-Werror")
+fi
+
 case "$conf" in
 static)
     echo "Static lib only configuration"

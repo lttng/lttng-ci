@@ -359,10 +359,10 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
       - 'liburcu_{version}_{buildtype}':
-          buildtype: macosxbuild
-          arch: !!python/tuple [macosx]
+          buildtype: macosbuild
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          conf: !!python/tuple [std]
       - 'liburcu_{version}_winbuild':
           arch: !!python/tuple [cygwin64]
           build: !!python/tuple [std]

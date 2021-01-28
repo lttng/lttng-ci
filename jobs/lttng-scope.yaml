@@ -236,7 +236,7 @@
 
 
 - job-template:
-    name: lttng-scope_{version}_macosxbuild
+    name: lttng-scope_{version}_macosbuild
     defaults: lttng-scope
 
     project-type: matrix
@@ -395,7 +395,7 @@
 #          arch: !!python/tuple [i386, amd64]
 #      - 'lttng-scope_{version}_winbuild':
 #          arch: !!python/tuple [win64]
-#      - 'lttng-scope_{version}_macosxbuild':
-#          arch: !!python/tuple [macosx]
+#      - 'lttng-scope_{version}_macosbuild':
+#          arch: !!python/tuple [macos]
 #      - 'lttng-scope_{version}_coverity':
 #          version: master

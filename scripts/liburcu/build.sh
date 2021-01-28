@@ -189,7 +189,7 @@ sol11-i386)
     export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
     ;;
 
-macosx)
+macos*)
     export MAKE=make
     export TAR=tar
     export NPROC="getconf _NPROCESSORS_ONLN"

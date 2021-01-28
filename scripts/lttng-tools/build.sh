@@ -225,7 +225,7 @@ sol11-i386)
     RUN_TESTS="no"
     ;;
 
-macosx)
+macos*)
     export MAKE=make
     export TAR=tar
     export NPROC="getconf _NPROCESSORS_ONLN"

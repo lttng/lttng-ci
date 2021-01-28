@@ -711,8 +711,8 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static]
       - 'babeltrace_{version}_{buildtype}':
-          buildtype: macosxbuild
-          arch: !!python/tuple [macosx]
+          buildtype: macosbuild
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
       - 'babeltrace_{version}_{buildtype}':
@@ -765,8 +765,8 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{buildtype}':
-          buildtype: macosxbuild
-          arch: !!python/tuple [macosx]
+          buildtype: macosbuild
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{buildtype}':
@@ -806,8 +806,8 @@
           conf: !!python/tuple [std, static, prod, min]
           filter: '(build=="std" && conf=="std") || (arch=="amd64")'
       - 'dev_gerrit_babeltrace_{buildtype}':
-          buildtype: macosxbuild
-          arch: !!python/tuple [macosx]
+          buildtype: macosbuild
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
           filter: ''
@@ -833,8 +833,8 @@
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static, python-bindings]
       - 'dev_{user}_babeltrace_{version}_{buildtype}':
-          buildtype: macosxbuild
-          arch: !!python/tuple [macosx]
+          buildtype: macosbuild
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
 
@@ -858,8 +858,8 @@
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static, prod, min]
       - 'dev_{user}_babeltrace_{version}_{buildtype}':
-          buildtype: macosxbuild
-          arch: !!python/tuple [macosx]
+          buildtype: macosbuild
+          arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
 
