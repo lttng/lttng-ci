@@ -18,7 +18,7 @@
 set -exu
 
 # Parameters
-arch=${arch:-}
+arch=${arch:-amd64}
 cross_arch=${cross_arch:-}
 ktag=${ktag:-}
 kgitrepo=${kgitrepo:-}
@@ -104,7 +104,7 @@ select_compiler() {
 
     set +e
 
-    for cc in gcc-5 gcc-4.8; do
+    for cc in gcc-8 gcc-5 gcc-4.8; do
       if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
         selected_cc="$cc"
         break
@@ -430,6 +430,10 @@ build_modules() {
     local kversion
 
     kversion=$(make -C "$LINUX_HDROBJ_DIR" -s kernelversion)
+
+    # Try to catch some compatibility problems by turning some
+    # warnings into errors.
+    export KCFLAGS="$KCFLAGS -Wall -Werror"
 
     # Enter lttng-modules source dir
     cd "${MODULES_GIT_DIR}"
