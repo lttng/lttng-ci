@@ -416,6 +416,7 @@ for (ref in refs) {
   }
 }
 
+// The filtering step assumes the version lists are sorted
 kversions.sort()
 kversionsRC.sort()
 
@@ -433,6 +434,45 @@ switch (kverfilter) {
           kversions.remove(i)
           i--
         }
+      }
+    }
+    break
+
+  case 'lts':
+    // Keep only the head of each LTS branch and the latest non-RC tag
+    println('Filter kernel versions to keep only the latest point release of each lts branch and the current stable.')
+
+    def lts_44 = kversionFactory.factory("v4.4")
+    def lts_49 = kversionFactory.factory("v4.9")
+    def lts_414 = kversionFactory.factory("v4.14")
+    def lts_419 = kversionFactory.factory("v4.19")
+    def lts_54 = kversionFactory.factory("v5.4")
+
+    // First filter the head of each branch
+    for (i = 0; i < kversions.size(); i++) {
+      def curr = kversions[i]
+      def next = i < kversions.size() - 1 ? kversions[i + 1] : null
+
+      if (next != null) {
+        if (curr.isSameStable(next)) {
+          kversions.remove(i)
+          i--
+        }
+      }
+    }
+
+    for (i = 0; i < kversions.size(); i++) {
+      def curr = kversions[i]
+
+      // Keep the newest tag
+      if (i == kversions.size() - 1) {
+        break
+      }
+
+      // Prune non-LTS versions
+      if (!(curr.isSameStable(lts_44) || curr.isSameStable(lts_49) || curr.isSameStable(lts_414) || curr.isSameStable(lts_419) || curr.isSameStable(lts_54))) {
+        kversions.remove(i)
+        i--
       }
     }
     break
