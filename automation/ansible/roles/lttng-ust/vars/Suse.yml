@@ -4,6 +4,4 @@ __lttng_ust_packages:
   - texinfo
   - python3
   - log4j
-  - java-1_8_0-openjdk-headless
-  - java-1_8_0-openjdk-devel
   - libnuma-devel

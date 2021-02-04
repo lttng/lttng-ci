@@ -4,5 +4,4 @@ __lttng_ust_packages:
   - texinfo
   - python3
   - liblog4j1.2-java
-  - default-jdk
   - libnuma-dev
