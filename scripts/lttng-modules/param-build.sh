@@ -433,7 +433,7 @@ build_modules() {
 
     # Try to catch some compatibility problems by turning some
     # warnings into errors.
-    export KCFLAGS="$KCFLAGS -Wall -Werror"
+    #export KCFLAGS="$KCFLAGS -Wall -Werror"
 
     # Enter lttng-modules source dir
     cd "${MODULES_GIT_DIR}"
