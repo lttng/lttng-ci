@@ -706,11 +706,6 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
       - 'babeltrace_{version}_{buildtype}':
-          buildtype: solarisbuild
-          arch: !!python/tuple [sol10-i386, sol11-i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, static]
-      - 'babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
           arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]

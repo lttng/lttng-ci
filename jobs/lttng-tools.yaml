@@ -1134,17 +1134,6 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
-          buildtype: solarisbuild
-          version: master
-          ustversion: master
-          arch: !!python/tuple [sol10-i386, sol11-i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-          filter: ''
       - 'lttng-tools_{version}_winbuild':
           version: master
           ustversion: master
@@ -1221,17 +1210,6 @@
           conf: !!python/tuple [std]
           urcuversion: !!python/tuple [stable-0.12]
           babelversion: !!python/tuple [stable-2.0]
-          testtype: !!python/tuple [base]
-          filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
-          buildtype: solarisbuild
-          version: stable-2.12
-          ustversion: stable-2.12
-          arch: !!python/tuple [sol10-i386, sol11-i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [stable-0.12]
-          babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
@@ -1329,17 +1307,6 @@
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
-          buildtype: solarisbuild
-          version: stable-2.11
-          ustversion: stable-2.11
-          arch: !!python/tuple [sol10-i386, sol11-i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [stable-0.10]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-          filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
           buildtype: macosbuild
           version: stable-2.11
           ustversion: stable-2.11
@@ -1429,17 +1396,6 @@
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-          filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
-          buildtype: solarisbuild
-          version: stable-2.10
-          ustversion: stable-2.10
-          arch: !!python/tuple [sol10-i386, sol11-i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
@@ -1626,17 +1582,6 @@
           version: master-staging
           ustversion: master
           arch: !!python/tuple [macos-amd64, macos-arm64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-          filter: ''
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          buildtype: solarisbuild
-          version: master-staging
-          ustversion: master
-          arch: !!python/tuple [sol10-i386, sol11-i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
