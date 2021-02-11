@@ -345,7 +345,7 @@
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
       - 'liburcu_{version}_{buildtype}':
           buildtype: slesbuild
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
       - 'liburcu_{version}_{buildtype}':

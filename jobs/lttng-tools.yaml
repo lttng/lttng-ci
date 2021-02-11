@@ -1105,7 +1105,7 @@
           buildtype: slesbuild
           version: master
           ustversion: master
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [master]
@@ -1194,7 +1194,7 @@
           buildtype: slesbuild
           version: stable-2.12
           ustversion: stable-2.12
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.12]
@@ -1288,7 +1288,7 @@
           buildtype: slesbuild
           version: stable-2.11
           ustversion: stable-2.11
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.10]
@@ -1382,7 +1382,7 @@
           buildtype: slesbuild
           version: stable-2.10
           ustversion: stable-2.10
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1443,7 +1443,7 @@
           buildtype: slesbuild
           version: stable-2.9
           ustversion: stable-2.9
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.9]
@@ -1456,7 +1456,7 @@
           buildtype: slesbuild
           version: stable-2.8
           ustversion: stable-2.8
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [stable-0.9]

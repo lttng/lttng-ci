@@ -95,7 +95,7 @@ ci-rootnode-bionic-amd64-02
 ci-rootnode-bionic-amd64-03
 
 [node-sles]
-ci-node-sles12sp2-amd64-03-01
+ci-node-sles12sp5-amd64-03-01
 
 [node-el8]
 ci-node-el8-amd64-03-01

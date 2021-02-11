@@ -697,7 +697,7 @@
           conf: !!python/tuple [std, python-bindings]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
       - 'babeltrace_{version}_{buildtype}':
@@ -751,7 +751,7 @@
           conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
-          arch: !!python/tuple [sles12sp2]
+          arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, prod]
       - 'babeltrace_{version}_{buildtype}':
