@@ -485,6 +485,15 @@
     name: 'lttng-tools_build_publishers_dev'
     publishers:
       - postbuildscript:
+          mark-unstable-if-failed: false
+          builders:
+            - role: SLAVE
+              build-on:
+                  - ABORTED
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/tap_aborted.sh
+      - postbuildscript:
           mark-unstable-if-failed: true
           builders:
             - role: SLAVE
@@ -542,6 +551,15 @@
 - lttng-tools_build_publishers_prod: &lttng-tools_build_publishers_prod
     name: 'lttng-tools_build_publishers_prod'
     publishers:
+      - postbuildscript:
+          mark-unstable-if-failed: false
+          builders:
+            - role: SLAVE
+              build-on:
+                  - ABORTED
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/tap_aborted.sh
       - postbuildscript:
           mark-unstable-if-failed: true
           builders:
@@ -765,6 +783,15 @@
 
     publishers:
       - postbuildscript:
+          mark-unstable-if-failed: false
+          builders:
+            - role: SLAVE
+              build-on:
+                  - ABORTED
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/tap_aborted.sh
+      - postbuildscript:
           mark-unstable-if-failed: true
           builders:
             - role: SLAVE
@@ -906,6 +933,15 @@
           !include-raw-escape: scripts/lttng-tools/release.sh
 
     publishers:
+      - postbuildscript:
+          mark-unstable-if-failed: false
+          builders:
+            - role: SLAVE
+              build-on:
+                  - ABORTED
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/tap_aborted.sh
       - postbuildscript:
           mark-unstable-if-failed: true
           builders:
