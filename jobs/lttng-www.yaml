@@ -60,6 +60,6 @@
           credentials-id: 63a5abb5-9056-47e2-b419-f5946c1b8f08
           basedir: ./
           skip-tag: true
-          branches: 
+          branches:
             - master
 
