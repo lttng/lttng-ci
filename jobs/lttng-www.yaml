@@ -18,6 +18,9 @@
             key-file-variable: KEY_FILE_VARIABLE
             username-variable: USER_NAME_VARIABLE
             passphrase-variable: PASSPHRASE_VARIABLE
+        - file:
+            credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
+            variable: HOST_PUBLIC_KEYS
 
     triggers:
       - timed: '@daily'

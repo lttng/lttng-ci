@@ -19,7 +19,7 @@
 set -exu
 
 # Add ssh key for deployment
-echo "StrictHostKeyChecking no" >> ~/.ssh/config
+cp "$HOST_PUBLIC_KEYS" ~/.ssh/known_hosts
 cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
 
 # lttng-www dependencies
