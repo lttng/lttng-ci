@@ -21,6 +21,9 @@
         - file:
             credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
             variable: HOST_PUBLIC_KEYS
+    properties:
+      - build-discarder:
+          num-to-keep: 5
 
     triggers:
       - timed: '@daily'
