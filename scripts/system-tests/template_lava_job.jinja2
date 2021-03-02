@@ -87,7 +87,7 @@ actions:
                     - apt-get update
                     - apt-get upgrade
                     - apt-get install -y systemtap-sdt-dev
-                    - pip3 install --upgrade pip
+                    - pip3 install --upgrade 'pip>=20.3<21'
                     - hash -r
                     - pip3 install vlttng
                     - {{ vlttng_cmd }}
