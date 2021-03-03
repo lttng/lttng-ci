@@ -61,7 +61,7 @@ if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
   make --directory="$LINUX_PATH" olddefconfig
 
   if [ $BUILD_DEVICE = 'kvm' ] ; then
-    make --directory="$LINUX_PATH" kvmconfig
+    make --directory="$LINUX_PATH" kvm_guest.config
   fi
 
   make --directory="$LINUX_PATH" modules_prepare
