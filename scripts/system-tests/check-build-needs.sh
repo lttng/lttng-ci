@@ -14,6 +14,59 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Version compare functions
+vercomp () {
+    set +u
+    if [[ "$1" == "$2" ]]; then
+        return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++)); do
+        if [[ -z ${ver2[i]} ]]; then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]})); then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]})); then
+            return 2
+        fi
+    done
+    set -u
+    return 0
+}
+
+verlte() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "2" ]
+}
+
+verlt() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "2" ]
+}
+
+vergte() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "0" ] || [ "$res" -eq "1" ]
+}
+
+vergt() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -eq "1" ]
+}
+
+verne() {
+    vercomp "$1" "$2"; local res="$?"
+    [ "$res" -ne "0" ]
+}
+
 mkdir -p "$DEPLOYDIR"
 
 NEED_MODULES_BUILD=0
@@ -55,13 +108,23 @@ if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
   git remote add origin "$KGITREPO"
   git fetch --depth 1 origin "$KERNEL_COMMIT_ID"
   git checkout FETCH_HEAD
+  version=$(make -s kernelversion)
   popd
+
+
+  # Prepare version string for comparison.
+  # Strip any '-rc tag'.
+  version=${version%%"-"*}
 
   cp src/lttng-ci/lava/kernel/vanilla/x86_64_server.config "$LINUX_PATH/.config"
   make --directory="$LINUX_PATH" olddefconfig
 
   if [ $BUILD_DEVICE = 'kvm' ] ; then
-    make --directory="$LINUX_PATH" kvm_guest.config
+    if vergte "$version" "3.19"; then
+      make --directory="$LINUX_PATH" kvm_guest.config
+    else
+      make --directory="$LINUX_PATH" kvmconfig
+    fi
   fi
 
   make --directory="$LINUX_PATH" modules_prepare
