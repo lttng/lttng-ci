@@ -31,6 +31,19 @@ USERNAME = 'lava-jenkins'
 HOSTNAME = 'lava-master-02.internal.efficios.com'
 OBJSTORE_URL = "https://obj.internal.efficios.com/lava/results/"
 
+def parse_stable_version(stable_version_string):
+    # Get the major and minor version numbers from the lttng version string.
+    version_match = re.search('stable-(\d).(\d\d)', stable_version_string)
+
+    if version_match is not None:
+        major_version = int(version_match.group(1))
+        minor_version = int(version_match.group(2))
+    else:
+        # Setting to zero to make the comparison below easier.
+        major_version = 0
+        minor_version = 0
+    return major_version, minor_version
+
 
 class TestType:
     """ Enum like for test type """
@@ -139,17 +152,7 @@ def get_vlttng_cmd(
             + ' --profile lttng-ust-no-man-pages'
         )
 
-
-    # Get the major and minor version numbers from the lttng version string.
-    version_match = re.search('stable-(\d).(\d\d)', lttng_version)
-
-    if version_match is not None:
-        major_version = int(version_match.group(1))
-        minor_version = int(version_match.group(2))
-    else:
-        # Setting to zero to make the comparison below easier.
-        major_version = 0
-        minor_version = 0
+    major_version, minor_version = parse_stable_version(lttng_version)
 
     if lttng_version == 'master' or (major_version >= 2 and minor_version >= 11):
         vlttng_cmd += (
@@ -215,6 +218,13 @@ def main():
         args.lttng_version, args.tools_url, args.tools_commit, args.ust_url, args.ust_commit
     )
 
+    if args.lttng_version == "master":
+        lttng_version_string = "master"
+    else:
+        major, minor = parse_stable_version(args.lttng_version)
+        lttng_version_string = str(major) + "." + str(minor)
+
+
     context = dict()
     context['DeviceType'] = DeviceType
     context['TestType'] = TestType
@@ -226,6 +236,7 @@ def main():
 
     context['vlttng_cmd'] = vlttng_cmd
     context['vlttng_path'] = vlttng_path
+    context['lttng_version_string'] = lttng_version_string
 
     context['kernel_url'] = args.kernel
     context['nfsrootfs_url'] = nfsrootfs

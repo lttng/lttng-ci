@@ -102,6 +102,7 @@ actions:
               path: lava/system-tests/perf-tests.yml
               name: perf-tests
               params:
+                LTTNG_VERSION_STRING: {{ lttng_version_string }}
                 JENKINS_BUILD_ID: {{ jenkins_build_id }}
           {% elif test_type == TestType.kvm_tests %}
             - repository: https://github.com/lttng/lttng-ci.git
@@ -109,11 +110,13 @@ actions:
               path: lava/system-tests/kernel-tests.yml
               name: kernel-tests
               params:
+                LTTNG_VERSION_STRING: {{ lttng_version_string }}
                 JENKINS_BUILD_ID: {{ jenkins_build_id }}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
               path: lava/system-tests/destructive-tests.yml
               name: destructive-tests
               params:
+                LTTNG_VERSION_STRING: {{ lttng_version_string }}
                 JENKINS_BUILD_ID: {{ jenkins_build_id }}
           {% endif %}

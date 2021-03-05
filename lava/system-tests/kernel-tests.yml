@@ -4,6 +4,7 @@ metadata:
         description: "Run kernel test suite"
 params:
     JENKINS_BUILD_ID: "invalid_jenkins_build_id"
+    LTTNG_VERSION_STRING: "invalid_version_string"
 run:
         steps:
                 - apt install -y curl
@@ -15,8 +16,6 @@ run:
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools
                 - lava-test-case build-test-suite --shell "make"
-                - cd tests
-                - lava-test-case run-tests --shell "prove --nocolor --verbose --merge --exec '' - < root_regression"
-                - popd
+                - lava-test-case run-tests --shell "./ci/scripts/system-tests/run-test-suites.sh ${LTTNG_VERSION_STRING}"
                 - tar czf coredump.tar.gz coredump
                 - ./ci/lava/upload_artifact.sh coredump.tar.gz coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"

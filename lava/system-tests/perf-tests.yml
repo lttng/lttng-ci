@@ -4,6 +4,7 @@ metadata:
         description: "Run perf regression test suite"
 params:
     JENKINS_BUILD_ID: "invalid_jenkins_build_id"
+    LTTNG_VERSION_STRING: "invalid_version_string"
 run:
         steps:
                 - apt install -y libpfm4-dev curl

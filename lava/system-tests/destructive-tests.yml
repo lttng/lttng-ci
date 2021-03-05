@@ -4,6 +4,7 @@ metadata:
         description: "Run root destructive test suite"
 params:
   JENKINS_BUILD_ID: "invalid_jenkins_build_id"
+  LTTNG_VERSION_STRING: "invalid_version_string"
 run:
         steps:
                 - apt install -y curl
