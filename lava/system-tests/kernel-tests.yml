@@ -16,6 +16,6 @@ run:
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools
                 - lava-test-case build-test-suite --shell "make"
-                - lava-test-case run-tests --shell "./ci/scripts/system-tests/run-test-suites.sh ${LTTNG_VERSION_STRING}"
+                - lava-test-case run-tests --shell "$(dirs -l +1)/ci/scripts/system-tests/run-test-suites.sh ${LTTNG_VERSION_STRING}"
                 - tar czf coredump.tar.gz coredump
                 - ./ci/lava/upload_artifact.sh coredump.tar.gz coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"
