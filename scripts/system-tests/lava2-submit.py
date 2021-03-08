@@ -220,6 +220,8 @@ def main():
 
     if args.lttng_version == "master":
         lttng_version_string = "master"
+    elif args.lttng_version == "canary":
+        lttng_version_string = "2.10"
     else:
         major, minor = parse_stable_version(args.lttng_version)
         lttng_version_string = str(major) + "." + str(minor)
