@@ -22,6 +22,8 @@ run:
     - hash -r
     - pip3 install vlttng
     - git clone https://github.com/lttng/lttng-ci ci
+    - mkdir -p /root/.ssh
+    - chmod 700 /root/.ssh
     - cp lava/system-tests/authorized_keys /root/.ssh/authorized_keys
     - chmod 600 /root/.ssh/authorized_keys
     - sync
