@@ -132,7 +132,7 @@ def get_vlttng_cmd(
         'vlttng --jobs=$(nproc) --profile urcu-master'
         ' --override projects.babeltrace.build-env.PYTHON=python3'
         ' --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config'
-        ' --profile babeltrace-stable-1.4'
+        ' --profile babeltrace-stable-1.5'
         ' --profile babeltrace-python'
         ' --profile lttng-tools-master'
         ' --override projects.lttng-tools.source='
