@@ -1,0 +1,27 @@
+metadata:
+    format: Lava-Test Test Definition 1.0
+    name: x86-env-setup
+    description: "Basic environment setup for x86 board"
+    os:
+      - ubuntu
+    devices:
+      - x86
+run:
+  steps:
+    - git clone https://github.com/lttng/lttng-ci ci
+    - chmod 755 /
+    - systemctl start systemd-timesyncd
+    - echo nameserver 172.18.0.12 > /etc/resolv.conf
+    - ip a
+    - groupadd tracing
+    - depmod -a
+    - locale-gen en_US.UTF-8
+    - apt-get update
+    - apt-get upgrade
+    - apt-get install -y systemtap-sdt-dev openssh-server
+    - pip3 install 'pip==20.3'
+    - hash -r
+    - pip3 install vlttng
+    - cp lava/system-tests/authorized_keys /root/.ssh/authorized_keys
+    - chmod 600 /root/.ssh/authorized_keys
+    - sync

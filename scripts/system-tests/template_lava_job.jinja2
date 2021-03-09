@@ -59,7 +59,12 @@ actions:
 
     - test:
         definitions:
-            # Base setup of environment #
+            # Base setup #
+            - repository: https://github.com/lttng/lttng-ci.git
+              from: git
+              path: lava/system-tests/setup.yml
+              name: x86-env-setup
+            # Base vlttng setup #
             - repository:
                 metadata:
                     format: Lava-Test Test Definition 1.0
@@ -71,30 +76,17 @@ actions:
                       - x86
                 run:
                   steps:
-                    - chmod 755 /
-                    - systemctl start systemd-timesyncd
-                    - echo nameserver 172.18.0.12 > /etc/resolv.conf
-                    - ip a
-                    - groupadd tracing
                   {% if device_type == DeviceType.x86 %}
                     - mount /dev/sda1 /tmp
                   {% elif device_type == DeviceType.kvm %}
                     - mount /dev/sda /tmp
                   {% endif %}
                     - rm -rf /tmp/*
-                    - depmod -a
-                    - locale-gen en_US.UTF-8
-                    - apt-get update
-                    - apt-get upgrade
-                    - apt-get install -y systemtap-sdt-dev
-                    - pip3 install 'pip==20.3'
-                    - hash -r
-                    - pip3 install vlttng
                     - {{ vlttng_cmd }}
                     - ln -s {{ vlttng_path }} /root/lttngvenv
                     - sync
               from: inline
-              name: x86-env-setup-inline
+              name:vlttng-env-setup-inline
               path: inline/x86-env-setup.yaml
           {% if test_type == TestType.baremetal_tests %}
             - repository: https://github.com/lttng/lttng-ci.git
