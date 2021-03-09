@@ -86,7 +86,7 @@ actions:
                     - ln -s {{ vlttng_path }} /root/lttngvenv
                     - sync
               from: inline
-              name:vlttng-env-setup-inline
+              name: vlttng-env-setup-inline
               path: inline/x86-env-setup.yaml
           {% if test_type == TestType.baremetal_tests %}
             - repository: https://github.com/lttng/lttng-ci.git
