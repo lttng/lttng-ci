@@ -112,6 +112,68 @@
            - scripts/common/print.sh
            - scripts/lttng-ust/build.sh
 
+- lttng-ust_build_builders_gerrit_lttng-tools: &lttng-ust_build_builders_gerrit_lttng-tools
+    name: 'lttng-ust_build_builders_gerrit_lttng-tools'
+    builders:
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (std|agents)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (debug-rcu)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=debug-rcu,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$conf'
+          regex: (tls_fallback)
+          on-evaluation-failure: run
+          steps:
+            - copyartifact:
+                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=tls_fallback,build=std
+                which-build: last-successful
+                stable: false
+                filter: 'build/**'
+                target: 'deps'
+                do-not-fingerprint: true
+      - copyartifact:
+          project: babeltrace_{babeltrace_version}_{buildtype}/arch=${{arch}},conf=std,build=std
+          which-build: last-successful
+          stable: false
+          filter: 'build/**'
+          target: 'deps'
+          do-not-fingerprint: true
+
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/lttng-ust/build.sh
+      - shell:
+         !include-raw-escape:
+           - scripts/lttng-tools/gerrit-install-deps.sh
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/lttng-tools/build.sh
 
 ## Templates
 - job-template:
@@ -193,6 +255,73 @@
 
     <<: *lttng-ust_build_axes_defaults
     <<: *lttng-ust_build_builders_defaults
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=lttng-ust
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
+
+    publishers:
+      - tap:
+          results: 'tap/**/*.log'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            failed:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - archive:
+          artifacts: 'build/**,tap/**'
+          allow-empty: false
+      - workspace-cleanup
+
+- job-template:
+    name: dev_gerrit_lttng-ust_lttng-tools_{buildtype}
+    defaults: lttng-ust
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/lttng-ust
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/lttng-ust
+          skip-tag: true
+      - git:
+          url: https://review.lttng.org/lttng-tools
+          branches:
+            - '$GERRIT_BRANCH'
+          basedir: src/lttng-tools
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-ust'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+
+    <<: *lttng-ust_build_axes_defaults
+    <<: *lttng-ust_build_builders_gerrit_lttng-tools
 
     properties:
       - inject:
@@ -480,6 +609,15 @@
           conf: !!python/tuple [std, agents]
           liburcu_version: !!python/tuple [stable-0.12]
           filter: ''
+      - 'dev_gerrit_lttng-ust_lttng-tools_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist, oot-dist]
+          conf: !!python/tuple [std, agents]
+          liburcu_version: !!python/tuple [stable-0.12]
+          filter: ''
+          babeltrace_version: stable-2.0
+
       - 'dev_gerrit_lttng-ust_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
