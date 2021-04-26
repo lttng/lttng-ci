@@ -1112,6 +1112,7 @@
       - stable-2.10
       - stable-2.11
       - stable-2.12
+      - stable-2.13
       - master
     jobs:
       # Master #
@@ -1202,6 +1203,100 @@
           babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
+
+      # stable-2.13
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: build
+          version: stable-2.13
+          ustversion: stable-2.13
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.13
+          ustversion: stable-2.13
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: slesbuild
+          version: stable-2.13
+          ustversion: stable-2.13
+          arch: !!python/tuple [sles12sp5]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: elbuild
+          version: stable-2.13
+          ustversion: stable-2.13
+          arch: !!python/tuple [el8]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'lttng-tools_{version}_{buildtype}':
+          buildtype: macosbuild
+          version: stable-2.13
+          ustversion: stable-2.13
+          arch: !!python/tuple [macos-amd64, macos-arm64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [relayd-only]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'lttng-tools_{version}_winbuild':
+          version: stable-2.13
+          ustversion: stable-2.13
+          arch: !!python/tuple [cygwin64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [relayd-only]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'lttng-tools_{version}_long_regression':
+          buildtype: build
+          version: stable-2.13
+          ustversion: stable-2.13
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [full]
+          filter: ''
+      - 'lttng-tools_{version}_rootbuild':
+          buildtype: build
+          version: stable-2.13
+          ustversion: stable-2.13
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'lttng-tools_{version}_release':
+          version: v2.13
+          ustversion: stable-2.13
+          urcuversion: stable-0.12
+          babelversion: stable-2.0
 
       # stable-2.12
       - 'lttng-tools_{version}_{buildtype}':
@@ -1538,6 +1633,17 @@
           filter: ''
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           buildtype: build
+          version: stable-2.13-staging
+          ustversion: stable-2.13
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0, master]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: build
           version: stable-2.12-staging
           ustversion: stable-2.12
           arch: !!python/tuple [amd64]
@@ -1578,6 +1684,17 @@
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
           babelversion: !!python/tuple [stable-1.5, master]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.13-staging
+          ustversion: stable-2.13
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, no-ust, agents]
+          urcuversion: !!python/tuple [stable-0.12]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
