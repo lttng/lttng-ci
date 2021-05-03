@@ -82,6 +82,8 @@ if [[ "$lttng_version" == "master" ]]; then
 	fi
 elif vergte "$lttng_version" "2.13"; then
 	# All root regression are now part of the make check
+	# *destructive* tests are now part of the `make`-based test suites.
+	export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 	make --keep-going check || failed_tests=1
 else
 	make --keep-going check || failed_tests=1

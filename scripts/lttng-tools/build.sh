@@ -442,6 +442,15 @@ if [ "$RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
 
     # Run 'unit_tests', 2.8 and up has a new test suite
     if vergte "$PACKAGE_VERSION" "2.8"; then
+	# It is implied that tests depending on LTTNG_ENABLE_DESTRUCTIVE_TESTS
+	# only run for the root user. Note that here `destructive` means that
+	# operations are performed at the host level (add user etc.) that
+	# effectively modify the host. Running those tests are acceptable on our
+	# CI and root jobs since we always run root tests against a `snapshot`
+	# of the host.
+	if [ "$(id -u)" == "0" ]; then
+		export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
+	fi
         make --keep-going check || failed_tests=1
         rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
     else
