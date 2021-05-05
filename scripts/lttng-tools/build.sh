@@ -82,6 +82,24 @@ failed_configure() {
     exit 1
 }
 
+set_execute_traversal_bit()
+{
+    path=$1
+
+    level="$path"
+    if [ ! -d "$path" ]; then
+        fail "Path is not a directory"
+    fi
+    while level="$(dirname "$level")"
+    do
+        if [ "$level" = / ]; then
+            break
+        fi
+        chmod a+x "$level"
+    done
+    chmod a+x "$path"
+}
+
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
@@ -449,6 +467,12 @@ if [ "$RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
 	# CI and root jobs since we always run root tests against a `snapshot`
 	# of the host.
 	if [ "$(id -u)" == "0" ]; then
+		# Allow the traversal of all directories leading to the
+		# DEPS_LIBS directory to enable test app run by temp users to
+		# access lttng-ust.
+		set_execute_traversal_bit "$DEPS_LIB"
+		# Allow `all` to interact with all deps libs.
+		chmod a+rwx -R "$DEPS_LIB"
 		export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 	fi
         make --keep-going check || failed_tests=1
