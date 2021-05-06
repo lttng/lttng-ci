@@ -185,6 +185,7 @@ freebsd)
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
     export CLASSPATH='/usr/local/share/java/classes/*'
+    export JAVA_HOME='/usr/local/openjdk11'
     ;;
 
 *)
