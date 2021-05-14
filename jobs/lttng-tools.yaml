@@ -490,10 +490,10 @@
           builders:
             - role: SLAVE
               build-on:
-                  - ABORTED
+                  - FAILURE
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/tap_aborted.sh
+                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
       - postbuildscript:
           mark-unstable-if-failed: true
           builders:
@@ -557,10 +557,10 @@
           builders:
             - role: SLAVE
               build-on:
-                  - ABORTED
+                  - FAILURE
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/tap_aborted.sh
+                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
       - postbuildscript:
           mark-unstable-if-failed: true
           builders:
@@ -790,10 +790,10 @@
           builders:
             - role: SLAVE
               build-on:
-                  - ABORTED
+                  - FAILURE
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/tap_aborted.sh
+                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
       - postbuildscript:
           mark-unstable-if-failed: true
           builders:
@@ -944,7 +944,7 @@
                   - ABORTED
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/tap_aborted.sh
+                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
       - postbuildscript:
           mark-unstable-if-failed: true
           builders:
