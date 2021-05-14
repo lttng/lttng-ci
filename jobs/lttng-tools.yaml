@@ -55,6 +55,7 @@
           timeout: 30
           fail: true
           type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
       - workspace-cleanup:
           clean-if:
@@ -687,6 +688,7 @@
           timeout: 45
           fail: true
           type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
       - workspace-cleanup:
           clean-if:
@@ -717,6 +719,7 @@
           timeout: 10
           fail: true
           type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
 
     <<: *lttng-tools_build_axes_rootbuild
