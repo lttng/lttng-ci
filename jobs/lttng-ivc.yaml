@@ -51,12 +51,6 @@
          values: '{obj:liburcu_version}'
 
     builders:
-      - copyartifact:
-          project: liburcu_${{liburcu_version}}_build/arch=${{arch}},conf=std,build=std
-          which-build: last-successful
-          stable: false
-          filter: 'build/**'
-          target: 'deps/liburcu'
       - shell:
          !include-raw-escape: scripts/lttng-ivc/build.sh
 
@@ -111,12 +105,6 @@
          values: '{obj:liburcu_version}'
 
     builders:
-      - copyartifact:
-          project: liburcu_${{liburcu_version}}_build/arch=${{arch}},conf=std,build=std
-          which-build: last-successful
-          stable: false
-          filter: 'build/**'
-          target: 'deps/liburcu'
       - shell:
          !include-raw-escape: scripts/lttng-ivc/build.sh
 

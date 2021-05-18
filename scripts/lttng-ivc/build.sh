@@ -18,19 +18,8 @@
 PYTHON3="python3"
 P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
 
-URCU_INCS=${WORKSPACE}/deps/liburcu/build/include
-URCU_LIBS=${WORKSPACE}/deps/liburcu/build/lib
-URCU_PKG_CONFIG=${URCU_LIBS}/pkgconfig
-
-# Get liburcu setup
-export LD_LIBRARY_PATH="$URCU_LIBS:${LD_LIBRARY_PATH:-}"
-export CPPFLAGS="${CPPFLAGS:-} -I$URCU_INCS"
-export LDFLAGS="${LDFLAGS:-} -L$URCU_LIBS"
-export PKG_CONFIG_PATH="$URCU_PKG_CONFIG:${PKG_CONFIG_PATH:-}"
-
 # Tox does not support long path venv for whatever reason.
 PYENV_HOME=$(mktemp -d)
-
 
 # Create virtualenv and install necessary packages
 virtualenv --system-site-packages -p $PYTHON3 "$PYENV_HOME"
