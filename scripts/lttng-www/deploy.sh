@@ -29,12 +29,14 @@ cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
 curl -fsSL https://deb.nodesource.com/setup_15.x | bash -
 apt-get install -y nodejs
 
-apt-get install -y ruby asciidoc xmlto
+apt-get install -y ruby-dev asciidoc xmlto python3 python3-pip
 
 npm install -g grunt-cli
 npm install -g sass
 
-./bootstrap-ubuntu.sh
+export PATH="/root/.gem/ruby/2.5.0/bin:$PATH"
+
+./bootstrap.sh
 
 grunt build:prod
 grunt deploy:prod
