@@ -11,14 +11,14 @@ cloud05.internal.efficios.com
 #cloud08.internal.efficios.com
 
 [node-armhf]
-ci-node-bionic-armhf-01
-ci-node-bionic-armhf-02
-lava-armhf-wandboard-01
-#lava-armhf-wandboard-02
-ci-node-bionic-armhf-05
-ci-node-bionic-armhf-06
-ci-node-bionic-armhf-07
-ci-node-bionic-armhf-08
+ci-node-deb10-armhf-01
+ci-node-deb10-armhf-02
+ci-node-deb10-armhf-03
+ci-node-deb10-armhf-04
+ci-node-deb10-armhf-05
+ci-node-deb10-armhf-06
+ci-node-deb10-armhf-07
+ci-node-deb10-armhf-08
 
 [node-arm64]
 ci-node-bionic-arm64-01

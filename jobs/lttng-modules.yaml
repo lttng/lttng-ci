@@ -678,6 +678,7 @@
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
             - stable-2.12
+            - stable-2.13
             - master
           buildtype: build
           parambuildtype: build
@@ -703,6 +704,7 @@
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
             - stable-2.12
+            - stable-2.13
             - master
           buildtype: build
           parambuildtype: build
@@ -738,6 +740,7 @@
             - stable-2.10
             - stable-2.11
             - stable-2.12
+            - stable-2.13
             - master
           uversion:
             - xenial
@@ -754,6 +757,7 @@
           mversion:
             - stable-2.11
             - stable-2.12
+            - stable-2.13
             - master
           buildtype: crossbuild
           parambuildtype: crossbuild
@@ -767,6 +771,7 @@
             - stable-2.10
             - stable-2.11
             - stable-2.12
+            - stable-2.13
             - master
           uversion:
             - xenial
@@ -789,6 +794,7 @@
           mversion:
             - stable-2.11
             - stable-2.12
+            - stable-2.13
             - master
       - 'lttng-modules_{mversion}_sloccount':
           mversion: master
