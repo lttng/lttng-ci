@@ -464,28 +464,28 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
           filter: '(build=="std") || ((liburcu_version=="stable-0.12" && (conf=="std" || conf=="agents")))'
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
           filter: ''
       - 'lttng-ust_{version}_cppcheck'
       - 'lttng-ust_{version}_scan-build'
@@ -621,7 +621,7 @@
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
           filter: ''
 
       ## Stable 2.8 ##
@@ -631,7 +631,7 @@
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.10, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
           filter: ''
 
 
