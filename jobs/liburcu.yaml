@@ -331,6 +331,7 @@
       - stable-0.10
       - stable-0.11
       - stable-0.12
+      - stable-0.13
       - master
     jobs:
       - 'liburcu_{version}_{buildtype}':
@@ -369,6 +370,7 @@
           conf: !!python/tuple [std]
           version:
             - stable-0.12
+            - stable-0.13
             - master
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
