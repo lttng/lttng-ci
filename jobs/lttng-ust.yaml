@@ -455,41 +455,7 @@
     github_user: lttng
     github_name: lttng-ust
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
-    version:
-      - stable-2.10
-      - stable-2.11
     jobs:
-      - 'lttng-ust_{version}_{buildtype}':
-          buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, dist, oot, oot-dist]
-          conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
-          filter: '(build=="std") || ((liburcu_version=="stable-0.12" && (conf=="std" || conf=="agents")))'
-      - 'lttng-ust_{version}_{buildtype}':
-          buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
-          filter: ''
-      - 'lttng-ust_{version}_{buildtype}':
-          buildtype: slesbuild
-          arch: !!python/tuple [sles12sp5]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
-          filter: ''
-      - 'lttng-ust_{version}_{buildtype}':
-          buildtype: elbuild
-          arch: !!python/tuple [el8]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
-          filter: ''
-      - 'lttng-ust_{version}_cppcheck'
-      - 'lttng-ust_{version}_scan-build'
-
       ## Master ##
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: build
@@ -497,7 +463,7 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.13, master]
           filter: '(build=="std") || ((liburcu_version=="master" && (conf=="std" || conf=="agents")))'
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
@@ -505,7 +471,7 @@
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
@@ -513,7 +479,7 @@
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
@@ -521,7 +487,7 @@
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: freebsdbuild
@@ -529,7 +495,7 @@
           arch: !!python/tuple [freebsd]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_cppcheck':
           version: master
@@ -545,15 +511,15 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
-          liburcu_version: !!python/tuple [stable-0.12, master]
-          filter: '(build=="std") || ((liburcu_version=="stable-0.12" && (conf=="std" || conf=="agents")))'
+          liburcu_version: !!python/tuple [stable-0.13, master]
+          filter: '(build=="std") || ((liburcu_version=="stable-0.13" && (conf=="std" || conf=="agents")))'
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.13
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
@@ -561,7 +527,7 @@
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
@@ -569,7 +535,7 @@
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_cppcheck':
           version: stable-2.13
@@ -583,7 +549,7 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.12, stable-0.13, master]
           filter: '(build=="std") || ((liburcu_version=="stable-0.12" && (conf=="std" || conf=="agents")))'
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
@@ -591,7 +557,7 @@
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.12, stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
@@ -599,7 +565,7 @@
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.12, stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
@@ -607,31 +573,83 @@
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.12, stable-0.13, master]
           filter: ''
       - 'lttng-ust_{version}_cppcheck':
           version: stable-2.12
       - 'lttng-ust_{version}_scan-build':
           version: stable-2.12
 
-      ## Stable 2.9 ##
+      ## Stable 2.11 ##
       - 'lttng-ust_{version}_{buildtype}':
-          buildtype: slesbuild
-          version: stable-2.9
-          arch: !!python/tuple [sles12sp5]
+          buildtype: build
+          version: stable-2.11
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, dist, oot, oot-dist]
+          conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.13, master]
+          filter: '(build=="std") || ((liburcu_version=="stable-0.13" && (conf=="std" || conf=="agents")))'
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.11
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
-          conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
+          conf: !!python/tuple [std, agents]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.13, master]
           filter: ''
-
-      ## Stable 2.8 ##
       - 'lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
-          version: stable-2.8
+          version: stable-2.11
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12, master]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.13, master]
+          filter: ''
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: elbuild
+          version: stable-2.11
+          arch: !!python/tuple [el8]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.13, master]
+          filter: ''
+      - 'lttng-ust_{version}_cppcheck':
+          version: stable-2.11
+      - 'lttng-ust_{version}_scan-build':
+          version: stable-2.11
+
+      ## Stable 2.10 ##
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: build
+          version: stable-2.10
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, dist, oot, oot-dist]
+          conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12]
+          filter: '(build=="std") || ((liburcu_version=="stable-0.13" && (conf=="std" || conf=="agents")))'
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.10
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, agents]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12]
+          filter: ''
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: slesbuild
+          version: stable-2.10
+          arch: !!python/tuple [sles12sp5]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12]
+          filter: ''
+      - 'lttng-ust_{version}_{buildtype}':
+          buildtype: elbuild
+          version: stable-2.10
+          arch: !!python/tuple [el8]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+          liburcu_version: !!python/tuple [stable-0.9, stable-0.12]
           filter: ''
 
 
@@ -645,14 +663,14 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.12]
+          liburcu_version: !!python/tuple [stable-0.13]
           filter: ''
       - 'dev_gerrit_lttng-ust_lttng-tools_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.12]
+          liburcu_version: !!python/tuple [stable-0.13]
           filter: ''
           babeltrace_version: stable-2.0
 
@@ -661,7 +679,7 @@
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.12]
+          liburcu_version: !!python/tuple [stable-0.13]
           filter: ''
 
 - project:
