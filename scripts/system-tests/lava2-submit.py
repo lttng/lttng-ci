@@ -127,10 +127,15 @@ def get_vlttng_cmd(
     """
     Return vlttng cmd to be used in the job template for setup.
     """
+    urcu_profile = ""
+    if lttng_version == 'master' or (major_version >= 2 and minor_version >= 11):
+        urcu_profile = "urcu-master"
+    else:
+        urcu_profile = "urcu-stable-0.12"
 
     vlttng_cmd = (
-        'vlttng --jobs=$(nproc) --profile urcu-master'
-        ' --override projects.babeltrace.build-env.PYTHON=python3'
+        'vlttng --jobs=$(nproc) --profile ' + urcu_profile
+        + ' --override projects.babeltrace.build-env.PYTHON=python3'
         ' --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config'
         ' --profile babeltrace-stable-1.5'
         ' --profile babeltrace-python'
