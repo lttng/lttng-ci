@@ -127,6 +127,9 @@ def get_vlttng_cmd(
     """
     Return vlttng cmd to be used in the job template for setup.
     """
+
+    major_version, minor_version = parse_stable_version(lttng_version)
+
     urcu_profile = ""
     if lttng_version == 'master' or (major_version >= 2 and minor_version >= 11):
         urcu_profile = "urcu-master"
@@ -157,7 +160,6 @@ def get_vlttng_cmd(
             + ' --profile lttng-ust-no-man-pages'
         )
 
-    major_version, minor_version = parse_stable_version(lttng_version)
 
     if lttng_version == 'master' or (major_version >= 2 and minor_version >= 11):
         vlttng_cmd += (
