@@ -26,7 +26,7 @@ cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
 
 # Nodejs
 # Using Debian, as root
-curl -fsSL https://deb.nodesource.com/setup_15.x | bash -
+curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 apt-get install -y nodejs
 
 apt-get install -y ruby-dev asciidoc xmlto python3 python3-pip
