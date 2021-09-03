@@ -316,6 +316,13 @@
          !include-raw-escape: scripts/lttng-tools/gerrit-depends-on.sh
       - inject:
           properties-file: gerrit_custom_dependencies.properties
+      - copyartifact:
+              project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+              which-build: last-successful
+              stable: false
+              filter: 'build/**'
+              target: 'deps'
+              do-not-fingerprint: true
       - conditional-step:
           condition-kind: and
           on-evaluation-failure: run
@@ -324,7 +331,7 @@
                 condition-command: 'test -z "$GERRIT_DEP_LTTNG_UST"'
               - condition-kind: regex-match
                 label: '$conf'
-                regex: (std|static|agents|debug-rcu)
+                regex: (std|agents)
           steps:
             - copyartifact:
                 project: lttng-ust_${{GERRIT_BRANCH}}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
@@ -334,80 +341,12 @@
                 target: 'deps'
                 do-not-fingerprint: true
       - conditional-step:
-          condition-kind: regex-match
-          label: '$conf'
-          regex: (std|static)
+          condition-kind: shell
           on-evaluation-failure: run
-          steps:
-            - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
-            - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
-      - conditional-step:
-          condition-kind: regex-match
-          label: '$conf'
-          regex: no-ust
-          on-evaluation-failure: run
+          condition-command: 'test -z "$GERRIT_DEP_USERSPACE_RCU"'
           steps:
             - copyartifact:
                 project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
-            - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
-      - conditional-step:
-          condition-kind: regex-match
-          label: '$conf'
-          regex: (agents|relayd-only)
-          on-evaluation-failure: run
-          steps:
-            - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
-            - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
-      - conditional-step:
-          condition-kind: regex-match
-          label: '$conf'
-          regex: debug-rcu
-          on-evaluation-failure: run
-          steps:
-            - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std
-                which-build: last-successful
-                stable: false
-                filter: 'build/**'
-                target: 'deps'
-                do-not-fingerprint: true
-            - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -415,6 +354,17 @@
                 do-not-fingerprint: true
       - shell:
          !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
+      - conditional-step:
+          condition-kind: shell
+          condition-command: 'test ! -z "$GERRIT_DEP_USERSPACE_RCU"'
+          steps:
+            - shell:
+               !include-raw-escape:
+                   - scripts/common/override-build-std.sh
+                   - scripts/common/print.sh
+                   - scripts/liburcu/build.sh
+      - shell:
+         !include-raw-escape: scripts/lttng-tools/gerrit-install-deps.sh
       - conditional-step:
           condition-kind: shell
           condition-command: 'test ! -z "$GERRIT_DEP_LTTNG_UST"'

@@ -28,7 +28,7 @@ gerrit_query="?o=CURRENT_REVISION&o=DOWNLOAD_COMMANDS"
 gerrit_json_query=".revisions[.current_revision].ref"
 gerrit_json_query_status=".status"
 
-possible_depends_on="lttng-ust|lttng-modules"
+possible_depends_on="lttng-ust|lttng-modules|userspace-rcu"
 re="Depends-on: (${possible_depends_on}): ([^'$'\n'']*)"
 property_file="${WORKSPACE}/gerrit_custom_dependencies.properties"
 
@@ -84,7 +84,7 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
 	    ref="refs/heads/master"
     elif [ "$change_status" == "ABANDONED" ]; then
 	    # We have a situation where the "HEAD" commit for feature branch are
-	    # not merged and abandonned. Default to the master branch and hope
+	    # not merged and abandoned. Default to the master branch and hope
 	    # for the best. This is far from ideal but we need might also need
 	    # to find a better way to handle feature branch here. In the
 	    # meantime use master for such cases.
@@ -92,8 +92,18 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
 	    ref="refs/heads/master"
     fi
 
-    git clone "${gerrit_url}/${project}" "$WORKSPACE/src/$project"
-    pushd "$WORKSPACE/src/$project"
+    # The build.sh script from userspace-rcu expects the source to be located in
+    # `liburcu` instead of userspace-rcu. Accommodate for this here.
+    if [ "$project" = "userspace-rcu" ]; then
+        clone_directory="liburcu"
+    else
+	clone_directory="$project"
+    fi
+
+    clone_directory="$WORKSPACE/src/$clone_directory"
+
+    git clone "${gerrit_url}/${project}" "$clone_directory"
+    pushd "$clone_directory"
     git fetch "${gerrit_url}/${project}" "$ref"
     git checkout FETCH_HEAD
     popd
