@@ -638,33 +638,6 @@
       - cppcheck:
           pattern: 'cppcheck-result.xml'
 
-- job-template:
-    name: lttng-modules_{mversion}_sloccount
-    defaults: lttng-modules
-    description: |
-      The LTTng modules provide Linux kernel tracing capability to the LTTng
-      2.0 tracer toolset.
-
-      This job runs the sloccount utility and generates a trend report.
-
-      <p>Job is managed by Jenkins Job Builder.</p>
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell: |
-          cloc --by-file --xml --out=cloc.xml src/lttng-modules/
-
-    publishers:
-      - archive:
-          artifacts: 'cloc.xml'
-          allow-empty: false
-      - sloccount:
-          report-files: 'cloc.xml'
-      - workspace-cleanup
-
 
 ## Project
 - project:
@@ -796,8 +769,6 @@
             - stable-2.12
             - stable-2.13
             - master
-      - 'lttng-modules_{mversion}_sloccount':
-          mversion: master
       - 'lttng-modules_{mversion}_coverity':
           mversion: master
 
