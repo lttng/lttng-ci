@@ -62,9 +62,21 @@ print_tooling() {
     gcc --version | head -n1
     gcc -dumpmachine
 
+    print_blue "Selected CXX version"
+    ${CXX:-c++} --version | head -n1
+
+    print_blue "Default g++ version"
+    g++ --version | head -n1
+    g++ -dumpmachine
+
     if command -v clang >/dev/null 2>&1; then
         print_blue "Default clang version"
         clang --version
+    fi
+
+    if command -v clang++ >/dev/null 2>&1; then
+        print_blue "Default clang++ version"
+        clang++ --version
     fi
 
     print_blue "git version"
