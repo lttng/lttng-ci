@@ -71,6 +71,8 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
 
     # Export the GERRIT_DEP_... into the property file for further jenkins usage
     echo "GERRIT_DEP_${project_sanitize^^}=${gerrit_id}" >> "$property_file"
+    # Deactivate tests for the project
+    echo "${project_sanitize^^}_RUN_TESTS=no" >> "$property_file"
 
     # Get the change latest ref
     ref=$(curl "${gerrit_url}/changes/${gerrit_id}${gerrit_query}" | tail -n+2 | jq -r "$gerrit_json_query")

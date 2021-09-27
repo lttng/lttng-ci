@@ -227,7 +227,7 @@ sol10-i386)
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
 
-    RUN_TESTS="no"
+    LTTNG_TOOLS_RUN_TESTS="no"
     ;;
 
 sol11-i386)
@@ -240,7 +240,7 @@ sol11-i386)
     export PYTHON_CONFIG="python3-config"
     export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/lib/pkgconfig"
 
-    RUN_TESTS="no"
+    LTTNG_TOOLS_RUN_TESTS="no"
     ;;
 
 macos*)
@@ -253,7 +253,7 @@ macos*)
     export PYTHON="python3.9"
     export PYTHON_CONFIG="python3.9-config"
 
-    RUN_TESTS="no"
+    LTTNG_TOOLS_RUN_TESTS="no"
     ;;
 
 cygwin|cygwin64|msys32|msys64)
@@ -261,7 +261,7 @@ cygwin|cygwin64|msys32|msys64)
     export TAR=tar
     export NPROC=nproc
 
-    RUN_TESTS="no"
+    LTTNG_TOOLS_RUN_TESTS="no"
     ;;
 
 *)
@@ -269,7 +269,7 @@ cygwin|cygwin64|msys32|msys64)
     export TAR=tar
     export NPROC=nproc
 
-    RUN_TESTS="yes"
+    LTTNG_TOOLS_RUN_TESTS="yes"
 
     PYTHON2=python2
     PYTHON3=python3
@@ -284,10 +284,10 @@ esac
 
 case "$test_type" in
 full)
-    RUN_TESTS_LONG_REGRESSION="yes"
+    LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="yes"
     ;;
 *)
-    RUN_TESTS_LONG_REGRESSION="no"
+    LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="no"
     ;;
 esac
 
@@ -450,7 +450,7 @@ $MAKE install DESTDIR="$WORKSPACE"
 
 # Run tests for all configs except 'no-ust'
 failed_tests=0
-if [ "$RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
+if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
     # Allow core dumps
     ulimit -c unlimited
 
@@ -488,7 +488,7 @@ if [ "$RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
 	cd ..
     fi
 
-    if [ "$RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
+    if [ "$LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
         cd tests
         mkdir -p "$TAPDIR/long_regression"
         prove --merge -v --exec '' - < long_regression --archive "$TAPDIR/long_regression/" || failed_tests=1

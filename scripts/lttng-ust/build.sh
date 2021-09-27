@@ -89,6 +89,8 @@ conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
 
+# Controls if the tests are run
+LTTNG_UST_RUN_TESTS="${LTTNG_UST_RUN_TESTS:=yes}"
 
 DEPS_INC="$WORKSPACE/deps/build/include"
 DEPS_LIB="$WORKSPACE/deps/build/lib"
@@ -323,16 +325,18 @@ $MAKE install DESTDIR="$WORKSPACE"
 
 # Run tests, don't fail now, we want to run the archiving steps
 failed_tests=0
-$MAKE --keep-going check || failed_tests=1
+if [ "$LTTNG_UST_RUN_TESTS" = "yes" ]; then
+    $MAKE --keep-going check || failed_tests=1
 
-# Copy tap logs for the jenkins tap parser before cleaning the build dir
-rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+    # Copy tap logs for the jenkins tap parser before cleaning the build dir
+    rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
-# The test suite prior to 2.8 did not produce TAP logs
-if verlt "$PACKAGE_VERSION" "2.8"; then
-    mkdir -p "$WORKSPACE/tap/no-log"
-    echo "1..1" > "$WORKSPACE/tap/no-log/tests.log"
-    echo "ok 1 - Test suite doesn't support logging" >> "$WORKSPACE/tap/no-log/tests.log"
+    # The test suite prior to 2.8 did not produce TAP logs
+    if verlt "$PACKAGE_VERSION" "2.8"; then
+        mkdir -p "$WORKSPACE/tap/no-log"
+        echo "1..1" > "$WORKSPACE/tap/no-log/tests.log"
+        echo "ok 1 - Test suite doesn't support logging" >> "$WORKSPACE/tap/no-log/tests.log"
+    fi
 fi
 
 # Clean the build directory
