@@ -174,6 +174,7 @@ def get_vlttng_cmd(
 
 
 def main():
+    send_retry_limit = 10
     nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz"
     test_type = None
     parser = argparse.ArgumentParser(description='Launch baremetal test using Lava')
@@ -267,7 +268,7 @@ def main():
         'http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME)
     )
 
-    for attempt in range(10):
+    for attempt in range(1, send_retry_limit + 1):
         try:
             jobid = server.scheduler.submit_job(render)
         except xmlrpc.client.ProtocolError as error:
@@ -280,6 +281,14 @@ def main():
             continue
         else:
             break
+    # Early exit when the maximum number of retry is reached.
+    if attempt == send_retry_limit:
+            print(
+                'Protocol error on submit, maximum number of retry reached ({})'.format(
+                    attempt
+                )
+            )
+            return -1
 
     print('Lava jobid:{}'.format(jobid))
     print(
