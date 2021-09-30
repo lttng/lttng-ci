@@ -1,7 +1,7 @@
 ---
 __common_packages:
   - sudo
-  - openjdk8
+  - openjdk11
   - git
   - vim
   - tree
