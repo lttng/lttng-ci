@@ -1,4 +1,4 @@
-- hosts: node-ppc64el
+- hosts: node_powerpc
   roles:
     - common
     - babeltrace

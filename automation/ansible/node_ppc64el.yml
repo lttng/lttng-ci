@@ -1,8 +1,7 @@
-- hosts: node-i386
+- hosts: node_ppc64el
   roles:
     - common
     - babeltrace
     - liburcu
     - lttng-ust
     - lttng-tools
-    - lttng-analyses

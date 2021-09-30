@@ -1,4 +1,4 @@
-- hosts: node-amd64
+- hosts: node_amd64
   roles:
     - common
     - cross-compilers

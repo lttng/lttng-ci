@@ -1,4 +1,4 @@
-- hosts: node-standalone
+- hosts: node_standalone
   roles:
     - common
     - cross-compilers

@@ -1,7 +1,8 @@
-- hosts: node-el8
+- hosts: node_i386
   roles:
     - common
     - babeltrace
     - liburcu
     - lttng-ust
     - lttng-tools
+    - lttng-analyses

@@ -10,7 +10,7 @@ cloud05.internal.efficios.com
 #cloud07.internal.efficios.com
 #cloud08.internal.efficios.com
 
-[node-armhf]
+[node_armhf]
 ci-node-deb10-armhf-01
 ci-node-deb10-armhf-02
 ci-node-deb10-armhf-03
@@ -20,29 +20,29 @@ ci-node-deb10-armhf-06
 ci-node-deb10-armhf-07
 ci-node-deb10-armhf-08
 
-[node-arm64]
+[node_arm64]
 ci-node-bionic-arm64-01
 ci-node-bionic-arm64-02
 ci-node-bionic-arm64-03
 ci-node-bionic-arm64-04
 ci-node-bionic-arm64-05
 
-[node-powerpc]
+[node_powerpc]
 ci-node-xenial-powerpc-01
 #ci-node-xenial-powerpc-02
 ci-node-xenial-powerpc-03
 
-[node-ppc64el]
+[node_ppc64el]
 ci-node-bionic-ppc64el-01
 ci-node-bionic-ppc64el-02
 
-[node-i386]
+[node_i386]
 ci-node-bionic-i386-02-01
 ci-node-bionic-i386-03-01
 ci-node-bionic-i386-04-01
 ci-node-bionic-i386-05-01
 
-[node-amd64]
+[node_amd64]
 ci-node-bionic-amd64-02-01
 ci-node-bionic-amd64-02-02
 ci-node-bionic-amd64-02-03
@@ -88,28 +88,28 @@ ci-node-bionic-amd64-05-08
 ci-node-bionic-amd64-05-09
 ci-node-bionic-amd64-05-10
 
-[node-standalone]
+[node_standalone]
 #ci-node-standalone-amd64-02
 #ci-node-standalone-amd64-03
 ci-rootnode-bionic-amd64-02
 ci-rootnode-bionic-amd64-03
 
-[node-sles]
+[node_sles]
 ci-node-sles12sp5-amd64-03-01
 
-[node-el8]
+[node_el8]
 ci-node-el8-amd64-03-01
 
-[node-el8:vars]
+[node_el8:vars]
 ansible_python_interpreter=/usr/bin/python3
 
 [node:children]
-node-i386
-node-amd64
-node-armhf
-node-arm64
-node-powerpc
-node-ppc64el
-node-standalone
-node-sles
-node-el8
+node_i386
+node_amd64
+node_armhf
+node_arm64
+node_powerpc
+node_ppc64el
+node_standalone
+node_sles
+node_el8

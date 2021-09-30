@@ -1,4 +1,4 @@
-- hosts: node-armhf
+- hosts: node_el8
   roles:
     - common
     - babeltrace

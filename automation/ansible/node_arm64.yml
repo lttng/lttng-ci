@@ -1,4 +1,4 @@
-- hosts: node-arm64
+- hosts: node_arm64
   roles:
     - common
     - babeltrace

@@ -1,4 +1,4 @@
-- hosts: node-powerpc
+- hosts: node_armhf
   roles:
     - common
     - babeltrace

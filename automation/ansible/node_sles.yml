@@ -1,4 +1,4 @@
-- hosts: node-sles
+- hosts: node_sles
   roles:
     - common
     - babeltrace
