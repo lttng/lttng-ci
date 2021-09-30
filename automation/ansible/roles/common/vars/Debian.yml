@@ -20,7 +20,7 @@ __common_packages:
   - jq
   - cppcheck
   - cloc
-  - python-virtualenv
+  - virtualenv
   - curl
   - gettext
   - libssl-dev
