@@ -8,3 +8,4 @@ __lttng_modules_packages:
   - s3cmd
   - u-boot-tools
   - module-init-tools
+  - liblz4-tool
