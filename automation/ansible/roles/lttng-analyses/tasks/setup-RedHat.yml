@@ -1,6 +1,5 @@
 ---
 - name: Ensure lttng-analyses build dependencies are installed.
-  yum:
-    name: "{{ item }}"
+  dnf:
+    name: "{{ lttng_analyses_packages }}"
     state: installed
-  with_items: "{{ lttng_analyses_packages }}"

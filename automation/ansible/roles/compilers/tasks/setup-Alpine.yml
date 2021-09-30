@@ -3,5 +3,4 @@
   apk: update_cache=yes
 
 - name: Ensure compilers packages are installed.
-  apk: "name={{ item }} state=present"
-  with_items: "{{ compilers_packages }}"
+  apk: "name={{ compilers_packages }} state=present"

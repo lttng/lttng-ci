@@ -1,6 +1,5 @@
 ---
 - name: Ensure lttng-tools build dependencies are installed.
   dnf:
-    name: "{{ item }}"
+    name: "{{ lttng_tools_packages }}"
     state: installed
-  with_items: "{{ lttng_tools_packages }}"

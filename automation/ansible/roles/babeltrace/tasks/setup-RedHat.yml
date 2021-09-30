@@ -1,6 +1,5 @@
 ---
 - name: Ensure babeltrace build dependencies are installed.
   dnf:
-    name: "{{ item }}"
+    name: "{{ babeltrace_packages }}"
     state: installed
-  with_items: "{{ babeltrace_packages }}"

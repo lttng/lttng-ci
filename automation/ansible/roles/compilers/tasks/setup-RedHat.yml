@@ -1,6 +1,5 @@
 ---
 - name: Ensure compilers packages are installed.
-  yum:
-    name: "{{ item }}"
+  dnf:
+    name: "{{ compilers_packages }}"
     state: installed
-  with_items: "{{ compilers_packages }}"

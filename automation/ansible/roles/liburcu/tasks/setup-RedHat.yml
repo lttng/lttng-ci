@@ -1,6 +1,5 @@
 ---
 - name: Ensure liburcu build dependencies are installed.
   dnf:
-    name: "{{ item }}"
+    name: "{{ liburcu_packages }}"
     state: installed
-  with_items: "{{ liburcu_packages }}"

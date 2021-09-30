@@ -1,4 +1,3 @@
 ---
 - name: Ensure lttng-modules build dependencies are installed.
-  zypper: "name={{ item }} state=installed update_cache=yes"
-  with_items: "{{ lttng_modules_packages }}"
+  zypper: "name={{ lttng_modules_packages }} state=installed update_cache=yes"

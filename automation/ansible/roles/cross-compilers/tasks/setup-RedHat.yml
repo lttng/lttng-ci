@@ -1,6 +1,5 @@
 ---
 - name: Ensure cross-compilers packages are installed.
-  yum:
-    name: "{{ item }}"
+  dnf:
+    name: "{{ cross_compilers_packages }}"
     state: installed
-  with_items: "{{ cross_compilers_packages }}"

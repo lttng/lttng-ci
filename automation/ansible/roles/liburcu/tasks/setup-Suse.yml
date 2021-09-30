@@ -1,4 +1,3 @@
 ---
 - name: Ensure liburcu build dependencies are installed.
-  zypper: "name={{ item }} state=installed update_cache=yes"
-  with_items: "{{ liburcu_packages }}"
+  zypper: "name={{ liburcu_packages }} state=installed update_cache=yes"

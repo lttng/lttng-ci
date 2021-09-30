@@ -3,5 +3,4 @@
   apk: update_cache=yes
 
 - name: Ensure lttng-ust build dependencies are installed.
-  apk: "name={{ item }} state=present"
-  with_items: "{{ lttng_ust_packages }}"
+  apk: "name={{ lttng_ust_packages }} state=present"

@@ -1,6 +1,5 @@
 ---
 - name: Ensure common packages are installed.
   dnf:
-    name: "{{ item }}"
+    name: "{{ common_packages }}"
     state: installed
-  with_items: "{{ common_packages }}"

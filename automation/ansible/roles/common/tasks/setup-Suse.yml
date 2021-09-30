@@ -5,9 +5,7 @@
   when: common_patterns is not defined
 
 - name: Ensure common patterns are installed.
-  zypper: "name={{ item }} type=pattern state=present update_cache=yes"
-  with_items: "{{ common_patterns }}"
+  zypper: "name={{ common_patterns }} type=pattern state=present update_cache=yes"
 
 - name: Ensure common packages are installed.
-  zypper: "name={{ item }} type=package state=present update_cache=yes"
-  with_items: "{{ common_packages }}"
+  zypper: "name={{ common_packages }} type=package state=present update_cache=yes"

@@ -3,5 +3,4 @@
   apk: update_cache=yes
 
 - name: Ensure cross-compilers packages are installed.
-  apk: "name={{ item }} state=present"
-  with_items: "{{ cross_compilers_packages }}"
+  apk: "name={{ cross_compilers_packages }} state=present"

@@ -3,9 +3,7 @@
   apt: update_cache=yes cache_valid_time=86400
 
 - name: Ensure lttng-tools build dependencies are installed.
-  apt: "name={{ item }} state=present"
-  with_items: "{{ lttng_tools_packages }}"
+  apt: "name={{ lttng_tools_packages }} state=present"
 
 - name: Ensure lttng-tools build dependencies are installed (no recommends).
-  apt: "name={{ item }} state=present install_recommends=no"
-  with_items: "{{ lttng_tools_packages_no_recommends }}"
+  apt: "name={{ lttng_tools_packages_no_recommends }} state=present install_recommends=no"
