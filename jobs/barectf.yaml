@@ -145,7 +145,7 @@
       - stable-3.0
     jobs:
       - 'barectf_{version}_build':
-          arch: !!python/tuple [i386, amd64]
+          arch: !!python/tuple [amd64]
 
 - project:
     name: gerrit-barectf
@@ -154,7 +154,7 @@
     jobs:
       - 'dev_gerrit_barectf_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [i386, amd64]
+          arch: !!python/tuple [amd64]
 
 - project:
     name: barectf-views
