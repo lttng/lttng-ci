@@ -368,6 +368,11 @@ debug-rcu)
     ;;
 esac
 
+# Enable sdt tests when root
+if [ "$(id -u)" == "0" ] && vergte "$PACKAGE_VERSION" "2.12"; then
+    CONF_OPTS+=("--enable-test-sdt-uprobe")
+fi
+
 # Build type
 # oot     : out-of-tree build
 # dist    : build via make dist

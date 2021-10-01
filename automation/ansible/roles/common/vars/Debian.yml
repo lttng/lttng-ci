@@ -28,3 +28,4 @@ __common_packages:
   - rsync
   - pbzip2
   - lzop
+  - systemtap-std-dev
