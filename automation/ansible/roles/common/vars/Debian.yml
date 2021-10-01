@@ -28,4 +28,6 @@ __common_packages:
   - rsync
   - pbzip2
   - lzop
+  - lcov
   - systemtap-std-dev
+  - gcovr

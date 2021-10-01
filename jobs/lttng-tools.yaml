@@ -567,6 +567,51 @@
           send-to:
             - recipients
 
+- lttng-tools_build_publishers_code_coverage: &lttng-tools_build_publishers_code_coverage
+    name: 'lttng-tools_build_publishers_code_coverage'
+    publishers:
+      - postbuildscript:
+          mark-unstable-if-failed: false
+          builders:
+            - role: SLAVE
+              build-on:
+                  - FAILURE
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
+      - postbuildscript:
+          mark-unstable-if-failed: true
+          builders:
+            - role: SLAVE
+              build-on:
+                  - SUCCESS
+                  - UNSTABLE
+                  - NOT_BUILT
+                  - ABORTED
+                  - FAILURE
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
+      - html-publisher:
+          name: LCOV coverage report
+          dir: "coverage/"
+          files: "index.html"
+          keep-all: false
+          allow-missing: false
+      - cobertura:
+          report-file: "coverage/code_coverage.xml"
+          only-stable: "true"
+          fail-no-reports: "true"
+          fail-unhealthy: "false"
+          health-auto-update: "true"
+          targets:
+            - method:
+                healthy: 80
+                unhealthy: 0
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+
 - lttng-tools_build_publishers_win: &lttng-tools_build_publishers_win
     name: 'lttng-tools_build_publishers_win'
     publishers:
@@ -682,6 +727,33 @@
       - reverse:
             jobs: 'lttng-ust_{version}_build'
             result: 'success'
+
+- job-template:
+    name: lttng-tools_{version}_code_coverage
+    defaults: lttng-tools
+
+    scm:
+      - git: *lttng-tools_default_git
+      - git: *lttng-modules_default_git
+
+    wrappers:
+      - ansicolor
+      - timeout:
+          timeout: 10
+          fail: true
+          type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
+      - timestamps
+      - inject:
+          properties-content: 'code_coverage=yes'
+
+    <<: *lttng-tools_build_axes_rootbuild
+    <<: *lttng-tools_build_builders_defaults
+    <<: *lttng-tools_build_publishers_code_coverage
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
 
 - job-template:
     name: lttng-tools_{version}_winbuild
@@ -1146,6 +1218,17 @@
           testtype: !!python/tuple [full]
           filter: ''
       - 'lttng-tools_{version}_rootbuild':
+          buildtype: build
+          version: master
+          ustversion: master
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          urcuversion: !!python/tuple [master]
+          babelversion: !!python/tuple [stable-2.0]
+          testtype: !!python/tuple [base]
+          filter: ''
+      - 'lttng-tools_{version}_code_coverage':
           buildtype: build
           version: master
           ustversion: master

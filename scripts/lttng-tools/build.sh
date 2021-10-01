@@ -109,6 +109,8 @@ build=${build:-}
 cc=${cc:-}
 test_type=${test_type:-}
 
+code_coverage=${code_coverage:=no}
+
 DEPS_INC="$WORKSPACE/deps/build/include"
 DEPS_LIB="$WORKSPACE/deps/build/lib"
 DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
@@ -123,8 +125,10 @@ export LDFLAGS="-L$DEPS_LIB"
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
 TAPDIR="$WORKSPACE/tap"
+COVERAGEDIR="$WORKSPACE/coverage"
 PREFIX="/build"
 
+make_check_command="check"
 
 # Create tmp directory
 TMPDIR="$WORKSPACE/tmp"
@@ -373,6 +377,13 @@ if [ "$(id -u)" == "0" ] && vergte "$PACKAGE_VERSION" "2.12"; then
     CONF_OPTS+=("--enable-test-sdt-uprobe")
 fi
 
+# For code coverage, we need to override the make `check` command to be used.
+if [ "$code_coverage" = "yes" ]; then
+    CONF_OPTS+=("--enable-code-coverage")
+    # Override the make check command
+    make_check_command="check-code-coverage"
+fi
+
 # Build type
 # oot     : out-of-tree build
 # dist    : build via make dist
@@ -480,8 +491,19 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
 		chmod a+rwx -R "$DEPS_LIB"
 		export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 	fi
-        make --keep-going check || failed_tests=1
+
+        make --keep-going $make_check_command || failed_tests=1
         rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
+
+	# Preserve the code coverage output
+	if [ "$code_coverage" = "yes" ]; then
+            mkdir -p "$COVERAGEDIR"
+            # Generate a corbertura style xml report used for threshold and
+            # jenkins reporting.
+            gcovr --xml --output "$COVERAGEDIR/code_coverage.xml" -r ./
+            # Archive the lcov html report for line-by-line analysis.
+            rsync -a coverage/ "$COVERAGEDIR"
+	fi
     else
         cd tests
         mkdir -p "$TAPDIR/unit"
