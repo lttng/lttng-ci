@@ -211,8 +211,11 @@ $MAKE -j "$($NPROC)" V=1 MAKEINFO=/bin/true
 $MAKE install DESTDIR="$WORKSPACE"
 
 # Run tests, don't fail now, we want to run the archiving steps
+#
+# Disable ASan leaks reporting, it might break some tests since it adds
+# unexpected output when GDB exits.
 failed_tests=0
-$MAKE -C gdb --keep-going check -j "$($NPROC)" || failed_tests=1
+ASAN_OPTIONS=detect_leaks=0 $MAKE -C gdb --keep-going check -j "$($NPROC)" || failed_tests=1
 
 # Copy the dejagnu test results for archiving before cleaning the build dir
 mkdir "${WORKSPACE}/results"
