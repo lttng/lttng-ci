@@ -216,6 +216,7 @@ $MAKE -C gdb --keep-going check -j "$($NPROC)" || failed_tests=1
 
 # Copy the dejagnu test results for archiving before cleaning the build dir
 mkdir "${WORKSPACE}/results"
+cp gdb/testsuite/gdb.log "${WORKSPACE}/results/"
 cp gdb/testsuite/gdb.sum "${WORKSPACE}/results/"
 sum2junit gdb/testsuite/gdb.sum "${WORKSPACE}/results/gdb.xml"
 
