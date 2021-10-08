@@ -3,12 +3,11 @@
 This repository holds the configuration of the LTTng Jenkins jobs. It is
 meant to be used with Jenkins Job Builder from the OpenStack Foundation.
 
-A patched version of JJB is currently required with this repository, it
-can be installed directly from github :
+It can be installed with:
 
-    $ virtualenv -p python2 .venv
+    $ virtualenv -p python3 .venv
     $ . .venv/bin/activate
-    $ pip install git+git://github.com/lttng/jenkins-job-builder
+    $ pip install jenkins-job-builder
 
 
 ## Example Usage
