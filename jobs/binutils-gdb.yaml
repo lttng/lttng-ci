@@ -1,7 +1,7 @@
 - defaults:
     name: binutils-gdb
     description: |
-      GDB TODO
+      Build and test GDB.
 
       <p>Job is managed by Jenkins Job Builder.</p>
 
