@@ -1,0 +1,3 @@
+---
+- name: Ensure binutils_gdb build dependencies are installed.
+  zypper: "name={{ binutils_gdb_packages }} state=installed update_cache=yes"

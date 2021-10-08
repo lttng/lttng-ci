@@ -1,0 +1,131 @@
+- defaults:
+    name: binutils-gdb
+    description: |
+      GDB TODO
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    wrappers:
+      - ansicolor
+      - timeout:
+          timeout: 20
+          fail: true
+          type: no-activity
+      - timestamps
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+
+    scm:
+      - git:
+          url: git://git-mirror.internal.efficios.com/git/binutils-gdb.git
+          branches:
+            - origin/{version}
+          basedir: src/binutils-gdb
+          skip-tag: true
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=gdb
+      - build-discarder:
+          num-to-keep: 10
+
+
+## Templates ##
+- job-template:
+    name: binutils-gdb_{version}_build
+    defaults: binutils-gdb
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+
+    builders:
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/binutils-gdb/build.sh
+
+    publishers:
+      - archive:
+          artifacts: 'build/**,results/**'
+          allow-empty: false
+      - junit:
+          results: 'results/*.xml'
+
+- job-template:
+    name: dev_gerrit_binutils-gdb_build
+    defaults: binutils-gdb
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/binutils-gdb
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/binutils-gdb
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'binutils-gdb'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+
+    node: 'amd64'
+
+    builders:
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/binutils-gdb/build.sh
+
+    properties:
+      - build-discarder:
+          days-to-keep: 1
+
+
+## Views ##
+- view-template:
+    name: 'GDB'
+    view-type: list
+    regex: 'binutils-gdb[-_].*'
+
+
+## Projects ##
+- project:
+    name: binutils-gdb
+    version:
+      - master
+    jobs:
+      - 'binutils-gdb_{version}_build':
+          arch: !!python/tuple [amd64]
+
+- project:
+    name: gerrit-gdb
+    jobs:
+      - 'dev_gerrit_binutils-gdb_build'
+
+- project:
+    name: gdb-views
+    views:
+      - GDB

@@ -1,0 +1,6 @@
+---
+- name: Update apk cache.
+  apk: update_cache=yes
+
+- name: Ensure binutils_gdb build dependencies are installed.
+  apk: "name={{ binutils_gdb_packages }} state=present"

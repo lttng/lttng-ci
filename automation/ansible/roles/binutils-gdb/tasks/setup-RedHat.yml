@@ -1,0 +1,5 @@
+---
+- name: Ensure binutils_gdb build dependencies are installed.
+  dnf:
+    name: "{{ binutils_gdb_packages }}"
+    state: installed

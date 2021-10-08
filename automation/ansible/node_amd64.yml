@@ -4,6 +4,7 @@
     - cross-compilers
     - compilers
     - babeltrace
+    - binutils-gdb
     - liburcu
     - lttng-ust
     - lttng-tools
