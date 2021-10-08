@@ -1077,7 +1077,7 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5, master]
+          babelversion: !!python/tuple [stable-2.0, master]
           testtype: !!python/tuple [base]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
       - 'lttng-tools_{version}_{buildtype}':
@@ -1088,7 +1088,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
@@ -1099,7 +1099,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
@@ -1110,7 +1110,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_{buildtype}':
@@ -1121,7 +1121,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_winbuild':
@@ -1131,7 +1131,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
       - 'lttng-tools_{version}_long_regression':
@@ -1142,7 +1142,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [full]
           filter: ''
       - 'lttng-tools_{version}_rootbuild':
@@ -1555,7 +1555,7 @@
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5, master]
+          babelversion: !!python/tuple [stable-2.0, master]
           testtype: !!python/tuple [base]
           filter: ''
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -1665,7 +1665,7 @@
           build: !!python/tuple [std]
           conf: !!python/tuple [relayd-only]
           urcuversion: !!python/tuple [master]
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
 
@@ -1679,7 +1679,7 @@
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, no-ust, agents]
           urcuversion: !!python/tuple [master] # Switch to stable-0.14 when released (for C++ support)
-          babelversion: !!python/tuple [stable-1.5]
+          babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
       - 'dev_gerrit_lttng-tools_rootbuild':
