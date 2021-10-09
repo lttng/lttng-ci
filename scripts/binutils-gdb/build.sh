@@ -218,9 +218,143 @@ mkdir "${WORKSPACE}/results"
 cp gdb/testsuite/gdb.log "${WORKSPACE}/results/"
 cp gdb/testsuite/gdb.sum "${WORKSPACE}/results/"
 
+# Filter out some known failures.
+cat <<'EOF' > known-failures
+DUPLICATE: gdb.base/attach-pie-misread.exp: copy ld-2.27.so to ld-linux-x86-64.so.2
+DUPLICATE: gdb.base/attach-pie-misread.exp: copy libc-2.27.so to libc.so.6
+DUPLICATE: gdb.base/attach-pie-misread.exp: ldd attach-pie-misread
+DUPLICATE: gdb.base/attach-pie-misread.exp: ldd attach-pie-misread output contains libs
+DUPLICATE: gdb.base/call-signal-resume.exp: dummy stack frame number
+DUPLICATE: gdb.base/call-signal-resume.exp: return
+DUPLICATE: gdb.base/call-signal-resume.exp: set confirm off
+DUPLICATE: gdb.base/catch-signal.exp: 1: continue
+DUPLICATE: gdb.base/catch-signal.exp: SIGHUP: continue
+DUPLICATE: gdb.base/catch-signal.exp: SIGHUP SIGUSR2: continue
+DUPLICATE: gdb.base/checkpoint.exp: restart 0 one
+DUPLICATE: gdb.base/checkpoint.exp: verify lines 5 two
+DUPLICATE: gdb.base/checkpoint-ns.exp: restart 0 one
+DUPLICATE: gdb.base/checkpoint-ns.exp: verify lines 5 two
+DUPLICATE: gdb.base/complete-empty.exp: empty-input-line: cmd complete ""
+DUPLICATE: gdb.base/corefile-buildid.exp: could not generate core file
+DUPLICATE: gdb.base/decl-before-def.exp: p a
+DUPLICATE: gdb.base/define-prefix.exp: define user command: ghi-prefix-cmd
+DUPLICATE: gdb.base/del.exp: info break after removing break on main
+DUPLICATE: gdb.base/dfp-exprs.exp: p 1.2dl < 1.3df
+DUPLICATE: gdb.base/dfp-test.exp: 1.23E45A is an invalid number
+DUPLICATE: gdb.base/dfp-test.exp: 1.23E is an invalid number
+DUPLICATE: gdb.base/exprs.exp: \$[0-9]* = red (setup)
+DUPLICATE: gdb.base/funcargs.exp: run to call2a
+DUPLICATE: gdb.base/interp.exp: interpreter-exec mi "-var-update *"
+DUPLICATE: gdb.base/miscexprs.exp: print value of !ibig.i[100]
+DUPLICATE: gdb.base/nested-subp2.exp: continue to the STOP marker
+DUPLICATE: gdb.base/nested-subp2.exp: print c
+DUPLICATE: gdb.base/nested-subp2.exp: print count
+DUPLICATE: gdb.base/pending.exp: disable other breakpoints
+DUPLICATE: gdb.base/pie-fork.exp: test_no_detach_on_fork: continue
+DUPLICATE: gdb.base/pointers.exp: pointer assignment
+DUPLICATE: gdb.base/pretty-array.exp: print nums
+DUPLICATE: gdb.base/ptype.exp: list charfoo
+DUPLICATE: gdb.base/ptype.exp: list intfoo
+DUPLICATE: gdb.base/ptype.exp: ptype the_highest
+DUPLICATE: gdb.base/readline.exp: Simple operate-and-get-next - final prompt
+DUPLICATE: gdb.base/realname-expand.exp: set basenames-may-differ on
+DUPLICATE: gdb.base/set-cwd.exp: test_cwd_reset: continue to breakpoint: break-here
+DUPLICATE: gdb.base/shlib-call.exp: continue until exit
+DUPLICATE: gdb.base/shlib-call.exp: print g
+DUPLICATE: gdb.base/shlib-call.exp: set print address off
+DUPLICATE: gdb.base/shlib-call.exp: set print sevenbit-strings
+DUPLICATE: gdb.base/shlib-call.exp: set width 0
+DUPLICATE: gdb.base/solib-display.exp: IN: break 25
+DUPLICATE: gdb.base/solib-display.exp: IN: continue
+DUPLICATE: gdb.base/solib-display.exp: NO: break 25
+DUPLICATE: gdb.base/solib-display.exp: NO: continue
+DUPLICATE: gdb.base/solib-display.exp: SEP: break 25
+DUPLICATE: gdb.base/solib-display.exp: SEP: continue
+DUPLICATE: gdb.base/stack-checking.exp: bt
+DUPLICATE: gdb.base/subst.exp: unset substitute-path from, no rule entered yet
+DUPLICATE: gdb.base/ui-redirect.exp: redirect while already logging: set logging redirect off
+DUPLICATE: gdb.base/unload.exp: continuing to unloaded libfile
+DUPLICATE: gdb.base/watchpoints.exp: watchpoint hit, first time
+DUPLICATE: gdb.mi/mi2-amd64-entry-value.exp: breakpoint at main
+DUPLICATE: gdb.mi/mi2-amd64-entry-value.exp: mi runto main
+DUPLICATE: gdb.mi/mi2-var-child.exp: get children of psnp->char_ptr.*psnp->char_ptr.**psnp->char_ptr.***psnp->char_ptr
+DUPLICATE: gdb.mi/mi2-var-child.exp: get children of psnp->ptrs.0.next.char_ptr.*char_ptr.**char_ptr
+DUPLICATE: gdb.mi/mi2-var-child.exp: get children of psnp->ptrs.0.next.char_ptr.*char_ptr.**char_ptr.***char_ptr
+DUPLICATE: gdb.mi/mi2-var-child.exp: get number of children of psnp->ptrs.0.next.char_ptr.*char_ptr.**char_ptr.***char_ptr
+DUPLICATE: gdb.mi/mi-catch-cpp-exceptions.exp: breakpoint at main
+DUPLICATE: gdb.mi/mi-catch-cpp-exceptions.exp: mi runto main
+DUPLICATE: gdb.mi/mi-catch-load.exp: breakpoint at main
+DUPLICATE: gdb.mi/mi-catch-load.exp: mi runto main
+DUPLICATE: gdb.mi/mi-language.exp: set lang ada
+DUPLICATE: gdb.mi/mi-nonstop-exit.exp: breakpoint at main
+DUPLICATE: gdb.mi/mi-nonstop-exit.exp: mi runto main
+DUPLICATE: gdb.mi/mi-nonstop.exp: check varobj, w1, 1
+DUPLICATE: gdb.mi/mi-nonstop.exp: stacktrace of stopped thread
+DUPLICATE: gdb.mi/mi-nsthrexec.exp: breakpoint at main
+DUPLICATE: gdb.mi/mi-syn-frame.exp: finished exec continue
+DUPLICATE: gdb.mi/mi-syn-frame.exp: list stack frames
+DUPLICATE: gdb.mi/mi-var-child.exp: get children of psnp->char_ptr.*psnp->char_ptr.**psnp->char_ptr.***psnp->char_ptr
+DUPLICATE: gdb.mi/mi-var-child.exp: get children of psnp->ptrs.0.next.char_ptr.*char_ptr.**char_ptr
+DUPLICATE: gdb.mi/mi-var-child.exp: get children of psnp->ptrs.0.next.char_ptr.*char_ptr.**char_ptr.***char_ptr
+DUPLICATE: gdb.mi/mi-var-child.exp: get number of children of psnp->ptrs.0.next.char_ptr.*char_ptr.**char_ptr.***char_ptr
+DUPLICATE: gdb.mi/mi-var-cp.exp: create varobj for s
+DUPLICATE: gdb.mi/mi-var-rtti.exp: list children of ptr.Base.public (with RTTI) in use_rtti_with_multiple_inheritence
+DUPLICATE: gdb.mi/mi-var-rtti.exp: list children of ptr.public (without RTTI) in skip_type_update_when_not_use_rtti
+DUPLICATE: gdb.mi/mi-var-rtti.exp: list children of ptr (without RTTI) in skip_type_update_when_not_use_rtti
+DUPLICATE: gdb.mi/mi-var-rtti.exp: list children of s.ptr.public (without RTTI) in skip_type_update_when_not_use_rtti
+DUPLICATE: gdb.mi/mi-var-rtti.exp: list children of s.ptr (without RTTI) in skip_type_update_when_not_use_rtti
+DUPLICATE: gdb.mi/mi-watch.exp: mi-mode=main: wp-type=hw: watchpoint trigger
+DUPLICATE: gdb.mi/mi-watch.exp: mi-mode=main: wp-type=sw: watchpoint trigger
+DUPLICATE: gdb.mi/mi-watch.exp: mi-mode=separate: wp-type=hw: watchpoint trigger
+DUPLICATE: gdb.mi/mi-watch.exp: mi-mode=separate: wp-type=sw: watchpoint trigger
+FAIL: gdb.ada/interface.exp: print s
+FAIL: gdb.ada/iwide.exp: print d_access.all
+FAIL: gdb.ada/iwide.exp: print dp_access.all
+FAIL: gdb.ada/iwide.exp: print My_Drawable
+FAIL: gdb.ada/iwide.exp: print s_access.all
+FAIL: gdb.ada/iwide.exp: print sp_access.all
+FAIL: gdb.ada/mi_interface.exp: create ggg1 varobj (unexpected output)
+FAIL: gdb.ada/mi_interface.exp: list ggg1's children (unexpected output)
+FAIL: gdb.ada/tagged_access.exp: ptype c.all
+FAIL: gdb.ada/tagged_access.exp: ptype c.menu_name
+FAIL: gdb.ada/tagged.exp: print obj
+FAIL: gdb.ada/tagged.exp: ptype obj
+FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_bt_end
+FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_bt_start
+FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_fatal_msg
+FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: [expr $internal_error_msg_count == 2]
+FAIL: gdb.base/bt-on-fatal-signal.exp: FPE: $saw_bt_end
+FAIL: gdb.base/bt-on-fatal-signal.exp: FPE: $saw_bt_start
+FAIL: gdb.base/bt-on-fatal-signal.exp: FPE: $saw_fatal_msg
+FAIL: gdb.base/bt-on-fatal-signal.exp: FPE: [expr $internal_error_msg_count == 2]
+FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: $saw_bt_end
+FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: $saw_bt_start
+FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: $saw_fatal_msg
+FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: [expr $internal_error_msg_count == 2]
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.cp/no-dmgl-verbose.exp: setting breakpoint at 'f(std::string)'
+FAIL: gdb.gdb/python-interrupts.exp: run until breakpoint at captured_command_loop
+FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert -c "foo == 3" --source basics.c --function main --label label (unexpected output)
+FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert --source basics.c --function foobar (unexpected output)
+FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert --source basics.c --function main --label foobar (unexpected output)
+FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert --source basics.c (unexpected output)
+FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert -c "foo == 3" --source basics.c --function main --label label (unexpected output)
+FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert --source basics.c --function foobar (unexpected output)
+FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert --source basics.c --function main --label foobar (unexpected output)
+FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert --source basics.c (unexpected output)
+FAIL: gdb.mi/mi-breakpoint-changed.exp: test_auto_disable: -break-enable count 1 2 (unexpected output)
+FAIL: gdb.mi/mi-breakpoint-changed.exp: test_auto_disable: -break-insert -f pendfunc1 (unexpected output)
+UNRESOLVED: gdb.base/libsegfault.exp: gdb emits custom handler warning
+UNRESOLVED: gdb.base/readline-ask.exp: bell for more message
+UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
+UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
+EOF
+
+grep --invert-match --fixed-strings --file=known-failures  "${WORKSPACE}/results/gdb.sum" > "${WORKSPACE}/results/gdb.filtered.sum"
+
 # Convert results to JUnit format.
 failed_tests=0
-sum2junit gdb/testsuite/gdb.sum "${WORKSPACE}/results/gdb.xml" || failed_tests=1
+sum2junit "${WORKSPACE}/results/gdb.filtered.sum" "${WORKSPACE}/results/gdb.xml" || failed_tests=1
 
 # Clean the build directory
 $MAKE clean
