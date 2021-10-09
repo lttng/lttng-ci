@@ -29,90 +29,86 @@ sum2junit() {
     local infile="$1"
     local outfile="$2"
 
-    local tool
-    local skipped
-    local passes
-    local failures
-    local total
-    local s2jtmpfile
+cat <<EOF > sum2junit.py
+import sys
+from datetime import datetime
+import re
+from xml.etree.ElementTree import ElementTree, Element, SubElement
 
-    local result
-    local name
-    local message
+line_re = re.compile(
+    r"^(PASS|XPASS|FAIL|XFAIL|KFAIL|DUPLICATE|UNTESTED|UNSUPPORTED|UNRESOLVED): (.*?\.exp): (.*)"
+)
 
-    set +x
+pass_count = 0
+fail_count = 0
+skip_count = 0
+error_count = 0
+now = datetime.now().isoformat(timespec="seconds")
 
-    tool=$(grep "tests ===" "$infile" | tr -s ' ' | cut -d ' ' -f 2)
+testsuites = Element(
+    "testsuites",
+    {
+        "xmlns": "https://raw.githubusercontent.com/windyroad/JUnit-Schema/master/JUnit.xsd"
+    },
+)
+testsuite = SubElement(
+    testsuites,
+    "testsuite",
+    {
+        "name": "GDB",
+        "package": "package",
+        "id": "0",
+        "time": "1",
+        "timestamp": now,
+        "hostname": "hostname",
+    },
+)
+SubElement(testsuite, "properties")
 
-    # Get the counts for tests that didn't work properly
-    skipped=$(grep -E -c '^UNRESOLVED|^UNTESTED|^UNSUPPORTED' "$infile" || true)
-    if test x"${skipped}" = x; then
-        skipped=0
-    fi
+for line in sys.stdin:
+    m = line_re.match(line)
+    if not m:
+        continue
 
-    # The total of successful results are PASS and XFAIL
-    passes=$(grep -E -c '^PASS|XFAIL' "$infile" || true)
-    if test x"${passes}" = x; then
-        passes=0
-    fi
+    state, exp_filename, test_name = m.groups()
 
-    # The total of failed results are FAIL and XPASS
-    failures=$(grep -E -c '^FAIL|XPASS' "$infile" || true)
-    if test x"${failures}" = x; then
-        failures=0
-    fi
+    testcase_name = "{} - {}".format(exp_filename, test_name)
 
-    # Calculate the total number of test cases
-    total=$((passes + failures))
-    total=$((total + skipped))
+    testcase = SubElement(
+        testsuite,
+        "testcase",
+        {"name": testcase_name, "classname": "classname", "time": "0"},
+    )
 
-    cat <<EOF > "$outfile"
-<?xml version="1.0"?>
+    if state in ("PASS", "XFAIL", "KFAIL"):
+        pass_count += 1
+    elif state in ("FAIL", "XPASS"):
+        fail_count += 1
+        SubElement(testcase, "failure", {"type": state})
+    elif state in ("UNRESOLVED", "DUPLICATE"):
+        error_count += 1
+        SubElement(testcase, "error", {"type": state})
+    elif state in ("UNTESTED", "UNSUPPORTED"):
+        skip_count += 1
+        SubElement(testcase, "skipped")
+    else:
+        assert False
 
-<testsuites>
-<testsuite name="DejaGnu" tests="${total}" failures="${failures}" skipped="${skipped}">
+testsuite.attrib["tests"] = str(pass_count + fail_count + skip_count)
+testsuite.attrib["failures"] = str(fail_count)
+testsuite.attrib["skipped"] = str(skip_count)
+testsuite.attrib["errors"] = str(error_count)
 
+SubElement(testsuite, "system-out")
+SubElement(testsuite, "system-err")
+
+et = ElementTree(testsuites)
+et.write(sys.stdout, encoding="unicode")
+
+sys.exit(1 if fail_count > 0 or error_count > 0 else 0)
 EOF
 
-    s2jtmpfile="$(mktemp)"
-    grep -E 'PASS|XPASS|FAIL|UNTESTED|UNSUPPORTED|UNRESOLVED' "$infile" > "$s2jtmpfile" || true
-
-    while read -r line
-    do
-        echo -n "."
-        result=$(echo "$line" | cut -d ' ' -f 1 | tr -d ':')
-        name=$(echo "$line" | cut -d ' ' -f 2 | tr -d '\"><;:\[\]^\\&?@')
-        message=$(echo "$line" | cut -d ' ' -f 3-50 | tr -d '\"><;:\[\]^\\&?@')
-
-        echo "    <testcase name=\"${name}\" classname=\"${tool}-${result}\">" >> "$outfile"
-        case "${result}" in
-        PASS|XFAIL|KFAIL)
-            # No message for successful tests in junit
-            ;;
-        UNSUPPORTED|UNTESTED)
-    	    if test x"${message}" != x; then
-    		echo -n "        <skipped message=\"${message}\"/>" >> "$outfile"
-    	    else
-    		echo -n "        <skipped type=\"$result\"/>" >> "$outfile"
-    	    fi
-    	    ;;
-    	XPASS|UNRESOLVED|DUPLICATE)
-    	    echo -n "        <failure message=\"$message\"/>" >> "$outfile"
-    	    ;;
-    	*)
-    	    echo -n "        <failure message=\"$message\"/>" >> "$outfile"
-        esac
-
-        echo "    </testcase>" >> "$outfile"
-    done < "$s2jtmpfile"
-
-    rm -f "$s2jtmpfile"
-
-    # Write the closing tag for the test results
-    echo "</testsuite>" >> "$outfile"
-    echo "</testsuites>" >> "$outfile"
-
-    set -x
+    python3 sum2junit.py < "$infile" > "$outfile"
 }
 
 # Required variables
@@ -210,18 +206,21 @@ $MAKE -j "$($NPROC)" V=1 MAKEINFO=/bin/true
 # Install in the workspace
 $MAKE install DESTDIR="$WORKSPACE"
 
-# Run tests, don't fail now, we want to run the archiving steps
+# Run tests, don't fail now, we know that "make check" is going to fail,
+# since some tests don't pass.
 #
 # Disable ASan leaks reporting, it might break some tests since it adds
 # unexpected output when GDB exits.
-failed_tests=0
-ASAN_OPTIONS=detect_leaks=0 $MAKE -C gdb --keep-going check -j "$($NPROC)" || failed_tests=1
+ASAN_OPTIONS=detect_leaks=0 $MAKE -C gdb --keep-going check -j "$($NPROC)" || true
 
 # Copy the dejagnu test results for archiving before cleaning the build dir
 mkdir "${WORKSPACE}/results"
 cp gdb/testsuite/gdb.log "${WORKSPACE}/results/"
 cp gdb/testsuite/gdb.sum "${WORKSPACE}/results/"
-sum2junit gdb/testsuite/gdb.sum "${WORKSPACE}/results/gdb.xml"
+
+# Convert results to JUnit format.
+failed_tests=0
+sum2junit gdb/testsuite/gdb.sum "${WORKSPACE}/results/gdb.xml" || failed_tests=1
 
 # Clean the build directory
 $MAKE clean
