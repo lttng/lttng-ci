@@ -99,6 +99,13 @@
            - scripts/common/print.sh
            - scripts/binutils-gdb/build.sh
 
+    publishers:
+      - archive:
+          artifacts: 'results/**'
+          allow-empty: false
+      - junit:
+          results: 'results/*.xml'
+
     properties:
       - build-discarder:
           days-to-keep: 1
