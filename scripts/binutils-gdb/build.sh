@@ -332,7 +332,9 @@ FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: $saw_bt_start
 FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: $saw_fatal_msg
 FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: [expr $internal_error_msg_count == 2]
 FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.base/step-over-syscall.exp: clone: displaced=off: single step over clone
 FAIL: gdb.cp/no-dmgl-verbose.exp: setting breakpoint at 'f(std::string)'
+FAIL: gdb.dwarf2/dw2-inline-param.exp: running to *0x608 in runto
 FAIL: gdb.gdb/python-interrupts.exp: run until breakpoint at captured_command_loop
 FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert -c "foo == 3" --source basics.c --function main --label label (unexpected output)
 FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert --source basics.c --function foobar (unexpected output)
@@ -344,10 +346,13 @@ FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-i
 FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert --source basics.c (unexpected output)
 FAIL: gdb.mi/mi-breakpoint-changed.exp: test_auto_disable: -break-enable count 1 2 (unexpected output)
 FAIL: gdb.mi/mi-breakpoint-changed.exp: test_auto_disable: -break-insert -f pendfunc1 (unexpected output)
+FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=host: target-non-stop=on: non-stop=on: displaced=off: iter 3: attach (GDB internal error)
 UNRESOLVED: gdb.base/libsegfault.exp: gdb emits custom handler warning
 UNRESOLVED: gdb.base/readline-ask.exp: bell for more message
 UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
 UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
+UNRESOLVED: gdb.opencl/vec_comps.exp: OpenCL support not detected
+UNRESOLVED: gdb.threads/attach-many-short-lived-threads.exp: iter 8: detach
 EOF
 
 grep --invert-match --fixed-strings --file=known-failures  "${WORKSPACE}/results/gdb.sum" > "${WORKSPACE}/results/gdb.filtered.sum"
