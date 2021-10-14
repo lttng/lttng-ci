@@ -63,6 +63,8 @@
           allow-empty: false
       - junit:
           results: 'results/*.xml'
+      - email:
+          recipients: 'simon.marchi@efficios.com'
 
 - job-template:
     name: dev_gerrit_binutils-gdb_build
