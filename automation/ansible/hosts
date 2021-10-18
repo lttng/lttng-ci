@@ -11,36 +11,37 @@ cloud05.internal.efficios.com
 #cloud08.internal.efficios.com
 
 [node_armhf]
-ci-node-deb10-armhf-01
-ci-node-deb10-armhf-02
-ci-node-deb10-armhf-03
-ci-node-deb10-armhf-04
-ci-node-deb10-armhf-05
-ci-node-deb10-armhf-06
-ci-node-deb10-armhf-07
-ci-node-deb10-armhf-08
+ci-node-deb11-armhf-01
+ci-node-deb11-armhf-02
+ci-node-deb11-armhf-03
+ci-node-deb11-armhf-04
+ci-node-deb11-armhf-05
+ci-node-deb11-armhf-06
+ci-node-deb11-armhf-07
+ci-node-deb11-armhf-08
+
+[node_armhf:vars]
+ansible_python_interpreter=python3
 
 [node_arm64]
-ci-node-bionic-arm64-01
-ci-node-bionic-arm64-02
-ci-node-bionic-arm64-03
-ci-node-bionic-arm64-04
-ci-node-bionic-arm64-05
+ci-node-deb11-arm64-01
+ci-node-deb11-arm64-02
+ci-node-deb11-arm64-03
+ci-node-deb11-arm64-04
 
 [node_powerpc]
-ci-node-xenial-powerpc-01
-#ci-node-xenial-powerpc-02
-ci-node-xenial-powerpc-03
+#ci-node-sid-powerpc-01
+ci-node-sid-powerpc-03
 
 [node_ppc64el]
-ci-node-bionic-ppc64el-01
-ci-node-bionic-ppc64el-02
+ci-node-deb11-ppc64el-01
+ci-node-deb11-ppc64el-02
 
 [node_i386]
-ci-node-bionic-i386-02-01
-ci-node-bionic-i386-03-01
-ci-node-bionic-i386-04-01
-ci-node-bionic-i386-05-01
+ci-node-deb11-i386-02-01
+ci-node-deb11-i386-03-01
+ci-node-deb11-i386-04-01
+ci-node-deb11-i386-05-01
 
 [node_amd64]
 ci-node-bionic-amd64-02-01
@@ -89,8 +90,6 @@ ci-node-bionic-amd64-05-09
 ci-node-bionic-amd64-05-10
 
 [node_standalone]
-#ci-node-standalone-amd64-02
-#ci-node-standalone-amd64-03
 ci-rootnode-bionic-amd64-02
 ci-rootnode-bionic-amd64-03
 
