@@ -136,13 +136,18 @@ def get_vlttng_cmd(
     else:
         urcu_profile = "urcu-stable-0.12"
 
+    # Starting with 2.14, babeltrace2 is the reader for testing.
+    if lttng_version == 'master' or (major_version >= 2 and minor_version >= 14):
+        babeltrace_profile = " --profile babeltrace2-stable-2.0 --profile babeltrace2-python"
+    else:
+        babeltrace_profile = " --profile babeltrace-stable-1.5 --profile babeltrace-python"
+
     vlttng_cmd = (
         'vlttng --jobs=$(nproc) --profile ' + urcu_profile
         + ' --override projects.babeltrace.build-env.PYTHON=python3'
         ' --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config'
-        ' --profile babeltrace-stable-1.5'
-        ' --profile babeltrace-python'
-        ' --profile lttng-tools-master'
+        + babeltrace_profile
+        + ' --profile lttng-tools-master'
         ' --override projects.lttng-tools.source='
         + lttng_tools_url
         + ' --override projects.lttng-tools.checkout='
