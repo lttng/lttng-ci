@@ -127,5 +127,5 @@
     jobs:
       - 'lttng-ust-benchmarks_{version}_{buildtype}':
           buildtype: build
-          babeltrace_version: stable-1.5
+          babeltrace_version: stable-2.0
 

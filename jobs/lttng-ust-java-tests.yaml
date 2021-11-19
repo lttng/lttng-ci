@@ -195,7 +195,7 @@
       - master
     lttng_tools_version:
       - master
-    babeltrace_version: stable-1.5
+    babeltrace_version: stable-2.0
     jobs:
       - 'lttng-ust-java-tests_{version}_build':
           arch: !!python/tuple [amd64]
