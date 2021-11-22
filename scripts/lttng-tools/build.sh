@@ -507,12 +507,16 @@ fi
 # Clean the build directory
 $MAKE clean
 
-# Cleanup rpath in executables and shared libraries
+# Cleanup rpath in executables
 find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
 
-# Remove libtool .la files
-find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+# Some configs don't build liblttng-ctl
+if [ -d "$WORKSPACE/$PREFIX/lib" ]; then
+    # Cleanup rpath in shared libraries
+    find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+    # Remove libtool .la files
+    find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+fi
 
 # Exit with failure if any of the tests failed
 exit $failed_tests
