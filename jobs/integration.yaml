@@ -1,0 +1,21 @@
+## Jobs
+- job:
+    name: integration_ust-2.12-lower-urcu_testsuite
+    project-type: pipeline
+    dsl: !include-raw: pipelines/integration/ust-2.12-lower-urcu_testsuite.groovy
+
+
+## Views
+- view-template:
+    name: 'Integration'
+    view-type: list
+    regex: 'integration[-_].*'
+
+
+## Projects
+- project:
+    name: integration
+    views:
+      - 'Integration'
+    jobs:
+      - 'integration_ust-2.12-lower-urcu_testsuite'
