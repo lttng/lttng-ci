@@ -4,3 +4,4 @@ __binutils_gdb_packages:
   - guile-2.2-dev
   - dejagnu
   - gnat
+  - libreadline-dev
