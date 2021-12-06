@@ -64,6 +64,26 @@
          name: build
          values: '{obj:build}'
 
+- lttng-ust_build_axes_gerrit_lttng-tools: &lttng-ust_build_axes_gerrit_lttng-tools
+    name: 'lttng-ust_build_axes_gerrit_lttng-tools'
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    execution-strategy:
+      combination-filter: '{filter}'
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: conf
+         values: '{obj:conf}'
+      - axis:
+         type: user-defined
+         name: build
+         values: '{obj:build}'
+
 - lttng-ust_build_builders_defaults: &lttng-ust_build_builders_defaults
     name: 'lttng-ust_build_builders_defaults'
     builders:
@@ -115,6 +135,25 @@
 - lttng-ust_build_builders_gerrit_lttng-tools: &lttng-ust_build_builders_gerrit_lttng-tools
     name: 'lttng-ust_build_builders_gerrit_lttng-tools'
     builders:
+      - conditional-step:
+          condition-kind: strings-match
+          condition-string1: '$GERRIT_BRANCH'
+          condition-string2: master
+          on-evaluation-failure: run
+          steps:
+            - inject:
+                properties-content: liburcu_version=master
+      - conditional-step:
+          condition-kind: not
+          on-evaluation-failure: run
+          condition-operand:
+              condition-kind: strings-match
+              condition-string1: '$GERRIT_BRANCH'
+              condition-string2: master
+          steps:
+            - inject:
+                 properties-content: 'liburcu_version={liburcu_version}'
+
       - conditional-step:
           condition-kind: regex-match
           label: '$conf'
@@ -320,7 +359,7 @@
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
 
-    <<: *lttng-ust_build_axes_defaults
+    <<: *lttng-ust_build_axes_gerrit_lttng-tools
     <<: *lttng-ust_build_builders_gerrit_lttng-tools
 
     properties:
@@ -670,7 +709,7 @@
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.13]
+          liburcu_version: 'stable-0.13'
           filter: ''
           babeltrace_version: stable-2.0
 
