@@ -9,3 +9,4 @@ __lttng_modules_packages:
   - u-boot-tools
   - module-init-tools
   - liblz4-tool
+  - dwarves
