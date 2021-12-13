@@ -1,4 +1,4 @@
-localhost ansible_connection=local
+localhost ansible_connection=local ansible_python_interpreter=python3
 
 [hosts]
 #cloud01.internal.efficios.com
@@ -19,9 +19,6 @@ ci-node-deb11-armhf-05
 ci-node-deb11-armhf-06
 ci-node-deb11-armhf-07
 ci-node-deb11-armhf-08
-
-[node_armhf:vars]
-ansible_python_interpreter=python3
 
 [node_arm64]
 ci-node-deb11-arm64-01
@@ -99,9 +96,6 @@ ci-node-sles12sp5-amd64-03-01
 [node_el8]
 ci-node-el8-amd64-03-01
 
-[node_el8:vars]
-ansible_python_interpreter=/usr/bin/python3
-
 [node:children]
 node_i386
 node_amd64
@@ -112,3 +106,9 @@ node_ppc64el
 node_standalone
 node_sles
 node_el8
+
+[py3_hosts:children]
+node
+
+[py3_hosts:vars]
+ansible_python_interpreter=python3
