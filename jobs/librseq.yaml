@@ -261,7 +261,7 @@
     name: 'rseq'
     description: 'Restartable sequences'
     view-type: list
-    regex: 'librseq_.*|linux-rseq_.*'
+    regex: 'librseq_.*'
 
 
 ## Project

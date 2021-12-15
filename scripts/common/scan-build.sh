@@ -79,10 +79,6 @@ lttng-ust)
     BUILD_TYPE="autotools"
     export CLASSPATH="/usr/share/java/log4j-1.2.jar"
     ;;
-linux-rseq)
-    CONF_OPTS=""
-    BUILD_TYPE="linux-rseq"
-    ;;
 *)
     echo "Generic project, no configure options."
     CONF_OPTS=""
@@ -107,11 +103,6 @@ autotools)
     fi
 
     scan-build -k -o "${SCAN_BUILD_TMPDIR}" make -j"$NPROC" V=1
-    ;;
-linux-rseq)
-    make defconfig
-    make -j"$NPROC" prepare
-    scan-build -k -o "${SCAN_BUILD_TMPDIR}" make -j"$NPROC" kernel/rseq.o kernel/do_on_cpu/core.o kernel/do_on_cpu/interpreter.o kernel/do_on_cpu/validate.o V=1
     ;;
 *)
     echo "Unsupported build type: $BUILD_TYPE"
