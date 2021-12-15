@@ -104,6 +104,11 @@
 - librseq_build_publishers_defaults: &librseq_build_publishers_defaults
     name: 'librseq_build_publishers_defaults'
     publishers:
+      - tap:
+          results: 'tap/**/*.log'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
       - warnings:
           console-log-parsers:
             - 'GNU Make + GNU C Compiler (gcc)'
@@ -114,7 +119,7 @@
               total-normal: 0
               total-low: 0
       - archive:
-          artifacts: 'build/**'
+          artifacts: 'build/**,tap/**'
           allow-empty: false
       - ircbot:
           strategy: new-failure-and-fixed
@@ -143,6 +148,28 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
+
+- librseq_build_publishers_gerrit: &librseq_build_publishers_gerrit
+    name: 'librseq_build_publishers_gerrit'
+    publishers:
+      - tap:
+          results: 'tap/**/*.log'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+      - warnings:
+          console-log-parsers:
+            - 'GNU Make + GNU C Compiler (gcc)'
+          total-thresholds:
+            failed:
+              total-all: 0
+              total-high: 0
+              total-normal: 0
+              total-low: 0
+      - archive:
+          artifacts: 'build/**,tap/**'
+          allow-empty: false
+
 
 ## Templates
 - job-template:
@@ -202,6 +229,48 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
+
+- job-template:
+    name: dev_gerrit_librseq_{buildtype}
+    defaults: librseq
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/librseq
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/librseq
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'librseq'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+
+    <<: *librseq_build_axes_defaults
+    <<: *librseq_build_builders_defaults
+    <<: *librseq_build_publishers_gerrit
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=librseq
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
 
 - job-template:
     name: librseq_{version}_scan-build
@@ -299,6 +368,17 @@
 #      - 'librseq_{version}_scan-build'
 #      - 'librseq_{version}_coverity':
 #          version: master
+
+- project:
+    name: gerrit-librseq
+    github_user: compudj
+    github_name: librseq
+    jobs:
+      - 'dev_gerrit_librseq_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist, oot-dist]
+          conf: !!python/tuple [std, static]
 
 - project:
     name: librseq-views
