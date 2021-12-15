@@ -280,6 +280,9 @@ build_linux_kernel() {
     scripts/config --enable CONFIG_EVENT_TRACING
     scripts/config --enable CONFIG_KRETPROBES
 
+    # FIXME: disable objtool on vmlinux, it OOMs on allyesconfig
+    sed -i 's/objtool_link vmlinux.o//' scripts/link-vmlinux.sh || true
+
     # Debug
     #cat .config
 
