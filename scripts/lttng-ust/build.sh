@@ -196,7 +196,7 @@ freebsd)
     export NPROC=nproc
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
-    export CLASSPATH='/usr/share/java/*'
+    export CLASSPATH='/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar'
     ;;
 esac
 
