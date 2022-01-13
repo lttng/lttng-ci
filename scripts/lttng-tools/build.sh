@@ -345,7 +345,7 @@ agents)
     echo "Java and Python agents configuration"
 
     export JAVA_HOME="/usr/lib/jvm/default-java"
-    export CLASSPATH="$DEPS_JAVA/*:/usr/share/java/*"
+    export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
     export PYTHONPATH="$DEPS_PYTHON2:$DEPS_PYTHON3"
 
     CONF_OPTS+=("--enable-test-java-agent-all" "--enable-test-python-agent-all")
