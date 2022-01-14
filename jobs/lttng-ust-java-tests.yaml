@@ -80,6 +80,8 @@
             LTTNG_CONSUMERD32_BIN=${{WORKSPACE}}/deps/build/lib/lttng/libexec/lttng-consumerd
             LTTNG_CONSUMERD64_BIN=${{WORKSPACE}}/deps/build/lib/lttng/libexec/lttng-consumerd
             LTTNG_SESSION_CONFIG_XSD_PATH=${{WORKSPACE}}/deps/build/share/xml/lttng
+            BABELTRACE_PLUGIN_PATH=$WORKSPACE/deps/build/lib/babeltrace2/plugins
+            LIBBABELTRACE2_PLUGIN_PROVIDER_DIR=$WORKSPACE/deps/build/lib/babeltrace2/plugin-providers
 
     builders:
       - copyartifact:
