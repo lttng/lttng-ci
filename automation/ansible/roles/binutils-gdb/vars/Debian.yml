@@ -5,3 +5,4 @@ __binutils_gdb_packages:
   - dejagnu
   - gnat
   - libreadline-dev
+  - gfortran
