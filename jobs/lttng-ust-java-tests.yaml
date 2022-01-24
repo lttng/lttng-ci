@@ -127,6 +127,7 @@
             - common-jar-location=${{WORKSPACE}}/deps/build/share/java/lttng-ust-agent-common.jar
             - jul-jar-location=${{WORKSPACE}}/deps/build/share/java/lttng-ust-agent-jul.jar
             - log4j-jar-location=${{WORKSPACE}}/deps/build/share/java/lttng-ust-agent-log4j.jar
+            - log4j2-jar-location=${{WORKSPACE}}/deps/build/share/java/lttng-ust-agent-log4j2.jar
             - argLine=-Djava.library.path=${{WORKSPACE}}/deps/build/lib
       - shell:
           !include-raw-escape: scripts/lttng-ust-java-tests/stop-sessiond.sh
