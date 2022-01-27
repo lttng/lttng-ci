@@ -77,7 +77,7 @@ lttng-tools)
 lttng-ust)
     CONF_OPTS="--enable-java-agent-all --enable-python-agent"
     BUILD_TYPE="autotools"
-    export CLASSPATH="/usr/share/java/log4j-1.2.jar"
+    export CLASSPATH="/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
     ;;
 *)
     echo "Generic project, no configure options."
