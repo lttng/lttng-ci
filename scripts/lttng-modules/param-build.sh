@@ -390,7 +390,9 @@ extract_distro_headers() {
     touch -r "${LINUX_HDROBJ_DIR}/.config" "${LINUX_HDROBJ_DIR}/include/generated/autoconf.h"
 
     # Copy .config to include/config/auto.conf so "make prepare" is unnecessary.
-    cp "${LINUX_HDROBJ_DIR}/.config" "${LINUX_HDROBJ_DIR}/include/config/auto.conf"
+    if [ ! -f "${LINUX_HDROBJ_DIR}/include/config/auto.conf" ]; then
+        cp "${LINUX_HDROBJ_DIR}/.config" "${LINUX_HDROBJ_DIR}/include/config/auto.conf"
+    fi
 
     # Finally clean the object files from the full source tree
     make clean
