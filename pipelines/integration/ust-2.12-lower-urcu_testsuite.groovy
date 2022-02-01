@@ -246,7 +246,7 @@ pipeline {
 
           post {
             always {
-              recordIssues skipBlames: true, tools: [gcc(id: "gcc-ust-2.12")]
+              recordIssues skipBlames: true, tools: [gcc(id: "gcc-ust-212")]
               step([$class: 'TapPublisher', testResults: 'tap/**/*.log', verbose: true, failIfNoResults: true, failedTestsMarkBuildAsFailure: true, planRequired: true])
               archiveArtifacts artifacts: 'tap/**', fingerprint: false
             }
@@ -370,7 +370,7 @@ pipeline {
 
           post {
             always {
-              recordIssues skipBlames: true, tools: [gcc(id: "gcc-ust-2.13")]
+              recordIssues skipBlames: true, tools: [gcc(id: "gcc-ust-213")]
               step([$class: 'TapPublisher', testResults: 'tap/**/*.log', verbose: true, failIfNoResults: true, failedTestsMarkBuildAsFailure: true, planRequired: true])
               archiveArtifacts artifacts: 'tap/**', fingerprint: false
             }
