@@ -1,0 +1,17 @@
+---
+- name: Check if i386 foreign architecture is enabled in dpkg.
+  shell: dpkg --print-foreign-architectures | grep i386
+  register: dpkg_i386_is_enabled
+  changed_when: dpkg_i386_is_enabled.rc == 1
+  failed_when: dpkg_i386_is_enabled.rc > 1
+
+- name: Add i386 foreign architecture to dpkg.
+  command: dpkg --add-architecture i386
+  when: dpkg_i386_is_enabled.rc == 1
+
+- name: Update apt cache.
+  apt: update_cache=yes
+  when: dpkg_i386_is_enabled.rc == 1
+
+- name: Ensure libs-i386 packages are installed.
+  apt: "name={{ libs_i386_packages }} state=present"

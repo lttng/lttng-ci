@@ -1,0 +1,13 @@
+---
+# Include variables and define needed variables.
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Define libs_i386_packages.
+  set_fact:
+    libs_i386_packages: "{{ __libs_i386_packages | list }}"
+  when: libs_i386_packages is not defined
+
+# Setup/install tasks.
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
