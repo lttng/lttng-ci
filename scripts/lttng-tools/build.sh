@@ -349,6 +349,11 @@ agents)
     export PYTHONPATH="$DEPS_PYTHON2:$DEPS_PYTHON3"
 
     CONF_OPTS+=("--enable-test-java-agent-all" "--enable-test-python-agent-all")
+
+    # Explicitly add '--enable-test-java-agent-log4j2', it's not part of '-all' in stable 2.12/2.13
+    if verlt "$PACKAGE_VERSION" "2.14"; then
+        CONF_OPTS+=("--enable-test-java-agent-log4j2")
+    fi
     ;;
 
 relayd-only)
