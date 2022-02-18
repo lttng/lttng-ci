@@ -24,9 +24,9 @@ WORKSPACE=${WORKSPACE:-}
 conf=${conf:-}
 
 gerrit_url="https://${GERRIT_NAME}"
-gerrit_query="?o=CURRENT_REVISION&o=DOWNLOAD_COMMANDS"
-gerrit_json_query=".revisions[.current_revision].ref"
-gerrit_json_query_status=".status"
+gerrit_query="&o=CURRENT_REVISION&o=DOWNLOAD_COMMANDS"
+gerrit_json_query=".[0].revisions[.[0].current_revision].ref"
+gerrit_json_query_status=".[0].status"
 
 possible_depends_on="lttng-ust|lttng-modules|userspace-rcu"
 re="Depends-on: (${possible_depends_on}): ([^'$'\n'']*)"
@@ -75,23 +75,52 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
     echo "${project_sanitize^^}_RUN_TESTS=no" >> "$property_file"
 
     # Get the change latest ref
-    ref=$(curl "${gerrit_url}/changes/${gerrit_id}${gerrit_query}" | tail -n+2 | jq -r "$gerrit_json_query")
-    change_status=$(curl "${gerrit_url}/changes/${gerrit_id}${gerrit_query}" | tail -n+2 | jq -r "$gerrit_json_query_status")
+    case $project in
+        lttng-*)
+            # This is necessary since a cherry pick can have the same change id
+            # across branches. Still this is only valid for projects where the
+            # branch name fits the same branch name style of the lttng-tools
+            # project.
+            # We will need to be much more clever if the situation arise where
+            # we need to depends-on a cherry picked change id for the
+            # userspace-rcu or babeltrace project. Until then let's use this
+            # hack. The quick solution to this is to tell the committer to change
+            # the change id. We could also be clever and require that the
+            # "branch name" be included in the `Depends-on` clause.
+            local_query="${gerrit_url}/changes/?q=change:${gerrit_id}+branch:${GERRIT_BRANCH}${gerrit_query}"
+	    default_branch="${GERRIT_BRANCH}"
+            ;;
+        *)
+            local_query="${gerrit_url}/changes/?q=change:${gerrit_id}${gerrit_query}"
+	    default_branch="master"
+            ;;
+    esac
+
+    json_doc=$(curl "$local_query" | tail -n+2)
+    count=$(jq -r '. | length' <<< "$json_doc")
+    if [ "$count" != "1" ]; then
+	    echo "Expected an array of size 1 got $count"
+	    exit 1
+    fi
+
+    ref=$(jq -r "$gerrit_json_query" <<< "$json_doc")
+    change_status=$(jq -r "$gerrit_json_query_status" <<< "$json_doc")
     if [ "$change_status" == "MERGED" ]; then
 	    # When the change we depends on is merged use master as the ref.
 	    # This is not ideal CI time wise since we do not reuse artifacts.
 	    # This solve a tricky situation where we actually want to use master
 	    # instead of the change available on gerrit. Intermediary changes
 	    # present in master could have an impact on the change under test.
-	    ref="refs/heads/master"
+	    echo "Depends-on change is MERGED. Defaulting to ${default_branch}"
+	    ref="refs/heads/$default_branch"
     elif [ "$change_status" == "ABANDONED" ]; then
 	    # We have a situation where the "HEAD" commit for feature branch are
 	    # not merged and abandoned. Default to the master branch and hope
 	    # for the best. This is far from ideal but we need might also need
 	    # to find a better way to handle feature branch here. In the
 	    # meantime use master for such cases.
-	    echo "Depends-on change is ABANDONED. Defaulting to master"
-	    ref="refs/heads/master"
+	    echo "Depends-on change is ABANDONED. Defaulting to ${default_branch}"
+	    ref="refs/heads/${default_branch}"
     fi
 
     # The build.sh script from userspace-rcu expects the source to be located in
