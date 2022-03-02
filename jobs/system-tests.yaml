@@ -335,8 +335,8 @@
       - master
     lttngversion:
       - master
-      - stable-2.11
       - stable-2.12
+      - stable-2.13
     jobs:
       - 'vm_tests_k{kversion}_l{lttngversion}'
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
@@ -347,19 +347,20 @@
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     kversion:
       - canary
-      - linux-4.4.y
       - linux-4.9.y
       - linux-4.14.y
       - linux-4.19.y
-      - linux-5.0.y
-      - linux-5.1.y
       - linux-5.4.y
+      - linux-5.10.y
+      - linux-5.15.y
+      - linux-5.16.y
     lttngversion:
       - canary
       - master
       - stable-2.10
       - stable-2.11
       - stable-2.12
+      - stable-2.13
     jobs:
       - 'vm_tests_k{kversion}_l{lttngversion}'
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
@@ -373,6 +374,7 @@
       - stable-2.10
       - stable-2.11
       - stable-2.12
+      - stable-2.13
     jobs:
       - 'vm_tests_k{kversion}_l{lttngversion}'
 
