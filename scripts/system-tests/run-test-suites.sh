@@ -71,22 +71,11 @@ verne() {
 lttng_version="$1"
 failed_tests=0
 
-if [[ "$lttng_version" == "master" ]]; then
-	make --keep-going check || failed_tests=1
-	# TODO: remove when root regression tests are merged with make check or
-	# in another make command.
-	if [ -f "./tests/root_regression" ]; then
-		cd "./tests" || exit 1
-		prove --nocolor --verbose --merge --exec '' - < root_regression || failed_tests=1
-		cd ..
-	fi
-elif vergte "$lttng_version" "2.13"; then
-	# All root regression are now part of the make check
-	# *destructive* tests are now part of the `make`-based test suites.
-	export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
-	make --keep-going check || failed_tests=1
-else
-	make --keep-going check || failed_tests=1
+export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
+
+make --keep-going check || failed_tests=1
+
+if [ -f "./tests/root_regression" ]; then
 	cd "./tests" || exit 1
 	prove --nocolor --verbose --merge --exec '' - < root_regression || failed_tests=1
 	cd ..
