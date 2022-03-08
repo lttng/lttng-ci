@@ -75,7 +75,7 @@ if [[ "$lttng_version" == "master" ]]; then
 	make --keep-going check || failed_tests=1
 	# TODO: remove when root regression tests are merged with make check or
 	# in another make command.
-	if [ -f "./tests/long_regression" ]; then
+	if [ -f "./tests/root_regression" ]; then
 		cd "./tests" || exit 1
 		prove --nocolor --verbose --merge --exec '' - < root_regression || failed_tests=1
 		cd ..
