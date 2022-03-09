@@ -712,10 +712,16 @@
           liburcu_version: 'stable-0.13'
           filter: ''
           babeltrace_version: stable-2.0
-
       - 'dev_gerrit_lttng-ust_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [agents]
+          liburcu_version: !!python/tuple [stable-0.13]
+          filter: ''
+      - 'dev_gerrit_lttng-ust_{buildtype}':
+          buildtype: freebsdbuild
+          arch: !!python/tuple [freebsd]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
           liburcu_version: !!python/tuple [stable-0.13]
