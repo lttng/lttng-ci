@@ -965,6 +965,15 @@ EOF
 known_failures_file="known-failures-${target_board}"
 grep --invert-match --fixed-strings --file="$known_failures_file"  "${WORKSPACE}/results/gdb.sum" > "${WORKSPACE}/results/gdb.filtered.sum"
 
+# For informational purposes: check if some known failure lines did not appear
+# in the gdb.sum.
+echo "Known failures that don't appear in gdb.sum:"
+while read line; do
+    if ! grep --silent --fixed-strings "$line" "${WORKSPACE}/results/gdb.sum"; then
+        echo "$line"
+    fi
+done < "$known_failures_file"
+
 # Convert results to JUnit format.
 failed_tests=0
 sum2junit "${WORKSPACE}/results/gdb.filtered.sum" "${WORKSPACE}/results/gdb.xml" || failed_tests=1
