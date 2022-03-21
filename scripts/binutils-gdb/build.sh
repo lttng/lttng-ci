@@ -208,6 +208,9 @@ $MAKE -j "$($NPROC)" V=1 MAKEINFO=/bin/true
 # Install in the workspace
 $MAKE install DESTDIR="$WORKSPACE"
 
+# Allow core dumps
+ulimit -c unlimited
+
 case "$target_board" in
 unix | native-gdbserver | native-extended-gdbserver)
     RUNTESTFLAGS="--target_board=$target_board"
@@ -218,6 +221,9 @@ unix | native-gdbserver | native-extended-gdbserver)
     exit 1
     ;;
 esac
+
+# Generate a core file of GDB if it internal errors.
+RUNTESTFLAGS="$RUNTESTFLAGS GDBFLAGS='-iex maint\ set\ internal-error\ corefile\ yes'"
 
 # Run tests, don't fail now, we know that "make check" is going to fail,
 # since some tests don't pass.
