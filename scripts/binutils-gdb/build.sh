@@ -117,7 +117,6 @@ WORKSPACE=${WORKSPACE:-}
 arch=${arch:-}
 conf=${conf:-}
 build=${build:-}
-cc=${cc:-}
 
 
 SRCDIR="$WORKSPACE/src/binutils-gdb"
