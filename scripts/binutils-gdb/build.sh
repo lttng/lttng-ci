@@ -362,13 +362,6 @@ sum2junit "${WORKSPACE}/results/gdb.filtered.sum" "${WORKSPACE}/results/gdb.xml"
 # Clean the build directory
 $MAKE clean
 
-# Cleanup rpath in executables and shared libraries
-#find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-#find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
-
-# Remove libtool .la files
-find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
-
 # Exit with failure if any of the tests failed
 exit $failed_tests
 
