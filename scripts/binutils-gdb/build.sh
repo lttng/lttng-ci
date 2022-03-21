@@ -83,9 +83,11 @@ for line in sys.stdin:
     if state in ("PASS", "XFAIL", "KFAIL"):
         pass_count += 1
     elif state in ("FAIL", "XPASS"):
+        print("{}: {}".format(state, testcase_name), file=sys.stderr)
         fail_count += 1
         SubElement(testcase, "failure", {"type": state})
     elif state in ("UNRESOLVED", "DUPLICATE"):
+        print("{}: {}".format(state, testcase_name), file=sys.stderr)
         error_count += 1
         SubElement(testcase, "error", {"type": state})
     elif state in ("UNTESTED", "UNSUPPORTED"):
