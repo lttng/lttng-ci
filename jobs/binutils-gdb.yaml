@@ -50,6 +50,25 @@
          type: slave
          name: arch
          values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: target_board
+         values: '{obj:target_board}'
+
+    builders:
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/binutils-gdb/build.sh
+
+    publishers:
+      - archive:
+          artifacts: 'build/**,results/**'
+          allow-empty: false
+      - junit:
+          results: 'results/*.xml'
+      - email:
+          recipients: 'simon.marchi@efficios.com'
 
     builders:
       - shell:
@@ -70,6 +89,8 @@
     name: dev_gerrit_binutils-gdb_build
     defaults: binutils-gdb
     concurrent: true
+
+    project-type: matrix
 
     scm:
       - git:
@@ -93,7 +114,16 @@
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
 
-    node: 'amd64'
+    node: 'master'
+    axes:
+      - axis:
+         type: slave
+         name: arch
+         values: '{obj:arch}'
+      - axis:
+         type: user-defined
+         name: target_board
+         values: '{obj:target_board}'
 
     builders:
       - shell:
@@ -128,11 +158,14 @@
     jobs:
       - 'binutils-gdb_{version}_build':
           arch: !!python/tuple [amd64]
+          target_board: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver"]
 
 - project:
     name: gerrit-gdb
     jobs:
-      - 'dev_gerrit_binutils-gdb_build'
+      - 'dev_gerrit_binutils-gdb_build':
+          arch: !!python/tuple [amd64]
+          target_board: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver"]
 
 - project:
     name: gdb-views
