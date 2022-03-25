@@ -151,6 +151,7 @@ export BABELTRACE_PLUGIN_PATH="$DEPS_LIB/babeltrace2/plugins/"
 export LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="$DEPS_LIB/babeltrace2/plugin-providers/"
 
 export CFLAGS="-g -O2"
+export CXXFLAGS="-g -O2"
 
 # Set compiler variables
 case "$cc" in
@@ -281,6 +282,13 @@ cygwin|cygwin64|msys32|msys64)
     DEPS_PYTHON3="$WORKSPACE/deps/build/lib/python$P3_VERSION/site-packages"
     ;;
 esac
+
+# The missing-field-initializers warning code is very dumb in GCC 4.8 on
+# SLES12, disable it even if it's available.
+if [ "$arch" = "sles12sp5" ]; then
+	CFLAGS="$CFLAGS -Wno-missing-field-initializers"
+	CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers"
+fi
 
 case "$test_type" in
 full)
