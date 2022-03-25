@@ -161,21 +161,21 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std
+                project: '{job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=${{conf}},build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
+                project: '{job_prefix}lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -188,14 +188,14 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                project: '{job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -208,21 +208,21 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                project: '{job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std
+                project: '{job_prefix}lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -235,14 +235,14 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                project: '{job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -255,21 +255,21 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=debug-rcu,build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=debug-rcu,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                project: '{job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=debug-rcu,build=std
+                project: '{job_prefix}lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=debug-rcu,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -282,21 +282,21 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=tls_fallback,build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=tls_fallback,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std
+                project: '{job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
                 target: 'deps'
                 do-not-fingerprint: true
             - copyartifact:
-                project: lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=tls_fallback,build=std
+                project: '{job_prefix}lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=tls_fallback,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -432,75 +432,8 @@
                  - scripts/common/print.sh
                  - scripts/lttng-tools/build.sh
 
-- lttng-tools_build_publishers_dev: &lttng-tools_build_publishers_dev
-    name: 'lttng-tools_build_publishers_dev'
-    publishers:
-      - postbuildscript:
-          mark-unstable-if-failed: false
-          builders:
-            - role: SLAVE
-              build-on:
-                  - FAILURE
-              build-steps:
-                  - shell:
-                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
-      - postbuildscript:
-          mark-unstable-if-failed: true
-          builders:
-            - role: SLAVE
-              build-on:
-                  - SUCCESS
-                  - UNSTABLE
-                  - NOT_BUILT
-                  - ABORTED
-                  - FAILURE
-              build-steps:
-                  - shell:
-                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
-      - tap:
-          results: 'tap/**/*.*'
-          fail-if-no-results: true
-          failed-tests-mark-build-as-failure: true
-          todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - archive:
-          artifacts: 'build/**,deps/**,tap/**'
-          allow-empty: false
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
-      - email-ext:
-          recipients: '{obj:email_to}'
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
-
-- lttng-tools_build_publishers_prod: &lttng-tools_build_publishers_prod
-    name: 'lttng-tools_build_publishers_prod'
+- lttng-tools_build_publishers_defaults: &lttng-tools_build_publishers_defaults
+    name: 'lttng-tools_build_publishers_defaults'
     publishers:
       - postbuildscript:
           mark-unstable-if-failed: false
@@ -620,13 +553,28 @@
 
     <<: *lttng-tools_build_axes_defaults
     <<: *lttng-tools_build_builders_defaults
-    <<: *lttng-tools_build_publishers_prod
+    <<: *lttng-tools_build_publishers_defaults
 
     triggers:
       - pollscm:
           cron: "@hourly"
       - reverse:
             jobs: 'lttng-ust_{version}_{buildtype}'
+            result: 'success'
+
+- job-template:
+    name: '{job_prefix}lttng-tools_{version}_{buildtype}'
+    defaults: lttng-tools
+
+    <<: *lttng-tools_build_axes_defaults
+    <<: *lttng-tools_build_builders_defaults
+    <<: *lttng-tools_build_publishers_defaults
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+      - reverse:
+            jobs: '{job_prefix}lttng-ust_{version}_{buildtype}'
             result: 'success'
 
 - job-template:
@@ -646,13 +594,39 @@
 
     <<: *lttng-tools_build_axes_defaults
     <<: *lttng-tools_build_builders_defaults
-    <<: *lttng-tools_build_publishers_prod
+    <<: *lttng-tools_build_publishers_defaults
 
     triggers:
       - pollscm:
           cron: "@hourly"
       - reverse:
             jobs: 'lttng-ust_{version}_{buildtype}'
+            result: 'success'
+
+- job-template:
+    name: '{job_prefix}lttng-tools_{version}_long_regression'
+    defaults: lttng-tools
+    wrappers:
+      - ansicolor
+      - timeout:
+          timeout: 45
+          fail: true
+          type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
+      - timestamps
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+
+    <<: *lttng-tools_build_axes_defaults
+    <<: *lttng-tools_build_builders_defaults
+    <<: *lttng-tools_build_publishers_defaults
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+      - reverse:
+            jobs: '{job_prefix}lttng-ust_{version}_{buildtype}'
             result: 'success'
 
 - job-template:
@@ -674,13 +648,42 @@
 
     <<: *lttng-tools_build_axes_rootbuild
     <<: *lttng-tools_build_builders_defaults
-    <<: *lttng-tools_build_publishers_prod
+    <<: *lttng-tools_build_publishers_defaults
 
     triggers:
       - pollscm:
           cron: "@hourly"
       - reverse:
             jobs: 'lttng-ust_{version}_build'
+            result: 'success'
+
+
+- job-template:
+    name: '{job_prefix}lttng-tools_{version}_rootbuild'
+    defaults: lttng-tools
+
+    scm:
+      - git: *lttng-tools_default_git
+      - git: *lttng-modules_default_git
+
+    wrappers:
+      - ansicolor
+      - timeout:
+          timeout: 10
+          fail: true
+          type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
+      - timestamps
+
+    <<: *lttng-tools_build_axes_rootbuild
+    <<: *lttng-tools_build_builders_defaults
+    <<: *lttng-tools_build_publishers_defaults
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+      - reverse:
+            jobs: '{job_prefix}lttng-ust_{version}_build'
             result: 'success'
 
 - job-template:
@@ -692,12 +695,12 @@
     <<: *lttng-tools_build_publishers_win
 
 - job-template:
-    name: dev_{user}_lttng-tools_{version}_{buildtype}
+    name: 'dev_{user}_lttng-tools_{version}_{buildtype}'
     defaults: lttng-tools
 
     <<: *lttng-tools_build_axes_defaults
     <<: *lttng-tools_build_builders_defaults
-    <<: *lttng-tools_build_publishers_dev
+    <<: *lttng-tools_build_publishers_defaults
 
 - job-template:
     name: dev_gerrit_lttng-tools_{buildtype}
@@ -1059,6 +1062,7 @@
 ## Projects
 - project:
     name: lttng-tools
+    job_prefix: ''
     github_user: lttng
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     version:
@@ -1156,6 +1160,14 @@
           babelversion: !!python/tuple [stable-2.0]
           testtype: !!python/tuple [base]
           filter: ''
+      - 'lttng-tools_{version}_scan-build':
+          version: master
+          urcuversion: master
+          ustversion: master
+      - 'lttng-tools_{version}_coverity':
+          version: master
+          urcuversion: master
+          ustversion: master
 
       # stable-2.13
       - 'lttng-tools_{version}_{buildtype}':
@@ -1250,6 +1262,14 @@
           ustversion: stable-2.13
           urcuversion: stable-0.13
           babelversion: stable-2.0
+      - 'lttng-tools_{version}_scan-build':
+          version: stable-2.13
+          urcuversion: stable-0.13
+          ustversion: stable-2.13
+      - 'lttng-tools_{version}_coverity':
+          version: stable-2.13
+          urcuversion: stable-0.13
+          ustversion: stable-2.13
 
       # stable-2.12
       - 'lttng-tools_{version}_{buildtype}':
@@ -1344,103 +1364,94 @@
           ustversion: stable-2.12
           urcuversion: stable-0.12
           babelversion: stable-2.0
+      - 'lttng-tools_{version}_scan-build':
+          version: stable-2.12
+          urcuversion: stable-0.12
+          ustversion: stable-2.12
+      - 'lttng-tools_{version}_coverity':
+          version: stable-2.12
+          urcuversion: stable-0.12
+          ustversion: stable-2.12
 
+      # Other jobs
+      - 'lttng-tools_{version}_cppcheck'
+
+- project:
+    name: dev_upstream_lttng-tools
+    job_prefix: 'dev_upstream_'
+    github_user: lttng
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
+    jobs:
       # stable-2.11
-      - 'lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: stable-2.11
           ustversion: stable-2.11
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
-          urcuversion: !!python/tuple [stable-0.13]
+          urcuversion: !!python/tuple [stable-0.11]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
-          filter: '(build=="std") || ((babeltrace_version=="stable-1.5" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
-      - 'lttng-tools_{version}_{buildtype}':
+          filter: '(build=="std") || (conf=="std" || conf=="agents" || conf=="no-ust")'
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.11
           ustversion: stable-2.11
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, no-ust, agents]
-          urcuversion: !!python/tuple [stable-0.13]
+          urcuversion: !!python/tuple [stable-0.11]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.11
           ustversion: stable-2.11
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          urcuversion: !!python/tuple [stable-0.13]
+          urcuversion: !!python/tuple [stable-0.11]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.11
           ustversion: stable-2.11
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          urcuversion: !!python/tuple [stable-0.13]
+          urcuversion: !!python/tuple [stable-0.11]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
-          buildtype: macosbuild
-          version: stable-2.11
-          ustversion: stable-2.11
-          arch: !!python/tuple [macos-amd64, macos-arm64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [stable-0.13]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-          filter: ''
-      - 'lttng-tools_{version}_winbuild':
-          version: stable-2.11
-          ustversion: stable-2.11
-          arch: !!python/tuple [cygwin64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [stable-0.13]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-          filter: ''
-      - 'lttng-tools_{version}_long_regression':
+      - '{job_prefix}lttng-tools_{version}_long_regression':
           buildtype: build
           version: stable-2.11
           ustversion: stable-2.11
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          urcuversion: !!python/tuple [stable-0.13]
+          urcuversion: !!python/tuple [stable-0.11]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [full]
           filter: ''
-      - 'lttng-tools_{version}_rootbuild':
+      - '{job_prefix}lttng-tools_{version}_rootbuild':
           buildtype: build
           version: stable-2.11
           ustversion: stable-2.11
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          urcuversion: !!python/tuple [stable-0.13]
+          urcuversion: !!python/tuple [stable-0.11]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
-      - 'lttng-tools_{version}_release':
-          version: v2.11
-          ustversion: stable-2.11
-          urcuversion: stable-0.13
-          babelversion: stable-1.5
 
       # stable-2.10
-      - 'lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: build
           version: stable-2.10
           ustversion: stable-2.10
@@ -1450,8 +1461,8 @@
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
-          filter: '(build=="std") || ((babeltrace_version=="stable-1.5" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
-      - 'lttng-tools_{version}_{buildtype}':
+          filter: '(build=="std") || (conf=="std" || conf=="agents" || conf=="no-ust")'
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.10
           ustversion: stable-2.10
@@ -1462,7 +1473,7 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.10
           ustversion: stable-2.10
@@ -1473,7 +1484,7 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.10
           ustversion: stable-2.10
@@ -1484,28 +1495,7 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
           filter: ''
-      - 'lttng-tools_{version}_{buildtype}':
-          buildtype: macosbuild
-          version: stable-2.10
-          ustversion: stable-2.10
-          arch: !!python/tuple [macos-amd64, macos-arm64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-          filter: ''
-      - 'lttng-tools_{version}_winbuild':
-          version: stable-2.10
-          ustversion: stable-2.10
-          arch: !!python/tuple [cygwin64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [relayd-only]
-          urcuversion: !!python/tuple [stable-0.9]
-          babelversion: !!python/tuple [stable-1.5]
-          testtype: !!python/tuple [base]
-          filter: ''
-      - 'lttng-tools_{version}_long_regression':
+      - '{job_prefix}lttng-tools_{version}_long_regression':
           buildtype: build
           version: stable-2.10
           ustversion: stable-2.10
@@ -1516,33 +1506,10 @@
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [full]
           filter: ''
-      - 'lttng-tools_{version}_release':
-          version: v2.10
-          ustversion: stable-2.10
-          urcuversion: stable-0.9
-          babelversion: stable-1.5
-
-      - 'lttng-tools_{version}_cppcheck'
-      - 'lttng-tools_{version}_scan-build':
-          version: master
-          urcuversion: master
-          ustversion: master
-      - 'lttng-tools_{version}_scan-build':
-          version: stable-2.11
-          urcuversion: stable-0.13
-          ustversion: stable-2.11
-      - 'lttng-tools_{version}_scan-build':
-          version: stable-2.10
-          urcuversion: stable-0.9
-          ustversion: stable-2.10
-      - 'lttng-tools_{version}_coverity':
-          version: master
-          urcuversion: master
-          ustversion: master
-
 
 - project:
     name: dev_jgalar_lttng-tools
+    job_prefix: 'dev_jgalar_'
     user: jgalar
     github_user: jgalar
     email_to: 'jgalar@efficios.com'
@@ -1671,6 +1638,7 @@
 
 - project:
     name: gerrit-lttng-tools
+    job_prefix: ''
     github_user: lttng
     jobs:
       - 'dev_gerrit_lttng-tools_{buildtype}':
