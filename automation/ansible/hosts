@@ -26,6 +26,9 @@ ci-node-deb11-arm64-02
 ci-node-deb11-arm64-03
 ci-node-deb11-arm64-04
 
+[node_arm64:vars]
+ansible_python_interpreter=python3
+
 [node_powerpc]
 #ci-node-sid-powerpc-01
 ci-node-sid-powerpc-03
@@ -63,17 +66,6 @@ ci-node-bionic-amd64-03-08
 ci-node-bionic-amd64-03-09
 ci-node-bionic-amd64-03-10
 
-ci-node-bionic-amd64-04-01
-ci-node-bionic-amd64-04-02
-ci-node-bionic-amd64-04-03
-ci-node-bionic-amd64-04-04
-ci-node-bionic-amd64-04-05
-ci-node-bionic-amd64-04-06
-ci-node-bionic-amd64-04-07
-ci-node-bionic-amd64-04-08
-ci-node-bionic-amd64-04-09
-ci-node-bionic-amd64-04-10
-
 ci-node-bionic-amd64-05-01
 ci-node-bionic-amd64-05-02
 ci-node-bionic-amd64-05-03
@@ -86,9 +78,22 @@ ci-node-bionic-amd64-05-08
 ci-node-bionic-amd64-05-09
 ci-node-bionic-amd64-05-10
 
+ci-node-bionic-amd64-06-01
+ci-node-bionic-amd64-06-02
+ci-node-bionic-amd64-06-03
+ci-node-bionic-amd64-06-04
+ci-node-bionic-amd64-06-05
+ci-node-bionic-amd64-06-06
+ci-node-bionic-amd64-06-07
+ci-node-bionic-amd64-06-08
+ci-node-bionic-amd64-06-09
+ci-node-bionic-amd64-06-10
+
 [node_standalone]
+ci-rootnode-bionic-amd64-01
 ci-rootnode-bionic-amd64-02
 ci-rootnode-bionic-amd64-03
+ci-rootnode-bionic-amd64-06
 
 [node_sles]
 ci-node-sles12sp5-amd64-03-01
