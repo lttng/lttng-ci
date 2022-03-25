@@ -94,7 +94,7 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -108,7 +108,7 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=debug-rcu,build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=debug-rcu,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -121,7 +121,7 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=tls_fallback,build=std
+                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=tls_fallback,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -214,15 +214,8 @@
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
 
-## Templates
-- job-template:
-    name: lttng-ust_{version}_{buildtype}
-    defaults: lttng-ust
-
-    <<: *lttng-ust_build_axes_defaults
-    <<: *lttng-ust_build_builders_defaults
-
-    # TODO: Scan for open tasks
+- lttng-ust_build_publishers_defaults: &lttng-ust_build_publishers_defaults
+    name: 'lttng-ust_build_publishers_defaults'
     publishers:
       - tap:
           results: 'tap/**/*.log'
@@ -264,6 +257,25 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
+
+
+## Templates
+- job-template:
+    name: lttng-ust_{version}_{buildtype}
+    defaults: lttng-ust
+
+    <<: *lttng-ust_build_axes_defaults
+    <<: *lttng-ust_build_builders_defaults
+    <<: *lttng-ust_build_publishers_defaults
+
+
+- job-template:
+    name: '{job_prefix}lttng-ust_{version}_{buildtype}'
+    defaults: lttng-ust
+
+    <<: *lttng-ust_build_axes_defaults
+    <<: *lttng-ust_build_builders_defaults
+    <<: *lttng-ust_build_publishers_defaults
 
 - job-template:
     name: dev_gerrit_lttng-ust_{buildtype}
@@ -491,6 +503,7 @@
 ## Projects
 - project:
     name: lttng-ust
+    job_prefix: ''
     github_user: lttng
     github_name: lttng-ust
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
@@ -619,81 +632,86 @@
       - 'lttng-ust_{version}_scan-build':
           version: stable-2.12
 
+
+- project:
+    name: lttng-ust-dev-upstream
+    job_prefix: dev_upstream_
+    github_user: lttng
+    github_name: lttng-ust
+    email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
+    jobs:
       ## Stable 2.11 ##
-      - 'lttng-ust_{version}_{buildtype}':
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: stable-2.11
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.13, master]
-          filter: '(build=="std") || ((liburcu_version=="stable-0.13" && (conf=="std" || conf=="agents")))'
-      - 'lttng-ust_{version}_{buildtype}':
+          liburcu_version: !!python/tuple [stable-0.11]
+          filter: '(build=="std") || (conf=="std" || conf=="agents")'
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.11
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.13, master]
+          conf: !!python/tuple [agents]
+          liburcu_version: !!python/tuple [stable-0.11]
           filter: ''
-      - 'lttng-ust_{version}_{buildtype}':
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.11
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.13, master]
+          liburcu_version: !!python/tuple [stable-0.11]
           filter: ''
-      - 'lttng-ust_{version}_{buildtype}':
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.11
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.13, master]
+          liburcu_version: !!python/tuple [stable-0.11]
           filter: ''
-      - 'lttng-ust_{version}_cppcheck':
-          version: stable-2.11
-      - 'lttng-ust_{version}_scan-build':
-          version: stable-2.11
 
       ## Stable 2.10 ##
-      - 'lttng-ust_{version}_{buildtype}':
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: stable-2.10
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, dist, oot, oot-dist]
           conf: !!python/tuple [std, agents, debug-rcu, tls_fallback]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12]
-          filter: '(build=="std") || ((liburcu_version=="stable-0.13" && (conf=="std" || conf=="agents")))'
-      - 'lttng-ust_{version}_{buildtype}':
+          liburcu_version: !!python/tuple [stable-0.9]
+          filter: '(build=="std") || (conf=="std" || conf=="agents")'
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.10
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12]
+          conf: !!python/tuple [agents]
+          liburcu_version: !!python/tuple [stable-0.9]
           filter: ''
-      - 'lttng-ust_{version}_{buildtype}':
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.10
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [agents]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12]
+          liburcu_version: !!python/tuple [stable-0.9]
           filter: ''
-      - 'lttng-ust_{version}_{buildtype}':
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.10
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-          liburcu_version: !!python/tuple [stable-0.9, stable-0.12]
+          liburcu_version: !!python/tuple [stable-0.9]
           filter: ''
 
 
 - project:
     name: gerrit-lttng-ust
+    job_prefix: ''
     github_user: lttng
     github_name: lttng-ust
     jobs:
