@@ -345,17 +345,22 @@ def kversionFactory = ""
 if (uversion != null) {
   kversionFactory = new UbuntuKVersion()
   switch (uversion) {
+    case 'jammy':
+      matchStrs = [
+        ~/^refs\/tags\/(Ubuntu-5\.15\.0-\d{1,3}?\.[\d]+)$/,
+      ]
+      break
+
     case 'focal':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-5\.4\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-5\.8-5\.8\.0-.*_20\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-5\.13-5\.13\.0-.*_20\.04\.\d+)$/,
       ]
       break
 
     case 'bionic':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-4\.15\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-5\.0-5\.0\.0-.*_18\.04\.\d+)$/,
         ~/^refs\/tags\/(Ubuntu-hwe-5\.4-5\.4\.0-.*_18\.04\.\d+)$/,
       ]
       break

@@ -677,6 +677,7 @@
             - xenial
             - bionic
             - focal
+            - jammy
           buildtype: build
           parambuildtype: build
           kverfloor: ''
