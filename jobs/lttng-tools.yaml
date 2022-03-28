@@ -1066,8 +1066,6 @@
     github_user: lttng
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     version:
-      - stable-2.10
-      - stable-2.11
       - stable-2.12
       - stable-2.13
       - master
@@ -1400,7 +1398,7 @@
           ustversion: stable-2.11
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, agents]
+          conf: !!python/tuple [no-ust, agents]
           urcuversion: !!python/tuple [stable-0.11]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
@@ -1468,7 +1466,7 @@
           ustversion: stable-2.10
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
-          conf: !!python/tuple [std, no-ust, agents]
+          conf: !!python/tuple [no-ust, agents]
           urcuversion: !!python/tuple [stable-0.9]
           babelversion: !!python/tuple [stable-1.5]
           testtype: !!python/tuple [base]
