@@ -94,7 +94,7 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std'
+                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=std,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -108,7 +108,7 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=debug-rcu,build=std'
+                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=debug-rcu,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -121,7 +121,7 @@
           on-evaluation-failure: run
           steps:
             - copyartifact:
-                project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=tls_fallback,build=std'
+                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=$arch,conf=tls_fallback,build=std'
                 which-build: last-successful
                 stable: false
                 filter: 'build/**'
@@ -504,6 +504,7 @@
 - project:
     name: lttng-ust
     job_prefix: ''
+    urcu_job_prefix: ''
     github_user: lttng
     github_name: lttng-ust
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
@@ -636,6 +637,7 @@
 - project:
     name: lttng-ust-dev-upstream
     job_prefix: dev_upstream_
+    urcu_job_prefix: 'dev_upstream_'
     github_user: lttng
     github_name: lttng-ust
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
@@ -712,6 +714,7 @@
 - project:
     name: gerrit-lttng-ust
     job_prefix: ''
+    urcu_job_prefix: ''
     github_user: lttng
     github_name: lttng-ust
     jobs:
