@@ -121,11 +121,6 @@
       - archive:
           artifacts: 'build/**,tap/**'
           allow-empty: false
-      - ircbot:
-          strategy: new-failure-and-fixed
-          matrix-notifier: only-parent
-          channels:
-            - name: '#lttng'
       - email-ext:
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
