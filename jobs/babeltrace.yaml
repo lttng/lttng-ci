@@ -142,52 +142,32 @@
                  - scripts/common/print.sh
                  - scripts/babeltrace/build.sh
 
+# Use - in version number since yaml anchor do not support dot
+- babeltrace_build_builders_glib-2-28-6: &babeltrace_build_builders_glib-2-28-6
+    name: 'babeltrace_build_builders_glib-2-28-6'
+    builders:
+      - inject:
+          properties-content: |
+            LD_LIBRARY_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib
+            PKG_CONFIG_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib/pkgconfig
+            arch=amd64
+            conf=std
+            build=std
+      - shell: |
+          wget http://ftp.gnome.org/pub/gnome/sources/glib/2.28/glib-2.28.6.tar.gz
+          tar xvf glib-2.28.6.tar.gz
+          cd glib-2.28.6
+          mkdir BUILD_RESULT
+          ./configure --prefix=$WORKSPACE/glib-2.28.6/BUILD_RESULT
+          make -j `nproc` >/dev/null 2>&1 # Hide warnings
+          make install
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/babeltrace/build.sh
 
-- babeltrace_build_publishers_dev: &babeltrace_build_publishers_dev
-    name: 'babeltrace_build_publishers_dev'
-    publishers:
-      - tap:
-          results: 'tap/**/*.log'
-          fail-if-no-results: true
-          failed-tests-mark-build-as-failure: true
-          todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - archive:
-          artifacts: 'tap/**'
-          allow-empty: false
-      - email-ext:
-          recipients: '{obj:email_to}'
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
-
-
-- babeltrace_build_publishers_prod: &babeltrace_build_publishers_prod
-    name: 'babeltrace_build_publishers_prod'
+- babeltrace_build_publishers_defaults: &babeltrace_build_publishers_defaults
+    name: 'babeltrace_build_publishers_defaults'
     publishers:
       - tap:
           results: 'tap/**/*.log'
@@ -259,7 +239,7 @@
 
     <<: *babeltrace_build_axes_defaults
     <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_prod
+    <<: *babeltrace_build_publishers_defaults
 
 - job-template:
     name: '{job_prefix}babeltrace_{version}_{buildtype}'
@@ -267,7 +247,7 @@
 
     <<: *babeltrace_build_axes_defaults
     <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_prod
+    <<: *babeltrace_build_publishers_defaults
 
 - job-template:
     name: babeltrace_{version}_{cctype}
@@ -275,7 +255,7 @@
 
     <<: *babeltrace_build_axes_cc
     <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_prod
+    <<: *babeltrace_build_publishers_defaults
 
 - job-template:
     name: babeltrace_{version}_winbuild
@@ -283,15 +263,7 @@
 
     <<: *babeltrace_build_axes_defaults
     <<: *babeltrace_build_builders_win
-    <<: *babeltrace_build_publishers_prod
-
-- job-template:
-    name: dev_{user}_babeltrace_{version}_{buildtype}
-    defaults: babeltrace
-
-    <<: *babeltrace_build_axes_defaults
-    <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_dev
+    <<: *babeltrace_build_publishers_defaults
 
 - job-template:
     name: dev_gerrit_babeltrace_{buildtype}
@@ -587,94 +559,21 @@
           send-to:
             - recipients
 
-# Use - in version number since yaml anchor do not support dot
-- babeltrace_version_glib-2-28-6_anchor: &babeltrace_version_glib-2-28-6_anchor
-    name: 'babeltrace_version_glib_anchor'
+- job-template:
+    name: babeltrace_{version}_glib-2.28.6
     defaults: babeltrace
     node: 'amd64'
 
-    builders:
-      - inject:
-          properties-content: |
-            LD_LIBRARY_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib
-            PKG_CONFIG_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib/pkgconfig
-            arch=amd64
-            conf=std
-            build=std
-      - shell: |
-          wget http://ftp.gnome.org/pub/gnome/sources/glib/2.28/glib-2.28.6.tar.gz
-          tar xvf glib-2.28.6.tar.gz
-          cd glib-2.28.6
-          mkdir BUILD_RESULT
-          ./configure --prefix=$WORKSPACE/glib-2.28.6/BUILD_RESULT
-          make -j `nproc`
-          make install
-
-      - shell:
-         !include-raw-escape:
-           - scripts/common/print.sh
-           - scripts/babeltrace/build.sh
+    <<: *babeltrace_build_builders_glib-2-28-6
+    <<: *babeltrace_build_publishers_defaults
 
 - job-template:
-    name: babeltrace_{version}_glib-2.28.6
-    triggers:
-      - pollscm:
-          cron: "@daily"
-    <<: *babeltrace_version_glib-2-28-6_anchor
-    publishers:
-      - archive:
-          artifacts: 'tap/**'
-          allow-empty: false
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
+    name: '{job_prefix}babeltrace_{version}_glib-2.28.6'
+    defaults: babeltrace
+    node: 'amd64'
 
-- job-template:
-    name: dev_{user}_babeltrace_{version}_glib-2.28.6
-    <<: *babeltrace_version_glib-2-28-6_anchor
-
-    publishers:
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
+    <<: *babeltrace_build_builders_glib-2-28-6
+    <<: *babeltrace_build_publishers_defaults
 
 
 ## Views
@@ -685,36 +584,6 @@
 
 
 ## Projects
-- project:
-    name: dev_upstream_babeltrace
-    job_prefix: dev_upstream_
-    github_user: efficios
-    github_name: babeltrace
-    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
-    version:
-      - stable-1.5
-    jobs:
-      - '{job_prefix}babeltrace_{version}_{buildtype}':
-          buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist, oot-dist]
-          conf: !!python/tuple [std, static, python-bindings]
-      - '{job_prefix}babeltrace_{version}_{buildtype}':
-          buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, python-bindings]
-      - '{job_prefix}babeltrace_{version}_{buildtype}':
-          buildtype: slesbuild
-          arch: !!python/tuple [sles12sp5]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-      - '{job_prefix}babeltrace_{version}_{buildtype}':
-          buildtype: elbuild
-          arch: !!python/tuple [el8]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-
 - project:
     name: babeltrace2
     job_prefix: ''
@@ -801,21 +670,51 @@
 
 
 - project:
+    name: dev_upstream_babeltrace
+    job_prefix: dev_upstream_
+    github_user: efficios
+    github_name: babeltrace
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
+    version:
+      - stable-1.5
+    jobs:
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
+          buildtype: build
+          arch: !!python/tuple [amd64]
+          build: !!python/tuple [std, oot, dist, oot-dist]
+          conf: !!python/tuple [std, static, python-bindings]
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
+          buildtype: portbuild
+          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std, python-bindings]
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
+          buildtype: slesbuild
+          arch: !!python/tuple [sles12sp5]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
+          buildtype: elbuild
+          arch: !!python/tuple [el8]
+          build: !!python/tuple [std]
+          conf: !!python/tuple [std]
+
+
+- project:
     name: babeltrace-jgalar-staging
-    job_prefix: ''
-    user: jgalar
+    job_prefix: 'dev_jgalar_'
     github_user: jgalar
     github_name: babeltrace
     email_to: "jgalar@efficios.com"
     version:
       - stable-1.5-staging
     jobs:
-      - 'dev_{user}_babeltrace_{version}_{buildtype}':
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static, python-bindings]
-      - 'dev_{user}_babeltrace_{version}_{buildtype}':
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
           arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
@@ -824,8 +723,7 @@
 
 - project:
     name: babeltrace2-jgalar-staging
-    job_prefix: ''
-    user: jgalar
+    job_prefix: 'dev_jgalar_'
     github_user: jgalar
     github_name: babeltrace
     email_to: "jgalar@efficios.com"
@@ -833,15 +731,15 @@
       - stable-2.0-staging
       - master-staging
     jobs:
-      - 'dev_{user}_babeltrace_{version}_glib-2.28.6':
+      - '{job_prefix}babeltrace_{version}_glib-2.28.6':
           version:
             - master-staging
-      - 'dev_{user}_babeltrace_{version}_{buildtype}':
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist, oot-dist]
           conf: !!python/tuple [std, static, prod, min]
-      - 'dev_{user}_babeltrace_{version}_{buildtype}':
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
           arch: !!python/tuple [macos-amd64, macos-arm64]
           build: !!python/tuple [std]
