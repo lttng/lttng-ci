@@ -163,7 +163,7 @@
     <<: *liburcu_build_publishers_defaults
 
 - job-template:
-    name: dev_upstream_liburcu_{version}_{buildtype}
+    name: '{job_prefix}liburcu_{version}_{buildtype}'
     defaults: liburcu
 
     <<: *liburcu_build_axes_defaults
@@ -179,7 +179,7 @@
     <<: *liburcu_build_publishers_defaults
 
 - job-template:
-    name: dev_upstream_liburcu_{version}_winbuild
+    name: '{job_prefix}liburcu_{version}_winbuild'
     defaults: liburcu
 
     <<: *liburcu_build_axes_defaults
@@ -393,6 +393,7 @@
 
 - project:
     name: liburcu-dev-upstream
+    job_prefix: 'dev_upstream_'
     github_user: urcu
     github_name: userspace-rcu
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
@@ -401,22 +402,22 @@
       - stable-0.10
       - stable-0.11
     jobs:
-      - 'dev_upstream_liburcu_{version}_{buildtype}':
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: build
           arch: !!python/tuple [amd64]
           build: !!python/tuple [std, oot, dist]
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
-      - 'dev_upstream_liburcu_{version}_{buildtype}':
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: portbuild
           arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
           build: !!python/tuple [std]
           conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
-      - 'dev_upstream_liburcu_{version}_{buildtype}':
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: slesbuild
           arch: !!python/tuple [sles12sp5]
           build: !!python/tuple [std]
           conf: !!python/tuple [std]
-      - 'dev_upstream_liburcu_{version}_{buildtype}':
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: elbuild
           arch: !!python/tuple [el8]
           build: !!python/tuple [std]
