@@ -322,7 +322,7 @@
           allow-empty: false
 
 - view-template:
-    name: 'rseq'
+    name: 'Librseq'
     description: 'Restartable sequences'
     view-type: list
     regex: 'librseq_.*'
@@ -378,4 +378,4 @@
 - project:
     name: librseq-views
     views:
-      - rseq
+      - Librseq
