@@ -29,13 +29,9 @@ def trigger_jobs = [
   'lttng-modules_master_build-vanilla',
   'lttng-modules_stable-2.13_build-vanilla',
   'lttng-modules_stable-2.12_build-vanilla',
-  'lttng-modules_stable-2.11_build-vanilla',
-  'lttng-modules_stable-2.10_build-vanilla',
   'lttng-modules_master_crossbuild-vanilla',
   'lttng-modules_stable-2.13_crossbuild-vanilla',
   'lttng-modules_stable-2.12_crossbuild-vanilla',
-  'lttng-modules_stable-2.11_crossbuild-vanilla',
-  'lttng-modules_stable-2.10_crossbuild-vanilla',
 ]
 
 def previous_tags = []
