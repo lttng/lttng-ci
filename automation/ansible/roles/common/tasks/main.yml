@@ -27,6 +27,12 @@
     state: absent
     remove: yes
 
+- name: Remove debian user
+  user:
+    name: debian
+    state: absent
+    remove: yes
+
 - name: Create jenkins user
   user:
     name: 'jenkins'
