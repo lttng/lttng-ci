@@ -10,3 +10,5 @@ __lttng_modules_packages:
   - module-init-tools
   - liblz4-tool
   - dwarves
+  - dctrl-tools
+  - zstd
