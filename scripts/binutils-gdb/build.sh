@@ -256,7 +256,7 @@ FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: $saw_fatal_msg
 FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: [expr $internal_error_msg_count == 2]
 FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
 FAIL: gdb.base/step-over-syscall.exp: clone: displaced=off: single step over clone
-FAIL: gdb.cp/no-dmgl-verbose.exp: setting breakpoint at 'f(std::string)'
+FAIL: gdb.cp/no-dmgl-verbose.exp: gdb_breakpoint: set breakpoint at 'f(std::string)'
 FAIL: gdb.dwarf2/dw2-inline-param.exp: running to *0x608 in runto
 FAIL: gdb.gdb/python-interrupts.exp: run until breakpoint at captured_command_loop
 FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert -c "foo == 3" --source basics.c --function main --label label (unexpected output)
@@ -334,7 +334,7 @@ FAIL: gdb.base/interrupt-daemon.exp: bg: continue& (timeout)
 FAIL: gdb.base/interrupt-daemon.exp: bg: interrupt cmd stops process (timeout)
 FAIL: gdb.base/interrupt-daemon.exp: bg: interrupt (timeout)
 FAIL: gdb.base/interrupt-daemon.exp: fg: ctrl-c stops process (timeout)
-FAIL: gdb.cp/no-dmgl-verbose.exp: setting breakpoint at 'f(std::string)'
+FAIL: gdb.cp/no-dmgl-verbose.exp: gdb_breakpoint: set breakpoint at 'f(std::string)'
 FAIL: gdb.threads/forking-threads-plus-breakpoint.exp: cond_bp_target=0: detach_on_fork=on: displaced=off: inferior 1 exited (timeout)
 FAIL: gdb.threads/interrupted-hand-call.exp: continue until exit
 FAIL: gdb.threads/multiple-successive-infcall.exp: thread=3: created new thread
@@ -540,7 +540,7 @@ FAIL: gdb.cp/annota2.exp: delete bps
 FAIL: gdb.cp/annota2.exp: set watch on a.x (timeout)
 FAIL: gdb.cp/annota2.exp: watch triggered on a.x (timeout)
 FAIL: gdb.cp/annota3.exp: continue to exit (pattern 4)
-FAIL: gdb.cp/no-dmgl-verbose.exp: setting breakpoint at 'f(std::string)'
+FAIL: gdb.cp/no-dmgl-verbose.exp: gdb_breakpoint: set breakpoint at 'f(std::string)'
 FAIL: gdb.gdb/unittest.exp: executable loaded: maintenance selftest, failed none
 FAIL: gdb.gdb/unittest.exp: no executable loaded: maintenance selftest, failed none
 FAIL: gdb.mi/mi-exec-run.exp: inferior-tty=separate: mi=separate: force-fail=0: breakpoint hit reported on console (timeout)
