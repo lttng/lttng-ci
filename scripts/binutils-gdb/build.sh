@@ -167,7 +167,7 @@ case "$conf" in
     echo "Standard configuration"
 
     # Use system tools
-    CONF_OPTS+=("--disable-binutils" "--disable-ld" "--disable-gold" "--disable-gas" "--disable-sim" "--disable-gprof")
+    CONF_OPTS+=("--disable-binutils" "--disable-ld" "--disable-gold" "--disable-gas" "--disable-sim" "--disable-gprof" "--disable-gprofng")
 
     # Use system libs
     CONF_OPTS+=("--with-system-readline" "--with-system-zlib")
