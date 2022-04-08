@@ -426,28 +426,28 @@ UNRESOLVED: gdb.base/libsegfault.exp: gdb emits custom handler warning
 UNRESOLVED: gdb.base/readline-ask.exp: bell for more message
 UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
 UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
-FAIL: gdb.arch/ftrace-insn-reloc.exp: running to main in runto
-FAIL: gdb.dwarf2/clztest.exp: running to main in runto
+FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
+FAIL: gdb.dwarf2/clztest.exp: runto: run to main
 FAIL: gdb.dwarf2/dw2-inline-param.exp: running to *0x608 in runto
 FAIL: gdb.multi/multi-re-run.exp: re_run_inf=1: iter=1: running to all_started in runto
 FAIL: gdb.multi/multi-re-run.exp: re_run_inf=2: iter=1: running to all_started in runto
 KPASS: gdb.threads/process-dies-while-detaching.exp: single-process: continue: watchpoint:sw: continue (PRMS gdb/28375)
-FAIL: gdb.trace/change-loc.exp: 1 ftrace: running to main in runto
-FAIL: gdb.trace/change-loc.exp: InstallInTrace disabled: ftrace: running to main in runto
-FAIL: gdb.trace/ftrace-lock.exp: running to main in runto
-FAIL: gdb.trace/ftrace.exp: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace action_resolved: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace disconn: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace disconn_resolved: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace installed_in_trace: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace resolved_in_trace: running to main in runto
-FAIL: gdb.trace/range-stepping.exp: running to main in runto
-FAIL: gdb.trace/trace-break.exp: running to main in runto
-FAIL: gdb.trace/trace-condition.exp: running to main in runto
-FAIL: gdb.trace/trace-enable-disable.exp: test_tracepoint_enable_disable ftrace: running to main in runto
-FAIL: gdb.trace/trace-enable-disable.exp: test_tracepoint_enable_disable trace: running to main in runto
-FAIL: gdb.trace/trace-mt.exp: running to main in runto
-FAIL: gdb.trace/tspeed.exp: running to main in runto
+FAIL: gdb.trace/change-loc.exp: 1 ftrace: runto: run to main
+FAIL: gdb.trace/change-loc.exp: InstallInTrace disabled: ftrace: runto: run to main
+FAIL: gdb.trace/ftrace-lock.exp: runto: run to main
+FAIL: gdb.trace/ftrace.exp: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace action_resolved: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace disconn: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace disconn_resolved: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace installed_in_trace: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace resolved_in_trace: runto: run to main
+FAIL: gdb.trace/range-stepping.exp: runto: run to main
+FAIL: gdb.trace/trace-break.exp: runto: run to main
+FAIL: gdb.trace/trace-condition.exp: runto: run to main
+FAIL: gdb.trace/trace-enable-disable.exp: test_tracepoint_enable_disable ftrace: runto: run to main
+FAIL: gdb.trace/trace-enable-disable.exp: test_tracepoint_enable_disable trace: runto: run to main
+FAIL: gdb.trace/trace-mt.exp: runto: run to main
+FAIL: gdb.trace/tspeed.exp: runto: run to main
 EOF
 
 cat <<'EOF' > known-failures-native-extended-gdbserver
@@ -661,38 +661,38 @@ UNRESOLVED: gdb.mi/mi-exec-run.exp: inferior-tty=main: mi=separate: force-fail=1
 UNRESOLVED: gdb.mi/mi-exec-run.exp: inferior-tty=separate: mi=main: force-fail=1: run failure detected (eof)
 UNRESOLVED: gdb.mi/mi-exec-run.exp: inferior-tty=separate: mi=separate: force-fail=1: run failure detected (eof)
 UNRESOLVED: gdb.threads/attach-into-signal.exp: threaded: attach (pass 2), pending signal catch
-FAIL: gdb.arch/ftrace-insn-reloc.exp: running to main in runto
+FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
 FAIL: gdb.dwarf2/dw2-inline-param.exp: running to *0x608 in runto
-FAIL: gdb.multi/remove-inferiors.exp: running to main in runto
-FAIL: gdb.threads/access-mem-running-thread-exit.exp: non-stop: second inferior: running to main in runto
-FAIL: gdb.threads/break-while-running.exp: w/ithr: always-inserted off: non-stop: running to main in runto
-FAIL: gdb.threads/break-while-running.exp: w/ithr: always-inserted on: non-stop: running to main in runto
-FAIL: gdb.threads/break-while-running.exp: wo/ithr: always-inserted off: non-stop: running to main in runto
-FAIL: gdb.threads/break-while-running.exp: wo/ithr: always-inserted on: non-stop: running to main in runto
-FAIL: gdb.threads/gcore-stale-thread.exp: running to main in runto
-FAIL: gdb.threads/multi-create-ns-info-thr.exp: running to main in runto
-FAIL: gdb.threads/non-stop-fair-events.exp: running to main in runto
+FAIL: gdb.multi/remove-inferiors.exp: runto: run to main
+FAIL: gdb.threads/access-mem-running-thread-exit.exp: non-stop: second inferior: runto: run to main
+FAIL: gdb.threads/break-while-running.exp: w/ithr: always-inserted off: non-stop: runto: run to main
+FAIL: gdb.threads/break-while-running.exp: w/ithr: always-inserted on: non-stop: runto: run to main
+FAIL: gdb.threads/break-while-running.exp: wo/ithr: always-inserted off: non-stop: runto: run to main
+FAIL: gdb.threads/break-while-running.exp: wo/ithr: always-inserted on: non-stop: runto: run to main
+FAIL: gdb.threads/gcore-stale-thread.exp: runto: run to main
+FAIL: gdb.threads/multi-create-ns-info-thr.exp: runto: run to main
+FAIL: gdb.threads/non-stop-fair-events.exp: runto: run to main
 KPASS: gdb.threads/process-dies-while-detaching.exp: single-process: continue: watchpoint:sw: continue (PRMS gdb/28375)
-FAIL: gdb.threads/thread-execl.exp: non-stop: running to main in runto
-FAIL: gdb.threads/thread-specific-bp.exp: non-stop: running to main in runto
-FAIL: gdb.trace/change-loc.exp: 1 ftrace: running to main in runto
-FAIL: gdb.trace/change-loc.exp: InstallInTrace disabled: ftrace: running to main in runto
-FAIL: gdb.trace/ftrace-lock.exp: running to main in runto
-FAIL: gdb.trace/ftrace.exp: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace action_resolved: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace disconn: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace disconn_resolved: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace installed_in_trace: running to main in runto
-FAIL: gdb.trace/pending.exp: ftrace resolved_in_trace: running to main in runto
-FAIL: gdb.trace/range-stepping.exp: running to main in runto
-FAIL: gdb.trace/trace-break.exp: running to main in runto
-FAIL: gdb.trace/trace-condition.exp: running to main in runto
-FAIL: gdb.trace/trace-enable-disable.exp: test_tracepoint_enable_disable ftrace: running to main in runto
-FAIL: gdb.trace/trace-enable-disable.exp: test_tracepoint_enable_disable trace: running to main in runto
-FAIL: gdb.trace/trace-mt.exp: running to main in runto
-FAIL: gdb.trace/tspeed.exp: running to main in runto
-FAIL: gdb.trace/tspeed.exp: running to main in runto
-DUPLICATE: gdb.trace/tspeed.exp: running to main in runto
+FAIL: gdb.threads/thread-execl.exp: non-stop: runto: run to main
+FAIL: gdb.threads/thread-specific-bp.exp: non-stop: runto: run to main
+FAIL: gdb.trace/change-loc.exp: 1 ftrace: runto: run to main
+FAIL: gdb.trace/change-loc.exp: InstallInTrace disabled: ftrace: runto: run to main
+FAIL: gdb.trace/ftrace-lock.exp: runto: run to main
+FAIL: gdb.trace/ftrace.exp: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace action_resolved: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace disconn: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace disconn_resolved: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace installed_in_trace: runto: run to main
+FAIL: gdb.trace/pending.exp: ftrace resolved_in_trace: runto: run to main
+FAIL: gdb.trace/range-stepping.exp: runto: run to main
+FAIL: gdb.trace/trace-break.exp: runto: run to main
+FAIL: gdb.trace/trace-condition.exp: runto: run to main
+FAIL: gdb.trace/trace-enable-disable.exp: test_tracepoint_enable_disable ftrace: runto: run to main
+FAIL: gdb.trace/trace-enable-disable.exp: test_tracepoint_enable_disable trace: runto: run to main
+FAIL: gdb.trace/trace-mt.exp: runto: run to main
+FAIL: gdb.trace/tspeed.exp: runto: run to main
+FAIL: gdb.trace/tspeed.exp: runto: run to main
+DUPLICATE: gdb.trace/tspeed.exp: runto: run to main
 EOF
 
 known_failures_file="known-failures-${target_board}"
