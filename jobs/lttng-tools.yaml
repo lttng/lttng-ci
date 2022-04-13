@@ -1267,10 +1267,6 @@
           version: stable-2.13
           urcuversion: stable-0.13
           ustversion: stable-2.13
-      - 'lttng-tools_{version}_coverity':
-          version: stable-2.13
-          urcuversion: stable-0.13
-          ustversion: stable-2.13
 
       # stable-2.12
       - 'lttng-tools_{version}_{buildtype}':
@@ -1366,10 +1362,6 @@
           urcuversion: stable-0.12
           babelversion: stable-2.0
       - 'lttng-tools_{version}_scan-build':
-          version: stable-2.12
-          urcuversion: stable-0.12
-          ustversion: stable-2.12
-      - 'lttng-tools_{version}_coverity':
           version: stable-2.12
           urcuversion: stable-0.12
           ustversion: stable-2.12
