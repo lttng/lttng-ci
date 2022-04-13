@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PYTHON3="python3"
-P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
+P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 
 # Tox does not support long path venv for whatever reason.
 PYENV_HOME=$(mktemp -d)

@@ -23,7 +23,7 @@ set -exu
 SRCDIR="src/lttng-analyses"
 
 PYTHON3="python3"
-P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
+P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 
 BABELTRACE_DIR=$WORKSPACE/deps/babeltrace/build
 

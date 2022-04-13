@@ -128,8 +128,8 @@ PYTHON3=python3
 export PYTHON="$PYTHON3"
 export PYTHON_CONFIG="/usr/bin/$PYTHON3-config"
 
-P2_VERSION=$($PYTHON2 -c "import sys;print(sys.version[:3])")
-P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
+P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
+P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 
 UST_PYTHON2="$WORKSPACE/deps/build/lib/python$P2_VERSION/site-packages"
 UST_PYTHON3="$WORKSPACE/deps/build/lib/python$P3_VERSION/site-packages"
