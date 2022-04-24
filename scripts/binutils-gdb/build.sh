@@ -230,18 +230,6 @@ cp gdb/testsuite/gdb.sum "${WORKSPACE}/results/"
 
 # Filter out some known failures.  There is one file per target board.
 cat <<'EOF' > known-failures-unix
-FAIL: gdb.ada/interface.exp: print s
-FAIL: gdb.ada/iwide.exp: print d_access.all
-FAIL: gdb.ada/iwide.exp: print dp_access.all
-FAIL: gdb.ada/iwide.exp: print My_Drawable
-FAIL: gdb.ada/iwide.exp: print s_access.all
-FAIL: gdb.ada/iwide.exp: print sp_access.all
-FAIL: gdb.ada/mi_interface.exp: create ggg1 varobj (unexpected output)
-FAIL: gdb.ada/mi_interface.exp: list ggg1's children (unexpected output)
-FAIL: gdb.ada/tagged_access.exp: ptype c.all
-FAIL: gdb.ada/tagged_access.exp: ptype c.menu_name
-FAIL: gdb.ada/tagged.exp: print obj
-FAIL: gdb.ada/tagged.exp: ptype obj
 FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_bt_end
 FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_bt_start
 FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_fatal_msg
@@ -255,27 +243,13 @@ FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: $saw_bt_start
 FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: $saw_fatal_msg
 FAIL: gdb.base/bt-on-fatal-signal.exp: SEGV: [expr $internal_error_msg_count == 2]
 FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
-FAIL: gdb.base/step-over-syscall.exp: clone: displaced=off: single step over clone
 FAIL: gdb.cp/no-dmgl-verbose.exp: gdb_breakpoint: set breakpoint at 'f(std::string)'
-FAIL: gdb.dwarf2/dw2-inline-param.exp: running to *0x608 in runto
 FAIL: gdb.gdb/python-interrupts.exp: run until breakpoint at captured_command_loop
-FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert -c "foo == 3" --source basics.c --function main --label label (unexpected output)
-FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert --source basics.c --function foobar (unexpected output)
-FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert --source basics.c --function main --label foobar (unexpected output)
-FAIL: gdb.mi/mi-break.exp: mi-mode=main: test_explicit_breakpoints: -break-insert --source basics.c (unexpected output)
-FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert -c "foo == 3" --source basics.c --function main --label label (unexpected output)
-FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert --source basics.c --function foobar (unexpected output)
-FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert --source basics.c --function main --label foobar (unexpected output)
-FAIL: gdb.mi/mi-break.exp: mi-mode=separate: test_explicit_breakpoints: -break-insert --source basics.c (unexpected output)
-FAIL: gdb.mi/mi-breakpoint-changed.exp: test_auto_disable: -break-enable count 1 2 (unexpected output)
-FAIL: gdb.mi/mi-breakpoint-changed.exp: test_auto_disable: -break-insert -f pendfunc1 (unexpected output)
 FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=host: target-non-stop=on: non-stop=on: displaced=off: iter 3: attach (GDB internal error)
 UNRESOLVED: gdb.base/libsegfault.exp: gdb emits custom handler warning
 UNRESOLVED: gdb.base/readline-ask.exp: bell for more message
 UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
 UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
-UNRESOLVED: gdb.opencl/vec_comps.exp: OpenCL support not detected
-UNRESOLVED: gdb.threads/attach-many-short-lived-threads.exp: iter 8: detach
 EOF
 
 cat <<'EOF' > known-failures-native-gdbserver
@@ -299,19 +273,6 @@ DUPLICATE: gdb.trace/tfind.exp: 8.17: tfind none
 DUPLICATE: gdb.trace/trace-buffer-size.exp: set tracepoint at test_function
 DUPLICATE: gdb.trace/trace-buffer-size.exp: tstart
 DUPLICATE: gdb.trace/trace-mt.exp: successfully compiled posix threads test case
-FAIL: gdb.ada/interface.exp: print s
-FAIL: gdb.ada/iwide.exp: print d_access.all
-FAIL: gdb.ada/iwide.exp: print dp_access.all
-FAIL: gdb.ada/iwide.exp: print My_Drawable
-FAIL: gdb.ada/iwide.exp: print s_access.all
-FAIL: gdb.ada/iwide.exp: print sp_access.all
-FAIL: gdb.ada/mi_interface.exp: create ggg1 varobj (unexpected output)
-FAIL: gdb.ada/mi_interface.exp: list ggg1's children (unexpected output)
-FAIL: gdb.ada/tagged_access.exp: ptype c.all
-FAIL: gdb.ada/tagged_access.exp: ptype c.menu_name
-FAIL: gdb.ada/tagged.exp: print obj
-FAIL: gdb.ada/tagged.exp: ptype obj
-FAIL: gdb.ada/task_switch_in_core.exp: save a corefile (timeout)
 FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_bt_end
 FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_bt_start
 FAIL: gdb.base/bt-on-fatal-signal.exp: BUS: $saw_fatal_msg
@@ -335,14 +296,10 @@ FAIL: gdb.base/interrupt-daemon.exp: bg: interrupt cmd stops process (timeout)
 FAIL: gdb.base/interrupt-daemon.exp: bg: interrupt (timeout)
 FAIL: gdb.base/interrupt-daemon.exp: fg: ctrl-c stops process (timeout)
 FAIL: gdb.cp/no-dmgl-verbose.exp: gdb_breakpoint: set breakpoint at 'f(std::string)'
-FAIL: gdb.threads/forking-threads-plus-breakpoint.exp: cond_bp_target=0: detach_on_fork=on: displaced=off: inferior 1 exited (timeout)
-FAIL: gdb.threads/interrupted-hand-call.exp: continue until exit
 FAIL: gdb.threads/multiple-successive-infcall.exp: thread=3: created new thread
 FAIL: gdb.threads/multiple-successive-infcall.exp: thread=4: created new thread
 FAIL: gdb.threads/multiple-successive-infcall.exp: thread=5: created new thread
-FAIL: gdb.threads/non-ldr-exit.exp: program exits normally (timeout)
 FAIL: gdb.threads/process-dies-while-detaching.exp: single-process: continue: killed outside: continue
-FAIL: gdb.threads/process-dies-while-detaching.exp: single-process: continue: watchpoint:hw: continue (timeout)
 FAIL: gdb.threads/thread-specific-bp.exp: all-stop: continue to end (timeout)
 FAIL: gdb.threads/thread-specific-bp.exp: non-stop: continue to end (timeout)
 FAIL: gdb.trace/actions.exp: tfile: tracepoint on gdb_asm_test
@@ -428,9 +385,6 @@ UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
 UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
 FAIL: gdb.dwarf2/clztest.exp: runto: run to main
-FAIL: gdb.dwarf2/dw2-inline-param.exp: running to *0x608 in runto
-FAIL: gdb.multi/multi-re-run.exp: re_run_inf=1: iter=1: running to all_started in runto
-FAIL: gdb.multi/multi-re-run.exp: re_run_inf=2: iter=1: running to all_started in runto
 KPASS: gdb.threads/process-dies-while-detaching.exp: single-process: continue: watchpoint:sw: continue (PRMS gdb/28375)
 FAIL: gdb.trace/change-loc.exp: 1 ftrace: runto: run to main
 FAIL: gdb.trace/change-loc.exp: InstallInTrace disabled: ftrace: runto: run to main
@@ -461,10 +415,6 @@ DUPLICATE: gdb.base/cond-eval-mode.exp: rwatch: continue
 DUPLICATE: gdb.base/cond-eval-mode.exp: rwatch: rwatch global
 DUPLICATE: gdb.base/cond-eval-mode.exp: watch: continue
 DUPLICATE: gdb.base/cond-eval-mode.exp: watch: watch global
-FAIL: gdb.multi/multi-re-run.exp: re_run_inf=1: iter=2: continue until exit
-FAIL: gdb.multi/multi-re-run.exp: re_run_inf=1: iter=2: print re_run_var_1
-FAIL: gdb.multi/multi-re-run.exp: re_run_inf=2: iter=2: continue until exit
-FAIL: gdb.multi/multi-re-run.exp: re_run_inf=2: iter=2: print re_run_var_2
 DUPLICATE: gdb.threads/attach-into-signal.exp: threaded: thread apply 2 print $_siginfo.si_signo
 DUPLICATE: gdb.trace/circ.exp: check whether setting trace buffer size is supported
 DUPLICATE: gdb.trace/ftrace-lock.exp: successfully compiled posix threads test case
@@ -481,20 +431,7 @@ DUPLICATE: gdb.trace/tspeed.exp: advance to trace begin (the program is no longe
 DUPLICATE: gdb.trace/tspeed.exp: check on trace status
 DUPLICATE: gdb.trace/tspeed.exp: print iters = init_iters
 DUPLICATE: gdb.trace/tspeed.exp: start trace experiment
-FAIL: gdb.ada/interface.exp: print s
-FAIL: gdb.ada/iwide.exp: print d_access.all
-FAIL: gdb.ada/iwide.exp: print dp_access.all
-FAIL: gdb.ada/iwide.exp: print My_Drawable
-FAIL: gdb.ada/iwide.exp: print s_access.all
-FAIL: gdb.ada/iwide.exp: print sp_access.all
-FAIL: gdb.ada/mi_interface.exp: create ggg1 varobj (unexpected output)
-FAIL: gdb.ada/mi_interface.exp: list ggg1's children (unexpected output)
-FAIL: gdb.ada/tagged_access.exp: ptype c.all
-FAIL: gdb.ada/tagged_access.exp: ptype c.menu_name
-FAIL: gdb.ada/tagged.exp: print obj
-FAIL: gdb.ada/tagged.exp: ptype obj
 FAIL: gdb.base/a2-run.exp: run "a2-run" with shell (timeout)
-FAIL: gdb.base/attach.exp: do_command_attach_tests: starting with --pid
 FAIL: gdb.base/break-interp.exp: ldprelink=NO: ldsepdebug=IN: binprelink=NO: binsepdebug=NO: binpie=NO: INNER: symbol-less: entry point reached (the program is no longer running)
 FAIL: gdb.base/break-interp.exp: ldprelink=NO: ldsepdebug=IN: binprelink=NO: binsepdebug=NO: binpie=NO: INNER: symbol-less: reach-(_dl_debug_state|dl_main)-3: reach
 FAIL: gdb.base/break-interp.exp: ldprelink=NO: ldsepdebug=IN: binprelink=NO: binsepdebug=NO: binpie=YES: INNER: symbol-less: entry point reached (the program is no longer running)
@@ -545,28 +482,15 @@ FAIL: gdb.gdb/unittest.exp: executable loaded: maintenance selftest, failed none
 FAIL: gdb.gdb/unittest.exp: no executable loaded: maintenance selftest, failed none
 FAIL: gdb.mi/mi-exec-run.exp: inferior-tty=separate: mi=separate: force-fail=0: breakpoint hit reported on console (timeout)
 FAIL: gdb.mi/mi-pending.exp: MI pending breakpoint on mi-pendshr.c:pendfunc2 if x==4 (unexpected output)
-FAIL: gdb.multi/multi-re-run.exp: re_run_inf=1: iter=2: continue until exit
-FAIL: gdb.multi/multi-re-run.exp: re_run_inf=1: iter=2: print re_run_var_1
-FAIL: gdb.python/py-events.exp: get current thread
 FAIL: gdb.server/connect-with-no-symbol-file.exp: sysroot=: action=delete: connection to GDBserver succeeded
 FAIL: gdb.server/connect-with-no-symbol-file.exp: sysroot=: action=permission: connection to GDBserver succeeded
 FAIL: gdb.server/connect-with-no-symbol-file.exp: sysroot=target:: action=delete: connection to GDBserver succeeded
 FAIL: gdb.server/connect-with-no-symbol-file.exp: sysroot=target:: action=permission: connection to GDBserver succeeded
 FAIL: gdb.threads/attach-into-signal.exp: threaded: thread apply 2 print $_siginfo.si_signo
-FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=host: target-non-stop=off: non-stop=off: displaced=off: iter 1: all threads running (GDB internal error)
-FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=target: target-non-stop=on: non-stop=off: displaced=off: iter 1: stop with SIGUSR1 (timeout)
-FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=target: target-non-stop=on: non-stop=off: displaced=off: iter 2: all threads running
-FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=target: target-non-stop=on: non-stop=off: displaced=off: iter 2: stop with SIGUSR1 (timeout)
-FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=target: target-non-stop=on: non-stop=off: displaced=off: iter 3: all threads running
-FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=target: target-non-stop=on: non-stop=off: displaced=off: iter 3: attach (got interactive prompt)
-FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=target: target-non-stop=on: non-stop=off: displaced=off: iter 3: stop with SIGUSR1 (timeout)
-FAIL: gdb.threads/forking-threads-plus-breakpoint.exp: cond_bp_target=0: detach_on_fork=on: displaced=off: inferior 1 exited (timeout)
 FAIL: gdb.threads/multiple-successive-infcall.exp: thread=3: created new thread
 FAIL: gdb.threads/multiple-successive-infcall.exp: thread=4: created new thread
 FAIL: gdb.threads/multiple-successive-infcall.exp: thread=5: created new thread
-FAIL: gdb.threads/non-ldr-exit.exp: program exits normally (timeout)
 FAIL: gdb.threads/process-dies-while-detaching.exp: single-process: continue: killed outside: continue
-FAIL: gdb.threads/process-dies-while-detaching.exp: single-process: continue: watchpoint:hw: continue (timeout)
 FAIL: gdb.threads/thread-specific-bp.exp: all-stop: continue to end (timeout)
 FAIL: gdb.threads/tls.exp: print a_thread_local
 FAIL: gdb.trace/actions.exp: tfile: tracepoint on gdb_asm_test
@@ -656,13 +580,8 @@ UNRESOLVED: gdb.base/libsegfault.exp: gdb emits custom handler warning
 UNRESOLVED: gdb.base/readline-ask.exp: bell for more message
 UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
 UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
-UNRESOLVED: gdb.mi/mi-exec-run.exp: inferior-tty=main: mi=main: force-fail=1: run failure detected (eof)
-UNRESOLVED: gdb.mi/mi-exec-run.exp: inferior-tty=main: mi=separate: force-fail=1: run failure detected (eof)
-UNRESOLVED: gdb.mi/mi-exec-run.exp: inferior-tty=separate: mi=main: force-fail=1: run failure detected (eof)
-UNRESOLVED: gdb.mi/mi-exec-run.exp: inferior-tty=separate: mi=separate: force-fail=1: run failure detected (eof)
 UNRESOLVED: gdb.threads/attach-into-signal.exp: threaded: attach (pass 2), pending signal catch
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
-FAIL: gdb.dwarf2/dw2-inline-param.exp: running to *0x608 in runto
 FAIL: gdb.multi/remove-inferiors.exp: runto: run to main
 FAIL: gdb.threads/access-mem-running-thread-exit.exp: non-stop: second inferior: runto: run to main
 FAIL: gdb.threads/break-while-running.exp: w/ithr: always-inserted off: non-stop: runto: run to main
