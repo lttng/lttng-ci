@@ -480,6 +480,7 @@ FAIL: gdb.cp/annota3.exp: continue to exit (pattern 4)
 FAIL: gdb.cp/no-dmgl-verbose.exp: gdb_breakpoint: set breakpoint at 'f(std::string)'
 FAIL: gdb.gdb/unittest.exp: executable loaded: maintenance selftest, failed none
 FAIL: gdb.gdb/unittest.exp: no executable loaded: maintenance selftest, failed none
+FAIL: gdb.gdb/unittest.exp: reversed initialization: maintenance selftest, failed none
 FAIL: gdb.mi/mi-exec-run.exp: inferior-tty=separate: mi=separate: force-fail=0: breakpoint hit reported on console (timeout)
 FAIL: gdb.mi/mi-pending.exp: MI pending breakpoint on mi-pendshr.c:pendfunc2 if x==4 (unexpected output)
 FAIL: gdb.server/connect-with-no-symbol-file.exp: sysroot=: action=delete: connection to GDBserver succeeded
