@@ -705,7 +705,7 @@ while read line; do
     if ! grep --silent --fixed-strings "$line" "${WORKSPACE}/results/gdb.sum"; then
         echo "$line"
     fi
-done < "$known_failures_file"
+done < "$known_failures_file" > "${WORKSPACE}/results/known-failures-not-found.sum"
 
 # Convert results to JUnit format.
 failed_tests=0
