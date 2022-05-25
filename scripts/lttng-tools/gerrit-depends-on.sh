@@ -28,7 +28,7 @@ gerrit_query="&o=CURRENT_REVISION&o=DOWNLOAD_COMMANDS"
 gerrit_json_query=".[0].revisions[.[0].current_revision].ref"
 gerrit_json_query_status=".[0].status"
 
-possible_depends_on="lttng-ust|lttng-modules|userspace-rcu"
+possible_depends_on="lttng-ust|lttng-modules|userspace-rcu|babeltrace"
 re="Depends-on: (${possible_depends_on}): ([^'$'\n'']*)"
 property_file="${WORKSPACE}/gerrit_custom_dependencies.properties"
 
