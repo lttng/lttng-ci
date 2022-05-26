@@ -249,6 +249,7 @@ FAIL: gdb.threads/detach-step-over.exp: breakpoint-condition-evaluation=host: ta
 UNRESOLVED: gdb.base/libsegfault.exp: gdb emits custom handler warning
 UNRESOLVED: gdb.base/readline-ask.exp: bell for more message
 UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
+UNRESOLVED: gdb.base/symbol-without-target_section.exp: print symbol_without_target_section
 UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
 EOF
 
@@ -327,6 +328,8 @@ FAIL: gdb.trace/change-loc.exp: 2 trace: continue to marker 3
 FAIL: gdb.trace/change-loc.exp: 2 trace: tfind frame 2
 FAIL: gdb.trace/change-loc.exp: 2 trace: tracepoint with two locations - installed (unload)
 FAIL: gdb.trace/change-loc.exp: 2 trace: tracepoint with two locations - pending (unload)
+FAIL: gdb.trace/collection.exp: collect register locals collectively: run trace experiment: start trace experiment
+FAIL: gdb.trace/collection.exp: collect register locals collectively: run trace experiment: tfind test frame
 FAIL: gdb.trace/collection.exp: collect register locals collectively: collected local char
 FAIL: gdb.trace/collection.exp: collect register locals collectively: collected local double
 FAIL: gdb.trace/collection.exp: collect register locals collectively: collected local float
@@ -382,6 +385,7 @@ FAIL: gdb.trace/unavailable.exp: unavailable locals: static locals: tfile: info 
 UNRESOLVED: gdb.base/libsegfault.exp: gdb emits custom handler warning
 UNRESOLVED: gdb.base/readline-ask.exp: bell for more message
 UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
+UNRESOLVED: gdb.base/symbol-without-target_section.exp: print symbol_without_target_section
 UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
 FAIL: gdb.dwarf2/clztest.exp: runto: run to main
@@ -519,6 +523,8 @@ FAIL: gdb.trace/change-loc.exp: 2 trace: continue to marker 3
 FAIL: gdb.trace/change-loc.exp: 2 trace: tfind frame 2
 FAIL: gdb.trace/change-loc.exp: 2 trace: tracepoint with two locations - installed (unload)
 FAIL: gdb.trace/change-loc.exp: 2 trace: tracepoint with two locations - pending (unload)
+FAIL: gdb.trace/collection.exp: collect register locals collectively: run trace experiment: start trace experiment
+FAIL: gdb.trace/collection.exp: collect register locals collectively: run trace experiment: tfind test frame
 FAIL: gdb.trace/collection.exp: collect register locals collectively: collected local char
 FAIL: gdb.trace/collection.exp: collect register locals collectively: collected local double
 FAIL: gdb.trace/collection.exp: collect register locals collectively: collected local float
@@ -557,12 +563,12 @@ FAIL: gdb.trace/pending.exp: ftrace works: tfind test frame 2
 FAIL: gdb.trace/pending.exp: ftrace works: (the program exited)
 FAIL: gdb.trace/pending.exp: trace installed_in_trace: continue to marker 2
 FAIL: gdb.trace/pending.exp: trace installed_in_trace: tfind test frame 0
-FAIL: gdb.trace/tspeed.exp: advance through tracing (the program is no longer running)
-FAIL: gdb.trace/tspeed.exp: advance through tracing (the program is no longer running)
-FAIL: gdb.trace/tspeed.exp: advance to trace begin (the program is no longer running)
-FAIL: gdb.trace/tspeed.exp: advance to trace begin (the program is no longer running)
-FAIL: gdb.trace/tspeed.exp: start trace experiment
-FAIL: gdb.trace/tspeed.exp: start trace experiment
+FAIL: gdb.trace/tspeed.exp: gdb_fast_trace_speed_test: advance through tracing (the program is no longer running)
+FAIL: gdb.trace/tspeed.exp: gdb_fast_trace_speed_test: advance to trace begin (the program is no longer running)
+FAIL: gdb.trace/tspeed.exp: gdb_fast_trace_speed_test: start trace experiment
+FAIL: gdb.trace/tspeed.exp: gdb_slow_trace_speed_test: advance through tracing (the program is no longer running)
+FAIL: gdb.trace/tspeed.exp: gdb_slow_trace_speed_test: advance to trace begin (the program is no longer running)
+FAIL: gdb.trace/tspeed.exp: gdb_slow_trace_speed_test: start trace experiment
 FAIL: gdb.trace/unavailable.exp: collect globals: print object off: print derived_partial
 FAIL: gdb.trace/unavailable.exp: collect globals: print object on: print derived_partial
 FAIL: gdb.trace/unavailable.exp: collect globals: tfile: print object off: print derived_partial
@@ -580,6 +586,7 @@ FAIL: gdb.trace/unavailable.exp: unavailable locals: static locals: tfile: info 
 UNRESOLVED: gdb.base/libsegfault.exp: gdb emits custom handler warning
 UNRESOLVED: gdb.base/readline-ask.exp: bell for more message
 UNRESOLVED: gdb.base/symbol-without-target_section.exp: list -q main
+UNRESOLVED: gdb.base/symbol-without-target_section.exp: print symbol_without_target_section
 UNRESOLVED: gdb.dwarf2/dw2-icc-opaque.exp: ptype p_struct
 UNRESOLVED: gdb.threads/attach-into-signal.exp: threaded: attach (pass 2), pending signal catch
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
