@@ -267,6 +267,9 @@ build_linux_kernel() {
       scripts/config --disable CONFIG_IGBVF
     fi
 
+    # Don't fail the build on warnings
+    scripts/config --disable CONFIG_WERROR
+
     # Set required options
     scripts/config --enable CONFIG_TRACEPOINTS
     scripts/config --enable CONFIG_KALLSYMS
