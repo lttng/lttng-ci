@@ -28,15 +28,14 @@
     project-type: freestyle
 
     wrappers:
-      - ansicolor
-      - timeout:
+      - ansicolor: &liburcu_wrapper_ansicolor_defaults
+          colormap: xterm
+      - timeout: &liburcu_wrapper_timeout_defaults
           timeout: 90
           fail: true
           type: absolute
       - timestamps
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
+      - workspace-cleanup
 
     scm:
       - git:
@@ -63,39 +62,37 @@
 
 
 ## Anchors
-- liburcu_build_axes_defaults: &liburcu_build_axes_defaults
-    name: 'liburcu_build_axes_defaults'
+- liburcu_matrix_axes_defaults: &liburcu_matrix_axes_defaults
+    name: 'liburcu_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
+    execution-strategy:
+      touchstone:
+        expr: '{touchstone}'
+        result: unstable
     axes:
       - axis:
          type: slave
          name: arch
-         values: '{obj:arch}'
+         values: '{obj:archs}'
       - axis:
          type: user-defined
          name: conf
-         values: '{obj:conf}'
+         values: '{obj:confs}'
       - axis:
          type: user-defined
          name: build
-         values: '{obj:build}'
+         values: '{obj:builds}'
 
-- liburcu_build_builders_defaults: &liburcu_build_builders_defaults
-    name: 'liburcu_build_builders_defaults'
+- liburcu_builders_defaults: &liburcu_builders_defaults
+    name: 'liburcu_builders_defaults'
     builders:
-      - shell:
-         !include-raw-escape:
-           - scripts/common/print.sh
-           - scripts/liburcu/build.sh
-
-- liburcu_build_builders_win: &liburcu_build_builders_win
-    name: 'liburcu_build_builders_win'
-    builders:
+      !j2-yaml: |
+      {% if buildtype == 'winbuild' %}
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: '${{arch}}'
+          condition-string1: {{ '${{arch}}' }}
           condition-string2: 'cygwin64'
           steps:
             - shell:
@@ -104,28 +101,76 @@
                  - scripts/common/cygpath-prefix
                  - scripts/common/print.sh
                  - scripts/liburcu/build.sh
+      {% else %}
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/liburcu/build.sh
+      {% endif %}
 
-- liburcu_build_publishers_defaults: &liburcu_build_publishers_defaults
-    name: 'liburcu_build_publishers_defaults'
+- liburcu_publishers_defaults: &liburcu_publishers_defaults
+    name: 'liburcu_publishers_defaults'
     publishers:
-      - tap:
+      - tap: &liburcu_publisher_tap_defaults
           results: 'tap/**/*.log'
           fail-if-no-results: true
           failed-tests-mark-build-as-failure: true
           todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - archive:
+      - raw: &liburcu_publisher_warnings-ng_defaults
+          xml: |
+            <io.jenkins.plugins.analysis.core.steps.IssuesRecorder plugin="warnings-ng">
+              <analysisTools>
+                <io.jenkins.plugins.analysis.warnings.Gcc4>
+                  <id/>
+                  <name/>
+                  <jenkins plugin="plugin-util-api"/>
+                  <pattern/>
+                  <reportEncoding/>
+                  <skipSymbolicLinks>false</skipSymbolicLinks>
+                </io.jenkins.plugins.analysis.warnings.Gcc4>
+                <io.jenkins.plugins.analysis.warnings.Clang>
+                  <id/>
+                  <name/>
+                  <jenkins plugin="plugin-util-api"/>
+                  <pattern/>
+                  <reportEncoding/>
+                  <skipSymbolicLinks>false</skipSymbolicLinks>
+                </io.jenkins.plugins.analysis.warnings.Clang>
+              </analysisTools>
+              <sourceCodeEncoding/>
+              <sourceDirectory/>
+              <sourceDirectories/>
+              <ignoreQualityGate>false</ignoreQualityGate>
+              <ignoreFailedBuilds>true</ignoreFailedBuilds>
+              <failOnError>false</failOnError>
+              <healthy>0</healthy>
+              <unhealthy>0</unhealthy>
+              <minimumSeverity plugin="analysis-model-api">
+                <name>LOW</name>
+              </minimumSeverity>
+              <filters/>
+              <isEnabledForFailure>true</isEnabledForFailure>
+              <isAggregatingResults>true</isAggregatingResults>
+              <isBlameDisabled>false</isBlameDisabled>
+              <skipPublishingChecks>true</skipPublishingChecks>
+              <publishAllIssues>false</publishAllIssues>
+              <qualityGates>
+                <io.jenkins.plugins.analysis.core.util.QualityGate>
+                  <threshold>1</threshold>
+                  <type>TOTAL</type>
+                  <status>WARNING</status>
+                </io.jenkins.plugins.analysis.core.util.QualityGate>
+              </qualityGates>
+              <trendChartType>AGGREGATION_TOOLS</trendChartType>
+              <scm/>
+            </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
+      - archive: &liburcu_publisher_archive_defaults
           artifacts: 'build/**,tap/**'
           allow-empty: false
-      - email-ext:
+      - workspace-cleanup: &liburcu_publisher_workspace_cleanup_defaults
+          clean-if:
+            - failure: false
+      - email-ext: &liburcu_publisher_email_ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
           always: false
@@ -150,36 +195,12 @@
 
 ## Templates
 - job-template:
-    name: liburcu_{version}_{buildtype}
-    defaults: liburcu
-
-    <<: *liburcu_build_axes_defaults
-    <<: *liburcu_build_builders_defaults
-    <<: *liburcu_build_publishers_defaults
-
-- job-template:
     name: '{job_prefix}liburcu_{version}_{buildtype}'
     defaults: liburcu
 
-    <<: *liburcu_build_axes_defaults
-    <<: *liburcu_build_builders_defaults
-    <<: *liburcu_build_publishers_defaults
-
-- job-template:
-    name: liburcu_{version}_winbuild
-    defaults: liburcu
-
-    <<: *liburcu_build_axes_defaults
-    <<: *liburcu_build_builders_win
-    <<: *liburcu_build_publishers_defaults
-
-- job-template:
-    name: '{job_prefix}liburcu_{version}_winbuild'
-    defaults: liburcu
-
-    <<: *liburcu_build_axes_defaults
-    <<: *liburcu_build_builders_win
-    <<: *liburcu_build_publishers_defaults
+    <<: *liburcu_matrix_axes_defaults
+    <<: *liburcu_builders_defaults
+    <<: *liburcu_publishers_defaults
 
 - job-template:
     name: liburcu_{version}_cppcheck
@@ -200,28 +221,8 @@
           allow-empty: false
       - cppcheck:
           pattern: 'cppcheck-result.xml'
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: false
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: true
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
+      - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
+      - email-ext: *liburcu_publisher_email_ext_defaults
 
 - job-template:
     name: dev_gerrit_liburcu_{buildtype}
@@ -250,24 +251,13 @@
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
 
-    <<: *liburcu_build_axes_defaults
-    <<: *liburcu_build_builders_defaults
+    <<: *liburcu_matrix_axes_defaults
+    <<: *liburcu_builders_defaults
 
     publishers:
-      - tap:
-          results: 'tap/**/*.log'
-          fail-if-no-results: true
-          failed-tests-mark-build-as-failure: true
-          todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
+      - tap: *liburcu_publisher_tap_defaults
+      - raw: *liburcu_publisher_warnings-ng_defaults
+      - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
 
 - job-template:
     name: liburcu_{version}_scan-build
@@ -287,6 +277,7 @@
           name: 'HTML Report'
           dir: 'scan-build-archive/'
           files: 'index.html'
+      - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
 
 - job-template:
     name: liburcu_{version}_coverity
@@ -298,15 +289,10 @@
           cron: "@daily"
 
     wrappers:
-      - ansicolor
-      - timeout:
-          timeout: 60
-          fail: true
-          type: absolute
+      - ansicolor: *liburcu_wrapper_ansicolor_defaults
+      - timeout: *liburcu_wrapper_timeout_defaults
       - timestamps
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
+      - workspace-cleanup
       - credentials-binding:
           - username-password-separated:
               credential-id: liburcu_coverity_token
@@ -318,10 +304,10 @@
           !include-raw-escape: scripts/common/coverity.sh
 
     publishers:
-      - workspace-cleanup
       - archive:
           artifacts: 'analysis-results.tgz,cov-int/**'
           allow-empty: false
+      - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
 
 
 ## Views
@@ -334,6 +320,7 @@
 ## Projects
 - project:
     name: liburcu
+    job_prefix: ''
     github_user: urcu
     github_name: userspace-rcu
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
@@ -342,44 +329,48 @@
       - stable-0.13
       - master
     jobs:
-      - 'liburcu_{version}_{buildtype}':
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
-      - 'liburcu_{version}_{buildtype}':
+          archs: !!python/tuple [amd64]
+          builds: !!python/tuple [std, oot, dist]
+          confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          touchstone: '(build == "std") && (conf == "std")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
-      - 'liburcu_{version}_{buildtype}':
+          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          touchstone: '(build == "std") && (conf == "std") && (arch == "i386")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: slesbuild
-          arch: !!python/tuple [sles12sp5]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-      - 'liburcu_{version}_{buildtype}':
+          archs: !!python/tuple [sles12sp5]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: elbuild
-          arch: !!python/tuple [el8]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-      - 'liburcu_{version}_{buildtype}':
+          archs: !!python/tuple [el8]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: macosbuild
-          arch: !!python/tuple [macos-amd64, macos-arm64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-      - 'liburcu_{version}_winbuild':
-          arch: !!python/tuple [cygwin64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-      - 'liburcu_{version}_{buildtype}':
+          archs: !!python/tuple [macos-amd64, macos-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
+          buildtype: winbuild
+          archs: !!python/tuple [cygwin64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: freebsdbuild
-          arch: !!python/tuple [freebsd]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
-          version:
-            - stable-0.12
-            - stable-0.13
-            - master
+          archs: !!python/tuple [freebsd]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
       - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
@@ -399,24 +390,28 @@
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          archs: !!python/tuple [amd64]
+          builds: !!python/tuple [std, oot, dist]
+          confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          touchstone: '(build == "std") && (conf == "std") && (arch == "i386")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: slesbuild
-          arch: !!python/tuple [sles12sp5]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          archs: !!python/tuple [sles12sp5]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: elbuild
-          arch: !!python/tuple [el8]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          archs: !!python/tuple [el8]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
 
 
 - project:
@@ -426,15 +421,16 @@
     jobs:
       - 'dev_gerrit_liburcu_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist]
-          conf: !!python/tuple [std, static, tls_fallback, debug-rcu]
-          buildtype: build
+          archs: !!python/tuple [amd64]
+          builds: !!python/tuple [std, oot, dist]
+          confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          touchstone: '(build == "std")'
       - 'dev_gerrit_liburcu_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
 
 
 - project:
