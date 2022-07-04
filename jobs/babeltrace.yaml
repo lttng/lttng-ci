@@ -15,15 +15,15 @@
     project-type: freestyle
 
     wrappers:
-      - ansicolor
-      - timeout:
+      - ansicolor: &babeltrace_wrapper_ansicolor_defaults
+          colormap: xterm
+      - timeout: &babeltrace_wrapper_timeout_defaults
           timeout: 20
           fail: true
           type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
+      - workspace-cleanup
 
     scm:
       - git:
@@ -50,61 +50,52 @@
 
 
 ## Anchors
-- babeltrace_build_axes_defaults: &babeltrace_build_axes_defaults
-    name: 'babeltrace_build_axes_defaults'
+- babeltrace_matrix_axes_defaults: &babeltrace_matrix_axes_defaults
+    name: 'babeltrace_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
+    execution-strategy:
+      combination-filter: '{filter}'
+      touchstone:
+        expr: '{touchstone}'
+        result: unstable
     axes:
-      - axis:
+      - axis: &babeltrace_build_axis_arch
          type: slave
          name: arch
-         values: '{obj:arch}'
-      - axis:
+         values: '{obj:archs}'
+      - axis: &babeltrace_build_axis_conf
          type: user-defined
          name: conf
-         values: '{obj:conf}'
-      - axis:
+         values: '{obj:confs}'
+      - axis: &babeltrace_build_axis_build
          type: user-defined
          name: build
-         values: '{obj:build}'
+         values: '{obj:builds}'
 
-- babeltrace_build_axes_cc: &babeltrace_build_axes_cc
-    name: 'babeltrace_build_axes_cc'
-    project-type: matrix
-    node: 'master' # Applies only to matrix flyweight task
+- babeltrace_matrix_axes_cc: &babeltrace_matrix_axes_cc
+    name: 'babeltrace_matrix_axes_cc'
+
+    <<: *babeltrace_matrix_axes_defaults
+
     axes:
-      - axis:
-         type: slave
-         name: arch
-         values: '{obj:arch}'
-      - axis:
-         type: user-defined
-         name: conf
-         values: '{obj:conf}'
-      - axis:
-         type: user-defined
-         name: build
-         values: '{obj:build}'
-      - axis:
+      - axis: *babeltrace_build_axis_arch
+      - axis: *babeltrace_build_axis_conf
+      - axis: *babeltrace_build_axis_build
+      - axis: &babeltrace_build_axis_cc
          type: user-defined
          name: cc
-         values: '{obj:cc}'
+         values: '{obj:ccs}'
 
-- babeltrace_build_builders_defaults: &babeltrace_build_builders_defaults
-    name: 'babeltrace_build_builders_defaults'
+- babeltrace_builders_defaults: &babeltrace_builders_defaults
+    name: 'babeltrace_builders_defaults'
     builders:
-      - shell:
-         !include-raw-escape:
-           - scripts/common/print.sh
-           - scripts/babeltrace/build.sh
-
-- babeltrace_build_builders_win: &babeltrace_build_builders_win
-    name: 'babeltrace_build_builders_win'
-    builders:
+      !j2-yaml: |
+      {% if buildtype is defined and buildtype == 'winbuild' %}
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: '${{arch}}'
+          condition-string1: {{ '${{arch}}' }}
           condition-string2: 'cygwin64'
           steps:
             - shell:
@@ -116,7 +107,7 @@
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: '${{arch}}'
+          condition-string1: {{ '${{arch}}' }}
           condition-string2: 'msys2-mingw32'
           steps:
             - inject:
@@ -130,7 +121,7 @@
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: '${{arch}}'
+          condition-string1: {{ '${{arch}}' }}
           condition-string2: 'msys2-mingw64'
           steps:
             - inject:
@@ -141,10 +132,16 @@
                  - scripts/common/cygpath-prefix
                  - scripts/common/print.sh
                  - scripts/babeltrace/build.sh
+      {% else %}
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/babeltrace/build.sh
+      {% endif %}
 
 # Use - in version number since yaml anchor do not support dot
-- babeltrace_build_builders_glib-2-28-6: &babeltrace_build_builders_glib-2-28-6
-    name: 'babeltrace_build_builders_glib-2-28-6'
+- babeltrace_builders_glib-2-28-6: &babeltrace_builders_glib-2-28-6
+    name: 'babeltrace_builders_glib-2-28-6'
     builders:
       - inject:
           properties-content: |
@@ -166,27 +163,69 @@
            - scripts/common/print.sh
            - scripts/babeltrace/build.sh
 
-- babeltrace_build_publishers_defaults: &babeltrace_build_publishers_defaults
-    name: 'babeltrace_build_publishers_defaults'
+- babeltrace_publishers_defaults: &babeltrace_publishers_defaults
+    name: 'babeltrace_publishers_defaults'
     publishers:
-      - tap:
+      - tap: &babeltrace_publisher_tap_defaults
           results: 'tap/**/*.log'
           fail-if-no-results: true
           failed-tests-mark-build-as-failure: true
           todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - archive:
+      - raw: &babeltrace_publisher_warnings-ng_defaults
+          xml: |
+            <io.jenkins.plugins.analysis.core.steps.IssuesRecorder plugin="warnings-ng">
+              <analysisTools>
+                <io.jenkins.plugins.analysis.warnings.Gcc4>
+                  <id/>
+                  <name/>
+                  <jenkins plugin="plugin-util-api"/>
+                  <pattern/>
+                  <reportEncoding/>
+                  <skipSymbolicLinks>false</skipSymbolicLinks>
+                </io.jenkins.plugins.analysis.warnings.Gcc4>
+                <io.jenkins.plugins.analysis.warnings.Clang>
+                  <id/>
+                  <name/>
+                  <jenkins plugin="plugin-util-api"/>
+                  <pattern/>
+                  <reportEncoding/>
+                  <skipSymbolicLinks>false</skipSymbolicLinks>
+                </io.jenkins.plugins.analysis.warnings.Clang>
+              </analysisTools>
+              <sourceCodeEncoding/>
+              <sourceDirectory/>
+              <sourceDirectories/>
+              <ignoreQualityGate>false</ignoreQualityGate>
+              <ignoreFailedBuilds>true</ignoreFailedBuilds>
+              <failOnError>false</failOnError>
+              <healthy>0</healthy>
+              <unhealthy>0</unhealthy>
+              <minimumSeverity plugin="analysis-model-api">
+                <name>LOW</name>
+              </minimumSeverity>
+              <filters/>
+              <isEnabledForFailure>true</isEnabledForFailure>
+              <isAggregatingResults>true</isAggregatingResults>
+              <isBlameDisabled>false</isBlameDisabled>
+              <skipPublishingChecks>true</skipPublishingChecks>
+              <publishAllIssues>false</publishAllIssues>
+              <qualityGates>
+                <io.jenkins.plugins.analysis.core.util.QualityGate>
+                  <threshold>1</threshold>
+                  <type>TOTAL</type>
+                  <status>WARNING</status>
+                </io.jenkins.plugins.analysis.core.util.QualityGate>
+              </qualityGates>
+              <trendChartType>AGGREGATION_TOOLS</trendChartType>
+              <scm/>
+            </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
+      - archive: &babeltrace_publisher_archive_defaults
           artifacts: 'build/**,tap/**'
           allow-empty: false
-      - email-ext:
+      - workspace-cleanup: &babeltrace_publisher_workspace-cleanup_defaults
+          clean-if:
+            - failure: false
+      - email-ext: &babeltrace_publisher_email-ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
           always: false
@@ -212,58 +251,29 @@
 - babeltrace_build_publishers_gerrit: &babeltrace_build_publishers_gerrit
     name: 'babeltrace_build_publishers_gerrit'
     publishers:
-      - tap:
-          results: 'tap/**/*.log'
-          fail-if-no-results: true
-          failed-tests-mark-build-as-failure: true
-          todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            failed:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - archive:
-          artifacts: 'build/**,tap/**'
-          allow-empty: false
+      - tap: *babeltrace_publisher_tap_defaults
+      - raw: *babeltrace_publisher_warnings-ng_defaults
+      - archive: *babeltrace_publisher_archive_defaults
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
 
 
-## Templates
-
-- job-template:
-    name: babeltrace_{version}_{buildtype}
-    defaults: babeltrace
-
-    <<: *babeltrace_build_axes_defaults
-    <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_defaults
+## Job Templates
 
 - job-template:
     name: '{job_prefix}babeltrace_{version}_{buildtype}'
     defaults: babeltrace
 
-    <<: *babeltrace_build_axes_defaults
-    <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_defaults
+    <<: *babeltrace_matrix_axes_defaults
+    <<: *babeltrace_builders_defaults
+    <<: *babeltrace_publishers_defaults
 
 - job-template:
     name: babeltrace_{version}_{cctype}
     defaults: babeltrace
 
-    <<: *babeltrace_build_axes_cc
-    <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_defaults
-
-- job-template:
-    name: babeltrace_{version}_winbuild
-    defaults: babeltrace
-
-    <<: *babeltrace_build_axes_defaults
-    <<: *babeltrace_build_builders_win
-    <<: *babeltrace_build_publishers_defaults
+    <<: *babeltrace_matrix_axes_cc
+    <<: *babeltrace_builders_defaults
+    <<: *babeltrace_publishers_defaults
 
 - job-template:
     name: dev_gerrit_babeltrace_{buildtype}
@@ -292,28 +302,6 @@
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
 
-    project-type: matrix
-    node: 'master' # Applies only to matrix flyweight task
-    execution-strategy:
-      combination-filter: |
-        {filter}
-    axes:
-      - axis:
-         type: slave
-         name: arch
-         values: '{obj:arch}'
-      - axis:
-         type: user-defined
-         name: conf
-         values: '{obj:conf}'
-      - axis:
-         type: user-defined
-         name: build
-         values: '{obj:build}'
-
-    <<: *babeltrace_build_builders_defaults
-    <<: *babeltrace_build_publishers_gerrit
-
     properties:
       - inject:
           properties-content: |
@@ -325,46 +313,8 @@
           categories:
             - 'gerrit-{buildtype}'
 
-- job-template:
-    name: dev_gerrit_babeltrace_winbuild
-    defaults: babeltrace
-    concurrent: true
-
-    scm:
-      - git:
-          url: https://review.lttng.org/babeltrace
-          refspec: 'refs/changes/*:refs/changes/*'
-          branches:
-            - '$GERRIT_REFSPEC'
-          basedir: src/babeltrace
-          skip-tag: true
-
-    triggers:
-      - gerrit:
-          trigger-on:
-            - comment-added-event:
-                approval-category: 'CI-Build'
-                approval-value: 1
-          projects:
-            - project-compare-type: 'PLAIN'
-              project-pattern: 'babeltrace'
-              branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
-
-    properties:
-      - inject:
-          properties-content: |
-            PROJECT_NAME=babeltrace
-      - build-discarder:
-          days-to-keep: 1
-      - throttle:
-          option: 'category'
-          categories:
-            - 'gerrit-winbuild'
-
-    <<: *babeltrace_build_axes_defaults
-    <<: *babeltrace_build_builders_win
+    <<: *babeltrace_matrix_axes_defaults
+    <<: *babeltrace_builders_defaults
     <<: *babeltrace_build_publishers_gerrit
 
 - job-template:
@@ -391,23 +341,9 @@
           !include-raw-escape: scripts/babeltrace/release.sh
 
     publishers:
-      - tap:
-          results: 'tap/**/*.log'
-          fail-if-no-results: true
-          failed-tests-mark-build-as-failure: true
-          todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
+      - tap: *babeltrace_publisher_tap_defaults
+      - raw: *babeltrace_publisher_warnings-ng_defaults
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - archive:
           artifacts: 'out/**,tap/**'
           allow-empty: false
@@ -466,6 +402,7 @@
           cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/babeltrace 2> cppcheck-result.xml
 
     publishers:
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - archive:
           artifacts: 'cppcheck-result.xml'
           allow-empty: false
@@ -486,6 +423,7 @@
           !include-raw-escape: scripts/common/scan-build.sh
 
     publishers:
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - html-publisher:
           name: 'HTML Report'
           dir: 'scan-build-archive/'
@@ -501,21 +439,22 @@
           cron: "@daily"
 
     wrappers:
-      - workspace-cleanup
+      - ansicolor: *babeltrace_wrapper_ansicolor_defaults
+      - timeout: *babeltrace_wrapper_timeout_defaults
       - timestamps
-      - ansicolor:
-          colormap: xterm
+      - workspace-cleanup
       - credentials-binding:
           - username-password-separated:
               credential-id: babeltrace_coverity_token
               username: COVERITY_SCAN_PROJECT_NAME
               password: COVERITY_SCAN_TOKEN
+
     builders:
       - shell:
           !include-raw-escape: scripts/common/coverity.sh
 
     publishers:
-      - workspace-cleanup
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - archive:
           artifacts: 'analysis-results.tgz,cov-int/**'
           allow-empty: false
@@ -534,46 +473,19 @@
           !include-raw-escape: scripts/babeltrace/pylint.sh
 
     publishers:
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - archive:
           artifacts: 'black.out,flake8.out'
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
-
-- job-template:
-    name: babeltrace_{version}_glib-2.28.6
-    defaults: babeltrace
-    node: 'amd64'
-
-    <<: *babeltrace_build_builders_glib-2-28-6
-    <<: *babeltrace_build_publishers_defaults
+          allow-empty: false
+      - email-ext: *babeltrace_publisher_email-ext_defaults
 
 - job-template:
     name: '{job_prefix}babeltrace_{version}_glib-2.28.6'
     defaults: babeltrace
     node: 'amd64'
 
-    <<: *babeltrace_build_builders_glib-2-28-6
-    <<: *babeltrace_build_publishers_defaults
+    <<: *babeltrace_builders_glib-2-28-6
+    <<: *babeltrace_publishers_defaults
 
 
 ## Views
@@ -594,46 +506,63 @@
       - stable-2.0
       - master
     jobs:
-      - 'babeltrace_{version}_{buildtype}':
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist, oot-dist]
-          conf: !!python/tuple [std, static, prod, min]
-      - 'babeltrace_{version}_{buildtype}':
+          archs: !!python/tuple [amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, static, prod, min]
+          filter: ''
+          touchstone: '(build == "std") && (conf == "std")'
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, prod]
-      - 'babeltrace_{version}_{buildtype}':
+          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: '(build == "std") && (conf == "std") && (arch == "i386")'
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
-          arch: !!python/tuple [sles12sp5]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, prod]
-      - 'babeltrace_{version}_{buildtype}':
+          archs: !!python/tuple [sles12sp5]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: elbuild
-          arch: !!python/tuple [el8]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, prod]
-      - 'babeltrace_{version}_{buildtype}':
+          archs: !!python/tuple [el8]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          arch: !!python/tuple [macos-amd64, macos-arm64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, prod]
-      - 'babeltrace_{version}_{buildtype}':
+          archs: !!python/tuple [macos-amd64, macos-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: freebsdbuild
-          arch: !!python/tuple [freebsd]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, prod]
+          archs: !!python/tuple [freebsd]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
+          buildtype: winbuild
+          archs: !!python/tuple [cygwin64, msys2-mingw32, msys2-mingw64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, static, prod]
-          cc: !!python/tuple [clang-3.9, clang-4.0, clang-6.0, clang-7]
-      - 'babeltrace_{version}_winbuild':
-          arch: !!python/tuple [cygwin64, msys2-mingw32, msys2-mingw64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          archs: !!python/tuple [amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, static, prod]
+          ccs: !!python/tuple [clang-3.9, clang-4.0, clang-6.0, clang-7]
+          filter: ''
+          touchstone: ''
       - 'babeltrace_{version}_release':
           version: v2.0
       - 'babeltrace_{version}_cppcheck'
@@ -641,7 +570,7 @@
       - 'babeltrace_{version}_pylint'
       - 'babeltrace_{version}_coverity':
           version: master
-      - 'babeltrace_{version}_glib-2.28.6':
+      - '{job_prefix}babeltrace_{version}_glib-2.28.6':
           version: master
 
 - project:
@@ -652,20 +581,25 @@
     jobs:
       - 'dev_gerrit_babeltrace_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std, oot, dist, oot-dist]
-          conf: !!python/tuple [std, static, prod, min]
+          archs: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, static, prod, min]
           filter: '(build=="std" && conf=="std") || (arch=="amd64")'
+          touchstone: ''
       - 'dev_gerrit_babeltrace_{buildtype}':
           buildtype: macosbuild
-          arch: !!python/tuple [macos-amd64, macos-arm64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, prod]
+          archs: !!python/tuple [macos-amd64, macos-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
           filter: ''
-      - 'dev_gerrit_babeltrace_winbuild':
-          arch: !!python/tuple [cygwin64, msys2-mingw64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          touchstone: ''
+      - 'dev_gerrit_babeltrace_{buildtype}':
+          buildtype: winbuild
+          archs: !!python/tuple [cygwin64, msys2-mingw64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
       - 'dev_gerrit_babeltrace_pylint'
 
 
@@ -680,24 +614,32 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist, oot-dist]
-          conf: !!python/tuple [std, static, python-bindings]
+          archs: !!python/tuple [amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, static, python-bindings]
+          filter: ''
+          touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, python-bindings]
+          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, python-bindings]
+          filter: ''
+          touchstone: '(build == "std") && (conf == "std") && (arch == "i386")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
-          arch: !!python/tuple [sles12sp5]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          archs: !!python/tuple [sles12sp5]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: elbuild
-          arch: !!python/tuple [el8]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          archs: !!python/tuple [el8]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
 
 
 - project:
@@ -711,14 +653,18 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist, oot-dist]
-          conf: !!python/tuple [std, static, python-bindings]
+          archs: !!python/tuple [amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, static, python-bindings]
+          filter: ''
+          touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          arch: !!python/tuple [macos-amd64, macos-arm64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std]
+          archs: !!python/tuple [macos-amd64, macos-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
 
 
 - project:
@@ -736,14 +682,18 @@
             - master-staging
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
-          arch: !!python/tuple [amd64]
-          build: !!python/tuple [std, oot, dist, oot-dist]
-          conf: !!python/tuple [std, static, prod, min]
+          archs: !!python/tuple [amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, static, prod, min]
+          filter: ''
+          touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          arch: !!python/tuple [macos-amd64, macos-arm64]
-          build: !!python/tuple [std]
-          conf: !!python/tuple [std, prod]
+          archs: !!python/tuple [macos-amd64, macos-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
 
 - project:
     name: babeltrace-views

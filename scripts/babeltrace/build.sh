@@ -108,49 +108,17 @@ gcc)
     export CC=gcc
     export CXX=g++
     ;;
-gcc-4.8)
-    export CC=gcc-4.8
-    export CXX=g++-4.8
-    ;;
-gcc-5)
-    export CC=gcc-5
-    export CXX=g++-5
-    ;;
-gcc-6)
-    export CC=gcc-6
-    export CXX=g++-6
-    ;;
-gcc-7)
-    export CC=gcc-7
-    export CXX=g++-7
-    ;;
-gcc-8)
-    export CC=gcc-8
-    export CXX=g++-8
+gcc-*)
+    export CC=gcc-${cc#gcc-}
+    export CXX=g++-${cc#gcc-}
     ;;
 clang)
     export CC=clang
     export CXX=clang++
     ;;
-clang-3.9)
-    export CC=clang-3.9
-    export CXX=clang++-3.9
-    ;;
-clang-4.0)
-    export CC=clang-4.0
-    export CXX=clang++-4.0
-    ;;
-clang-5.0)
-    export CC=clang-5.0
-    export CXX=clang++-5.0
-    ;;
-clang-6.0)
-    export CC=clang-6.0
-    export CXX=clang++-6.0
-    ;;
-clang-7)
-    export CC=clang-7
-    export CXX=clang++-7
+clang-*)
+    export CC=clang-${cc#clang-}
+    export CXX=clang++-${cc#clang-}
     ;;
 *)
     if [ "x$cc" != "x" ]; then
@@ -166,30 +134,6 @@ fi
 
 # Set platform variables
 case "$arch" in
-sol10-i386)
-    export MAKE=gmake
-    export TAR=gtar
-    export NPROC=gnproc
-    export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
-    export CPPFLAGS="-I/opt/csw/include"
-    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib"
-    export PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
-    ;;
-
-sol11-i386)
-    export MAKE=gmake
-    export TAR=gtar
-    export NPROC=nproc
-    export PATH="/opt/csw/bin:$PATH:/usr/perl5/bin"
-    export LD_ALTEXEC=/usr/bin/gld
-    export LD=/usr/bin/gld
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
-    export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
-    ;;
-
 macos*)
     export MAKE=make
     export TAR=tar
@@ -201,16 +145,7 @@ macos*)
     export PYTHON_CONFIG="python3.9-config"
     ;;
 
-cygwin)
-    export MAKE=make
-    export TAR=tar
-    export NPROC=nproc
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
-    rebase_dll=1
-    ;;
-
-freebsd)
+freebsd*)
     export MAKE=gmake
     export TAR=tar
     export NPROC="getconf _NPROCESSORS_ONLN"
@@ -385,11 +320,6 @@ esac
 
 # BUILD!
 $MAKE -j "$($NPROC)" V=1
-
-# Force rebase DLL address mapping
-if [ "${rebase_dll:-}" == "1" ]; then
-	find . -name "*.dll" -print0 | xargs -0 rebase -O -v
-fi
 
 # Install in the workspace
 $MAKE install DESTDIR="$WORKSPACE"
