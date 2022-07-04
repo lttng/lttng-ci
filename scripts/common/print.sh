@@ -58,12 +58,12 @@ print_tooling() {
     print_blue "Selected CC version"
     ${CC:-cc} --version | head -n1
 
+    print_blue "Selected CXX version"
+    ${CXX:-c++} --version | head -n1
+
     print_blue "Default gcc version"
     gcc --version | head -n1
     gcc -dumpmachine
-
-    print_blue "Selected CXX version"
-    ${CXX:-c++} --version | head -n1
 
     print_blue "Default g++ version"
     g++ --version | head -n1
