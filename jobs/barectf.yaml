@@ -12,10 +12,14 @@
     project-type: freestyle
 
     wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor:
+      - ansicolor: &barectf_wrapper_ansicolor_defaults
           colormap: xterm
+      - timeout: &barectf_wrapper_timeout_defaults
+          timeout: 20
+          fail: true
+          type: no-activity
+      - timestamps
+      - workspace-cleanup
 
     scm:
       - git:
@@ -38,10 +42,15 @@
       - github:
           url: https://github.com/{github_user}/{github_name}
 
+    publishers:
+      - workspace-cleanup: &barectf_publisher_workspace_cleanup_defaults
+          clean-if:
+            - failure: false
+
 
 ## Templates ##
 - job-template:
-    name: barectf_{version}_build
+    name: barectf_{version}_{buildtype}
     defaults: barectf
 
     project-type: matrix
@@ -49,14 +58,15 @@
     axes:
       - axis:
          type: slave
-         name: arch
-         values: '{obj:arch}'
+         name: platform
+         values: '{obj:platforms}'
 
     builders:
       - shell:
          !include-raw-escape: scripts/barectf/build.sh
 
     publishers:
+      - workspace-cleanup: *barectf_publisher_workspace_cleanup_defaults
       - email-ext:
          recipients: '{obj:email_to}'
          reply-to: ci-notification@lists.lttng.org
@@ -90,8 +100,8 @@
     axes:
       - axis:
          type: slave
-         name: arch
-         values: '{obj:arch}'
+         name: platform
+         values: '{obj:platforms}'
 
     scm:
       - git:
@@ -122,6 +132,7 @@
           option: 'category'
           categories:
             - 'gerrit-{buildtype}'
+
     builders:
       - shell:
          !include-raw-escape: scripts/barectf/build.sh
@@ -144,8 +155,9 @@
       - master
       - stable-3.0
     jobs:
-      - 'barectf_{version}_build':
-          arch: !!python/tuple [amd64]
+      - 'barectf_{version}_{buildtype}':
+          buildtype: linuxbuild
+          platforms: !!python/tuple [jammy-amd64]
 
 - project:
     name: gerrit-barectf
@@ -153,8 +165,8 @@
     github_name: barectf
     jobs:
       - 'dev_gerrit_barectf_{buildtype}':
-          buildtype: build
-          arch: !!python/tuple [amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [jammy-amd64]
 
 - project:
     name: barectf-views
