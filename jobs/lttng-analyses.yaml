@@ -8,10 +8,14 @@
     project-type: freestyle
 
     wrappers:
-      - workspace-cleanup
-      - timestamps
       - ansicolor:
           colormap: xterm
+      - timeout:
+          timeout: 10
+          fail: true
+          type: no-activity
+      - timestamps
+      - workspace-cleanup
       - credentials-binding:
           - username-password-separated:
               credential-id: lttng-analyses_codecov_token
@@ -41,7 +45,7 @@
 
 ## Templates
 - job-template:
-    name: lttng-analyses_{version}_build
+    name: lttng-analyses_{version}_linuxbuild
     defaults: lttng-analyses
 
     project-type: matrix
@@ -49,16 +53,16 @@
     axes:
       - axis:
          type: slave
-         name: arch
-         values: '{obj:arch}'
+         name: platform
+         values: '{obj:platforms}'
       - axis:
          type: user-defined
          name: babeltrace_version
-         values: '{obj:babeltrace_version}'
+         values: '{obj:babeltrace_versions}'
 
     builders:
       - copyartifact:
-          project: babeltrace_${{babeltrace_version}}_build/arch=${{arch}},build=std,conf=python-bindings
+          project: dev_upstream_babeltrace_${{babeltrace_version}}_linuxbuild/platform=${{platform}},build=std,conf=python-bindings
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -67,10 +71,10 @@
          !include-raw-escape: scripts/lttng-analyses/build.sh
 
     publishers:
-#      - archive:
-#          artifacts: 'build/**'
-#          allow-empty: false
-       - email-ext:
+      - workspace-cleanup: &lttng-analyses_publisher_workspace-cleanup_defaults
+          clean-if:
+            - failure: false
+      - email-ext: &lttng-analyses_publisher_email_ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
           always: false
@@ -96,7 +100,7 @@
 - job-template:
     name: lttng-analyses_{version}_pylint
     defaults: lttng-analyses
-    node: 'amd64'
+    node: 'jammy-amd64'
 
     triggers:
       - pollscm:
@@ -104,7 +108,7 @@
 
     builders:
        - copyartifact:
-           project: babeltrace_{babeltrace_version}_build/arch=amd64,build=std,conf=python-bindings
+           project: dev_upstream_babeltrace_{babeltrace_version}_linuxbuild/platform=jammy-amd64,build=std,conf=python-bindings
            which-build: last-successful
            stable: false
            filter: 'build/**'
@@ -114,29 +118,10 @@
 
     publishers:
       - archive:
-          artifacts: 'pep8.out,pylint.out'
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
+          artifacts: 'pylint.out'
+      - workspace-cleanup: *lttng-analyses_publisher_workspace-cleanup_defaults
+      - email-ext: *lttng-analyses_publisher_email_ext_defaults
+
 
 ## Project
 - project:
@@ -147,9 +132,9 @@
     version:
       - master
     jobs:
-      - 'lttng-analyses_{version}_build':
-          arch: !!python/tuple [amd64]
-          babeltrace_version: !!python/tuple [stable-1.5]
+      - 'lttng-analyses_{version}_linuxbuild':
+          platforms: !!python/tuple [jammy-amd64]
+          babeltrace_versions: !!python/tuple [stable-1.5]
       - 'lttng-analyses_{version}_pylint':
           babeltrace_version: stable-1.5
 

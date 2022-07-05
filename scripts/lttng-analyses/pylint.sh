@@ -43,10 +43,8 @@ set +ux
 set -ux
 
 pip install --quiet pylint
-pip install --quiet pep8
 
 
 cd "$SRCDIR"
 
-pep8 lttnganalyses | tee "$WORKSPACE/pep8.out"
 pylint -f parseable --ignore="_version.py" --disable=C0111 lttnganalyses | tee "$WORKSPACE/pylint.out"
