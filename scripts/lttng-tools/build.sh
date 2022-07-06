@@ -217,33 +217,6 @@ fi
 
 # Set platform variables
 case "$arch" in
-sol10-i386)
-    export MAKE=gmake
-    export TAR=gtar
-    export NPROC=gnproc
-    export PATH="/opt/csw/bin:/usr/ccs/bin:$PATH"
-    export CPPFLAGS="-I/opt/csw/include -D_XOPEN_SOURCE=500 $CPPFLAGS"
-    export LDFLAGS="-L/opt/csw/lib -R/opt/csw/lib $LDFLAGS"
-    export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/opt/csw/lib/pkgconfig"
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
-
-    LTTNG_TOOLS_RUN_TESTS="no"
-    ;;
-
-sol11-i386)
-    export MAKE=gmake
-    export TAR=gtar
-    export NPROC=nproc
-    export PATH="/opt/csw/bin:$PATH:/usr/perl5/bin"
-    export CPPFLAGS="-D_XOPEN_SOURCE=500 $CPPFLAGS"
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
-    export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/lib/pkgconfig"
-
-    LTTNG_TOOLS_RUN_TESTS="no"
-    ;;
-
 macos*)
     export MAKE=make
     export TAR=tar
