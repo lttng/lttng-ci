@@ -116,7 +116,7 @@ EOF
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
-arch=${arch:-}
+platform=${platform:-}
 conf=${conf:-}
 build=${build:-}
 target_board=${target_board:-unix}
@@ -136,7 +136,7 @@ export CXXFLAGS="-O2 -fsanitize=address -D_GLIBCXX_DEBUG=1"
 export LDFLAGS="-fsanitize=address"
 
 # Set platform variables
-case "$arch" in
+case "$platform" in
 *)
     export MAKE=make
     export TAR=tar

@@ -8,15 +8,15 @@
     project-type: freestyle
 
     wrappers:
-      - ansicolor
+      - ansicolor:
+          colormap: gnome-terminal
       - timeout:
           timeout: 20
           fail: true
           type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
+      - workspace-cleanup
 
     scm:
       - git:
@@ -38,28 +38,40 @@
           num-to-keep: 10
 
 
-## Templates ##
-- job-template:
-    name: binutils-gdb_{version}_build
-    defaults: binutils-gdb
+## Anchors
 
+# Default matrix axes
+- binutils-gdb_matrix_axes_defaults: &binutils-gdb_matrix_axes_defaults
+    name: 'binutils-gdb_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     axes:
-      - axis:
+      - axis: &binutils-gdb_matrix_axis_platform
          type: slave
-         name: arch
-         values: '{obj:arch}'
-      - axis:
+         name: platform
+         values: '{obj:platforms}'
+      - axis: &binutils-gdb_matrix_axis_target_board
          type: user-defined
          name: target_board
-         values: '{obj:target_board}'
+         values: '{obj:target_boards}'
 
+# Default builders
+- binutils-gdb_builders_defaults: &binutils-gdb_builders_defaults
+    name: 'binutils-gdb_builders_defaults'
     builders:
       - shell:
          !include-raw-escape:
            - scripts/common/print.sh
            - scripts/binutils-gdb/build.sh
+
+
+## Templates ##
+- job-template:
+    name: binutils-gdb_{version}_linuxbuild
+    defaults: binutils-gdb
+
+    <<: *binutils-gdb_matrix_axes_defaults
+    <<: *binutils-gdb_builders_defaults
 
     publishers:
       - archive:
@@ -67,30 +79,16 @@
           allow-empty: false
       - junit:
           results: 'results/*.xml'
-      - email:
-          recipients: 'simon.marchi@efficios.com'
-
-    builders:
-      - shell:
-         !include-raw-escape:
-           - scripts/common/print.sh
-           - scripts/binutils-gdb/build.sh
-
-    publishers:
-      - archive:
-          artifacts: 'build/**,results/**'
-          allow-empty: false
-      - junit:
-          results: 'results/*.xml'
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
       - email:
           recipients: 'simon.marchi@efficios.com'
 
 - job-template:
-    name: dev_gerrit_binutils-gdb_build
+    name: dev_gerrit_binutils-gdb_linuxbuild
     defaults: binutils-gdb
     concurrent: true
-
-    project-type: matrix
 
     scm:
       - git:
@@ -114,22 +112,8 @@
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
 
-    node: 'master'
-    axes:
-      - axis:
-         type: slave
-         name: arch
-         values: '{obj:arch}'
-      - axis:
-         type: user-defined
-         name: target_board
-         values: '{obj:target_board}'
-
-    builders:
-      - shell:
-         !include-raw-escape:
-           - scripts/common/print.sh
-           - scripts/binutils-gdb/build.sh
+    <<: *binutils-gdb_matrix_axes_defaults
+    <<: *binutils-gdb_builders_defaults
 
     publishers:
       - archive:
@@ -137,6 +121,9 @@
           allow-empty: false
       - junit:
           results: 'results/*.xml'
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
 
     properties:
       - build-discarder:
@@ -156,16 +143,16 @@
     version:
       - master
     jobs:
-      - 'binutils-gdb_{version}_build':
-          arch: !!python/tuple [amd64]
-          target_board: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver"]
+      - 'binutils-gdb_{version}_linuxbuild':
+          platforms: !!python/tuple [jammy-amd64]
+          target_boards: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver"]
 
 - project:
     name: gerrit-gdb
     jobs:
-      - 'dev_gerrit_binutils-gdb_build':
-          arch: !!python/tuple [amd64]
-          target_board: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver"]
+      - 'dev_gerrit_binutils-gdb_linuxbuild':
+          platforms: !!python/tuple [jammy-amd64]
+          target_boards: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver"]
 
 - project:
     name: gdb-views
