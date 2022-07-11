@@ -204,6 +204,9 @@
 
       - shell:
          !include-raw-escape:
+           - scripts/lttng-ust/gerrit-checkout-tools.sh
+      - shell:
+         !include-raw-escape:
            - scripts/common/print.sh
            - scripts/lttng-ust/build.sh
       - shell:
@@ -350,12 +353,6 @@
           branches:
             - '$GERRIT_REFSPEC'
           basedir: src/lttng-ust
-          skip-tag: true
-      - git:
-          url: https://review.lttng.org/lttng-tools
-          branches:
-            - '$GERRIT_BRANCH'
-          basedir: src/lttng-tools
           skip-tag: true
 
     triggers:
