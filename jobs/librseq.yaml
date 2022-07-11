@@ -18,15 +18,14 @@
     project-type: freestyle
 
     wrappers:
-      - ansicolor
-      - timeout:
+      - ansicolor: &librseq_wrapper_ansicolor_defaults
+          colormap: xterm
+      - timeout: &librseq_wrapper_timeout_defaults
           timeout: 10
           fail: true
           type: no-activity
       - timestamps
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
+      - workspace-cleanup
 
     scm:
       - git:
@@ -53,8 +52,8 @@
 
 
 ## Anchors
-- librseq_build_axes_defaults: &librseq_build_axes_defaults
-    name: 'librseq_build_axes_defaults'
+- librseq_matrix_axes_defaults: &librseq_matrix_axes_defaults
+    name: 'librseq_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy:
@@ -62,21 +61,21 @@
         expr: '{touchstone}'
         result: unstable
     axes:
-      - axis:
+      - axis: &librseq_matrix_axis_platform
          type: slave
          name: platform
          values: '{obj:platforms}'
-      - axis:
+      - axis: &librseq_matrix_axis_conf
          type: user-defined
          name: conf
          values: '{obj:confs}'
-      - axis:
+      - axis: &librseq_matrix_axis_build
          type: user-defined
          name: build
          values: '{obj:builds}'
 
-- librseq_build_axes_cc: &librseq_build_axes_cc
-    name: 'librseq_build_axes_cc'
+- librseq_matrix_axes_cc: &librseq_matrix_axes_cc
+    name: 'librseq_matrix_axes_cc'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy:
@@ -84,52 +83,85 @@
         expr: '{touchstone}'
         result: unstable
     axes:
-      - axis:
-         type: slave
-         name: platform
-         values: '{obj:platforms}'
-      - axis:
-         type: user-defined
-         name: conf
-         values: '{obj:confs}'
-      - axis:
-         type: user-defined
-         name: build
-         values: '{obj:builds}'
-      - axis:
+      - axis: *librseq_matrix_axis_platform
+      - axis: *librseq_matrix_axis_conf
+      - axis: *librseq_matrix_axis_build
+      - axis: &librseq_matrix_axis_cc
          type: user-defined
          name: cc
          values: '{obj:ccs}'
 
-- librseq_build_builders_defaults: &librseq_build_builders_defaults
-    name: 'librseq_build_builders_defaults'
+- librseq_builders_defaults: &librseq_builders_defaults
+    name: 'librseq_builders_defaults'
     builders:
       - shell:
          !include-raw-escape:
            - scripts/common/print.sh
            - scripts/librseq/build.sh
 
-- librseq_build_publishers_defaults: &librseq_build_publishers_defaults
-    name: 'librseq_build_publishers_defaults'
+- librseq_publishers_defaults: &librseq_publishers_defaults
+    name: 'librseq_publishers_defaults'
     publishers:
-      - tap:
+      - tap: &librseq_publisher_tap_defaults
           results: 'tap/**/*.log'
           fail-if-no-results: true
           failed-tests-mark-build-as-failure: true
           todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            unstable:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - archive:
+      - raw: &librseq_publisher_warnings-ng_defaults
+          xml: |
+            <io.jenkins.plugins.analysis.core.steps.IssuesRecorder plugin="warnings-ng">
+              <analysisTools>
+                <io.jenkins.plugins.analysis.warnings.Gcc4>
+                  <id/>
+                  <name/>
+                  <jenkins plugin="plugin-util-api"/>
+                  <pattern/>
+                  <reportEncoding/>
+                  <skipSymbolicLinks>false</skipSymbolicLinks>
+                </io.jenkins.plugins.analysis.warnings.Gcc4>
+                <io.jenkins.plugins.analysis.warnings.Clang>
+                  <id/>
+                  <name/>
+                  <jenkins plugin="plugin-util-api"/>
+                  <pattern/>
+                  <reportEncoding/>
+                  <skipSymbolicLinks>false</skipSymbolicLinks>
+                </io.jenkins.plugins.analysis.warnings.Clang>
+              </analysisTools>
+              <sourceCodeEncoding/>
+              <sourceDirectory/>
+              <sourceDirectories/>
+              <ignoreQualityGate>false</ignoreQualityGate>
+              <ignoreFailedBuilds>true</ignoreFailedBuilds>
+              <failOnError>false</failOnError>
+              <healthy>0</healthy>
+              <unhealthy>0</unhealthy>
+              <minimumSeverity plugin="analysis-model-api">
+                <name>LOW</name>
+              </minimumSeverity>
+              <filters/>
+              <isEnabledForFailure>true</isEnabledForFailure>
+              <isAggregatingResults>true</isAggregatingResults>
+              <isBlameDisabled>false</isBlameDisabled>
+              <skipPublishingChecks>true</skipPublishingChecks>
+              <publishAllIssues>false</publishAllIssues>
+              <qualityGates>
+                <io.jenkins.plugins.analysis.core.util.QualityGate>
+                  <threshold>1</threshold>
+                  <type>TOTAL</type>
+                  <status>WARNING</status>
+                </io.jenkins.plugins.analysis.core.util.QualityGate>
+              </qualityGates>
+              <trendChartType>AGGREGATION_TOOLS</trendChartType>
+              <scm/>
+            </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
+      - archive: &librseq_publisher_archive_defaults
           artifacts: 'build/**,tap/**'
           allow-empty: false
-      - email-ext:
+      - workspace-cleanup: &librseq_publisher_workspace-cleanup_defaults
+          clean-if:
+            - failure: false
+      - email-ext: &librseq_publisher_email-ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
           always: false
@@ -152,26 +184,13 @@
           send-to:
             - recipients
 
-- librseq_build_publishers_gerrit: &librseq_build_publishers_gerrit
-    name: 'librseq_build_publishers_gerrit'
+- librseq_publishers_gerrit: &librseq_publishers_gerrit
+    name: 'librseq_publishers_gerrit'
     publishers:
-      - tap:
-          results: 'tap/**/*.log'
-          fail-if-no-results: true
-          failed-tests-mark-build-as-failure: true
-          todo-is-failure: false
-      - warnings:
-          console-log-parsers:
-            - 'GNU Make + GNU C Compiler (gcc)'
-          total-thresholds:
-            failed:
-              total-all: 0
-              total-high: 0
-              total-normal: 0
-              total-low: 0
-      - archive:
-          artifacts: 'build/**,tap/**'
-          allow-empty: false
+      - tap: *librseq_publisher_tap_defaults
+      - raw: *librseq_publisher_warnings-ng_defaults
+      - archive: *librseq_publisher_archive_defaults
+      - workspace-cleanup: *librseq_publisher_workspace-cleanup_defaults
 
 
 ## Templates
@@ -179,17 +198,17 @@
     name: librseq_{version}_{buildtype}
     defaults: librseq
 
-    <<: *librseq_build_axes_defaults
-    <<: *librseq_build_builders_defaults
-    <<: *librseq_build_publishers_defaults
+    <<: *librseq_matrix_axes_defaults
+    <<: *librseq_builders_defaults
+    <<: *librseq_publishers_defaults
 
 - job-template:
     name: librseq_{version}_{cctype}
     defaults: librseq
 
-    <<: *librseq_build_axes_cc
-    <<: *librseq_build_builders_defaults
-    <<: *librseq_build_publishers_defaults
+    <<: *librseq_matrix_axes_cc
+    <<: *librseq_builders_defaults
+    <<: *librseq_publishers_defaults
 
 - job-template:
     name: librseq_{version}_cppcheck
@@ -210,28 +229,8 @@
           allow-empty: false
       - cppcheck:
           pattern: 'cppcheck-result.xml'
-      - email-ext:
-          recipients: '{obj:email_to}'
-          reply-to: ci-notification@lists.lttng.org
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: false
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: false
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: true
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
+      - workspace-cleanup: *librseq_publisher_workspace-cleanup_defaults
+      - email-ext: *librseq_publisher_email-ext_defaults
 
 - job-template:
     name: dev_gerrit_librseq_{buildtype}
@@ -260,9 +259,9 @@
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
 
-    <<: *librseq_build_axes_defaults
-    <<: *librseq_build_builders_defaults
-    <<: *librseq_build_publishers_gerrit
+    <<: *librseq_matrix_axes_defaults
+    <<: *librseq_builders_defaults
+    <<: *librseq_publishers_gerrit
 
     properties:
       - inject:
@@ -293,6 +292,7 @@
           name: 'HTML Report'
           dir: 'scan-build-archive/'
           files: 'index.html'
+      - workspace-cleanup: *librseq_publisher_workspace-cleanup_defaults
 
 - job-template:
     name: librseq_{version}_coverity
@@ -304,15 +304,10 @@
           cron: "@daily"
 
     wrappers:
-      - ansicolor
-      - timeout:
-          timeout: 10
-          fail: true
-          type: no-activity
+      - ansicolor: *librseq_wrapper_ansicolor_defaults
+      - timeout: *librseq_wrapper_timeout_defaults
       - timestamps
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
+      - workspace-cleanup
       - credentials-binding:
           - username-password-separated:
               credential-id: librseq_coverity_token
@@ -328,6 +323,7 @@
       - archive:
           artifacts: 'analysis-results.tgz,cov-int/**'
           allow-empty: false
+      - workspace-cleanup: *librseq_publisher_workspace-cleanup_defaults
 
 - view-template:
     name: 'Librseq'
@@ -346,7 +342,7 @@
       - master
     jobs:
       - 'librseq_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           platforms: !!python/tuple [jammy-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
@@ -378,7 +374,7 @@
     github_name: librseq
     jobs:
       - 'dev_gerrit_librseq_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           platforms: !!python/tuple [jammy-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
