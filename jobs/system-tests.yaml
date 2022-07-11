@@ -252,13 +252,9 @@
       - git:
           url: https://github.com/lttng/lttng-ci
           basedir: src/lttng-ci/
-      - git:
-          url : $LTTNG_MODULES_REPO
-          basedir: src/lttng-modules/
-          branches:
-            - $LTTNG_MODULES_COMMIT_ID
 
     builders:
+      - shell: !include-raw-escape: scripts/system-tests/checkout-modules.sh
       - shell: !include-raw-escape: scripts/system-tests/generate-properties-slave.sh
       - inject:
           properties-file: properties.txt
