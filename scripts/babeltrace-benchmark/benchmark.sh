@@ -29,6 +29,10 @@ TMPDIR="${VENV}/tmp"
 mkdir -p "$TMPDIR"
 export TMPDIR
 
+function checkout_scripts() {
+	git clone https://github.com/lttng/lttng-ci.git "$SCRIPT_DIR"
+}
+
 function setup_env ()
 {
 	mkdir -p "$RESULTS_DIR"
@@ -50,6 +54,7 @@ function generate_report ()
 	python "$SCRIPT_PATH" --generate-report --repo-path "$SRC_DIR" --report-name "${RESULTS_DIR}/babeltrace-benchmark.pdf"
 }
 
+checkout_scripts
 setup_env
 run_jobs
 generate_report

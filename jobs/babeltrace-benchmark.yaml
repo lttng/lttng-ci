@@ -27,6 +27,7 @@
 
     triggers:
       - timed: '@daily'
+
     builders:
       - shell:
           !include-raw: scripts/babeltrace-benchmark/benchmark.sh
@@ -35,12 +36,10 @@
       - archive:
           artifacts: 'results/**'
           allow-empty: false
-    scm:
-      - babeltrace
-      - lttng-ci
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
 
-- scm:
-    name: babeltrace
     scm:
       - git:
           url: https://github.com/efficios/babeltrace.git
@@ -48,13 +47,3 @@
           browser-url: https://github.com/efficios/babeltrace
           basedir: src/babeltrace
           skip-tag: true
-- scm:
-    name: lttng-ci
-    scm:
-      - git:
-          url: https://github.com/lttng/lttng-ci.git
-          browser: githubweb
-          browser-url: https://github.com/lttng/lttng-ci
-          basedir: src/lttng-ci
-          skip-tag: true
-
