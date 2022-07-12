@@ -252,7 +252,55 @@
     name: 'babeltrace_publishers_gerrit'
     publishers:
       - tap: *babeltrace_publisher_tap_defaults
-      - raw: *babeltrace_publisher_warnings-ng_defaults
+      # Fail job on any compiler warnings
+      - raw:
+          xml: |
+            <io.jenkins.plugins.analysis.core.steps.IssuesRecorder plugin="warnings-ng">
+              <analysisTools>
+                <io.jenkins.plugins.analysis.warnings.Gcc4>
+                  <id/>
+                  <name/>
+                  <jenkins plugin="plugin-util-api"/>
+                  <pattern/>
+                  <reportEncoding/>
+                  <skipSymbolicLinks>false</skipSymbolicLinks>
+                </io.jenkins.plugins.analysis.warnings.Gcc4>
+                <io.jenkins.plugins.analysis.warnings.Clang>
+                  <id/>
+                  <name/>
+                  <jenkins plugin="plugin-util-api"/>
+                  <pattern/>
+                  <reportEncoding/>
+                  <skipSymbolicLinks>false</skipSymbolicLinks>
+                </io.jenkins.plugins.analysis.warnings.Clang>
+              </analysisTools>
+              <sourceCodeEncoding/>
+              <sourceDirectory/>
+              <sourceDirectories/>
+              <ignoreQualityGate>false</ignoreQualityGate>
+              <ignoreFailedBuilds>true</ignoreFailedBuilds>
+              <failOnError>false</failOnError>
+              <healthy>0</healthy>
+              <unhealthy>0</unhealthy>
+              <minimumSeverity plugin="analysis-model-api">
+                <name>LOW</name>
+              </minimumSeverity>
+              <filters/>
+              <isEnabledForFailure>true</isEnabledForFailure>
+              <isAggregatingResults>true</isAggregatingResults>
+              <isBlameDisabled>false</isBlameDisabled>
+              <skipPublishingChecks>true</skipPublishingChecks>
+              <publishAllIssues>false</publishAllIssues>
+              <qualityGates>
+                <io.jenkins.plugins.analysis.core.util.QualityGate>
+                  <threshold>1</threshold>
+                  <type>TOTAL</type>
+                  <status>FAILED</status>
+                </io.jenkins.plugins.analysis.core.util.QualityGate>
+              </qualityGates>
+              <trendChartType>AGGREGATION_TOOLS</trendChartType>
+              <scm/>
+            </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
       - archive: *babeltrace_publisher_archive_defaults
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
 
