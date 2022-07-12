@@ -60,15 +60,15 @@
         expr: '{touchstone}'
         result: unstable
     axes:
-      - axis: &babeltrace_build_axis_arch
+      - axis: &babeltrace_matrix_axis_arch
          type: slave
          name: arch
          values: '{obj:archs}'
-      - axis: &babeltrace_build_axis_conf
+      - axis: &babeltrace_matrix_axis_conf
          type: user-defined
          name: conf
          values: '{obj:confs}'
-      - axis: &babeltrace_build_axis_build
+      - axis: &babeltrace_matrix_axis_build
          type: user-defined
          name: build
          values: '{obj:builds}'
@@ -79,10 +79,10 @@
     <<: *babeltrace_matrix_axes_defaults
 
     axes:
-      - axis: *babeltrace_build_axis_arch
-      - axis: *babeltrace_build_axis_conf
-      - axis: *babeltrace_build_axis_build
-      - axis: &babeltrace_build_axis_cc
+      - axis: *babeltrace_matrix_axis_arch
+      - axis: *babeltrace_matrix_axis_conf
+      - axis: *babeltrace_matrix_axis_build
+      - axis: &babeltrace_matrix_axis_cc
          type: user-defined
          name: cc
          values: '{obj:ccs}'
@@ -248,8 +248,8 @@
           send-to:
             - recipients
 
-- babeltrace_build_publishers_gerrit: &babeltrace_build_publishers_gerrit
-    name: 'babeltrace_build_publishers_gerrit'
+- babeltrace_publishers_gerrit: &babeltrace_publishers_gerrit
+    name: 'babeltrace_publishers_gerrit'
     publishers:
       - tap: *babeltrace_publisher_tap_defaults
       - raw: *babeltrace_publisher_warnings-ng_defaults
@@ -315,7 +315,7 @@
 
     <<: *babeltrace_matrix_axes_defaults
     <<: *babeltrace_builders_defaults
-    <<: *babeltrace_build_publishers_gerrit
+    <<: *babeltrace_publishers_gerrit
 
 - job-template:
     name: babeltrace_{version}_release
