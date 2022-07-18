@@ -624,6 +624,7 @@ EOF
 
 known_failures_file="known-failures-${target_board}"
 grep --invert-match --fixed-strings --file="$known_failures_file"  "${WORKSPACE}/results/gdb.sum" > "${WORKSPACE}/results/gdb.filtered.sum"
+grep --extended-regexp --regexp="^(FAIL|XPASS|UNRESOLVED|DUPLICATE):" "${WORKSPACE}/results/gdb.filtered.sum" > "${WORKSPACE}/results/gdb.fail.sum" || true
 
 # For informational purposes: check if some known failure lines did not appear
 # in the gdb.sum.
