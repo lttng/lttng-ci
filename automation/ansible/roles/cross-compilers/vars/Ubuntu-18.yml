@@ -1,5 +1,5 @@
 ---
-__cross_compilers_packages:
+cross_compilers_packages:
   - gcc-5-aarch64-linux-gnu
   - gcc-5-arm-linux-gnueabihf
   - gcc-5-i686-linux-gnu
