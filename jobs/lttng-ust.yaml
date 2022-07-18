@@ -554,7 +554,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: master
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -607,7 +607,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.13
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -650,7 +650,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.12
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
@@ -700,7 +700,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.11
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -738,7 +738,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.10
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.9]

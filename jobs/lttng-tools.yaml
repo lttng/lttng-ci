@@ -215,7 +215,7 @@
             - shell: |
                 #!/bin/bash
                 set -exu
-                git clone -b "&GERRIT_BRANCH" https://github.com/{github_user}/lttng-modules.git src/lttng-modules
+                git clone -b "$GERRIT_BRANCH" https://github.com/{github_user}/lttng-modules.git src/lttng-modules
 
       # Copy lttng-ust artifacts if the conf is 'std' or 'agents'
       # and we don't depend on a specific lttng-ust change
@@ -865,7 +865,7 @@
           buildtype: elbuild
           version: master
           ustversion: master
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [master]
@@ -970,7 +970,7 @@
           buildtype: elbuild
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1076,7 +1076,7 @@
           buildtype: elbuild
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1194,7 +1194,7 @@
           buildtype: elbuild
           version: stable-2.11
           ustversion: stable-2.11
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1268,7 +1268,7 @@
           buildtype: elbuild
           version: stable-2.10
           ustversion: stable-2.10
-          archs: !!python/tuple [el8]
+          archs: !!python/tuple [el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.9]
