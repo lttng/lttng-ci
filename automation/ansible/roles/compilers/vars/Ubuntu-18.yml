@@ -1,5 +1,5 @@
 ---
-__compilers_packages:
+compilers_packages:
   - gcc-4.8
   - gcc-5
   - gcc-6
