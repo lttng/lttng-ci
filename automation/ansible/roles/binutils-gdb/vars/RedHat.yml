@@ -1,3 +1,3 @@
 ---
-__binutils_gdb_packages:
+binutils_gdb_packages:
   - gmp-devel

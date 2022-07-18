@@ -2,7 +2,7 @@
 binutils_gdb_packages:
   - dejagnu
   - gfortran
-  - gnat
+  - gnat-11
   - guile-2.2-dev
   - libgmp-dev
   - libreadline-dev
