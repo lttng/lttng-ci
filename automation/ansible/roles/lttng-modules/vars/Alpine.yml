@@ -1,6 +1,4 @@
 ---
-__lttng_modules_packages:
-#  - kernel-wedge
+lttng_modules_packages:
   - libelf-dev
   - bc
-#  - gcc-4.9

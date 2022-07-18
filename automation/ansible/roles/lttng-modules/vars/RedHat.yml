@@ -1,8 +1,4 @@
 ---
-__lttng_modules_packages:
-#  - kernel-wedge
+lttng_modules_packages:
   - elfutils-devel
   - bc
-#  - s3cmd
-#  - u-boot-tools
-#  - module-init-tools

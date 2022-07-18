@@ -1,0 +1,14 @@
+---
+lttng_modules_packages:
+  - bc
+  - dctrl-tools
+  - dwarves
+  - gcc-4.8
+  - gcc-5
+  - kernel-wedge
+  - libelf-dev
+  - liblz4-tool
+  - module-init-tools
+  - s3cmd
+  - u-boot-tools
+  - zstd
