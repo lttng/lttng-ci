@@ -1,6 +1,6 @@
 ---
-__lttng_ust_packages:
-  - libuuid-devel
-#  - texinfo
+lttng_ust_packages:
 #  - liblog4j1.2-java
+  - libuuid-devel
   - numactl-devel
+#  - texinfo

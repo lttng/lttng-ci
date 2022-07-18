@@ -1,27 +1,27 @@
 ---
-__common_packages:
-  - sudo
-  - openjdk11
-  - git
-  - vim
-  - tree
-  - htop
+common_packages:
   - alpine-sdk
-  - clang
-  - automake
   - autoconf
-  - libtool
-  - bison
-  - flex
-  - perl
-  - jq
-  - cppcheck
-  - cloc
-  - py-virtualenv
-  - curl
-  - gettext
-  - openssl-dev
-  - coreutils
+  - automake
   - bash
-  - shadow
+  - bison
+  - clang
+  - cloc
+  - coreutils
+  - cppcheck
+  - curl
+  - flex
+  - gettext
+  - git
+  - htop
+  - jq
+  - libtool
+  - openjdk11
+  - openssl-dev
+  - perl
+  - py-virtualenv
   - rsync
+  - shadow
+  - sudo
+  - tree
+  - vim

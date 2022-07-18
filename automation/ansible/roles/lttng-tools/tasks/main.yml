@@ -1,23 +1,15 @@
 ---
 # Include variables and define needed variables.
 - name: Include OS-specific variables.
-  include_vars: "{{ ansible_os_family }}.yml"
-
-- name: Define lttng_tools_packages.
-  set_fact:
-    lttng_tools_packages: "{{ __lttng_tools_packages | list }}"
-  when: lttng_tools_packages is not defined
-
-- name: Define lttng_tools_packages_no_recommends.
-  set_fact:
-    lttng_tools_packages_no_recommends: "{{ __lttng_tools_packages_no_recommends | list }}"
-  when:
-    - lttng_tools_packages_no_recommends is not defined
-    - ansible_os_family == 'Debian' or ansible_os_family == 'Suse'
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
 
 # Setup/install tasks.
 - include: setup-RedHat.yml
-  when: ansible_os_family == 'RedHat'
+  when: ansible_os_family in ['RedHat', 'Rocky']
 
 - include: setup-Debian.yml
   when: ansible_os_family == 'Debian'

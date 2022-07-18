@@ -1,8 +1,8 @@
 ---
-__lttng_ust_packages:
-  - uuid-dev
-  - texinfo
-  - python3
+lttng_ust_packages:
   - liblog4j1.2-java
   - liblog4j2-java
   - libnuma-dev
+  - python3
+  - texinfo
+  - uuid-dev

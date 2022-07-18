@@ -1,11 +1,11 @@
 ---
-__babeltrace_packages:
+babeltrace_packages:
+  - chrpath
+  - libdw-dev
+  - libelf-dev
+  - libglib2.0-dev
   - libpopt-dev
-  - uuid-dev
   - python3-dev
   - python3-sphinx
   - swig
-  - libglib2.0-dev
-  - libdw-dev
-  - libelf-dev
-  - chrpath
+  - uuid-dev

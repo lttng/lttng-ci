@@ -1,30 +1,25 @@
 ---
-__common_packages:
-  - openssh-server
-  - sudo
-  - java-11-openjdk-headless
-  - git
-  - vim
-  - emacs-nox
-  - tree
-  - htop
-#  - build-essential
-  - clang
-#  - clang-tools
-  - automake
+common_packages:
   - autoconf
-  - libtool
+  - automake
   - bison
-  - flex
-  - perl-Test-Harness
-  - jq
-#  - cppcheck
-#  - cloc
-  - python3-virtualenv
+  - clang
   - curl
+  - emacs-nox
+  - flex
   - gettext
-  - openssl-devel
-  - psmisc
-  - rsync
-#  - pbzip2
+  - git
+  - htop
+  - java-11-openjdk-headless
+  - jq
+  - libtool
   - lzop
+  - openssh-server
+  - openssl-devel
+  - perl-Test-Harness
+  - psmisc
+  - python3-virtualenv
+  - rsync
+  - sudo
+  - tree
+  - vim

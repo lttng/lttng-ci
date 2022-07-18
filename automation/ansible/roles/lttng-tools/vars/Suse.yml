@@ -1,9 +1,9 @@
 ---
-__lttng_tools_packages:
-  - popt-devel
-  - libxml2-devel
+lttng_tools_packages:
   - bash-completion
+  - libxml2-devel
+  - popt-devel
 
-__lttng_tools_packages_no_recommends:
+lttng_tools_packages_no_recommends:
   - asciidoc
   - xmlto

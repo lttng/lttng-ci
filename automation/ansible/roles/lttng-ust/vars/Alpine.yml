@@ -1,7 +1,7 @@
 ---
-__lttng_ust_packages:
-  - util-linux-dev
-  - texinfo
-  - python3
+lttng_ust_packages:
 #  - liblog4j1.2-java
   - numactl-dev
+  - python3
+  - texinfo
+  - util-linux-dev

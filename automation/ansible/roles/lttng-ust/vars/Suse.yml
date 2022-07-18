@@ -1,7 +1,7 @@
 ---
-__lttng_ust_packages:
-  - libuuid-devel
-  - texinfo
-  - python3
-  - log4j
+lttng_ust_packages:
   - libnuma-devel
+  - libuuid-devel
+  - log4j
+  - python3
+  - texinfo

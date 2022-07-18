@@ -98,8 +98,9 @@ ci-rootnode-bionic-amd64-06
 [node_sles]
 ci-node-sles12sp5-amd64-03-01
 
-[node_el8]
+[node_el]
 ci-node-el8-amd64-03-01
+ci-node-el9-amd64-02-01
 
 [node:children]
 node_i386
@@ -110,7 +111,7 @@ node_powerpc
 node_ppc64el
 node_standalone
 node_sles
-node_el8
+node_el
 
 [py3_hosts:children]
 node

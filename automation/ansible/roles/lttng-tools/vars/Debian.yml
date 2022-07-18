@@ -1,10 +1,10 @@
 ---
-__lttng_tools_packages:
+lttng_tools_packages:
+  - bash-completion
+  - libmsgpack-dev
   - libpopt-dev
   - libxml2-dev
-  - libmsgpack-dev
-  - bash-completion
 
-__lttng_tools_packages_no_recommends:
+lttng_tools_packages_no_recommends:
   - asciidoc
   - xmlto
