@@ -248,10 +248,12 @@ cygwin|cygwin64|msys32|msys64)
     PYTHON2=python2
     PYTHON3=python3
 
-    P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
-    P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
+    if command -v $PYTHON2 >/dev/null 2>&1; then
+        P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
+        DEPS_PYTHON2="$WORKSPACE/deps/build/lib/python$P2_VERSION/site-packages"
+    fi
 
-    DEPS_PYTHON2="$WORKSPACE/deps/build/lib/python$P2_VERSION/site-packages"
+    P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
     DEPS_PYTHON3="$WORKSPACE/deps/build/lib/python$P3_VERSION/site-packages"
     ;;
 esac
@@ -327,7 +329,7 @@ agents)
 
     export JAVA_HOME="/usr/lib/jvm/default-java"
     export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
-    export PYTHONPATH="$DEPS_PYTHON2:$DEPS_PYTHON3"
+    export PYTHONPATH="${DEPS_PYTHON2:-}${DEPS_PYTHON2:+:}$DEPS_PYTHON3"
 
     CONF_OPTS+=("--enable-test-java-agent-all" "--enable-test-python-agent-all")
 
