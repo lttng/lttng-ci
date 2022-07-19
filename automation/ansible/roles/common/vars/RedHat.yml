@@ -10,6 +10,7 @@ common_packages:
   - gettext
   - git
   - htop
+  - java-11-openjdk-devel
   - java-11-openjdk-headless
   - jq
   - libtool

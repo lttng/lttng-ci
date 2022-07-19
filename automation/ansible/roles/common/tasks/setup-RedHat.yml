@@ -3,3 +3,4 @@
   dnf:
     name: "{{ common_packages }}"
     state: installed
+    install_weak_deps: false
