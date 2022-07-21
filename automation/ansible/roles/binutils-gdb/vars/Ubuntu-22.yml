@@ -1,5 +1,6 @@
 ---
 binutils_gdb_packages:
+  - ccache
   - dejagnu
   - gfortran
   - gnat-11
