@@ -134,7 +134,7 @@
 - view-template:
     name: 'GDB'
     view-type: list
-    regex: 'binutils-gdb[-_].*'
+    regex: '.*binutils-gdb.*'
 
 
 ## Projects ##
