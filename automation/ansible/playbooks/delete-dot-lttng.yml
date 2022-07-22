@@ -1,0 +1,9 @@
+---
+- name: Delete .lttng folder for the jenkins user
+  hosts: all
+
+  tasks:
+   - name: delete .lttng folder
+     file:
+             path: /home/jenkins/.lttng
+             state: absent
