@@ -182,6 +182,15 @@ cd "$SRCDIR"
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
+# Gerrit will trigger build on FreeBSD regardless of the branch, exit
+# successfuly when the version is < 2.13.
+if [[ $arch == freebsd* ]] && verlt "$PACKAGE_VERSION" "2.13"; then
+    mkdir -p "$WORKSPACE/tap/no-log"
+    echo "1..1" > "$WORKSPACE/tap/no-log/tests.log"
+    echo "ok 1 - FreeBSD build unsupported in < 2.13" >> "$WORKSPACE/tap/no-log/tests.log"
+    exit 0
+fi
+
 # Set configure options and environment variables for each build
 # configuration.
 CONF_OPTS=("--prefix=$PREFIX")
@@ -240,7 +249,7 @@ dist)
 
     # Run configure and generate the tar file
     # in the source directory
-    ./configure || failed_configure
+    ./configure --enable-jni-interface || failed_configure
     $MAKE dist
 
     # Create and enter a temporary build directory
@@ -263,7 +272,7 @@ oot-dist)
     cd "$builddir"
 
     # Run configure out of tree and generate the tar file
-    "$SRCDIR/configure" || failed_configure
+    "$SRCDIR/configure" --enable-jni-interface || failed_configure
     $MAKE dist
 
     dist_srcdir="$(mktemp -d)"
