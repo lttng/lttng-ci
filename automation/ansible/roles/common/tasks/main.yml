@@ -23,15 +23,8 @@
 - name: Set up authorized_keys for the root user
   authorized_key:
     user: 'root'
-    key: '{{ item }}'
-  with_file:
-    - public_keys/mjeanson.pub
-    - public_keys/joraj.pub
-    - public_keys/jgalar.pub
-    - public_keys/frdeso.pub
-    - public_keys/mdesnoyers.pub
-    - public_keys/smarchi.pub
-    - public_keys/pproulx.pub
+    key: "{% for key in query('fileglob', 'public_keys/*.pub') %}{{ lookup('file', key) ~ '\n'}}{% endfor %}"
+    exclusive: true
 
 - name: Remove ubuntu user
   user:
