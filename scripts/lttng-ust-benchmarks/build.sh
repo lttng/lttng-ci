@@ -56,6 +56,7 @@ export LD_LIBRARY_PATH="$URCU_LIBS:$UST_LIBS:$BABEL_LIBS:$TOOLS_LIBS:${LD_LIBRAR
 export PYTHONPATH="$TOOLS_PY:$BABEL_PY:${PYTHONPATH:-}"
 export PATH="$TOOLS_BINS:$UST_BINS:$PATH"
 export LTTNG_MODULES_DIR="$WORKSPACE/deps/lttng-modules/"
+export PKG_CONFIG_PATH="$UST_LIBS/pkgconfig"
 
 export LTTNG_SESSION_CONFIG_XSD_PATH="$WORKSPACE/deps/lttng-tools/build/share/xml/lttng"
 export LTTNG_CONSUMERD64_BIN="$WORKSPACE/deps/lttng-tools/build/lib/lttng/libexec/lttng-consumerd"
