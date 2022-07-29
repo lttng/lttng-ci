@@ -48,7 +48,7 @@ TOOLS_BINS="$WORKSPACE/deps/lttng-tools/build/bin/"
 TOOLS_PY="$WORKSPACE/deps/lttng-tools/build/lib/python$P3_VERSION/site-packages/"
 
 rm -rf "$WORKSPACE/deps/lttng-modules"
-git clone git://github.com/lttng/lttng-modules.git "$WORKSPACE/deps/lttng-modules"
+git clone https://github.com/lttng/lttng-modules.git "$WORKSPACE/deps/lttng-modules"
 
 export CFLAGS="-I$URCU_INCS -I$UST_INCS"
 export LDFLAGS="-L$URCU_LIBS -L$UST_LIBS"
