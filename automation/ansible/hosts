@@ -109,6 +109,7 @@ ci-rootnode-bionic-amd64-06
 ci-node-sles12sp5-amd64-03-01
 
 [node_el]
+ci-node-el7-amd64-02-01 ansible_python_interpreter=python2
 ci-node-el8-amd64-03-01
 ci-node-el9-amd64-02-01
 
