@@ -226,7 +226,13 @@ prod)
     unset BABELTRACE_MINIMAL_LOG_LEVEL
 
     # Enable the python bindings
-    CONF_OPTS+=("--enable-python-bindings" "--enable-python-bindings-doc" "--enable-python-plugins")
+    CONF_OPTS+=("--enable-python-bindings" "--enable-python-plugins")
+    ;;
+
+doc)
+    echo "Documentation configuration"
+
+    CONF_OPTS+=("--enable-python-bindings" "--enable-python-bindings-doc" "--enable-python-plugins" "--enable-api-doc")
     ;;
 
 min)

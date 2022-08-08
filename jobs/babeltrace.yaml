@@ -558,7 +558,7 @@
           buildtype: build
           archs: !!python/tuple [amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
-          confs: !!python/tuple [std, static, prod, min]
+          confs: !!python/tuple [std, static, prod, min, doc]
           filter: ''
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
