@@ -349,7 +349,7 @@
           touchstone: '(build == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: elbuild
-          archs: !!python/tuple [el8, el9]
+          archs: !!python/tuple [el7, el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
@@ -408,7 +408,7 @@
           touchstone: '(build == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: elbuild
-          archs: !!python/tuple [el8, el9]
+          archs: !!python/tuple [el7, el8, el9]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
