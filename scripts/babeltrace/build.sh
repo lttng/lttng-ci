@@ -83,7 +83,7 @@ failed_configure() {
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
-arch=${arch:-}
+platform=${platform:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
@@ -133,7 +133,7 @@ if [ "x${CC:-}" != "x" ]; then
 fi
 
 # Set platform variables
-case "$arch" in
+case "$platform" in
 macos*)
     export MAKE=make
     export TAR=tar

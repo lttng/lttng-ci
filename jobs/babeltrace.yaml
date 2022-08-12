@@ -61,10 +61,10 @@
         expr: '{touchstone}'
         result: unstable
     axes:
-      - axis: &babeltrace_matrix_axis_arch
+      - axis: &babeltrace_matrix_axis_platform
          type: slave
-         name: arch
-         values: '{obj:archs}'
+         name: platform
+         values: '{obj:platforms}'
       - axis: &babeltrace_matrix_axis_conf
          type: user-defined
          name: conf
@@ -80,7 +80,7 @@
     <<: *babeltrace_matrix_axes_defaults
 
     axes:
-      - axis: *babeltrace_matrix_axis_arch
+      - axis: *babeltrace_matrix_axis_platform
       - axis: *babeltrace_matrix_axis_conf
       - axis: *babeltrace_matrix_axis_build
       - axis: &babeltrace_matrix_axis_cc
@@ -96,7 +96,7 @@
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: {{ '${{arch}}' }}
+          condition-string1: {{ '${{platform}}' }}
           condition-string2: 'cygwin64'
           steps:
             - shell:
@@ -108,7 +108,7 @@
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: {{ '${{arch}}' }}
+          condition-string1: {{ '${{platform}}' }}
           condition-string2: 'msys2-mingw32'
           steps:
             - inject:
@@ -122,7 +122,7 @@
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: {{ '${{arch}}' }}
+          condition-string1: {{ '${{platform}}' }}
           condition-string2: 'msys2-mingw64'
           steps:
             - inject:
@@ -148,7 +148,7 @@
           properties-content: |
             LD_LIBRARY_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib
             PKG_CONFIG_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib/pkgconfig
-            arch=amd64
+            platform=bionic-amd64
             conf=std
             build=std
       - shell: |
@@ -369,7 +369,7 @@
 - job-template:
     name: babeltrace_{version}_release
     defaults: babeltrace
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -424,7 +424,7 @@
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
 
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     builders:
       - shell:
@@ -461,7 +461,7 @@
 - job-template:
     name: babeltrace_{version}_scan-build
     defaults: babeltrace
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -481,7 +481,7 @@
 - job-template:
     name: babeltrace_{version}_coverity
     defaults: babeltrace
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -511,7 +511,7 @@
 - job-template:
     name: babeltrace_{version}_pylint
     defaults: babeltrace
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -531,7 +531,7 @@
 - job-template:
     name: '{job_prefix}babeltrace_{version}_glib-2.28.6'
     defaults: babeltrace
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     <<: *babeltrace_builders_glib-2-28-6
     <<: *babeltrace_publishers_defaults
@@ -556,57 +556,64 @@
       - master
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
+          buildtype: linuxbuild
+          platforms: !!python/tuple [jammy-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, static, prod, min, doc]
+          filter: ''
+          touchstone: '(build == "std") && (conf == "std")'
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min, doc]
           filter: ''
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
-          touchstone: '(build == "std") && (conf == "std") && (arch == "i386")'
+          touchstone: '(build == "std") && (conf == "std") && (platform == "deb11-i386")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: elbuild
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          archs: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: freebsdbuild
-          archs: !!python/tuple [freebsd]
+          platforms: !!python/tuple [freebsd-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: winbuild
-          archs: !!python/tuple [cygwin64, msys2-mingw32, msys2-mingw64]
+          platforms: !!python/tuple [cygwin64, msys2-mingw32, msys2-mingw64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, prod]
           ccs: !!python/tuple [clang-3.9, clang-4.0, clang-6.0, clang-7]
@@ -630,21 +637,21 @@
     jobs:
       - 'dev_gerrit_babeltrace_{buildtype}':
           buildtype: build
-          archs: !!python/tuple [amd64, armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [bionic-amd64, deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
-          filter: '(build=="std" && conf=="std") || (arch=="amd64")'
+          filter: '(build=="std" && conf=="std") || (platform=="bionic-amd64")'
           touchstone: ''
       - 'dev_gerrit_babeltrace_{buildtype}':
           buildtype: macosbuild
-          archs: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
       - 'dev_gerrit_babeltrace_{buildtype}':
           buildtype: winbuild
-          archs: !!python/tuple [cygwin64, msys2-mingw64]
+          platforms: !!python/tuple [cygwin64, msys2-mingw64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -662,29 +669,29 @@
       - stable-1.5
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
-          buildtype: build
-          archs: !!python/tuple [amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [jammy-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, python-bindings]
           filter: ''
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, python-bindings]
           filter: ''
-          touchstone: '(build == "std") && (conf == "std") && (arch == "i386")'
+          touchstone: '(build == "std") && (conf == "std") && (platform == "deb11-i386")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: elbuild
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -702,14 +709,14 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, python-bindings]
           filter: ''
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          archs: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -731,14 +738,14 @@
             - master-staging
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: build
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           filter: ''
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          archs: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
