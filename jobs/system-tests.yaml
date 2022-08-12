@@ -146,6 +146,7 @@
     properties:
       - build-discarder:
           num-to-keep: 10
+          artifact-num-to-keep: 2
       - throttle:
           max-total: 2
           option: 'category'

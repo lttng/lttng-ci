@@ -40,7 +40,8 @@
           properties-content: |
             PROJECT_NAME=lttng-ust
       - build-discarder:
-          num-to-keep: 2
+          num-to-keep: 10
+          artifact-num-to-keep: 2
       - github:
           url: https://github.com/{github_user}/{github_name}
 
