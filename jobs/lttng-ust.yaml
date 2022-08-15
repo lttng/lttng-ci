@@ -57,10 +57,10 @@
         expr: '{touchstone}'
         result: unstable
     axes:
-      - axis: &lttng-ust_matrix_axis_arch
+      - axis: &lttng-ust_matrix_axis_platform
          type: slave
-         name: arch
-         values: '{obj:archs}'
+         name: platform
+         values: '{obj:platforms}'
       - axis: &lttng-ust_matrix_axis_conf
          type: user-defined
          name: conf
@@ -80,7 +80,7 @@
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy: *lttng-ust_matrix_execution-strategy_defaults
     axes:
-      - axis: *lttng-ust_matrix_axis_arch
+      - axis: *lttng-ust_matrix_axis_platform
       - axis: *lttng-ust_matrix_axis_conf
       - axis: *lttng-ust_matrix_axis_build
 
@@ -119,7 +119,7 @@
 
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{liburcu_conf}},build=std'
+          project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/platform=${{platform}},conf=${{liburcu_conf}},build=std'
 
       # Run the build
       - shell:
@@ -162,11 +162,11 @@
 
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: 'liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{liburcu_conf}},build=std'
+          project: 'liburcu_${{liburcu_version}}_{buildtype}/platform=${{platform}},conf=${{liburcu_conf}},build=std'
 
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: 'babeltrace_{babeltrace_version}_{buildtype}/arch=${{arch}},conf=std,build=std'
+          project: 'babeltrace_{babeltrace_version}_{buildtype}/platform=${{platform}},conf=std,build=std'
 
       - shell: |
            #!/bin/bash
@@ -454,7 +454,7 @@
 - job-template:
     name: lttng-ust_{version}_scan-build
     defaults: lttng-ust
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -463,7 +463,7 @@
     builders:
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: liburcu_master_build/arch=amd64,conf=std,build=std
+          project: liburcu_master_build/platform=bionic-amd64,conf=std,build=std
       - shell:
           !include-raw-escape: scripts/common/scan-build.sh
 
@@ -478,7 +478,7 @@
 - job-template:
     name: lttng-ust_{version}_coverity
     defaults: lttng-ust
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -498,7 +498,7 @@
     builders:
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: liburcu_master_build/arch=amd64,conf=std,build=std
+          project: liburcu_master_build/platform=bionic-amd64,conf=std,build=std
       - shell:
           !include-raw-escape: scripts/common/coverity.sh
 
@@ -528,7 +528,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: master
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -537,7 +537,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: master
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -546,7 +546,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: master
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -555,7 +555,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: master
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -564,7 +564,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: freebsdbuild
           version: master
-          archs: !!python/tuple [freebsd]
+          platforms: !!python/tuple [freebsd-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -581,7 +581,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: stable-2.13
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -590,7 +590,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.13
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -599,7 +599,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.13
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -608,7 +608,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.13
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -623,7 +623,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: stable-2.12
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
@@ -632,8 +632,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.12
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
@@ -642,7 +641,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.12
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
@@ -651,7 +650,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.12
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
@@ -674,7 +673,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: stable-2.11
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -683,7 +682,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.11
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -692,7 +691,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.11
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -701,7 +700,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.11
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -712,7 +711,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: stable-2.10
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.9]
@@ -721,7 +720,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.10
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.9]
@@ -730,7 +729,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.10
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.9]
@@ -739,7 +738,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.10
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.9]
@@ -755,7 +754,7 @@
     jobs:
       - 'dev_gerrit_lttng-ust_{buildtype}':
           buildtype: build
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13]
@@ -763,7 +762,7 @@
           touchstone: ''
       - 'dev_gerrit_lttng-ust_lttng-tools_{buildtype}':
           buildtype: build
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           filter: ''
@@ -772,7 +771,7 @@
           babeltrace_version: stable-2.0
       - 'dev_gerrit_lttng-ust_{buildtype}':
           buildtype: portbuild
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13]
@@ -780,7 +779,7 @@
           touchstone: ''
       - 'dev_gerrit_lttng-ust_{buildtype}':
           buildtype: freebsdbuild
-          archs: !!python/tuple [freebsd]
+          platforms: !!python/tuple [freebsd-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13]

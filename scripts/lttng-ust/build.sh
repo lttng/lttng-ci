@@ -84,7 +84,7 @@ failed_configure() {
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
-arch=${arch:-}
+platform=${platform:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
@@ -145,7 +145,7 @@ if [ "x${CC:-}" != "x" ]; then
 fi
 
 # Set platform variables
-case "$arch" in
+case "$platform" in
 freebsd*)
     export MAKE=gmake
     export TAR=tar
@@ -184,7 +184,7 @@ PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
 # Gerrit will trigger build on FreeBSD regardless of the branch, exit
 # successfuly when the version is < 2.13.
-if [[ $arch == freebsd* ]] && verlt "$PACKAGE_VERSION" "2.13"; then
+if [[ $platform == freebsd* ]] && verlt "$PACKAGE_VERSION" "2.13"; then
     mkdir -p "$WORKSPACE/tap/no-log"
     echo "1..1" > "$WORKSPACE/tap/no-log/tests.log"
     echo "ok 1 - FreeBSD build unsupported in < 2.13" >> "$WORKSPACE/tap/no-log/tests.log"
