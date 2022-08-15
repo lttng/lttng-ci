@@ -103,7 +103,7 @@ set_execute_traversal_bit()
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
-arch=${arch:-}
+platform=${platform:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
@@ -216,7 +216,7 @@ if [ "x${CC:-}" != "x" ]; then
 fi
 
 # Set platform variables
-case "$arch" in
+case "$platform" in
 macos*)
     export MAKE=make
     export TAR=tar
@@ -260,7 +260,7 @@ esac
 
 # The missing-field-initializers warning code is very dumb in GCC 4.8 on
 # SLES12, disable it even if it's available.
-if [ "$arch" = "sles12sp5" ]; then
+if [[ $platform = sles12sp5* ]]; then
 	CFLAGS="$CFLAGS -Wno-missing-field-initializers"
 	CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers"
 fi

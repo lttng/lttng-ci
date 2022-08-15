@@ -71,10 +71,10 @@
         expr: '{touchstone}'
         result: unstable
     axes:
-      - axis: &lttng-tools_matrix_axis_arch
+      - axis: &lttng-tools_matrix_axis_platform
          type: slave
-         name: arch
-         values: '{obj:archs}'
+         name: platform
+         values: '{obj:platforms}'
       - axis: &lttng-tools_matrix_axis_conf
          type: user-defined
          name: conf
@@ -108,7 +108,7 @@
          values:
            - 'amd64-rootnode'
       - axis:
-          <<: *lttng-tools_matrix_axis_arch
+          <<: *lttng-tools_matrix_axis_platform
           type: user-defined
       - axis: *lttng-tools_matrix_axis_conf
       - axis: *lttng-tools_matrix_axis_build
@@ -159,12 +159,12 @@
       # Always copy liburcu artifacts
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=${{liburcu_conf}},build=std'
+          project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/platform=${{platform}},conf=${{liburcu_conf}},build=std'
 
       # Always copy babeltrace artifacts
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=${{babeltrace_conf}},build=std'
+          project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/platform=${{platform}},conf=${{babeltrace_conf}},build=std'
 
       # Some conf do not require lttng-ust artifacts
       - conditional-step:
@@ -176,7 +176,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{ust_job_prefix}lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{ust_conf}},build=std'
+                project: '{ust_job_prefix}lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{ust_conf}},build=std'
 
       # rootbuild requires a checkout of modules
       - conditional-step:
@@ -231,7 +231,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{ust_job_prefix}lttng-ust_${{GERRIT_BRANCH}}_{buildtype}/liburcu_version=${{liburcu_version}},arch=${{arch}},conf=${{conf}},build=std'
+                project: '{ust_job_prefix}lttng-ust_${{GERRIT_BRANCH}}_{buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
 
       # Copy liburcu artifacts if we don't depend on a specific liburcu change
       - conditional-step:
@@ -241,7 +241,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
+                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/platform=${{platform}},conf=std,build=std'
 
       # Copy babeltrace artifacts if we don't depend on a specific babeltrace change
       - conditional-step:
@@ -251,7 +251,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/arch=${{arch}},conf=std,build=std'
+                project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/platform=${{platform}},conf=std,build=std'
 
       - shell:
          !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
@@ -307,12 +307,12 @@
       # Always copy liburcu artifacts
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_winbuild/arch=${{arch}},conf=std,build=std'
+          project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_winbuild/platform=${{platform}},conf=std,build=std'
 
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: '${{arch}}'
+          condition-string1: '${{platform}}'
           condition-string2: 'cygwin64'
           steps:
             - shell:
@@ -325,7 +325,7 @@
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: '${{arch}}'
+          condition-string1: '${{platform}}'
           condition-string2: 'msys2-mingw32'
           steps:
             - inject:
@@ -340,7 +340,7 @@
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
-          condition-string1: '${{arch}}'
+          condition-string1: '${{platform}}'
           condition-string2: 'msys2-mingw64'
           steps:
             - inject:
@@ -657,7 +657,7 @@
 - job-template:
     name: lttng-tools_{version}_release
     defaults: lttng-tools
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -676,13 +676,13 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_build/arch=amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_build/platform=bionic-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'babeltrace_{babelversion}_build/arch=amd64,conf=std,build=std'
+          project: 'babeltrace_{babelversion}_build/platform=bionic-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=amd64,conf=agents,build=std'
+          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},platform=bionic-amd64,conf=agents,build=std'
       - shell:
           !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
       - shell:
@@ -744,7 +744,7 @@
 - job-template:
     name: lttng-tools_{version}_scan-build
     defaults: lttng-tools
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -753,10 +753,10 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_build/arch=amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_build/platform=bionic-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=amd64,conf=std,build=std'
+          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},platform=bionic-amd64,conf=std,build=std'
       - shell:
           !include-raw-escape: scripts/common/scan-build.sh
 
@@ -769,7 +769,7 @@
 - job-template:
     name: lttng-tools_{version}_coverity
     defaults: lttng-tools
-    node: 'amd64'
+    node: 'bionic-amd64'
 
     triggers:
       - pollscm:
@@ -789,10 +789,10 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_build/arch=amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_build/platform=bionic-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},arch=amd64,conf=std,build=std'
+          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},platform=bionic-amd64,conf=std,build=std'
       - shell:
           !include-raw-escape: scripts/common/coverity.sh
 
@@ -829,7 +829,7 @@
           buildtype: build
           version: master
           ustversion: master
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [master]
@@ -841,7 +841,7 @@
           buildtype: portbuild
           version: master
           ustversion: master
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [master]
@@ -853,7 +853,7 @@
           buildtype: slesbuild
           version: master
           ustversion: master
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
@@ -865,7 +865,7 @@
           buildtype: elbuild
           version: master
           ustversion: master
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [master]
@@ -877,7 +877,7 @@
           buildtype: macosbuild
           version: master
           ustversion: master
-          archs: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [master]
@@ -888,7 +888,7 @@
       - 'lttng-tools_{version}_winbuild':
           version: master
           ustversion: master
-          archs: !!python/tuple [cygwin64]
+          platforms: !!python/tuple [cygwin64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [master]
@@ -900,7 +900,7 @@
           buildtype: build
           version: master
           ustversion: master
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [master]
@@ -912,7 +912,7 @@
           buildtype: build
           version: master
           ustversion: master
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
@@ -934,7 +934,7 @@
           buildtype: build
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.13]
@@ -946,7 +946,7 @@
           buildtype: portbuild
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -958,7 +958,7 @@
           buildtype: slesbuild
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -970,7 +970,7 @@
           buildtype: elbuild
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
@@ -982,7 +982,7 @@
           buildtype: macosbuild
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [stable-0.13]
@@ -993,7 +993,7 @@
       - 'lttng-tools_{version}_winbuild':
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [cygwin64]
+          platforms: !!python/tuple [cygwin64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1005,7 +1005,7 @@
           buildtype: build
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1017,7 +1017,7 @@
           buildtype: build
           version: stable-2.13
           ustversion: stable-2.13
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1040,7 +1040,7 @@
           buildtype: build
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1052,7 +1052,7 @@
           buildtype: portbuild
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1064,7 +1064,7 @@
           buildtype: slesbuild
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1076,7 +1076,7 @@
           buildtype: elbuild
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1088,7 +1088,7 @@
           buildtype: macosbuild
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1099,7 +1099,7 @@
       - 'lttng-tools_{version}_winbuild':
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [cygwin64]
+          platforms: !!python/tuple [cygwin64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1111,7 +1111,7 @@
           buildtype: build
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1123,7 +1123,7 @@
           buildtype: build
           version: stable-2.12
           ustversion: stable-2.12
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1158,7 +1158,7 @@
           buildtype: build
           version: stable-2.11
           ustversion: stable-2.11
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1170,7 +1170,7 @@
           buildtype: portbuild
           version: stable-2.11
           ustversion: stable-2.11
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [no-ust, agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1182,7 +1182,7 @@
           buildtype: slesbuild
           version: stable-2.11
           ustversion: stable-2.11
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1194,7 +1194,7 @@
           buildtype: elbuild
           version: stable-2.11
           ustversion: stable-2.11
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1206,7 +1206,7 @@
           buildtype: build
           version: stable-2.11
           ustversion: stable-2.11
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1218,7 +1218,7 @@
           buildtype: build
           version: stable-2.11
           ustversion: stable-2.11
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1232,7 +1232,7 @@
           buildtype: build
           version: stable-2.10
           ustversion: stable-2.10
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1244,7 +1244,7 @@
           buildtype: portbuild
           version: stable-2.10
           ustversion: stable-2.10
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [no-ust, agents]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1256,7 +1256,7 @@
           buildtype: slesbuild
           version: stable-2.10
           ustversion: stable-2.10
-          archs: !!python/tuple [sles12sp5]
+          platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1268,7 +1268,7 @@
           buildtype: elbuild
           version: stable-2.10
           ustversion: stable-2.10
-          archs: !!python/tuple [el7, el8, el9]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1280,7 +1280,7 @@
           buildtype: build
           version: stable-2.10
           ustversion: stable-2.10
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1304,7 +1304,7 @@
           buildtype: build
           version: master-staging
           ustversion: master
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [master]
@@ -1316,7 +1316,7 @@
           buildtype: portbuild
           version: master-staging
           ustversion: master
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [master]
@@ -1328,7 +1328,7 @@
           buildtype: macosbuild
           version: master-staging
           ustversion: master
-          archs: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [master]
@@ -1342,7 +1342,7 @@
           buildtype: build
           version: stable-2.13-staging
           ustversion: stable-2.13
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1354,7 +1354,7 @@
           buildtype: portbuild
           version: stable-2.13-staging
           ustversion: stable-2.13
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1368,7 +1368,7 @@
           buildtype: build
           version: stable-2.12-staging
           ustversion: stable-2.12
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1380,7 +1380,7 @@
           buildtype: portbuild
           version: stable-2.12-staging
           ustversion: stable-2.12
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.12]
@@ -1404,7 +1404,7 @@
           buildtype: build
           version: stable-2.11-staging
           ustversion: stable-2.11
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1416,7 +1416,7 @@
           buildtype: portbuild
           version: stable-2.11-staging
           ustversion: stable-2.11
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1430,7 +1430,7 @@
           buildtype: build
           version: stable-2.10-staging
           ustversion: stable-2.10
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1442,7 +1442,7 @@
           buildtype: portbuild
           version: stable-2.10-staging
           ustversion: stable-2.10
-          archs: !!python/tuple [armhf, arm64, powerpc, ppc64el, i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1461,7 +1461,7 @@
     jobs:
       - 'dev_gerrit_lttng-tools_{buildtype}':
           buildtype: build
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [master] # Switch to stable-0.14 when released (for C++ support)
@@ -1471,7 +1471,7 @@
           touchstone: ''
       - 'dev_gerrit_lttng-tools_rootbuild':
           buildtype: build
-          archs: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master] # Switch to stable-0.14 when released (for C++ support)
