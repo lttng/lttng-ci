@@ -4,6 +4,85 @@
     project-type: pipeline
     dsl: !include-raw: pipelines/integration/ust-2.12-lower-urcu_testsuite.groovy
 
+- job-template:
+    name: 'integration_lttng-tools-{version}-32-64_testsuite'
+    description: |
+      Integration pipeline for multi-bitness scenario (32/64).
+      This essentially tests frontier scenario where the bitness between component changes.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+    project-type: pipeline
+    dsl: !include-jinja2: pipelines/integration/lttng-tools-_version_-32-64_testsuite.groovy.inc
+
+- job:
+    name: integration_lttng-tools-32-64_test
+    project-type: freestyle
+    concurrent: true
+    node: 'amd64-rootnode'
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - timeout:
+          timeout: 6
+          fail: true
+          type: no-activity
+    parameters:
+        - string:
+            name: 'ARTIFACT_ID'
+            default: 'null'
+            description: 'The ID of the artifact to download.'
+        - string:
+            name: 'BT_VERSION'
+            default: 'stable-2.0'
+            description: 'The version of babeltrace to use.'
+
+        - choice:
+            name: 'TEST_TYPE'
+            description: 'The test to perform.'
+            choices:
+                    - 32bit-sessiond
+                    - 32bit-relayd
+                    - 32bit-cli
+                    - canary
+    builders:
+      - copyartifact:
+          project: 'babeltrace_${BT_VERSION}_build/platform=bionic-amd64,conf=std,build=std'
+          which-build: last-successful
+          stable: false
+          filter: 'build/**'
+          target: 'deps-64'
+          do-not-fingerprint: true
+      - shell:
+          !include-raw-escape: scripts/integration/32-64/build.sh
+    publishers:
+      - postbuildscript:
+          mark-unstable-if-failed: true
+          builders:
+            - role: SLAVE
+              build-on:
+                  - SUCCESS
+                  - UNSTABLE
+                  - NOT_BUILT
+                  - ABORTED
+                  - FAILURE
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/integration/32-64/gather_tap_result.sh
+      - tap:
+          results: 'tap/**/*.*'
+          fail-if-no-results: true
+          failed-tests-mark-build-as-failure: true
+          todo-is-failure: false
+          output-tap-to-console: true
+          include-comment-diagnostics: true
+          plan-required: true
+          show-only-failures: true
+          verbose: true
+      - archive:
+          artifacts: 'tap/**'
+          allow-empty: false
+
 
 ## Views
 - view-template:
@@ -19,3 +98,20 @@
       - 'Integration'
     jobs:
       - 'integration_ust-2.12-lower-urcu_testsuite'
+
+- project:
+    name: integration-32-64
+    jobs:
+      - 'integration_lttng-tools-{version}-32-64_testsuite':
+          version: master
+          babelversion: stable-2.0
+          urcu_version: master
+      - 'integration_lttng-tools-{version}-32-64_testsuite':
+          version: stable-2.13
+          babelversion: stable-2.0
+          urcu_version: stable-0.13
+      - 'integration_lttng-tools-{version}-32-64_testsuite':
+          version: stable-2.12
+          babelversion: stable-2.0
+          urcu_version: stable-0.13
+      - 'integration_lttng-tools-32-64_test'
