@@ -644,7 +644,7 @@
           platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
-          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
+          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13]
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -653,7 +653,7 @@
           platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
+          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13]
           filter: ''
           touchstone: ''
       - 'lttng-ust_{version}_cppcheck':
