@@ -18,6 +18,8 @@
 
 set -exu
 
+RUBY_VERSION=2.7
+
 # Add ssh key for deployment
 cp "$HOST_PUBLIC_KEYS" ~/.ssh/known_hosts
 cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
@@ -29,12 +31,20 @@ cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
 curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 apt-get install -y nodejs
 
-apt-get install -y ruby-dev asciidoc xmlto python3 python3-pip
+apt-add-repository ppa:brightbox/ruby-ng
+apt-get install -y ruby${RUBY_VERSION} ruby${RUBY_VERSION}-dev ruby-switch
+
+ruby-switch --list
+ruby-switch --set ruby${RUBY_VERSION}
+
+ruby -v
+
+apt-get install -y asciidoc xmlto python3 python3-pip
 
 npm install -g grunt-cli
 npm install -g sass
 
-export PATH="/root/.gem/ruby/2.5.0/bin:$PATH"
+export PATH="/root/.gem/ruby/${RUBY_VERSION}.0/bin:$PATH"
 
 ./bootstrap.sh
 
