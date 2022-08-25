@@ -44,8 +44,8 @@
     axes:
       - axis:
          type: slave
-         name: arch
-         values: '{obj:arch}'
+         name: platform
+         values: '{obj:platforms}'
       - axis:
          type: user-defined
          name: liburcu_version
@@ -98,8 +98,8 @@
          values: '{obj:slave}'
       - axis:
          type: user-defined
-         name: arch
-         values: '{obj:arch}'
+         name: platform
+         values: '{obj:platforms}'
       - axis:
          type: user-defined
          name: liburcu_version
@@ -144,26 +144,22 @@
     name: lttng-ivc
     github_user: lttng
     github_name: lttng-ivc
-    email_to: "ci-notification@lists.lttng.org, cc:joraj@efficios.com"
+    email_to: "ci-notification@lists.lttng.org"
     version:
       - staging
       - master
     jobs:
       - 'lttng-ivc-{version}':
           version: master
-          arch: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ivc-{version}':
-          # Send only to maintainer
-          email_to: "joraj@efficios.com"
           version: staging
-          arch: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ivc-{version}-modules':
-         # Send only to maintainer
-         email_to: "joraj@efficios.com"
          version: master
-         arch: !!python/tuple [amd64]
+         platforms: !!python/tuple [bionic-amd64]
          slave: !!python/tuple [amd64-rootnode]
          liburcu_version: !!python/tuple [master]
 

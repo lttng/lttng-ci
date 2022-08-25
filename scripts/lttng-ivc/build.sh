@@ -1,4 +1,4 @@
-#!/bin/bash -xu
+#!/bin/bash
 #
 # Copyright (C) 2017 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -xu
 
 PYTHON3="python3"
 P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
