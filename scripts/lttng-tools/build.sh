@@ -142,7 +142,7 @@ export TMPDIR="$tmpdir"
 # the trace reader in its test suite or that we move to only supporting
 # babeltrace2
 if [ -x "$DEPS_BIN/babeltrace2" ]; then
-	ln -s "$DEPS_BIN/babeltrace2" "$DEPS_BIN/babeltrace"
+    ln -s "$DEPS_BIN/babeltrace2" "$DEPS_BIN/babeltrace"
 fi
 
 # When using babeltrace2 make sure that it finds its plugins and
@@ -205,7 +205,7 @@ clang-7)
     ;;
 *)
     if [ "x$cc" != "x" ]; then
-	    export CC="$cc"
+        export CC="$cc"
     fi
     ;;
 esac
@@ -261,8 +261,8 @@ esac
 # The missing-field-initializers warning code is very dumb in GCC 4.8 on
 # SLES12, disable it even if it's available.
 if [[ $platform = sles12sp5* ]]; then
-	CFLAGS="$CFLAGS -Wno-missing-field-initializers"
-	CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers"
+    CFLAGS="$CFLAGS -Wno-missing-field-initializers"
+    CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers"
 fi
 
 case "$test_type" in
@@ -448,25 +448,26 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
 
     # Run 'unit_tests', 2.8 and up has a new test suite
     if vergte "$PACKAGE_VERSION" "2.8"; then
-	# It is implied that tests depending on LTTNG_ENABLE_DESTRUCTIVE_TESTS
-	# only run for the root user. Note that here `destructive` means that
-	# operations are performed at the host level (add user etc.) that
-	# effectively modify the host. Running those tests are acceptable on our
-	# CI and root jobs since we always run root tests against a `snapshot`
-	# of the host.
-	if [ "$(id -u)" == "0" ]; then
-		# Allow the traversal of all directories leading to the
-		# DEPS_LIBS directory to enable test app run by temp users to
-		# access lttng-ust.
-		set_execute_traversal_bit "$DEPS_LIB"
-		# Allow `all` to interact with all deps libs.
-		chmod a+rwx -R "$DEPS_LIB"
+        # It is implied that tests depending on LTTNG_ENABLE_DESTRUCTIVE_TESTS
+        # only run for the root user. Note that here `destructive` means that
+        # operations are performed at the host level (add user etc.) that
+        # effectively modify the host. Running those tests are acceptable on our
+        # CI and root jobs since we always run root tests against a `snapshot`
+        # of the host.
+        if [ "$(id -u)" == "0" ]; then
+            # Allow the traversal of all directories leading to the
+            # DEPS_LIBS directory to enable test app run by temp users to
+            # access lttng-ust.
+            set_execute_traversal_bit "$DEPS_LIB"
+            # Allow `all` to interact with all deps libs.
+            chmod a+rwx -R "$DEPS_LIB"
 
-		export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
+            export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 
-		# Some destructive tests play with the system clock, disable timesyncd
-		systemctl stop systemd-timesyncd.service || true
-	fi
+            # Some destructive tests play with the system clock, disable timesyncd
+            systemctl stop systemd-timesyncd.service || true
+        fi
+
         make --keep-going check || failed_tests=1
         rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
     else
@@ -477,14 +478,14 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
         prove --merge -v --exec '' - < unit_tests --archive "$TAPDIR/unit/" || failed_tests=1
         prove --merge -v --exec '' - < fast_regression --archive "$TAPDIR/fast_regression/" || failed_tests=1
         prove --merge -v --exec '' - < with_bindings_regression --archive "$TAPDIR/with_bindings_regression/" || failed_tests=1
-	cd ..
+        cd ..
     fi
 
     if [ "$LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
         cd tests
         mkdir -p "$TAPDIR/long_regression"
         prove --merge -v --exec '' - < long_regression --archive "$TAPDIR/long_regression/" || failed_tests=1
-	cd ..
+        cd ..
     fi
 
     # TAP plugin is having a hard time with .yml files.
