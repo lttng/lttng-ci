@@ -461,7 +461,11 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
 		set_execute_traversal_bit "$DEPS_LIB"
 		# Allow `all` to interact with all deps libs.
 		chmod a+rwx -R "$DEPS_LIB"
+
 		export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
+
+		# Some destructive tests play with the system clock, disable timesyncd
+		systemctl stop systemd-timesyncd.service || true
 	fi
         make --keep-going check || failed_tests=1
         rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
