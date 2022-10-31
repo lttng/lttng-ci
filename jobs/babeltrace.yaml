@@ -696,6 +696,8 @@
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
+      - 'babeltrace_{version}_release':
+          version: v1.5
 
 
 - project:
