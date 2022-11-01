@@ -718,6 +718,7 @@
       - archive:
           artifacts: 'out/**'
           allow-empty: false
+          fingerprint: true
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
 
 - job-template:
