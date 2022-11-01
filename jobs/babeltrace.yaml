@@ -396,6 +396,7 @@
       - archive:
           artifacts: 'out/**,tap/**'
           allow-empty: false
+          fingerprint: true
 
 - job-template:
     name: dev_gerrit_babeltrace_pylint
