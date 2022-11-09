@@ -224,8 +224,8 @@ macos*)
     export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
     export CPPFLAGS="-I/opt/local/include $CPPFLAGS"
     export LDFLAGS="-L/opt/local/lib $LDFLAGS"
-    export PYTHON="python3.9"
-    export PYTHON_CONFIG="python3.9-config"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
 
     LTTNG_TOOLS_RUN_TESTS="no"
     ;;

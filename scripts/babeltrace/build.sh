@@ -141,8 +141,8 @@ macos*)
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     export CPPFLAGS="-I/opt/local/include"
     export LDFLAGS="-L/opt/local/lib"
-    export PYTHON="python3.9"
-    export PYTHON_CONFIG="python3.9-config"
+    export PYTHON="python3"
+    export PYTHON_CONFIG="python3-config"
     ;;
 
 freebsd*)
