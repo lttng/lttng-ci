@@ -104,6 +104,7 @@ ci-rootnode-bionic-amd64-01
 ci-rootnode-bionic-amd64-02
 ci-rootnode-bionic-amd64-03
 ci-rootnode-bionic-amd64-06
+ci-rootnode-deb11-i386-01
 
 [node_sles]
 ci-node-sles12sp5-amd64-03-01
