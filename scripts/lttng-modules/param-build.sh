@@ -285,6 +285,8 @@ build_linux_kernel() {
 
     # FIXME: disable objtool on vmlinux, it OOMs on allyesconfig
     sed -i 's/objtool_link vmlinux.o//' scripts/link-vmlinux.sh || true
+    # Starting with v6.1-rc6
+    sed -i 's/^objtool-enabled := .*/objtool-enabled := /' scripts/Makefile.vmlinux_o || true
 
     # Debug
     #cat .config
