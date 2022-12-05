@@ -1,6 +1,7 @@
 ---
 binutils_gdb_packages:
   - ccache
+  - cmake
   - dejagnu
   - elfutils
   - fp-compiler

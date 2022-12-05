@@ -15,3 +15,8 @@ compilers_packages:
   - clang-12
   - clang-13
   - clang-14
+  - libclang-dev
+  - libclang-11-dev
+  - libclang-12-dev
+  - libclang-13-dev
+  - libclang-14-dev
