@@ -32,7 +32,7 @@ curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 apt-get install -y nodejs
 
 apt-add-repository ppa:brightbox/ruby-ng
-apt-get install -y ruby${RUBY_VERSION} ruby${RUBY_VERSION}-dev ruby-switch
+apt-get install -y ruby${RUBY_VERSION} ruby${RUBY_VERSION}-dev ruby-switch ruby-bundler
 
 ruby-switch --list
 ruby-switch --set ruby${RUBY_VERSION}
@@ -45,6 +45,8 @@ npm install -g grunt-cli
 npm install -g sass
 
 export PATH="/root/.gem/ruby/${RUBY_VERSION}.0/bin:$PATH"
+
+bundle config set --local path "/root/.gem"
 
 ./bootstrap.sh
 
