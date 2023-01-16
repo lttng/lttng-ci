@@ -288,6 +288,9 @@ build_linux_kernel() {
     # Starting with v6.1-rc6
     sed -i 's/^objtool-enabled := .*/objtool-enabled := /' scripts/Makefile.vmlinux_o || true
 
+    # Disable SORTTAB
+    sed -i 's/is_enabled CONFIG_BUILDTIME_TABLE_SORT/is_enabled CONFIG_NONEXISTANT/' scripts/link-vmlinux.sh || true
+
     # Debug
     #cat .config
 
