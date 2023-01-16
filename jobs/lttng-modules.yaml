@@ -109,7 +109,7 @@
           description: 'The maximum number of concurrent child build to run.'
       - string:
           name: 'kverfloor'
-          default: 'v2.6.36-rt0-rebase'
+          default: '{kverfloor}'
           description: 'The lowest kernel version to build.'
       - string:
           name: 'kverceil'
@@ -707,7 +707,7 @@
 # RT normal builds
       - 'lttng-modules_{mversion}_build-rt':
           mversion: master
-          kverfloor: v4.4
+          kverfloor: v4.4.0-rt1-rebase
           kverceil: ''
           kverfilter: stable-head
 
