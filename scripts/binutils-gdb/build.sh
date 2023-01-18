@@ -173,7 +173,7 @@ case "$conf" in
     CONF_OPTS+=("--with-system-readline" "--with-system-zlib")
 
     # Enable optional features
-    CONF_OPTS+=("--enable-targets=all" "--with-expat=yes" "--with-python=python3" "--with-guile=guile-2.2" "--enable-libctf")
+    CONF_OPTS+=("--enable-targets=all" "--with-expat=yes" "--with-python=python3" "--with-guile" "--enable-libctf")
 
     CONF_OPTS+=("--enable-build-warnings" "--enable-gdb-build-warnings" "--enable-unit-tests" "--enable-ubsan")
 
