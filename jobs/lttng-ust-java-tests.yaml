@@ -45,8 +45,8 @@
     axes:
       - axis:
          type: slave
-         name: arch
-         values: '{obj:arch}'
+         name: platform
+         values: '{obj:platforms}'
       - axis:
          type: user-defined
          name: java_version
@@ -58,7 +58,7 @@
       - ansicolor
       - inject:
           properties-content: |
-            JAVA_HOME=/usr/lib/jvm/${{java_version}}-${{arch}}
+            JAVA_HOME=/usr/lib/jvm/${{java_version}}-amd64
             LD_LIBRARY_PATH=${{WORKSPACE}}/deps/build/lib
             PATH=${{WORKSPACE}}/deps/build/bin:${{PATH}}
             LTTNG_UST_DEBUG=1
@@ -70,28 +70,28 @@
 
     builders:
       - copyartifact:
-          project: liburcu_{liburcu_version}_build/arch=${{arch}},conf=std,build=std
+          project: liburcu_{liburcu_version}_build/platform=${{platform}},conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-ust_{version}_build/liburcu_version={liburcu_version},arch=${{arch}},conf=agents,build=std
+          project: lttng-ust_{version}_build/liburcu_version={liburcu_version},platform=${{platform}},conf=agents,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-tools_{version}_build/babeltrace_version={babeltrace_version},liburcu_version={liburcu_version},arch=${{arch}},conf=agents,build=std,test_type=base
+          project: lttng-tools_{version}_build/babeltrace_version={babeltrace_version},liburcu_version={liburcu_version},platform=${{platform}},conf=agents,build=std,test_type=base
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
-          project: babeltrace_{babeltrace_version}_build/arch=${{arch}},conf=std,build=std
+          project: babeltrace_{babeltrace_version}_build/platform=${{platform}},conf=std,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -181,19 +181,19 @@
       - 'lttng-ust-java-tests_{version}_build':
           version: master
           liburcu_version: master
-          arch: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           java_version: !!python/tuple [java-11-openjdk]
           groups: '!domain:log4j2' # Remove once the log4j2 domain is merged in master
       - 'lttng-ust-java-tests_{version}_build':
           version: stable-2.13
           liburcu_version: stable-0.13
-          arch: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           java_version: !!python/tuple [java-11-openjdk]
           groups: '!domain:log4j2'
       - 'lttng-ust-java-tests_{version}_build':
           version: stable-2.12
           liburcu_version: stable-0.12
-          arch: !!python/tuple [amd64]
+          platforms: !!python/tuple [bionic-amd64]
           java_version: !!python/tuple [java-11-openjdk]
           groups: '!domain:log4j2'
 
