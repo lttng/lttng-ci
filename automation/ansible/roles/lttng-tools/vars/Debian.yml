@@ -4,6 +4,7 @@ lttng_tools_packages:
   - libmsgpack-dev
   - libpopt-dev
   - libxml2-dev
+  - shellcheck
 
 lttng_tools_packages_no_recommends:
   - asciidoc
