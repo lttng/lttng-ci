@@ -438,6 +438,12 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
+      - 'dev_gerrit_liburcu_{buildtype}':
+          buildtype: winbuild
+          platforms: !!python/tuple [cygwin64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: ''
 
 
 - project:
