@@ -328,6 +328,7 @@
     version:
       - stable-0.12
       - stable-0.13
+      - stable-0.14
       - master
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
