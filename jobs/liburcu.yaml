@@ -326,7 +326,6 @@
     github_name: userspace-rcu
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     version:
-      - stable-0.12
       - stable-0.13
       - stable-0.14
       - master
@@ -395,6 +394,7 @@
       - stable-0.9
       - stable-0.10
       - stable-0.11
+      - stable-0.12
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: linuxbuild
