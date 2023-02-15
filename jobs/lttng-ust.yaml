@@ -626,8 +626,8 @@
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
-          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
-          filter: '(build=="std") || ((liburcu_version=="stable-0.12" && (conf=="std" || conf=="agents")))'
+          liburcu_versions: !!python/tuple [stable-0.13, master]
+          filter: '(build=="std") || ((liburcu_version=="stable-0.13" && (conf=="std" || conf=="agents")))'
           touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
@@ -635,7 +635,7 @@
           platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
-          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, master]
+          liburcu_versions: !!python/tuple [stable-0.13, master]
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -644,7 +644,7 @@
           platforms: !!python/tuple [sles12sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
-          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13]
+          liburcu_versions: !!python/tuple [stable-0.13]
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -653,7 +653,7 @@
           platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13]
+          liburcu_versions: !!python/tuple [stable-0.13]
           filter: ''
           touchstone: ''
       - 'lttng-ust_{version}_cppcheck':
