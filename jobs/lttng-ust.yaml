@@ -526,6 +526,15 @@
     jobs:
       ## Master ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: linuxbuild
+          version: master
+          platforms: !!python/tuple [jammy-amd64]
+          builds: !!python/tuple [std, dist, oot, oot-dist]
+          confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
+          liburcu_versions: !!python/tuple [stable-0.13, master]
+          filter: '(build=="std") || ((liburcu_version=="master" && (conf=="std" || conf=="agents")))'
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: master
           platforms: !!python/tuple [bionic-amd64]
@@ -579,6 +588,15 @@
 
       ## Stable 2.13 ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: linuxbuild
+          version: stable-2.13
+          platforms: !!python/tuple [jammy-amd64]
+          builds: !!python/tuple [std, dist, oot, oot-dist]
+          confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
+          liburcu_versions: !!python/tuple [stable-0.13, master]
+          filter: '(build=="std") || ((liburcu_version=="stable-0.13" && (conf=="std" || conf=="agents")))'
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: stable-2.13
           platforms: !!python/tuple [bionic-amd64]
@@ -620,6 +638,15 @@
           version: stable-2.13
 
       ## Stable 2.12 ##
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: linuxbuild
+          version: stable-2.12
+          platforms: !!python/tuple [jammy-amd64]
+          builds: !!python/tuple [std, dist, oot, oot-dist]
+          confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
+          liburcu_versions: !!python/tuple [stable-0.13, master]
+          filter: '(build=="std") || ((liburcu_version=="stable-0.13" && (conf=="std" || conf=="agents")))'
+          touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: build
           version: stable-2.12
