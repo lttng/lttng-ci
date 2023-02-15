@@ -192,7 +192,7 @@
           groups: '!domain:log4j2'
       - 'lttng-ust-java-tests_{version}_build':
           version: stable-2.12
-          liburcu_version: stable-0.12
+          liburcu_version: stable-0.13
           platforms: !!python/tuple [bionic-amd64]
           java_version: !!python/tuple [java-11-openjdk]
           groups: '!domain:log4j2'
