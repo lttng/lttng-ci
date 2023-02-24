@@ -7,7 +7,6 @@ common_packages:
   - clang
   - clang-tools
   - cloc
-  - cppcheck
   - curl
   - default-jdk-headless
   - emacs-nox

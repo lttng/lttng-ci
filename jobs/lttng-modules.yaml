@@ -619,26 +619,6 @@
           allow-empty: false
       - workspace-cleanup
 
-- job-template:
-    name: lttng-modules_{mversion}_cppcheck
-    defaults: lttng-modules
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell: |
-          rm -f cppcheck-result.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/lttng-modules 2> cppcheck-result.xml
-
-    publishers:
-      - archive:
-          artifacts: 'cppcheck-result.xml'
-          allow-empty: false
-      - cppcheck:
-          pattern: 'cppcheck-result.xml'
-
 
 ## Project
 - project:
@@ -771,7 +751,6 @@
 
 # Misc jobs
       - 'lttng-modules_ALL_trigger-vanilla'
-      - 'lttng-modules_{mversion}_cppcheck'
       - 'lttng-modules_{mversion}_coverity':
           mversion: master
 

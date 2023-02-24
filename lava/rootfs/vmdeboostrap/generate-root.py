@@ -40,7 +40,6 @@ packages = [
     'chrpath',
     'clang',
     'cloc',
-    'cppcheck',
     'curl',
     'elfutils',
     'flex',

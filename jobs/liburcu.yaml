@@ -4,7 +4,6 @@
 # jobtypes:
 #   - build
 #   - portbuild
-#   - cppcheck
 #   - coverity
 #   - scan-build
 #   - pylint
@@ -204,28 +203,6 @@
     <<: *liburcu_publishers_defaults
 
 - job-template:
-    name: liburcu_{version}_cppcheck
-    defaults: liburcu
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell: |
-          rm -f cppcheck-result.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/liburcu 2> cppcheck-result.xml
-
-    publishers:
-      - archive:
-          artifacts: 'cppcheck-result.xml'
-          allow-empty: false
-      - cppcheck:
-          pattern: 'cppcheck-result.xml'
-      - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
-      - email-ext: *liburcu_publisher_email_ext_defaults
-
-- job-template:
     name: dev_gerrit_liburcu_{buildtype}
     defaults: liburcu
     concurrent: true
@@ -378,7 +355,6 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
-      - 'liburcu_{version}_cppcheck'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
           version: master

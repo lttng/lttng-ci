@@ -426,32 +426,6 @@
 
 
 - job-template:
-    name: lttng-ust_{version}_cppcheck
-    defaults: lttng-ust
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell: |
-          rm -f cppcheck-result.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/lttng-ust 2> cppcheck-result.xml
-
-    publishers:
-      - archive:
-          artifacts: 'cppcheck-result.xml'
-          allow-empty: false
-      - cppcheck:
-          pattern: 'cppcheck-result.xml'
-      - email:
-          recipients: 'ci-notification@lists.lttng.org'
-          notify-every-unstable-build: true
-          send-to-individuals: false
-      - workspace-cleanup: *lttng-ust_publisher_workspace-cleanup_defaults
-
-
-- job-template:
     name: lttng-ust_{version}_scan-build
     defaults: lttng-ust
     node: 'bionic-amd64'
@@ -579,8 +553,6 @@
           liburcu_versions: !!python/tuple [stable-0.13, master]
           filter: ''
           touchstone: ''
-      - 'lttng-ust_{version}_cppcheck':
-          version: master
       - 'lttng-ust_{version}_scan-build':
           version: master
       - 'lttng-ust_{version}_coverity':
@@ -632,8 +604,6 @@
           liburcu_versions: !!python/tuple [stable-0.13, master]
           filter: ''
           touchstone: ''
-      - 'lttng-ust_{version}_cppcheck':
-          version: stable-2.13
       - 'lttng-ust_{version}_scan-build':
           version: stable-2.13
 
@@ -683,8 +653,6 @@
           liburcu_versions: !!python/tuple [stable-0.13]
           filter: ''
           touchstone: ''
-      - 'lttng-ust_{version}_cppcheck':
-          version: stable-2.12
       - 'lttng-ust_{version}_scan-build':
           version: stable-2.12
 

@@ -8,7 +8,6 @@ common_packages:
   - clang
   - cloc
   - coreutils
-  - cppcheck
   - curl
   - flex
   - gettext

@@ -439,27 +439,6 @@
           days-to-keep: 1
 
 - job-template:
-    name: babeltrace_{version}_cppcheck
-    defaults: babeltrace
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell: |
-          rm -f cppcheck-result.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/babeltrace 2> cppcheck-result.xml
-
-    publishers:
-      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
-      - archive:
-          artifacts: 'cppcheck-result.xml'
-          allow-empty: false
-      - cppcheck:
-          pattern: 'cppcheck-result.xml'
-
-- job-template:
     name: babeltrace_{version}_scan-build
     defaults: babeltrace
     node: 'bionic-amd64'
@@ -622,7 +601,6 @@
           touchstone: ''
       - 'babeltrace_{version}_release':
           version: v2.0
-      - 'babeltrace_{version}_cppcheck'
       - 'babeltrace_{version}_scan-build'
       - 'babeltrace_{version}_pylint'
       - 'babeltrace_{version}_coverity':

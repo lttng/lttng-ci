@@ -4,7 +4,6 @@
 # jobtypes:
 #   - build
 #   - portbuild
-#   - cppcheck
 #   - coverity
 #   - scan-build
 #   - pylint
@@ -210,28 +209,6 @@
     <<: *librseq_matrix_axes_cc
     <<: *librseq_builders_defaults
     <<: *librseq_publishers_defaults
-
-- job-template:
-    name: librseq_{version}_cppcheck
-    defaults: librseq
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell: |
-          rm -f cppcheck-result.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE/src/librseq 2> cppcheck-result.xml
-
-    publishers:
-      - archive:
-          artifacts: 'cppcheck-result.xml'
-          allow-empty: false
-      - cppcheck:
-          pattern: 'cppcheck-result.xml'
-      - workspace-cleanup: *librseq_publisher_workspace-cleanup_defaults
-      - email-ext: *librseq_publisher_email-ext_defaults
 
 - job-template:
     name: dev_gerrit_librseq_{buildtype}

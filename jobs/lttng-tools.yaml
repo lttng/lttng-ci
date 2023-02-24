@@ -722,27 +722,6 @@
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
 
 - job-template:
-    name: lttng-tools_{version}_cppcheck
-    defaults: lttng-tools
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell: |
-          rm -f cppcheck-result.xml
-          cppcheck --enable=all --xml --xml-version=2 $WORKSPACE 2> cppcheck-result.xml
-
-    publishers:
-      - archive:
-          artifacts: 'cppcheck-result.xml'
-          allow-empty: false
-      - cppcheck:
-          pattern: 'cppcheck-result.xml'
-      - email-ext: *lttng-tools_publisher_email-ext_defaults
-
-- job-template:
     name: lttng-tools_{version}_scan-build
     defaults: lttng-tools
     node: 'bionic-amd64'
@@ -1141,9 +1120,6 @@
           version: stable-2.12
           urcuversion: stable-0.13
           ustversion: stable-2.12
-
-      # Other jobs
-      - 'lttng-tools_{version}_cppcheck'
 
 - project:
     name: dev_upstream_lttng-tools
