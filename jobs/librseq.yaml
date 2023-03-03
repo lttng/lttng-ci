@@ -119,14 +119,6 @@
                   <reportEncoding/>
                   <skipSymbolicLinks>false</skipSymbolicLinks>
                 </io.jenkins.plugins.analysis.warnings.Gcc4>
-                <io.jenkins.plugins.analysis.warnings.Clang>
-                  <id/>
-                  <name/>
-                  <jenkins plugin="plugin-util-api"/>
-                  <pattern/>
-                  <reportEncoding/>
-                  <skipSymbolicLinks>false</skipSymbolicLinks>
-                </io.jenkins.plugins.analysis.warnings.Clang>
               </analysisTools>
               <sourceCodeEncoding/>
               <sourceDirectory/>
