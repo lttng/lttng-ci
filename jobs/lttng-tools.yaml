@@ -107,6 +107,7 @@
          name: node
          values:
            - 'amd64-rootnode'
+           - 'i386-rootnode'
       - axis:
           <<: *lttng-tools_matrix_axis_platform
           type: user-defined
@@ -539,6 +540,30 @@
             result: 'success'
 
 - job-template:
+    name: '{job_prefix}lttng-tools_{version}_rootbuild_i386'
+    defaults: lttng-tools
+
+    scm:
+      - git: *lttng-tools_scm_git_default
+
+    wrappers:
+      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
+      - timeout:
+          <<: *lttng-tools_wrapper_timeout_defaults
+          timeout: 10
+      - timestamps
+
+    <<: *lttng-tools_matrix_axes_rootbuild
+    <<: *lttng-tools_builders_defaults
+    <<: *lttng-tools_publishers_defaults
+
+    triggers:
+      - pollscm: *lttng-tools_trigger_pollscm_default
+      - reverse:
+            jobs: '{ust_job_prefix}lttng-ust_{version}_build'
+            result: 'success'
+
+- job-template:
     name: lttng-tools_{version}_winbuild
     defaults: lttng-tools
 
@@ -892,7 +917,19 @@
           urcuversions: !!python/tuple [master]
           babelversions: !!python/tuple [stable-2.0]
           testtypes: !!python/tuple [base]
-          filter: ''
+          filter: '(node=="amd64-rootnode" && platform=="bionic-amd64")'
+          touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_rootbuild_i386':
+          buildtype: portbuild
+          version: master
+          ustversion: master
+          platforms: !!python/tuple [deb11-i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
+          babelversions: !!python/tuple [stable-2.0]
+          testtypes: !!python/tuple [base]
+          filter: '(node=="i386-rootnode" && platform=="deb11-i386")'
           touchstone: ''
       - 'lttng-tools_{version}_scan-build':
           version: master
