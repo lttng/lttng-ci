@@ -171,6 +171,8 @@
           results: 'tap/**/*.log'
           fail-if-no-results: true
           failed-tests-mark-build-as-failure: true
+          include-comment-diagnostics: true
+          output-tap-to-console: false
           todo-is-failure: false
       - raw: &babeltrace_publisher_warnings-ng_defaults
           xml: |
