@@ -246,6 +246,14 @@ doc)
     CONF_OPTS+=("--enable-python-bindings" "--enable-python-bindings-doc" "--enable-python-plugins" "--enable-api-doc")
     ;;
 
+asan)
+    echo "Address Sanitizer configuration"
+
+    # --enable-asan was introduced after 2.0 but don't check the version, we
+    # want this configuration to fail if ASAN is unavailable.
+    CONF_OPTS+=("--enable-asan" "--enable-python-bindings" "--enable-python-plugins")
+    ;;
+
 min)
     echo "Minimal configuration"
     ;;
