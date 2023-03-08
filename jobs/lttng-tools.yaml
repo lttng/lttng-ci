@@ -1521,7 +1521,7 @@
           urcuversions: !!python/tuple [master] # Switch to stable-0.14 when released (for C++ support)
           babelversions: !!python/tuple [stable-2.0]
           testtypes: !!python/tuple [base]
-          filter: ''
+          filter: '(node=="amd64-rootnode" && platform=="bionic-amd64")'
           touchstone: ''
 
 - project:
