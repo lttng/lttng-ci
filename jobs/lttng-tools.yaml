@@ -1508,7 +1508,7 @@
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
-          urcuversions: !!python/tuple [master] # Switch to stable-0.14 when released (for C++ support)
+          urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
           babelversions: !!python/tuple [stable-2.0]
           testtypes: !!python/tuple [base]
           filter: ''
@@ -1518,7 +1518,7 @@
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
-          urcuversions: !!python/tuple [master] # Switch to stable-0.14 when released (for C++ support)
+          urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
           babelversions: !!python/tuple [stable-2.0]
           testtypes: !!python/tuple [base]
           filter: '(node=="amd64-rootnode" && platform=="bionic-amd64")'
