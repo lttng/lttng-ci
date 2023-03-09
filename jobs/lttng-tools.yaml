@@ -885,6 +885,18 @@
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
+          buildtype: yoctobuild
+          version: master
+          ustversion: master
+          platforms: !!python/tuple [yocto23-powerpcspe, yocto23-powerpc, yocto31-ppc64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          urcuversions: !!python/tuple [master]
+          babelversions: !!python/tuple [stable-2.0]
+          testtypes: !!python/tuple [base]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: macosbuild
           version: master
           ustversion: master

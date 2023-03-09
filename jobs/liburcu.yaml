@@ -332,6 +332,12 @@
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
+          buildtype: yoctobuild
+          platforms: !!python/tuple [yocto23-powerpcspe, yocto23-powerpc, yocto31-ppc64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: macosbuild
           platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]

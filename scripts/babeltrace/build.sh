@@ -275,6 +275,11 @@ min)
     if vergte "$PACKAGE_VERSION" "2.0"; then
         CONF_OPTS+=("--enable-python-bindings" "--enable-python-plugins")
     fi
+
+    # Something is broken in docbook-xml on yocto
+    if [[ "$platform" = yocto* ]]; then
+        CONF_OPTS+=("--disable-man-pages")
+    fi
     ;;
 esac
 

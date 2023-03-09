@@ -233,6 +233,11 @@ debug-rcu)
 
 *)
     echo "Standard configuration"
+
+    # Something is broken in docbook-xml on yocto
+    if [[ "$platform" = yocto* ]]; then
+        CONF_OPTS+=("--disable-man-pages")
+    fi
     ;;
 esac
 
