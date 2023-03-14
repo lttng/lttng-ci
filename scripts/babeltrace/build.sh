@@ -105,6 +105,15 @@ BABELTRACE_RUN_TESTS="${BABELTRACE_RUN_TESTS:=yes}"
 SRCDIR="$WORKSPACE/src/babeltrace"
 TMPDIR="$WORKSPACE/tmp"
 PREFIX="/build"
+LIBDIR="lib"
+
+# RHEL and SLES both use lib64 but don't bother shipping a default autoconf
+# site config that matches this.
+if [[ ( -f /etc/redhat-release || -f /etc/SuSE-release ) && ( "$(uname -m)" == "x86_64" ) ]]; then
+    LIBDIR_ARCH="${LIBDIR}64"
+else
+    LIBDIR_ARCH="$LIBDIR"
+fi
 
 # Create tmp directory
 rm -rf "$TMPDIR"
@@ -199,7 +208,7 @@ export BABELTRACE_MINIMAL_LOG_LEVEL=TRACE
 
 # Set configure options and environment variables for each build
 # configuration.
-CONF_OPTS=("--prefix=$PREFIX")
+CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH")
 
 # -Werror is enabled by default in stable-2.0 but won't be in 2.1
 # Explicitly disable it for consistency.
@@ -370,10 +379,10 @@ $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
 find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -exec rm -f {} \;
 
 # Exit with failure if any of the tests failed
 exit $failed_tests

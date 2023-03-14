@@ -26,6 +26,8 @@ vercomp () {
         return 0
     fi
     local IFS=.
+    # Ignore the shellcheck warning, we want splitting to happen based on IFS.
+    # shellcheck disable=SC2206
     local i ver1=($1) ver2=($2)
     # fill empty fields in ver1 with zeros
     for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
@@ -109,8 +111,21 @@ build=${build:-}
 cc=${cc:-}
 test_type=${test_type:-}
 
+SRCDIR="$WORKSPACE/src/lttng-tools"
+TAPDIR="$WORKSPACE/tap"
+PREFIX="/build"
+LIBDIR="lib"
+
+# RHEL and SLES both use lib64 but don't bother shipping a default autoconf
+# site config that matches this.
+if [[ ( -f /etc/redhat-release || -f /etc/SuSE-release ) && ( "$(uname -m)" == "x86_64" ) ]]; then
+    LIBDIR_ARCH="${LIBDIR}64"
+else
+    LIBDIR_ARCH="$LIBDIR"
+fi
+
 DEPS_INC="$WORKSPACE/deps/build/include"
-DEPS_LIB="$WORKSPACE/deps/build/lib"
+DEPS_LIB="$WORKSPACE/deps/build/$LIBDIR_ARCH"
 DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
 DEPS_BIN="$WORKSPACE/deps/build/bin"
 DEPS_JAVA="$WORKSPACE/deps/build/share/java"
@@ -120,10 +135,6 @@ export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
 export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
 export CPPFLAGS="-I$DEPS_INC"
 export LDFLAGS="-L$DEPS_LIB"
-
-SRCDIR="$WORKSPACE/src/lttng-tools"
-TAPDIR="$WORKSPACE/tap"
-PREFIX="/build"
 
 
 # Create tmp directory
@@ -250,11 +261,17 @@ cygwin|cygwin64|msys32|msys64)
 
     if command -v $PYTHON2 >/dev/null 2>&1; then
         P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
-        DEPS_PYTHON2="$WORKSPACE/deps/build/lib/python$P2_VERSION/site-packages"
+        DEPS_PYTHON2="$WORKSPACE/deps/build/$LIBDIR/python$P2_VERSION/site-packages"
+	if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
+            DEPS_PYTHON2="$DEPS_PYTHON2:$WORKSPACE/deps/build/$LIBDIR_ARCH/python$P2_VERSION/site-packages"
+	fi
     fi
 
     P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
-    DEPS_PYTHON3="$WORKSPACE/deps/build/lib/python$P3_VERSION/site-packages"
+    DEPS_PYTHON3="$WORKSPACE/deps/build/$LIBDIR/python$P3_VERSION/site-packages"
+    if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
+        DEPS_PYTHON3="$DEPS_PYTHON3:$WORKSPACE/deps/build/$LIBDIR_ARCH/python$P3_VERSION/site-packages"
+    fi
 
     # Most build configs require access to the babeltrace 2 python bindings.
     # This also makes the lttngust python agent available for `agents` builds.
@@ -309,7 +326,7 @@ else
 fi
 
 # Most build configs require the python bindings
-CONF_OPTS=("--prefix=$PREFIX" "--enable-python-bindings")
+CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--enable-python-bindings")
 
 DIST_CONF_OPTS=()
 
@@ -507,11 +524,11 @@ $MAKE clean
 find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
 
 # Some configs don't build liblttng-ctl
-if [ -d "$WORKSPACE/$PREFIX/lib" ]; then
+if [ -d "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" ]; then
     # Cleanup rpath in shared libraries
-    find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
     # Remove libtool .la files
-    find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -exec rm -f {} \;
 fi
 
 # Exit with failure if any of the tests failed

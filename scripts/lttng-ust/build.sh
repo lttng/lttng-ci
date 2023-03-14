@@ -25,6 +25,8 @@ vercomp () {
         return 0
     fi
     local IFS=.
+    # Ignore the shellcheck warning, we want splitting to happen based on IFS.
+    # shellcheck disable=SC2206
     local i ver1=($1) ver2=($2)
     # fill empty fields in ver1 with zeros
     for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
@@ -92,8 +94,21 @@ cc=${cc:-}
 # Controls if the tests are run
 LTTNG_UST_RUN_TESTS="${LTTNG_UST_RUN_TESTS:=yes}"
 
+SRCDIR="$WORKSPACE/src/lttng-ust"
+TMPDIR="$WORKSPACE/tmp"
+PREFIX="/build"
+LIBDIR="lib"
+
+# RHEL and SLES both use lib64 but don't bother shipping a default autoconf
+# site config that matches this.
+if [[ ( -f /etc/redhat-release || -f /etc/SuSE-release ) && ( "$(uname -m)" == "x86_64" ) ]]; then
+    LIBDIR_ARCH="${LIBDIR}64"
+else
+    LIBDIR_ARCH="$LIBDIR"
+fi
+
 DEPS_INC="$WORKSPACE/deps/build/include"
-DEPS_LIB="$WORKSPACE/deps/build/lib"
+DEPS_LIB="$WORKSPACE/deps/build/$LIBDIR_ARCH"
 DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
 #DEPS_BIN="$WORKSPACE/deps/build/bin"
 #DEPS_JAVA="$WORKSPACE/deps/build/share/java"
@@ -102,10 +117,6 @@ export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
 export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
 export CPPFLAGS="-I$DEPS_INC"
 export LDFLAGS="-L$DEPS_LIB"
-
-SRCDIR="$WORKSPACE/src/lttng-ust"
-TMPDIR="$WORKSPACE/tmp"
-PREFIX="/build"
 
 # Create tmp directory
 rm -rf "$TMPDIR"
@@ -193,7 +204,7 @@ fi
 
 # Set configure options and environment variables for each build
 # configuration.
-CONF_OPTS=("--prefix=$PREFIX")
+CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH")
 case "$conf" in
 static)
     echo "Static lib only configuration"
@@ -326,10 +337,10 @@ $MAKE clean
 
 # Cleanup rpath in executables and shared libraries
 #find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
 
 # Remove libtool .la files
-find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
+find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -exec rm -f {} \;
 
 # Exit with failure if any of the tests failed
 exit $failed_tests
