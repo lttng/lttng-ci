@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2020 Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2023 Michael Jeanson <mjeanson@efficios.com>
 # Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ WORKSPACE=${WORKSPACE:-}
 COVERITY_SCAN_DESCRIPTION="Automated CI build"
 COVERITY_SCAN_NOTIFICATION_EMAIL="ci-notification@lists.lttng.org"
 COVERITY_SCAN_BUILD_OPTIONS=""
-#COVERITY_SCAN_BUILD_OPTIONS="--return-emit-failures 8 --parse-error-threshold 85"
+#COVERITY_SCAN_BUILD_OPTIONS=("--return-emit-failures 8" "--parse-error-threshold 85")
 
 DEPS_INC="$WORKSPACE/deps/build/include"
 DEPS_LIB="$WORKSPACE/deps/build/lib"
@@ -48,7 +48,9 @@ NPROC=$(nproc)
 PLATFORM=$(uname)
 export CFLAGS="-O0 -g -DDEBUG"
 
-TOOL_ARCHIVE="$TMPDIR/cov-analysis-${PLATFORM}.tgz"
+# Cache the tool installer in the home directory since we delete the workspace
+# on each build
+TOOL_ARCHIVE="$HOME/cov-analysis-${PLATFORM}.tgz"
 TOOL_URL=https://scan.coverity.com/download/${PLATFORM}
 TOOL_BASE="$TMPDIR/coverity-scan-analysis"
 
@@ -67,34 +69,34 @@ export TMPDIR
 
 case "$COVERITY_SCAN_PROJECT_NAME" in
 babeltrace)
-    CONF_OPTS="--enable-python-bindings --enable-python-bindings-doc --enable-python-plugins"
+    CONF_OPTS=("--enable-python-bindings" "--enable-python-bindings-doc" "--enable-python-plugins")
     BUILD_TYPE="autotools"
     ;;
 liburcu)
-    CONF_OPTS=""
+    CONF_OPTS=()
     BUILD_TYPE="autotools"
     ;;
 lttng-modules)
-    CONF_OPTS=""
+    CONF_OPTS=()
     BUILD_TYPE="autotools"
     ;;
 lttng-tools)
-    CONF_OPTS=""
+    CONF_OPTS=()
     BUILD_TYPE="autotools"
     ;;
 lttng-ust)
-    CONF_OPTS="--enable-java-agent-all --enable-python-agent"
+    CONF_OPTS=("--enable-java-agent-all" "--enable-python-agent")
     BUILD_TYPE="autotools"
     export CLASSPATH="/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
     ;;
 lttng-scope|ctf-java|libdelorean-java|jabberwocky)
-    CONF_OPTS=""
+    CONF_OPTS=()
     BUILD_TYPE="maven"
     MVN_BIN="$HOME/tools/hudson.tasks.Maven_MavenInstallation/default/bin/mvn"
     ;;
 *)
     echo "Generic project, no configure options."
-    CONF_OPTS=""
+    CONF_OPTS=()
     BUILD_TYPE="autotools"
     ;;
 esac
@@ -107,9 +109,8 @@ fi
 cd "$SRCDIR"
 
 # Verify upload is permitted
-#  Added "--insecure" because Coverity can't be bothered to properly install SSL certificate chains
 set +x
-AUTH_RES=$(curl -s --insecure --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" $SCAN_URL/api/upload_permitted)
+AUTH_RES=$(curl --silent --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" $SCAN_URL/api/upload_permitted)
 set -x
 if [ "$AUTH_RES" = "Access denied" ]; then
   echo -e "\033[33;1mCoverity Scan API access denied. Check COVERITY_SCAN_PROJECT_NAME and COVERITY_SCAN_TOKEN.\033[0m"
@@ -131,7 +132,7 @@ if [ ! -d "$TOOL_BASE" ]; then
   if [ ! -e "$TOOL_ARCHIVE" ]; then
     echo -e "\033[33;1mDownloading Coverity Scan Analysis Tool...\033[0m"
     set +x
-    curl -s --insecure --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" -o "$TOOL_ARCHIVE" "$TOOL_URL"
+    curl --fail --remote-time --continue-at - --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" --output "$TOOL_ARCHIVE" --time-cond "$TOOL_ARCHIVE" "$TOOL_URL"
     set -x
   fi
 
@@ -153,7 +154,7 @@ echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
 case "$BUILD_TYPE" in
 maven)
     cov-configure --java
-    cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS "$MVN_BIN" \
+    cov-build --dir "$RESULTS_DIR" "${COVERITY_SCAN_BUILD_OPTIONS[@]}" "$MVN_BIN" \
       -s "$MVN_SETTINGS" \
       -Dmaven.repo.local="$WORKSPACE/.repository" \
       -Dmaven.compiler.fork=true \
@@ -166,10 +167,10 @@ autotools)
     # Prepare build dir for autotools based projects
     if [ -f "./bootstrap" ]; then
       ./bootstrap
-      ./configure $CONF_OPTS
+      ./configure "${CONF_OPTS[@]}"
     fi
 
-    cov-build --dir "$RESULTS_DIR" $COVERITY_SCAN_BUILD_OPTIONS make -j"$NPROC" V=1
+    cov-build --dir "$RESULTS_DIR" ${COVERITY_SCAN_BUILD_OPTIONS[@]} make -j"$NPROC" V=1
     ;;
 *)
     echo "Unsupported build type: $BUILD_TYPE"
@@ -190,7 +191,7 @@ tar czf $RESULTS_ARCHIVE $RESULTS_DIR_NAME
 # Upload results
 echo -e "\033[33;1mUploading Coverity Scan Analysis results...\033[0m"
 set +x
-response=$(curl --insecure \
+response=$(curl \
   --silent --write-out "\n%{http_code}\n" \
   --form project="$COVERITY_SCAN_PROJECT_NAME" \
   --form token="$COVERITY_SCAN_TOKEN" \
