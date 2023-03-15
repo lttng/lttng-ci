@@ -129,12 +129,10 @@ fi
 
 # Download Coverity Scan Analysis Tool
 if [ ! -d "$TOOL_BASE" ]; then
-  if [ ! -e "$TOOL_ARCHIVE" ]; then
-    echo -e "\033[33;1mDownloading Coverity Scan Analysis Tool...\033[0m"
-    set +x
-    curl --fail --remote-time --continue-at - --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" --output "$TOOL_ARCHIVE" --time-cond "$TOOL_ARCHIVE" "$TOOL_URL"
-    set -x
-  fi
+  echo -e "\033[33;1mDownloading Coverity Scan Analysis Tool...\033[0m"
+  set +x
+  curl --fail --remote-time --continue-at - --form project="$COVERITY_SCAN_PROJECT_NAME" --form token="$COVERITY_SCAN_TOKEN" --output "$TOOL_ARCHIVE" --time-cond "$TOOL_ARCHIVE" "$TOOL_URL"
+  set -x
 
   # Extract Coverity Scan Analysis Tool
   echo -e "\033[33;1mExtracting Coverity Scan Analysis Tool...\033[0m"
