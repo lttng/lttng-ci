@@ -280,8 +280,8 @@ cygwin|cygwin64|msys32|msys64)
 esac
 
 # The missing-field-initializers warning code is very dumb in GCC 4.8 on
-# SLES12, disable it even if it's available.
-if [[ $platform = sles12sp5* ]]; then
+# SLES12 / EL7, disable it even if it's available.
+if [[ $platform = sles12sp5* ]] || [[  $platform = el7* ]]; then
     CFLAGS="$CFLAGS -Wno-missing-field-initializers"
     CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers"
 fi
