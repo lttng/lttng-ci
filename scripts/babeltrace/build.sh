@@ -106,6 +106,7 @@ SRCDIR="$WORKSPACE/src/babeltrace"
 TMPDIR="$WORKSPACE/tmp"
 PREFIX="/build"
 LIBDIR="lib"
+LIBDIR_ARCH="$LIBDIR"
 
 # RHEL and SLES both use lib64 but don't bother shipping a default autoconf
 # site config that matches this.
@@ -113,8 +114,6 @@ if [[ ( -f /etc/redhat-release || -f /etc/SuSE-release || -f /etc/yocto-release 
     # Detect the userspace bitness in a distro agnostic way
     if file -L /bin/bash | grep '64-bit' >/dev/null 2>&1; then
         LIBDIR_ARCH="${LIBDIR}64"
-    else
-        LIBDIR_ARCH="$LIBDIR"
     fi
 fi
 
