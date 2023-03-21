@@ -265,6 +265,9 @@ set -e
 # Copy tap logs for the jenkins tap parser before cleaning the build dir
 rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
+# Copy the test suites top-level log which includes all tests failures
+rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
+
 # Clean the build directory
 $MAKE clean
 

@@ -496,7 +496,12 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
         fi
 
         make --keep-going check || failed_tests=1
+
+        # Copy tap logs for the jenkins tap parser before cleaning the build dir
         rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
+
+        # Copy the test suites top-level log which includes all tests failures
+        rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
     else
         cd tests
         mkdir -p "$TAPDIR/unit"

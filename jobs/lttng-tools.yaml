@@ -431,7 +431,7 @@
             </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
 
       - archive: &lttng-tools_publisher_archive_defaults
-          artifacts: 'build/**,deps/**,tap/**'
+          artifacts: 'build/**,deps/**,tap/**,log/**'
           allow-empty: false
 
       - workspace-cleanup: &lttng-tools_publisher_workspace-cleanup_defaults

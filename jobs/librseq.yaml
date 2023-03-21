@@ -150,7 +150,7 @@
               <scm/>
             </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
       - archive: &librseq_publisher_archive_defaults
-          artifacts: 'build/**,tap/**'
+          artifacts: 'build/**,tap/**,log/**'
           allow-empty: false
       - workspace-cleanup: &librseq_publisher_workspace-cleanup_defaults
           clean-if:

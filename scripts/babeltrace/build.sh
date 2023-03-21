@@ -373,6 +373,9 @@ if [ "$BABELTRACE_RUN_TESTS" = "yes" ]; then
 	# Copy tap logs for the jenkins tap parser before cleaning the build dir
 	rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
+	# Copy the test suites top-level log which includes all tests failures
+	rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
+
 	# The test suite prior to 1.5 did not produce TAP logs
 	if verlt "$PACKAGE_VERSION" "1.5"; then
 	    mkdir -p "$WORKSPACE/tap/no-log"
