@@ -108,6 +108,7 @@ ci-rootnode-deb11-i386-01
 
 [node_sles]
 ci-node-sles12sp5-amd64-03-01
+ci-node-sles15sp4-amd64-05-01
 
 [node_el]
 ci-node-el7-amd64-02-01 ansible_python_interpreter=python2
