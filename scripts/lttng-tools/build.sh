@@ -353,11 +353,18 @@ agents)
     export JAVA_HOME="/usr/lib/jvm/default-java"
     export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
 
-    CONF_OPTS+=("--enable-test-java-agent-all" "--enable-test-python-agent-all")
+    CONF_OPTS+=("--enable-test-java-agent-all")
 
     # Explicitly add '--enable-test-java-agent-log4j2', it's not part of '-all' in stable 2.12/2.13
     if verlt "$PACKAGE_VERSION" "2.14"; then
         CONF_OPTS+=("--enable-test-java-agent-log4j2")
+    fi
+
+    # Some distros don't ship python2 anymore
+    if command -v $PYTHON2 >/dev/null 2>&1; then
+        CONF_OPTS+=("--enable-test-python-agent-all")
+    else
+        CONF_OPTS+=("--enable-test-python3-agent")
     fi
     ;;
 
