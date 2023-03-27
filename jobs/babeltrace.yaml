@@ -544,7 +544,7 @@
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb11-i386")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
@@ -656,7 +656,7 @@
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb11-i386")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
