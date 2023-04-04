@@ -1070,7 +1070,7 @@
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
           testtypes: !!python/tuple [base]
-          filter: ''
+          filter: '(node=="amd64-rootnode" && platform=="bionic-amd64")'
           touchstone: ''
       - 'lttng-tools_{version}_release':
           version: v2.13
@@ -1188,7 +1188,7 @@
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
           testtypes: !!python/tuple [base]
-          filter: ''
+          filter: '(node=="amd64-rootnode" && platform=="bionic-amd64")'
           touchstone: ''
       - 'lttng-tools_{version}_release':
           version: v2.12
