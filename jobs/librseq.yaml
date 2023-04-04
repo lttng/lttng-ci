@@ -335,7 +335,7 @@
           touchstone: '(build == "std") && (conf == "std") && (cc == "clang-14")'
       - 'librseq_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb11-i386")'

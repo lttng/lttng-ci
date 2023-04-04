@@ -852,7 +852,7 @@
           buildtype: portbuild
           version: master
           ustversion: master
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [master]
@@ -993,7 +993,7 @@
           buildtype: portbuild
           version: stable-2.13
           ustversion: stable-2.13
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1111,7 +1111,7 @@
           buildtype: portbuild
           version: stable-2.12
           ustversion: stable-2.12
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1226,7 +1226,7 @@
           buildtype: portbuild
           version: stable-2.11
           ustversion: stable-2.11
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [no-ust, agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1300,7 +1300,7 @@
           buildtype: portbuild
           version: stable-2.10
           ustversion: stable-2.10
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [no-ust, agents]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1372,7 +1372,7 @@
           buildtype: portbuild
           version: master-staging
           ustversion: master
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [master]
@@ -1410,7 +1410,7 @@
           buildtype: portbuild
           version: stable-2.13-staging
           ustversion: stable-2.13
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1436,7 +1436,7 @@
           buildtype: portbuild
           version: stable-2.12-staging
           ustversion: stable-2.12
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1472,7 +1472,7 @@
           buildtype: portbuild
           version: stable-2.11-staging
           ustversion: stable-2.11
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1498,7 +1498,7 @@
           buildtype: portbuild
           version: stable-2.10-staging
           ustversion: stable-2.10
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.9]

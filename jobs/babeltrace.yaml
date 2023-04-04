@@ -537,7 +537,7 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
@@ -609,7 +609,7 @@
     jobs:
       - 'dev_gerrit_babeltrace_{buildtype}':
           buildtype: build
-          platforms: !!python/tuple [bionic-amd64, deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [bionic-amd64, deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           filter: '(build=="std" && conf=="std") || (platform=="bionic-amd64")'
@@ -649,7 +649,7 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, sid-powerpc, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, python-bindings]
           filter: ''
