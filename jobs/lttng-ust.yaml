@@ -599,6 +599,15 @@
           liburcu_versions: !!python/tuple [stable-0.13, master]
           filter: ''
           touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: yoctobuild
+          version: stable-2.13
+          platforms: !!python/tuple [yocto23-powerpcspe, yocto23-powerpc, yocto31-ppc64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          liburcu_versions: !!python/tuple [stable-0.13, master]
+          filter: ''
+          touchstone: ''
       - 'lttng-ust_{version}_scan-build':
           version: stable-2.13
 
@@ -643,6 +652,15 @@
           buildtype: elbuild
           version: stable-2.12
           platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          liburcu_versions: !!python/tuple [stable-0.13]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: yoctobuild
+          version: stable-2.12
+          platforms: !!python/tuple [yocto23-powerpcspe, yocto23-powerpc, yocto31-ppc64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13]
