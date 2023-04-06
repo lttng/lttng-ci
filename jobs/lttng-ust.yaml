@@ -679,9 +679,9 @@
     jobs:
       ## Stable 2.11 ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.11
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [jammy-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -699,7 +699,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.11
-          platforms: !!python/tuple [sles12sp5-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -717,9 +717,9 @@
 
       ## Stable 2.10 ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.10
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [jammy-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.9]
@@ -737,7 +737,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.10
-          platforms: !!python/tuple [sles12sp5-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.9]

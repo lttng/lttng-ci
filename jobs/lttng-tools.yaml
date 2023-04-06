@@ -1235,10 +1235,10 @@
     jobs:
       # stable-2.11
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.11
           ustversion: stable-2.11
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [jammy-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1262,7 +1262,7 @@
           buildtype: slesbuild
           version: stable-2.11
           ustversion: stable-2.11
-          platforms: !!python/tuple [sles12sp5-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1277,30 +1277,6 @@
           platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          urcuversions: !!python/tuple [stable-0.11]
-          babelversions: !!python/tuple [stable-1.5]
-          testtypes: !!python/tuple [base]
-          filter: ''
-          touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_long_regression':
-          buildtype: build
-          version: stable-2.11
-          ustversion: stable-2.11
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std]
-          confs: !!python/tuple [std]
-          urcuversions: !!python/tuple [stable-0.11]
-          babelversions: !!python/tuple [stable-1.5]
-          testtypes: !!python/tuple [full]
-          filter: ''
-          touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_rootbuild':
-          buildtype: build
-          version: stable-2.11
-          ustversion: stable-2.11
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std]
-          confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.11]
           babelversions: !!python/tuple [stable-1.5]
           testtypes: !!python/tuple [base]
@@ -1309,10 +1285,10 @@
 
       # stable-2.10
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.10
           ustversion: stable-2.10
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [jammy-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1336,7 +1312,7 @@
           buildtype: slesbuild
           version: stable-2.10
           ustversion: stable-2.10
-          platforms: !!python/tuple [sles12sp5-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1354,18 +1330,6 @@
           urcuversions: !!python/tuple [stable-0.9]
           babelversions: !!python/tuple [stable-1.5]
           testtypes: !!python/tuple [base]
-          filter: ''
-          touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_long_regression':
-          buildtype: build
-          version: stable-2.10
-          ustversion: stable-2.10
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std]
-          confs: !!python/tuple [std]
-          urcuversions: !!python/tuple [stable-0.9]
-          babelversions: !!python/tuple [stable-1.5]
-          testtypes: !!python/tuple [full]
           filter: ''
           touchstone: ''
 
