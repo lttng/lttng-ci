@@ -125,6 +125,10 @@
       - junit:
           results: 'lttng-ust-java-tests/**/target/failsafe-reports/*.xml'
       - workspace-cleanup
+      - ircbot: &lttng-ust-java-tests_publisher_ircbot_defaults
+          strategy: statechange-only
+          message-type: summary-scm
+          matrix-notifier: only-configurations
       - email-ext:
          recipients: '{obj:email_for_all_failure}'
          always: false
@@ -135,28 +139,6 @@
          aborted: false
          regression: false
          failure: true
-         second-failure: false
-         improvement: false
-         still-failing: false
-         success: false
-         fixed: false
-         fixed-unhealthy: true
-         still-unstable: false
-         pre-build: false
-         matrix-trigger: only-parent
-         send-to:
-           - recipients
-      - email-ext:
-         recipients: '{obj:email_to}'
-         reply-to: ci-notification@lists.lttng.org
-         always: false
-         unstable: false
-         first-failure: true
-         first-unstable: true
-         not-built: false
-         aborted: false
-         regression: false
-         failure: false
          second-failure: false
          improvement: false
          still-failing: false

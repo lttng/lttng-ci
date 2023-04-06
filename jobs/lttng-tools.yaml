@@ -438,6 +438,11 @@
           clean-if:
             - failure: false
 
+      - ircbot: &lttng-tools_publisher_ircbot_defaults
+          strategy: statechange-only
+          message-type: summary-scm
+          matrix-notifier: only-configurations
+
       - email-ext: &lttng-tools_publisher_email-ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
@@ -468,6 +473,7 @@
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
       - archive: *lttng-tools_publisher_archive_defaults
+      - ircbot: *lttng-tools_publisher_ircbot_defaults
       - email-ext: *lttng-tools_publisher_email-ext_defaults
 
 ## Templates
@@ -739,6 +745,7 @@
           allow-empty: false
           fingerprint: true
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - ircbot: *lttng-tools_publisher_ircbot_defaults
 
 - job-template:
     name: lttng-tools_{version}_scan-build
@@ -764,6 +771,7 @@
           name: 'HTML Report'
           dir: 'scan-build-archive/'
           files: 'index.html'
+      - ircbot: *lttng-tools_publisher_ircbot_defaults
 
 - job-template:
     name: lttng-tools_{version}_coverity
@@ -800,6 +808,7 @@
           artifacts: 'analysis-results.tgz,cov-int/**'
           allow-empty: false
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - ircbot: *lttng-tools_publisher_ircbot_defaults
 
 
 ## Views

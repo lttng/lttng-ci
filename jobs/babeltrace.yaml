@@ -220,6 +220,10 @@
       - workspace-cleanup: &babeltrace_publisher_workspace-cleanup_defaults
           clean-if:
             - failure: false
+      - ircbot: &babeltrace_publisher_ircbot_defaults
+          strategy: statechange-only
+          message-type: summary-scm
+          matrix-notifier: only-configurations
       - email-ext: &babeltrace_publisher_email-ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
@@ -383,6 +387,7 @@
           artifacts: 'out/**,tap/**'
           allow-empty: false
           fingerprint: true
+      - ircbot: *babeltrace_publisher_ircbot_defaults
 
 - job-template:
     name: dev_gerrit_babeltrace_pylint
@@ -443,6 +448,7 @@
           name: 'HTML Report'
           dir: 'scan-build-archive/'
           files: 'index.html'
+      - ircbot: *babeltrace_publisher_ircbot_defaults
 
 - job-template:
     name: babeltrace_{version}_coverity
@@ -473,6 +479,7 @@
       - archive:
           artifacts: 'analysis-results.tgz,cov-int/**'
           allow-empty: false
+      - ircbot: *babeltrace_publisher_ircbot_defaults
 
 - job-template:
     name: babeltrace_{version}_pylint
@@ -492,6 +499,7 @@
       - archive:
           artifacts: 'black.out,flake8.out'
           allow-empty: false
+      - ircbot: *babeltrace_publisher_ircbot_defaults
       - email-ext: *babeltrace_publisher_email-ext_defaults
 
 - job-template:

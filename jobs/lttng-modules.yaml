@@ -189,6 +189,10 @@
 
     publishers:
       - workspace-cleanup
+      - ircbot: &lttng-modules_publisher_ircbot_defaults
+          strategy: statechange-only
+          message-type: summary-scm
+          matrix-notifier: only-configurations
       - email-ext:
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
@@ -617,6 +621,7 @@
       - archive:
           artifacts: 'analysis-results.tgz,cov-int/**'
           allow-empty: false
+      - ircbot: *lttng-modules_publisher_ircbot_defaults
       - workspace-cleanup
 
 

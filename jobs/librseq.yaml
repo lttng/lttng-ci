@@ -155,6 +155,10 @@
       - workspace-cleanup: &librseq_publisher_workspace-cleanup_defaults
           clean-if:
             - failure: false
+      - ircbot: &librseq_publisher_ircbot_defaults
+          strategy: statechange-only
+          message-type: summary-scm
+          matrix-notifier: only-configurations
       - email-ext: &librseq_publisher_email-ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org

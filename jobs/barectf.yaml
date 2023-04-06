@@ -47,6 +47,10 @@
       - workspace-cleanup: &barectf_publisher_workspace_cleanup_defaults
           clean-if:
             - failure: false
+      - ircbot: &barectf_publisher_ircbot_defaults
+          strategy: statechange-only
+          message-type: summary-scm
+          matrix-notifier: only-configurations
 
 
 ## Templates ##
@@ -68,6 +72,7 @@
 
     publishers:
       - workspace-cleanup: *barectf_publisher_workspace_cleanup_defaults
+      - ircbot: *barectf_publisher_ircbot_defaults
       - email-ext:
          recipients: '{obj:email_to}'
          reply-to: ci-notification@lists.lttng.org
@@ -137,6 +142,9 @@
     builders:
       - shell:
          !include-raw-escape: scripts/barectf/build.sh
+
+    publishers:
+      - workspace-cleanup: *barectf_publisher_workspace_cleanup_defaults
 
 
 ## Views ##

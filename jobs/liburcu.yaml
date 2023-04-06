@@ -164,6 +164,10 @@
       - workspace-cleanup: &liburcu_publisher_workspace_cleanup_defaults
           clean-if:
             - failure: false
+      - ircbot: &liburcu_publisher_ircbot_defaults
+          strategy: statechange-only
+          message-type: summary-scm
+          matrix-notifier: only-configurations
       - email-ext: &liburcu_publisher_email_ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org
@@ -250,6 +254,7 @@
           dir: 'scan-build-archive/'
           files: 'index.html'
       - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
+      - ircbot: *liburcu_publisher_ircbot_defaults
 
 - job-template:
     name: liburcu_{version}_coverity
@@ -280,6 +285,7 @@
           artifacts: 'analysis-results.tgz,cov-int/**'
           allow-empty: false
       - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
+      - ircbot: *liburcu_publisher_ircbot_defaults
 
 
 ## Views
