@@ -17,7 +17,7 @@
           colormap: xterm
       - timeout: &lttng-tools_wrapper_timeout_defaults
           timeout: 30
-          fail: true
+          abort: true
           type: no-activity
           write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
@@ -191,7 +191,7 @@
                 git clone -b "{version}" https://github.com/{github_user}/lttng-modules.git src/lttng-modules
 
       - shell:
-         !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
+         !include-raw-escape: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
 
       - shell:
          !include-raw-escape:
@@ -255,7 +255,7 @@
                 project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/platform=${{platform}},conf=std,build=std'
 
       - shell:
-         !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
+         !include-raw-escape: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
 
       # Build liburcu if we depend on a specific liburcu change
       - conditional-step:
@@ -356,18 +356,35 @@
 - lttng-tools_publishers_defaults: &lttng-tools_publishers_defaults
     name: 'lttng-tools_publishers_defaults'
     publishers:
-      # On build failure, try to get partial tap results if any exists
-      - postbuildscript:
+      # On build abort (timeout), wait 10 seconds before running the other post
+      # build scripts, this will allow the processes to terminate and make the
+      # build log more legible.
+      - postbuildscript: &lttng-tools_publisher_postbuildscript_wait_10_seconds_on_abort
           mark-unstable-if-failed: false
           builders:
             - role: SLAVE
               build-on:
+                  - ABORTED
+              build-steps:
+                  - shell:
+                      !include-raw-escape: scripts/lttng-tools/postbuild_wait_10_seconds.sh
+
+      # On build failure, try to get partial tap results if any exists
+      - postbuildscript: &lttng-tools_publisher_postbuildscript_collect_tap_on_failure
+          mark-unstable-if-failed: false
+          builders:
+            - role: SLAVE
+              build-on:
+                  - ABORTED
                   - FAILURE
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
+                      !include-raw-escape: scripts/lttng-tools/postbuild_collect_tap_results.sh
 
-      - postbuildscript:
+      # If there are leftover lttng processes or core files present, kill the
+      # processes, collect the core files, delete them and mark the build
+      # unstable.
+      - postbuildscript: &lttng-tools_publisher_postbuildscript_clean_processes_coredumps
           mark-unstable-if-failed: true
           builders:
             - role: SLAVE
@@ -379,7 +396,7 @@
                   - FAILURE
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
+                      !include-raw-escape: scripts/lttng-tools/postbuild_clean_processes_coredumps.sh
 
       - tap: &lttng-tools_publisher_tap_defaults
           results: 'tap/**/*.*'
@@ -619,29 +636,18 @@
     <<: *lttng-tools_builders_gerrit
 
     publishers:
-      - postbuildscript:
-          mark-unstable-if-failed: false
-          builders:
-            - role: SLAVE
-              build-on:
-                  - FAILURE
-              build-steps:
-                  - shell:
-                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
+      # On build abort (timeout), wait 10 seconds before running the other post
+      # build scripts, this will allow the processes to terminate and make the
+      # build log more legible.
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_wait_10_seconds_on_abort
 
-      - postbuildscript:
-          mark-unstable-if-failed: true
-          builders:
-            - role: SLAVE
-              build-on:
-                  - SUCCESS
-                  - UNSTABLE
-                  - NOT_BUILT
-                  - ABORTED
-                  - FAILURE
-              build-steps:
-                  - shell:
-                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
+      # On build failure, try to get partial tap results if any exists
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_collect_tap_on_failure
+
+      # If there are leftover lttng processes or core files present, kill the
+      # processes, collect the core files, delete them and mark the build
+      # unstable.
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_clean_processes_coredumps
 
       - tap: *lttng-tools_publisher_tap_defaults
       - raw: *lttng-tools_publisher_warnings-ng_defaults
@@ -709,34 +715,23 @@
           <<: *lttng-tools_steps_copyartifact_defaults
           project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},platform=bionic-amd64,conf=agents,build=std'
       - shell:
-          !include-raw-escape: scripts/lttng-tools/clean_processes_coredump.sh
+          !include-raw-escape: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
       - shell:
           !include-raw-escape: scripts/lttng-tools/release.sh
 
     publishers:
-      - postbuildscript:
-          mark-unstable-if-failed: false
-          builders:
-            - role: SLAVE
-              build-on:
-                  - ABORTED
-              build-steps:
-                  - shell:
-                      !include-raw-escape: scripts/lttng-tools/tap_failure.sh
+      # On build abort (timeout), wait 10 seconds before running the other post
+      # build scripts, this will allow the processes to terminate and make the
+      # build log more legible.
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_wait_10_seconds_on_abort
 
-      - postbuildscript:
-          mark-unstable-if-failed: true
-          builders:
-            - role: SLAVE
-              build-on:
-                  - SUCCESS
-                  - UNSTABLE
-                  - NOT_BUILT
-                  - ABORTED
-                  - FAILURE
-              build-steps:
-                  - shell:
-                      !include-raw-escape: scripts/lttng-tools/hang_processes.sh
+      # On build failure, try to get partial tap results if any exists
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_collect_tap_on_failure
+
+      # If there are leftover lttng processes or core files present, kill the
+      # processes, collect the core files, delete them and mark the build
+      # unstable.
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_clean_processes_coredumps
 
       - tap: *lttng-tools_publisher_tap_defaults
       - raw: *lttng-tools_publisher_warnings-ng_defaults
