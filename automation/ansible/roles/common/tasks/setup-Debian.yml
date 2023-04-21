@@ -1,4 +1,21 @@
 ---
+- name: Add LTTng-CI PPA
+  when: ansible_distribution == 'Ubuntu'
+  block:
+    - name: LTTng-CI PPA | apt key
+      ansible.builtin.copy:
+        src: efficios_ubuntu_ci.gpg
+        dest: /etc/apt/trusted.gpg.d/efficios_ubuntu_ci.gpg
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: LTTng-CI PPA | apt source
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/trusted.gpg.d/efficios_ubuntu_ci.gpg] http://ppa.launchpad.net/efficios/ci/ubuntu {{ ansible_distribution_release }} main"
+        state: present
+        filename: efficios-ubuntu-ci
+
 - name: Update apt cache.
   apt: update_cache=yes cache_valid_time=86400
 
