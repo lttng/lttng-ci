@@ -26,7 +26,7 @@
       - workspace-cleanup
 
     scm:
-      - git:
+      - git: &babeltrace_scm_git_default
           url: https://github.com/{github_user}/{github_name}.git
           browser: githubweb
           browser-url: https://github.com/{github_user}/{github_name}
@@ -51,7 +51,7 @@
 
 
 ## Anchors
-- babeltrace_matrix_axes_defaults: &babeltrace_matrix_axes_defaults
+- job-template: &babeltrace_matrix_axes_defaults
     name: 'babeltrace_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -74,7 +74,7 @@
          name: build
          values: '{obj:builds}'
 
-- babeltrace_matrix_axes_cc: &babeltrace_matrix_axes_cc
+- job-template: &babeltrace_matrix_axes_cc
     name: 'babeltrace_matrix_axes_cc'
 
     <<: *babeltrace_matrix_axes_defaults
@@ -88,7 +88,7 @@
          name: cc
          values: '{obj:ccs}'
 
-- babeltrace_builders_defaults: &babeltrace_builders_defaults
+- job-template: &babeltrace_builders_defaults
     name: 'babeltrace_builders_defaults'
     builders:
       !j2-yaml: |
@@ -141,7 +141,7 @@
       {% endif %}
 
 # Use - in version number since yaml anchor do not support dot
-- babeltrace_builders_glib-2-28-6: &babeltrace_builders_glib-2-28-6
+- job-template: &babeltrace_builders_glib-2-28-6
     name: 'babeltrace_builders_glib-2-28-6'
     builders:
       - inject:
@@ -164,7 +164,7 @@
            - scripts/common/print.sh
            - scripts/babeltrace/build.sh
 
-- babeltrace_publishers_defaults: &babeltrace_publishers_defaults
+- job-template: &babeltrace_publishers_defaults
     name: 'babeltrace_publishers_defaults'
     publishers:
       - tap: &babeltrace_publisher_tap_defaults
@@ -247,8 +247,8 @@
           send-to:
             - recipients
 
-- babeltrace_publishers_gerrit: &babeltrace_publishers_gerrit
-    name: 'babeltrace_publishers_gerrit'
+- job-template: &babeltrace_publishers_review
+    name: 'babeltrace_publishers_review'
     publishers:
       - tap: *babeltrace_publisher_tap_defaults
       # Fail job on any compiler warnings
@@ -315,12 +315,12 @@
     <<: *babeltrace_publishers_defaults
 
 - job-template:
-    name: dev_gerrit_babeltrace_{buildtype}
+    name: 'dev_review_babeltrace_{version}_{buildtype}'
     defaults: babeltrace
     concurrent: true
 
     scm:
-      - git:
+      - git: &babeltrace_scm_git_review
           url: https://review.lttng.org/babeltrace
           refspec: 'refs/changes/*:refs/changes/*'
           branches:
@@ -329,7 +329,7 @@
           skip-tag: true
 
     triggers:
-      - gerrit:
+      - gerrit: &babeltrace_trigger_gerrit_defaults
           trigger-on:
             - comment-added-event:
                 approval-category: 'CI-Build'
@@ -338,8 +338,8 @@
             - project-compare-type: 'PLAIN'
               project-pattern: 'babeltrace'
               branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
 
     properties:
       - inject:
@@ -354,7 +354,31 @@
 
     <<: *babeltrace_matrix_axes_defaults
     <<: *babeltrace_builders_defaults
-    <<: *babeltrace_publishers_gerrit
+    <<: *babeltrace_publishers_review
+
+- job-template:
+    name: 'dev_review_babeltrace_{version}_pylint'
+    defaults: babeltrace
+    concurrent: true
+
+    scm:
+      - git: *babeltrace_scm_git_review
+
+    triggers:
+      - gerrit: *babeltrace_trigger_gerrit_defaults
+
+    node: 'bionic-amd64'
+
+    builders:
+      - shell:
+         !include-raw-escape: scripts/babeltrace/pylint.sh
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=babeltrace
+      - build-discarder:
+          days-to-keep: 1
 
 - job-template:
     name: babeltrace_{version}_release
@@ -367,13 +391,10 @@
 
     scm:
       - git:
-          url: https://github.com/{github_user}/{github_name}.git
-          browser: githubweb
-          browser-url: https://github.com/{github_user}/{github_name}
+          <<: *babeltrace_scm_git_default
           refspec: '+refs/tags/*:refs/remotes/origin/tags/*'
           branches:
             - '*/tags/{version}.*'
-          basedir: src/babeltrace
 
     builders:
       - shell:
@@ -388,46 +409,6 @@
           allow-empty: false
           fingerprint: true
       - ircbot: *babeltrace_publisher_ircbot_defaults
-
-- job-template:
-    name: dev_gerrit_babeltrace_pylint
-    defaults: babeltrace
-    concurrent: true
-
-    scm:
-      - git:
-          url: https://review.lttng.org/babeltrace
-          refspec: 'refs/changes/*:refs/changes/*'
-          branches:
-            - '$GERRIT_REFSPEC'
-          basedir: src/babeltrace
-          skip-tag: true
-
-    triggers:
-      - gerrit:
-          trigger-on:
-            - comment-added-event:
-                approval-category: 'CI-Build'
-                approval-value: 1
-          projects:
-            - project-compare-type: 'PLAIN'
-              project-pattern: 'babeltrace'
-              branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
-
-    node: 'bionic-amd64'
-
-    builders:
-      - shell:
-         !include-raw-escape: scripts/babeltrace/pylint.sh
-
-    properties:
-      - inject:
-          properties-content: |
-            PROJECT_NAME=babeltrace
-      - build-discarder:
-          days-to-keep: 1
 
 - job-template:
     name: babeltrace_{version}_scan-build
@@ -610,33 +591,43 @@
           version: master
 
 - project:
-    name: gerrit-babeltrace
+    name: review-babeltrace
     job_prefix: ''
     github_user: efficios
     github_name: babeltrace
+    version:
+      - stable-2.0
+      - master
     jobs:
-      - 'dev_gerrit_babeltrace_{buildtype}':
+      - 'dev_review_babeltrace_{version}_{buildtype}':
           buildtype: build
-          platforms: !!python/tuple [bionic-amd64, deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
+          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
-          filter: '(build=="std" && conf=="std") || (platform=="bionic-amd64")'
+          filter: ''
           touchstone: ''
-      - 'dev_gerrit_babeltrace_{buildtype}':
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          buildtype: portbuild
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
+      - 'dev_review_babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
           platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
-      - 'dev_gerrit_babeltrace_{buildtype}':
+      - 'dev_review_babeltrace_{version}_{buildtype}':
           buildtype: winbuild
           platforms: !!python/tuple [cygwin64, msys2-mingw64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
-      - 'dev_gerrit_babeltrace_pylint'
+      - 'dev_review_babeltrace_{version}_pylint'
 
 
 - project:
