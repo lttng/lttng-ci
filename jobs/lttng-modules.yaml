@@ -1,152 +1,4 @@
 ---
-## Anchors
-- lttng-modules_build_parameters_defaults: &lttng-modules_build_parameters_defaults
-    name: 'lttng-modules_build_parameters_defaults'
-    parameters:
-      - string:
-          name: 'maxConcurrentBuild'
-          default: '20'
-          description: 'The maximum number of concurrent child build to run.'
-      - string:
-          name: 'kverfloor'
-          default: '{kverfloor}'
-          description: 'The lowest kernel version to build.'
-      - string:
-          name: 'kverceil'
-          default: '{kverceil}'
-          description: 'The highest kernel version to build. (excluded)'
-      - string:
-          name: 'kverfilter'
-          default: '{kverfilter}'
-          description: 'Kernel versions list filtering strategy.'
-      - string:
-          name: 'kverrc'
-          default: 'true'
-          description: 'Add latest RC to kernel versions list.'
-      - string:
-          name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
-          description: 'The linux kernel git repository url.'
-      - string:
-          name: 'kbuildjob'
-          default: 'lttng-modules_PARAM_{parambuildtype}'
-          description: 'The parametrized job to use for child builds.'
-
-- lttng-modules_build_parameters_gerrit: &lttng-modules_build_parameters_gerrit
-    name: 'lttng-modules_build_parameters_defaults'
-    parameters:
-      - string:
-          name: 'maxConcurrentBuild'
-          default: '10'
-          description: 'The maximum number of concurrent child build to run.'
-      - string:
-          name: 'kverfloor'
-          default: '{kverfloor}'
-          description: 'The lowest kernel version to build.'
-      - string:
-          name: 'kverceil'
-          default: '{kverceil}'
-          description: 'The highest kernel version to build. (excluded)'
-      - string:
-          name: 'kverfilter'
-          default: '{kverfilter}'
-          description: 'Kernel versions list filtering strategy.'
-      - string:
-          name: 'kverrc'
-          default: 'false'
-          description: 'Add latest RC to kernel versions list.'
-      - string:
-          name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
-          description: 'The linux kernel git repository url.'
-      - string:
-          name: 'kbuildjob'
-          default: 'lttng-modules_PARAM_build'
-          description: 'The parametrized job to use for child builds.'
-
-- lttng-modules_build_parameters_ubuntu: &lttng-modules_build_parameters_ubuntu
-    name: 'lttng-modules_build_parameters_ubuntu'
-    parameters:
-      - string:
-          name: 'maxConcurrentBuild'
-          default: '20'
-          description: 'The maximum number of concurrent child build to run.'
-      - string:
-          name: 'kverfloor'
-          default: '{kverfloor}'
-          description: 'The lowest kernel version to build.'
-      - string:
-          name: 'kverceil'
-          default: '{kverceil}'
-          description: 'The highest kernel version to build. (excluded)'
-      - string:
-          name: 'kverfilter'
-          default: '{kverfilter}'
-          description: 'Kernel versions list filtering strategy.'
-      - string:
-          name: 'kverrc'
-          default: 'false'
-          description: 'Add latest RC to kernel versions list.'
-      - string:
-          name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/git/ubuntu-{uversion}.git'
-          description: 'The linux kernel git repository url.'
-      - string:
-          name: 'kbuildjob'
-          default: 'lttng-modules_PARAM_{parambuildtype}'
-          description: 'The parametrized job to use for child builds.'
-      - string:
-          name: 'uversion'
-          default: '{uversion}'
-          description: 'The lowest kernel version to build.'
-
-- lttng-modules_build_parameters_rt: &lttng-modules_build_parameters_rt
-    name: 'lttng-modules_build_parameters_rt'
-    parameters:
-      - string:
-          name: 'maxConcurrentBuild'
-          default: '20'
-          description: 'The maximum number of concurrent child build to run.'
-      - string:
-          name: 'kverfloor'
-          default: '{kverfloor}'
-          description: 'The lowest kernel version to build.'
-      - string:
-          name: 'kverceil'
-          default: '{kverceil}'
-          description: 'The highest kernel version to build. (excluded)'
-      - string:
-          name: 'kverfilter'
-          default: '{kverfilter}'
-          description: 'Kernel versions list filtering strategy.'
-      - string:
-          name: 'kverrc'
-          default: 'false'
-          description: 'Add latest RC to kernel versions list.'
-      - string:
-          name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-stable-rt.git'
-          description: 'The linux kernel git repository url.'
-      - string:
-          name: 'kbuildjob'
-          default: 'lttng-modules_PARAM_build'
-          description: 'The parametrized job to use for child builds.'
-
-- lttng-modules_build_builders_defaults: &lttng-modules_build_builders_defaults
-    name: 'lttng-modules_build_builders_defaults'
-    builders:
-      - system-groovy:
-         command:
-           !include-raw-escape: scripts/lttng-modules/master.groovy
-
-- lttng-modules_build_rt_builders_defaults: &lttng-modules_build_rt_builders_defaults
-    name: 'lttng-modules_build_rt_builders_defaults'
-    builders:
-      - system-groovy:
-         command:
-           !include-raw-escape: scripts/lttng-modules/master-rt.groovy
-
-
 ## Defaults
 - defaults:
     name: lttng-modules
@@ -215,6 +67,154 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
+
+
+## Anchors
+- _lttng-modules_build_parameters_defaults: &lttng-modules_build_parameters_defaults
+    name: 'lttng-modules_build_parameters_defaults'
+    parameters:
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '20'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: '{kverfloor}'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverceil'
+          default: '{kverceil}'
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: '{kverfilter}'
+          description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'true'
+          description: 'Add latest RC to kernel versions list.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_PARAM_{parambuildtype}'
+          description: 'The parametrized job to use for child builds.'
+
+- _lttng-modules_build_parameters_review: &lttng-modules_build_parameters_review
+    name: 'lttng-modules_build_parameters_review'
+    parameters:
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '10'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: '{kverfloor}'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverceil'
+          default: '{kverceil}'
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: '{kverfilter}'
+          description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'false'
+          description: 'Add latest RC to kernel versions list.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_PARAM_build'
+          description: 'The parametrized job to use for child builds.'
+
+- _lttng-modules_build_parameters_ubuntu: &lttng-modules_build_parameters_ubuntu
+    name: 'lttng-modules_build_parameters_ubuntu'
+    parameters:
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '20'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: '{kverfloor}'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverceil'
+          default: '{kverceil}'
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: '{kverfilter}'
+          description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'false'
+          description: 'Add latest RC to kernel versions list.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/git/ubuntu-{uversion}.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_PARAM_{parambuildtype}'
+          description: 'The parametrized job to use for child builds.'
+      - string:
+          name: 'uversion'
+          default: '{uversion}'
+          description: 'The lowest kernel version to build.'
+
+- _lttng-modules_build_parameters_rt: &lttng-modules_build_parameters_rt
+    name: 'lttng-modules_build_parameters_rt'
+    parameters:
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '20'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: '{kverfloor}'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverceil'
+          default: '{kverceil}'
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: '{kverfilter}'
+          description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'false'
+          description: 'Add latest RC to kernel versions list.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-stable-rt.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_PARAM_build'
+          description: 'The parametrized job to use for child builds.'
+
+- _lttng-modules_build_builders_defaults: &lttng-modules_build_builders_defaults
+    name: 'lttng-modules_build_builders_defaults'
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/lttng-modules/master.groovy
+
+- _lttng-modules_build_rt_builders_defaults: &lttng-modules_build_rt_builders_defaults
+    name: 'lttng-modules_build_rt_builders_defaults'
+    builders:
+      - system-groovy:
+         command:
+           !include-raw-escape: scripts/lttng-modules/master-rt.groovy
 
 
 ## Templates
@@ -312,7 +312,7 @@
     <<: *lttng-modules_build_builders_defaults
 
 - job-template:
-    name: dev_gerrit_lttng-modules_build
+    name: dev_review_lttng-modules_{mversion}_build
     defaults: lttng-modules
     concurrent: true
 
@@ -337,8 +337,8 @@
             - project-compare-type: 'PLAIN'
               project-pattern: 'lttng-modules'
               branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{mversion}'
 
     properties:
       - build-discarder:
@@ -348,7 +348,7 @@
           categories:
             - 'gerrit-build'
 
-    <<: *lttng-modules_build_parameters_gerrit
+    <<: *lttng-modules_build_parameters_review
     <<: *lttng-modules_build_builders_defaults
 
     publishers:
@@ -473,7 +473,7 @@
 
     scm: []
 
-    triggers:
+    triggers: []
 
     builders:
       - shell:
@@ -525,7 +525,7 @@
 
     scm: []
 
-    triggers:
+    triggers: []
 
     builders:
       - shell:
@@ -578,7 +578,7 @@
 
     scm: []
 
-    triggers:
+    triggers: []
 
     builders:
       - shell:
@@ -760,12 +760,23 @@
           mversion: master
 
 - project:
-    name: lttng-modules-gerrit
+    name: lttng-modules-review
     jobs:
-      - 'dev_gerrit_lttng-modules_build':
-          kverfloor: v5.5
-          kverceil: v5.6
-          kverfilter: stable-head
+      - 'dev_review_lttng-modules_{mversion}_build':
+          mversion: master
+          kverfloor: v4.4
+          kverceil: ''
+          kverfilter: lts-head
+      - 'dev_review_lttng-modules_{mversion}_build':
+          mversion: stable-2.13
+          kverfloor: v3.0
+          kverceil: ''
+          kverfilter: lts-head
+      - 'dev_review_lttng-modules_{mversion}_build':
+          mversion: stable-2.12
+          kverfloor: v3.0
+          kverceil: v5.18
+          kverfilter: lts-head
 
 - project:
     name: lttng-modules-dev-mjeanson

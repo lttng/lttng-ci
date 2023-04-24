@@ -443,15 +443,19 @@ switch (kverfilter) {
     }
     break
 
-  case 'lts':
+  case 'lts-head':
     // Keep only the head of each LTS branch and the latest non-RC tag
     println('Filter kernel versions to keep only the latest point release of each lts branch and the current stable.')
 
-    def lts_44 = kversionFactory.factory("v4.4")
-    def lts_49 = kversionFactory.factory("v4.9")
-    def lts_414 = kversionFactory.factory("v4.14")
-    def lts_419 = kversionFactory.factory("v4.19")
-    def lts_54 = kversionFactory.factory("v5.4")
+    def lts_kversions = []
+    lts_kversions.add(kversionFactory.factory("v4.4"))  // SLTS until 2026
+    lts_kversions.add(kversionFactory.factory("v4.9"))  // LTS until January 2023
+    lts_kversions.add(kversionFactory.factory("v4.14")) // LTS until January 2024
+    lts_kversions.add(kversionFactory.factory("v4.19")) // LTS until December 2024
+    lts_kversions.add(kversionFactory.factory("v5.4"))  // LTS until December 2025
+    lts_kversions.add(kversionFactory.factory("v5.10")) // LTS until December 2026
+    lts_kversions.add(kversionFactory.factory("v5.15")) // LTS until October 2026
+    lts_kversions.add(kversionFactory.factory("v6.1"))  // LTS until December 2026
 
     // First filter the head of each branch
     for (i = 0; i < kversions.size(); i++) {
@@ -475,7 +479,15 @@ switch (kverfilter) {
       }
 
       // Prune non-LTS versions
-      if (!(curr.isSameStable(lts_44) || curr.isSameStable(lts_49) || curr.isSameStable(lts_414) || curr.isSameStable(lts_419) || curr.isSameStable(lts_54))) {
+      def keep = false
+      for (j = 0; j < lts_kversions.size(); j++) {
+        if (curr.isSameStable(lts_kversions[j])) {
+          keep = true
+          break
+        }
+      }
+
+      if (!keep) {
         kversions.remove(i)
         i--
       }
