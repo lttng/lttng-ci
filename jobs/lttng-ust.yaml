@@ -1,3 +1,5 @@
+---
+## Defaults
 - defaults:
     name: lttng-ust
     description: |
@@ -47,7 +49,7 @@
 
 
 ## Anchors
-- lttng-ust_matrix_axes_defaults: &lttng-ust_matrix_axes_defaults
+- _lttng-ust_matrix_axes_defaults: &lttng-ust_matrix_axes_defaults
     name: 'lttng-ust_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -74,8 +76,8 @@
          name: liburcu_version
          values: '{obj:liburcu_versions}'
 
-- lttng-ust_matrix_axes_gerrit_lttng-tools: &lttng-ust_matrix_axes_gerrit_lttng-tools
-    name: 'lttng-ust_matrix_axes_gerrit_lttng-tools'
+- _lttng-ust_matrix_axes_review_lttng-tools: &lttng-ust_matrix_axes_review_lttng-tools
+    name: 'lttng-ust_matrix_axes_review_lttng-tools'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy: *lttng-ust_matrix_execution-strategy_defaults
@@ -84,7 +86,7 @@
       - axis: *lttng-ust_matrix_axis_conf
       - axis: *lttng-ust_matrix_axis_build
 
-- lttng-ust_steps_copyartifact_defaults:
+- _lttng-ust_steps_copyartifact_defaults:
     name: 'lttng-ust_steps_copyartifact_defaults'
     steps:
       - copyartifact: &lttng-ust_steps_copyartifact_defaults
@@ -95,7 +97,7 @@
           target: 'deps'
           do-not-fingerprint: true
 
-- lttng-ust_builders_defaults: &lttng-ust_builders_defaults
+- _lttng-ust_builders_defaults: &lttng-ust_builders_defaults
     name: 'lttng-ust_builders_defaults'
     builders:
       # Generate a properties file to add additionnal env
@@ -127,8 +129,8 @@
            - scripts/common/print.sh
            - scripts/lttng-ust/build.sh
 
-- lttng-ust_builders_gerrit_lttng-tools: &lttng-ust_builders_gerrit_lttng-tools
-    name: 'lttng-ust_builders_gerrit_lttng-tools'
+- _lttng-ust_builders_review_lttng-tools: &lttng-ust_builders_review_lttng-tools
+    name: 'lttng-ust_builders_review_lttng-tools'
 
     builders:
       # Generate a properties file to add additionnal env
@@ -187,7 +189,7 @@
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
 
-- lttng-ust_publishers_defaults: &lttng-ust_publishers_defaults
+- _lttng-ust_publishers_defaults: &lttng-ust_publishers_defaults
     name: 'lttng-ust_publishers_defaults'
     publishers:
       - tap: &lttng-ust_publisher_tap_defaults
@@ -270,8 +272,8 @@
           send-to:
             - recipients
 
-- lttng-ust_publishers_gerrit: &lttng-ust_publishers_gerrit
-    name: 'lttng-ust_publishers_gerrit'
+- _lttng-ust_publishers_review: &lttng-ust_publishers_review
+    name: 'lttng-ust_publishers_review'
     publishers:
       - tap: *lttng-ust_publisher_tap_defaults
       # Fail job on any compiler warnings
@@ -330,7 +332,7 @@
 
 
 - job-template:
-    name: dev_gerrit_lttng-ust_{buildtype}
+    name: dev_review_lttng-ust_{version}_{buildtype}
     defaults: lttng-ust
     concurrent: true
 
@@ -344,7 +346,7 @@
           skip-tag: true
 
     triggers:
-      - gerrit:
+      - gerrit: &lttng-ust_trigger_gerrit_defaults
           trigger-on:
             - comment-added-event:
                 approval-category: 'CI-Build'
@@ -353,12 +355,12 @@
             - project-compare-type: 'PLAIN'
               project-pattern: 'lttng-ust'
               branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
 
     <<: *lttng-ust_matrix_axes_defaults
     <<: *lttng-ust_builders_defaults
-    <<: *lttng-ust_publishers_gerrit
+    <<: *lttng-ust_publishers_review
 
     properties:
       - inject:
@@ -373,7 +375,7 @@
 
 
 - job-template:
-    name: dev_gerrit_lttng-ust_lttng-tools_{buildtype}
+    name: dev_review_lttng-ust_lttng-tools_{version}_{buildtype}
     defaults: lttng-ust
     concurrent: true
 
@@ -387,21 +389,11 @@
           skip-tag: true
 
     triggers:
-      - gerrit:
-          trigger-on:
-            - comment-added-event:
-                approval-category: 'CI-Build'
-                approval-value: 1
-          projects:
-            - project-compare-type: 'PLAIN'
-              project-pattern: 'lttng-ust'
-              branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
+      - gerrit: *lttng-ust_trigger_gerrit_defaults
 
-    <<: *lttng-ust_matrix_axes_gerrit_lttng-tools
-    <<: *lttng-ust_builders_gerrit_lttng-tools
-    <<: *lttng-ust_publishers_gerrit
+    <<: *lttng-ust_matrix_axes_review_lttng-tools
+    <<: *lttng-ust_builders_review_lttng-tools
+    <<: *lttng-ust_publishers_review
 
     properties:
       - inject:
@@ -761,20 +753,23 @@
 
 
 - project:
-    name: gerrit-lttng-ust
+    name: review-lttng-ust
     job_prefix: ''
     github_user: lttng
     github_name: lttng-ust
     jobs:
-      - 'dev_gerrit_lttng-ust_{buildtype}':
+    ## master ##
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: master
           buildtype: build
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.14]
           filter: ''
-          touchstone: ''
-      - 'dev_gerrit_lttng-ust_lttng-tools_{buildtype}':
+          touchstone: '(build == "std") && (conf == "std")'
+      - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
+          version: master
           buildtype: build
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
@@ -783,15 +778,17 @@
           touchstone: ''
           liburcu_version: stable-0.14
           babeltrace_version: stable-2.0
-      - 'dev_gerrit_lttng-ust_{buildtype}':
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: master
           buildtype: portbuild
           platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.14]
           filter: ''
-          touchstone: ''
-      - 'dev_gerrit_lttng-ust_{buildtype}':
+          touchstone: '(platform == "deb11-i386")'
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: master
           buildtype: freebsdbuild
           platforms: !!python/tuple [freebsd-amd64]
           builds: !!python/tuple [std]
@@ -799,6 +796,66 @@
           liburcu_versions: !!python/tuple [stable-0.14]
           filter: ''
           touchstone: ''
+
+      ## Stable 2.13 ##
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: stable-2.13
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, agents]
+          liburcu_versions: !!python/tuple [stable-0.13]
+          filter: ''
+          touchstone: '(build == "std") && (conf == "std")'
+      - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
+          version: stable-2.13
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, agents]
+          filter: ''
+          touchstone: ''
+          liburcu_version: stable-0.13
+          babeltrace_version: stable-2.0
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: stable-2.13
+          buildtype: portbuild
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.13]
+          filter: ''
+          touchstone: '(platform == "deb11-i386")'
+
+      ## Stable 2.12 ##
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: stable-2.12
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, agents]
+          liburcu_versions: !!python/tuple [stable-0.13]
+          filter: ''
+          touchstone: '(build == "std") && (conf == "std")'
+      - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
+          version: stable-2.12
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, agents]
+          filter: ''
+          touchstone: ''
+          liburcu_version: stable-0.13
+          babeltrace_version: stable-2.0
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: stable-2.12
+          buildtype: portbuild
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.13]
+          filter: ''
+          touchstone: '(platform == "deb11-i386")'
 
 - project:
     name: lttng-ust-views
