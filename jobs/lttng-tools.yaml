@@ -48,7 +48,7 @@
           url: https://github.com/{github_user}/lttng-tools
 
 ## Anchors
-- lttng-tools_steps_copyartifact_defaults:
+- _lttng-tools_steps_copyartifact_defaults:
     name: 'lttng-tools_steps_copyartifact_defaults'
     steps:
       - copyartifact: &lttng-tools_steps_copyartifact_defaults
@@ -61,7 +61,7 @@
 
 
 ## Axis Anchors
-- lttng-tools_matrix_axes_defaults: &lttng-tools_matrix_axes_defaults
+- _lttng-tools_matrix_axes_defaults: &lttng-tools_matrix_axes_defaults
     name: 'lttng-tools_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -96,7 +96,7 @@
          name: test_type
          values: '{obj:testtypes}'
 
-- lttng-tools_matrix_axes_rootbuild: &lttng-tools_matrix_axes_rootbuild
+- _lttng-tools_matrix_axes_rootbuild: &lttng-tools_matrix_axes_rootbuild
     name: 'lttng-tools_matrix_axes_rootbuild'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -119,7 +119,7 @@
 
 
 ## Builders Anchors
-- lttng-tools_builders_defaults: &lttng-tools_builders_defaults
+- _lttng-tools_builders_defaults: &lttng-tools_builders_defaults
     name: 'lttng-tools_builders_defaults'
     builders:
       # Generate a properties file to add additionnal env
@@ -198,8 +198,8 @@
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
 
-- lttng-tools_builders_gerrit: &lttng-tools_builders_gerrit
-    name: 'lttng-tools_builders_gerrit'
+- _lttng-tools_builders_review: &lttng-tools_builders_review
+    name: 'lttng-tools_builders_review'
     builders:
       - shell:
          !include-raw-escape: scripts/lttng-tools/gerrit-depends-on.sh
@@ -283,7 +283,7 @@
             - shell:
                !include-raw-escape: scripts/lttng-tools/gerrit-install-deps.sh
 
-      # Build babeltrace if we depend on a specific babeltrace change
+      # Build lttng-ust if we depend on a specific lttng-ust change
       - conditional-step:
           condition-kind: shell
           condition-command: 'test "$GERRIT_DEP_LTTNG_UST" != ""'
@@ -302,7 +302,7 @@
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
 
-- lttng-tools_builders_win: &lttng-tools_builders_win
+- _lttng-tools_builders_win: &lttng-tools_builders_win
     name: 'lttng-tools_builders_win'
     builders:
       # Always copy liburcu artifacts
@@ -353,7 +353,7 @@
                  - scripts/common/print.sh
                  - scripts/lttng-tools/build.sh
 
-- lttng-tools_publishers_defaults: &lttng-tools_publishers_defaults
+- _lttng-tools_publishers_defaults: &lttng-tools_publishers_defaults
     name: 'lttng-tools_publishers_defaults'
     publishers:
       # On build abort (timeout), wait 10 seconds before running the other post
@@ -483,7 +483,7 @@
           send-to:
             - recipients
 
-- lttng-tools_publishers_win: &lttng-tools_publishers_win
+- _lttng-tools_publishers_win: &lttng-tools_publishers_win
     name: 'lttng-tools_publishers_win'
     publishers:
       - tap: *lttng-tools_publisher_tap_defaults
@@ -492,6 +492,7 @@
       - archive: *lttng-tools_publisher_archive_defaults
       - ircbot: *lttng-tools_publisher_ircbot_defaults
       - email-ext: *lttng-tools_publisher_email-ext_defaults
+
 
 ## Templates
 - job-template:
@@ -595,12 +596,12 @@
     <<: *lttng-tools_publishers_win
 
 - job-template:
-    name: dev_gerrit_lttng-tools_{buildtype}
+    name: dev_review_lttng-tools_{version}_{buildtype}
     defaults: lttng-tools
     concurrent: true
 
     scm:
-      - git: &lttng-tools_scm_git_gerrit
+      - git: &lttng-tools_scm_git_review
           url: https://review.lttng.org/lttng-tools
           refspec: 'refs/changes/*:refs/changes/*'
           branches:
@@ -618,8 +619,8 @@
             - project-compare-type: 'PLAIN'
               project-pattern: 'lttng-tools'
               branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
 
     properties:
       - inject:
@@ -633,7 +634,7 @@
             - 'gerrit-{buildtype}'
 
     <<: *lttng-tools_matrix_axes_defaults
-    <<: *lttng-tools_builders_gerrit
+    <<: *lttng-tools_builders_review
 
     publishers:
       # On build abort (timeout), wait 10 seconds before running the other post
@@ -655,12 +656,12 @@
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
 
 - job-template:
-    name: dev_gerrit_lttng-tools_rootbuild
+    name: dev_review_lttng-tools_{version}_rootbuild
     defaults: lttng-tools
     concurrent: true
 
     scm:
-      - git: *lttng-tools_scm_git_gerrit
+      - git: *lttng-tools_scm_git_review
 
     triggers:
       - gerrit: *lttng-tools_trigger_gerrit_default
@@ -677,7 +678,7 @@
             - 'gerrit-{buildtype}'
 
     <<: *lttng-tools_matrix_axes_rootbuild
-    <<: *lttng-tools_builders_gerrit
+    <<: *lttng-tools_builders_review
 
     publishers:
       - tap: *lttng-tools_publisher_tap_defaults
@@ -1500,14 +1501,16 @@
           touchstone: ''
 
 - project:
-    name: gerrit-lttng-tools
+    name: review-lttng-tools
     job_prefix: ''
     ust_job_prefix: ''
     urcu_job_prefix: ''
     bt_job_prefix: ''
     github_user: lttng
     jobs:
-      - 'dev_gerrit_lttng-tools_{buildtype}':
+    ## Master ##
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          version: master
           buildtype: build
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
@@ -1517,12 +1520,61 @@
           testtypes: !!python/tuple [base]
           filter: ''
           touchstone: ''
-      - 'dev_gerrit_lttng-tools_rootbuild':
+      - 'dev_review_lttng-tools_{version}_rootbuild':
+          version: master
           buildtype: build
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
+          babelversions: !!python/tuple [stable-2.0]
+          testtypes: !!python/tuple [base]
+          filter: '(node=="amd64-rootnode" && platform=="bionic-amd64")'
+          touchstone: ''
+
+    ## Stable 2.13 ##
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          version: stable-2.13
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, no-ust, agents]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          testtypes: !!python/tuple [base]
+          filter: ''
+          touchstone: ''
+      - 'dev_review_lttng-tools_{version}_rootbuild':
+          version: stable-2.13
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          testtypes: !!python/tuple [base]
+          filter: '(node=="amd64-rootnode" && platform=="bionic-amd64")'
+          touchstone: ''
+
+    ## Stable 2.12 ##
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          version: stable-2.12
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, no-ust, agents]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          testtypes: !!python/tuple [base]
+          filter: ''
+          touchstone: ''
+      - 'dev_review_lttng-tools_{version}_rootbuild':
+          version: stable-2.12
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
           testtypes: !!python/tuple [base]
           filter: '(node=="amd64-rootnode" && platform=="bionic-amd64")'
