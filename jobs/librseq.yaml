@@ -52,7 +52,7 @@
 
 
 ## Anchors
-- librseq_matrix_axes_defaults: &librseq_matrix_axes_defaults
+- _librseq_matrix_axes_defaults: &librseq_matrix_axes_defaults
     name: 'librseq_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -74,7 +74,7 @@
          name: build
          values: '{obj:builds}'
 
-- librseq_matrix_axes_cc: &librseq_matrix_axes_cc
+- _librseq_matrix_axes_cc: &librseq_matrix_axes_cc
     name: 'librseq_matrix_axes_cc'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -91,7 +91,7 @@
          name: cc
          values: '{obj:ccs}'
 
-- librseq_builders_defaults: &librseq_builders_defaults
+- _librseq_builders_defaults: &librseq_builders_defaults
     name: 'librseq_builders_defaults'
     builders:
       - shell:
@@ -99,7 +99,7 @@
            - scripts/common/print.sh
            - scripts/librseq/build.sh
 
-- librseq_publishers_defaults: &librseq_publishers_defaults
+- _librseq_publishers_defaults: &librseq_publishers_defaults
     name: 'librseq_publishers_defaults'
     publishers:
       - tap: &librseq_publisher_tap_defaults
@@ -182,8 +182,8 @@
           send-to:
             - recipients
 
-- librseq_publishers_gerrit: &librseq_publishers_gerrit
-    name: 'librseq_publishers_gerrit'
+- _librseq_publishers_review: &librseq_publishers_review
+    name: 'librseq_publishers_review'
     publishers:
       - tap: *librseq_publisher_tap_defaults
       - raw: *librseq_publisher_warnings-ng_defaults
@@ -209,7 +209,7 @@
     <<: *librseq_publishers_defaults
 
 - job-template:
-    name: dev_gerrit_librseq_{buildtype}
+    name: dev_review_librseq_{version}_{buildtype}
     defaults: librseq
     concurrent: true
 
@@ -232,12 +232,12 @@
             - project-compare-type: 'PLAIN'
               project-pattern: 'librseq'
               branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
 
     <<: *librseq_matrix_axes_defaults
     <<: *librseq_builders_defaults
-    <<: *librseq_publishers_gerrit
+    <<: *librseq_publishers_review
 
     properties:
       - inject:
@@ -345,11 +345,13 @@
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb11-i386")'
 
 - project:
-    name: gerrit-librseq
+    name: review-librseq
     github_user: compudj
     github_name: librseq
+    version:
+      - master
     jobs:
-      - 'dev_gerrit_librseq_{buildtype}':
+      - 'dev_review_librseq_{version}_{buildtype}':
           buildtype: linuxbuild
           platforms: !!python/tuple [jammy-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
