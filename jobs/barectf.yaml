@@ -97,7 +97,7 @@
            - recipients
 
 - job-template:
-    name: dev_gerrit_barectf_{buildtype}
+    name: dev_review_barectf_{version}_{buildtype}
     defaults: barectf
     concurrent: true
 
@@ -128,8 +128,8 @@
             - project-compare-type: 'PLAIN'
               project-pattern: 'barectf'
               branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
 
     properties:
       - build-discarder:
@@ -169,11 +169,14 @@
           platforms: !!python/tuple [jammy-amd64]
 
 - project:
-    name: gerrit-barectf
+    name: review-barectf
     github_user: efficios
     github_name: barectf
+    version:
+      - master
+      - stable-3.0
     jobs:
-      - 'dev_gerrit_barectf_{buildtype}':
+      - 'dev_review_barectf_{version}_{buildtype}':
           buildtype: linuxbuild
           platforms: !!python/tuple [jammy-amd64]
 
