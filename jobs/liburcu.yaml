@@ -62,7 +62,7 @@
 
 
 ## Anchors
-- liburcu_matrix_axes_defaults: &liburcu_matrix_axes_defaults
+- _liburcu_matrix_axes_defaults: &liburcu_matrix_axes_defaults
     name: 'liburcu_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -84,7 +84,7 @@
          name: build
          values: '{obj:builds}'
 
-- liburcu_builders_defaults: &liburcu_builders_defaults
+- _liburcu_builders_defaults: &liburcu_builders_defaults
     name: 'liburcu_builders_defaults'
     builders:
       !j2-yaml: |
@@ -108,7 +108,7 @@
            - scripts/liburcu/build.sh
       {% endif %}
 
-- liburcu_publishers_defaults: &liburcu_publishers_defaults
+- _liburcu_publishers_defaults: &liburcu_publishers_defaults
     name: 'liburcu_publishers_defaults'
     publishers:
       - tap: &liburcu_publisher_tap_defaults
@@ -201,7 +201,7 @@
     <<: *liburcu_publishers_defaults
 
 - job-template:
-    name: dev_gerrit_liburcu_{buildtype}
+    name: dev_review_liburcu_{version}_{buildtype}
     defaults: liburcu
     concurrent: true
 
@@ -224,8 +224,19 @@
             - project-compare-type: 'PLAIN'
               project-pattern: 'userspace-rcu'
               branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=liburcu
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
 
     <<: *liburcu_matrix_axes_defaults
     <<: *liburcu_builders_defaults
@@ -405,23 +416,27 @@
 
 
 - project:
-    name: gerrit-liburcu
+    name: review-liburcu
     github_user: urcu
     github_name: userspace-rcu
+    version:
+      - stable-0.13
+      - stable-0.14
+      - master
     jobs:
-      - 'dev_gerrit_liburcu_{buildtype}':
+      - 'dev_review_liburcu_{version}_{buildtype}':
           buildtype: build
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std")'
-      - 'dev_gerrit_liburcu_{buildtype}':
+      - 'dev_review_liburcu_{version}_{buildtype}':
           buildtype: portbuild
           platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          touchstone: '(build == "std")'
-      - 'dev_gerrit_liburcu_{buildtype}':
+          touchstone: ''
+      - 'dev_review_liburcu_{version}_{buildtype}':
           buildtype: winbuild
           platforms: !!python/tuple [cygwin64]
           builds: !!python/tuple [std]
