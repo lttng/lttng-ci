@@ -38,6 +38,8 @@ from xml.etree.ElementTree import ElementTree, Element, SubElement
 line_re = re.compile(
     r"^(PASS|XPASS|FAIL|XFAIL|KFAIL|DUPLICATE|UNTESTED|UNSUPPORTED|UNRESOLVED): (.*?\.exp): (.*)"
 )
+running_re = re.compile(r"^Running .*/(gdb\.[^/]+/.*\.exp)")
+error_re = re.compile(r"^ERROR: (.*)")
 
 pass_count = 0
 fail_count = 0
@@ -65,7 +67,29 @@ testsuite = SubElement(
 )
 SubElement(testsuite, "properties")
 
+cur_test = None
+
 for line in sys.stdin:
+    m = running_re.match(line)
+    if m:
+        cur_test = m.group(1)
+        continue
+
+    m = error_re.match(line)
+    if m:
+        test = cur_test if cur_test else "<unknown test>"
+        msg = m.group(1)
+        print("ERROR: {} - {}".format(test, msg), file=sys.stderr)
+        error_count += 1
+
+        testcase_name = test
+        testcase = SubElement(
+            testsuite,
+            "testcase",
+            {"name": testcase_name, "classname": "classname", "time": "0"},
+        )
+        SubElement(testcase, "error", {"type": "ERROR"})
+
     m = line_re.match(line)
     if not m:
         continue
@@ -96,7 +120,7 @@ for line in sys.stdin:
     else:
         assert False
 
-testsuite.attrib["tests"] = str(pass_count + fail_count + skip_count)
+testsuite.attrib["tests"] = str(pass_count + fail_count + skip_count + error_count)
 testsuite.attrib["failures"] = str(fail_count)
 testsuite.attrib["skipped"] = str(skip_count)
 testsuite.attrib["errors"] = str(error_count)
@@ -872,7 +896,7 @@ known_failures_file="known-failures-${target_board}"
 known_failures_re_file="known-failures-re-${target_board}"
 grep --invert-match --fixed-strings --file="$known_failures_file" "${WORKSPACE}/results/gdb.sum" | \
     grep --invert-match --extended-regexp --file="$known_failures_re_file" > "${WORKSPACE}/results/gdb.filtered.sum"
-grep --extended-regexp --regexp="^(FAIL|XPASS|UNRESOLVED|DUPLICATE):" "${WORKSPACE}/results/gdb.filtered.sum" > "${WORKSPACE}/results/gdb.fail.sum" || true
+grep --extended-regexp --regexp="^(FAIL|XPASS|UNRESOLVED|DUPLICATE|ERROR):" "${WORKSPACE}/results/gdb.filtered.sum" > "${WORKSPACE}/results/gdb.fail.sum" || true
 
 # For informational purposes: check if some known failure lines did not appear
 # in the gdb.sum.
