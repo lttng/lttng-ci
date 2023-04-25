@@ -134,6 +134,8 @@ export TMPDIR
 export CFLAGS="-O2 -fsanitize=address"
 export CXXFLAGS="-O2 -fsanitize=address -D_GLIBCXX_DEBUG=1"
 export LDFLAGS="-fsanitize=address"
+export CC="ccache cc"
+export CXX="ccache c++"
 
 # Set platform variables
 case "$platform" in
@@ -147,6 +149,10 @@ esac
 # Print build env details
 print_os || true
 print_tooling || true
+
+if use_ccache; then
+	ccache -c
+fi
 
 # Enter the source directory
 cd "$SRCDIR"
