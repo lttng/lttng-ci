@@ -142,6 +142,10 @@
     properties:
       - build-discarder:
           days-to-keep: 7
+      - throttle:
+          option: 'category'
+          categories:
+            - 'review-binutils-gdb'
 
 
 ## Views ##
