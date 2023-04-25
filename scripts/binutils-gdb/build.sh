@@ -155,8 +155,8 @@ rm -rf "$TMPDIR"
 mkdir -p "$TMPDIR"
 
 export TMPDIR
-export CFLAGS="-O2 -fsanitize=address"
-export CXXFLAGS="-O2 -fsanitize=address -D_GLIBCXX_DEBUG=1"
+export CFLAGS="-O2 -g -fsanitize=address"
+export CXXFLAGS="-O2 -g -fsanitize=address -D_GLIBCXX_DEBUG=1"
 export LDFLAGS="-fsanitize=address"
 export CC="ccache cc"
 export CXX="ccache c++"
