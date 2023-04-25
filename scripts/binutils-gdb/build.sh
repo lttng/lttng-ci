@@ -207,6 +207,10 @@ if use_ccache; then
 	ccache -c
 fi
 
+# This job has been seen generating cores in /tmp, filling and and causing
+# problems.  Remove any leftover core from a previous job.
+rm /tmp/core.* || true
+
 # Enter the source directory
 cd "$SRCDIR"
 
