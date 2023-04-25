@@ -380,6 +380,77 @@
       - build-discarder:
           days-to-keep: 1
 
+    publishers:
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
+
+- job-template:
+    name: 'dev_review_babeltrace_{version}_smokebuild'
+    defaults: babeltrace
+    concurrent: true
+
+    scm:
+      - git: *babeltrace_scm_git_review
+
+    triggers:
+      - gerrit: &babeltrace_trigger_gerrit_smoke
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'Smoke-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'babeltrace'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
+          skip-vote:
+            successful: true
+            failed: true
+            unstable: true
+            notbuilt: true
+            aborted: true
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=babeltrace
+            BABELTRACE_RUN_TESTS=no
+      - build-discarder:
+          days-to-keep: 1
+
+    <<: *babeltrace_matrix_axes_defaults
+    <<: *babeltrace_builders_defaults
+
+    publishers:
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
+
+- job-template:
+    name: 'dev_review_babeltrace_{version}_check-format'
+    defaults: babeltrace
+    concurrent: true
+
+    scm:
+      - git: *babeltrace_scm_git_review
+
+    triggers:
+      - gerrit: *babeltrace_trigger_gerrit_smoke
+
+    node: 'jammy-amd64'
+
+    builders:
+      - shell:
+         !include-raw-escape: scripts/babeltrace/check-format.sh
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=babeltrace
+      - build-discarder:
+          days-to-keep: 1
+
+    publishers:
+      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
+
 - job-template:
     name: babeltrace_{version}_release
     defaults: babeltrace
@@ -628,6 +699,13 @@
           filter: ''
           touchstone: ''
       - 'dev_review_babeltrace_{version}_pylint'
+      - 'dev_review_babeltrace_{version}_smokebuild':
+          platforms: !!python/tuple [jammy-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
+      - 'dev_review_babeltrace_{version}_check-format'
 
 
 - project:
