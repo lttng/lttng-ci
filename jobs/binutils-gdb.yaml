@@ -93,6 +93,9 @@
     <<: *binutils-gdb_builders_defaults
 
     publishers:
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
       - email:
           recipients: 'simon.marchi@efficios.com'
 
