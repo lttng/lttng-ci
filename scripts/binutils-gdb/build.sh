@@ -950,7 +950,7 @@ grep --extended-regexp --regexp="^(FAIL|XPASS|UNRESOLVED|DUPLICATE|ERROR):" "${W
 # For informational purposes: check if some known failure lines did not appear
 # in the gdb.sum.
 echo "Known failures that don't appear in gdb.sum:"
-while read line; do
+while read -r line; do
     if ! grep --silent --fixed-strings "$line" "${WORKSPACE}/results/gdb.sum"; then
         echo "$line"
     fi
