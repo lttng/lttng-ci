@@ -150,6 +150,18 @@ SRCDIR="$WORKSPACE/src/binutils-gdb"
 TMPDIR="$WORKSPACE/tmp"
 PREFIX="/build"
 
+function use_ccache()
+{
+    case "$platform" in
+    macos-*)
+        return 1
+        ;;
+    *)
+        return 0
+        ;;
+    esac
+}
+
 # Create tmp directory
 rm -rf "$TMPDIR"
 mkdir -p "$TMPDIR"
@@ -158,14 +170,31 @@ export TMPDIR
 export CFLAGS="-O2 -g -fsanitize=address"
 export CXXFLAGS="-O2 -g -fsanitize=address -D_GLIBCXX_DEBUG=1"
 export LDFLAGS="-fsanitize=address"
-export CC="ccache cc"
-export CXX="ccache c++"
+export CC="cc"
+export CXX="c++"
+
+if use_ccache; then
+	CC="ccache $CC"
+	CXX="ccache $CXX"
+fi
+
+# To make GDB find libcc1.so
+export LD_LIBRARY_PATH="/usr/lib/gcc/x86_64-linux-gnu/11:${LD_LIBRARY_PATH:-}"
 
 # Set platform variables
+export TAR=tar
+export MAKE=make
+
 case "$platform" in
+macos-*)
+    export NPROC="getconf _NPROCESSORS_ONLN"
+    export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    export CPPFLAGS="-I/opt/local/include"
+    export LDFLAGS="-L/opt/local/lib"
+    export PYTHON="python3.9"
+    export PYTHON_CONFIG="python3.9-config"
+    ;;
 *)
-    export MAKE=make
-    export TAR=tar
     export NPROC=nproc
     ;;
 esac
@@ -210,6 +239,12 @@ case "$conf" in
     ;;
 esac
 
+case "$platform" in
+macos-*)
+    CONF_OPTS+=("--disable-werror")
+    ;;
+esac
+
 # Build type
 # oot     : out-of-tree build
 # dist    : build via make dist
@@ -233,10 +268,17 @@ esac
 # We are now inside a configured build directory
 
 # BUILD!
-$MAKE -j "$($NPROC)" V=1 MAKEINFO=/bin/true
+$MAKE -j "$($NPROC)" V=1 MAKEINFO=true
 
 # Install in the workspace
 $MAKE install DESTDIR="$WORKSPACE"
+
+case "$platform" in
+macos-*)
+    # Stop there, don't run tests on macOS.
+    exit 0
+    ;;
+esac
 
 case "$target_board" in
 unix | native-gdbserver | native-extended-gdbserver)
