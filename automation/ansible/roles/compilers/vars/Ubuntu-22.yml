@@ -20,3 +20,13 @@ compilers_packages:
   - libclang-12-dev
   - libclang-13-dev
   - libclang-14-dev
+  - clang-format
+  - clang-format-11
+  - clang-format-12
+  - clang-format-13
+  - clang-format-14
+  - clang-tidy
+  - clang-tidy-11
+  - clang-tidy-12
+  - clang-tidy-13
+  - clang-tidy-14
