@@ -42,7 +42,7 @@
 ## Anchors
 
 # Default matrix axes
-- binutils-gdb_matrix_axes_defaults: &binutils-gdb_matrix_axes_defaults
+- _binutils-gdb_matrix_axes_defaults: &binutils-gdb_matrix_axes_defaults
     name: 'binutils-gdb_matrix_axes_defaults'
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
@@ -57,7 +57,7 @@
          values: '{obj:target_boards}'
 
 # Default builders
-- binutils-gdb_builders_defaults: &binutils-gdb_builders_defaults
+- _binutils-gdb_builders_defaults: &binutils-gdb_builders_defaults
     name: 'binutils-gdb_builders_defaults'
     builders:
       - shell:

@@ -1,6 +1,6 @@
 ---
 ## Anchors
-- system_tests_parameters_defaults: &system_tests_parameters_defaults
+- _system_tests_parameters_defaults: &system_tests_parameters_defaults
     name: 'system_tests_parameters_defaults'
     parameters:
       - string:
