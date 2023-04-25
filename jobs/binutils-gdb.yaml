@@ -76,7 +76,7 @@
 
     publishers:
       - archive:
-          artifacts: 'build/**,results/**'
+          artifacts: 'results/**'
           allow-empty: false
       - junit:
           results: 'results/*.xml'
