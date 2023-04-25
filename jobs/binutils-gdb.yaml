@@ -100,7 +100,7 @@
           recipients: 'simon.marchi@efficios.com'
 
 - job-template:
-    name: dev_gerrit_binutils-gdb_linuxbuild
+    name: dev_review_binutils-gdb_linuxbuild
     defaults: binutils-gdb
     concurrent: true
 
@@ -165,9 +165,9 @@
           target_boards: !!python/tuple ["unix"]
 
 - project:
-    name: gerrit-gdb
+    name: review-gdb
     jobs:
-      - 'dev_gerrit_binutils-gdb_linuxbuild':
+      - 'dev_review_binutils-gdb_linuxbuild':
           platforms: !!python/tuple [jammy-amd64]
           target_boards: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver"]
 
