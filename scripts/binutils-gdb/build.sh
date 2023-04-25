@@ -297,6 +297,9 @@ esac
 
 # Run tests, don't fail now, we know that "make check" is going to fail,
 # since some tests don't pass.
+$MAKE -C gdb/testsuite site.exp
+# shellcheck disable=SC2016
+echo 'set gdb_test_timeout [expr 5 * $timeout]' >> gdb/testsuite/site.exp
 $MAKE -C gdb --keep-going check -j "$($NPROC)" RUNTESTFLAGS="$RUNTESTFLAGS" FORCE_PARALLEL="1" || true
 
 # Copy the dejagnu test results for archiving before cleaning the build dir
