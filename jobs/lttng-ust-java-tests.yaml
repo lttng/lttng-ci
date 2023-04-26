@@ -84,7 +84,7 @@
           target: 'deps'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-tools_{version}_build/babeltrace_version={babeltrace_version},liburcu_version={liburcu_version},platform=${{platform}},conf=agents,build=std,test_type=base
+          project: lttng-tools_{version}_build/babeltrace_version={babeltrace_version},liburcu_version={liburcu_version},platform=${{platform}},conf=agents,build=std
           which-build: last-successful
           stable: false
           filter: 'build/**'

@@ -64,7 +64,7 @@
           target: 'deps/babeltrace'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-tools_master_build/platform=bionic-amd64,babeltrace_version={babeltrace_version},build=std,conf=agents,liburcu_version=master,test_type=base
+          project: lttng-tools_master_build/platform=bionic-amd64,babeltrace_version={babeltrace_version},build=std,conf=agents,liburcu_version=master
           which-build: last-successful
           stable: false
           filter: 'build/**'

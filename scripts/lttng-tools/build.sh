@@ -1,21 +1,10 @@
 #!/bin/bash
+#
+# SPDX-FileCopyrightText: 2016 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# SPDX-FileCopyrightText: 2016-2023 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
 # shellcheck disable=SC2103
-#
-# Copyright (C) 2016 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-# Copyright (C) 2016-2020 Michael Jeanson <mjeanson@efficios.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 set -exu
 
@@ -74,11 +63,31 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
+}
+
 failed_configure() {
     # Assume we are in the configured build directory
-    echo "#################### BEGIN config.log ####################"
+    print_header "BEGIN config.log"
     cat config.log
-    echo "#################### END config.log ####################"
+    print_header "END config.log"
 
     # End the build with failure
     exit 1
@@ -102,14 +111,24 @@ set_execute_traversal_bit()
     chmod a+x "$path"
 }
 
+print_header "LTTng-tools build script starting"
+
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
+# Axis
 platform=${platform:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
-test_type=${test_type:-}
+
+# Build steps that can be overriden by the environment
+LTTNG_TOOLS_MAKE_INSTALL="${LTTNG_TOOLS_MAKE_INSTALL:-yes}"
+LTTNG_TOOLS_MAKE_CLEAN="${LTTNG_TOOLS_MAKE_CLEAN:-yes}"
+LTTNG_TOOLS_GEN_COMPILE_COMMANDS="${LTTNG_TOOLS_GEN_COMPILE_COMMANDS:-no}"
+LTTNG_TOOLS_RUN_TESTS="${LTTNG_TOOLS_RUN_TESTS:-yes}"
+LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="${LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION:-no}"
+LTTNG_TOOLS_CLANG_TIDY="${LTTNG_TOOLS_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
 TAPDIR="$WORKSPACE/tap"
@@ -138,6 +157,13 @@ export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
 export CPPFLAGS="-I$DEPS_INC"
 export LDFLAGS="-L$DEPS_LIB"
 
+exit_status=0
+
+# Use bear to generate compile_commands.json when enabled
+BEAR=""
+if [ "$LTTNG_TOOLS_GEN_COMPILE_COMMANDS" = "yes" ]; then
+	BEAR="bear"
+fi
 
 # Create tmp directory
 TMPDIR="$WORKSPACE/tmp"
@@ -172,53 +198,21 @@ gcc)
     export CC=gcc
     export CXX=g++
     ;;
-gcc-4.8)
-    export CC=gcc-4.8
-    export CXX=g++-4.8
-    ;;
-gcc-5)
-    export CC=gcc-5
-    export CXX=g++-5
-    ;;
-gcc-6)
-    export CC=gcc-6
-    export CXX=g++-6
-    ;;
-gcc-7)
-    export CC=gcc-7
-    export CXX=g++-7
-    ;;
-gcc-8)
-    export CC=gcc-8
-    export CXX=g++-8
+gcc-*)
+    export CC=gcc-${cc#gcc-}
+    export CXX=g++-${cc#gcc-}
     ;;
 clang)
     export CC=clang
     export CXX=clang++
     ;;
-clang-3.9)
-    export CC=clang-3.9
-    export CXX=clang++-3.9
-    ;;
-clang-4.0)
-    export CC=clang-4.0
-    export CXX=clang++-4.0
-    ;;
-clang-5.0)
-    export CC=clang-5.0
-    export CXX=clang++-5.0
-    ;;
-clang-6.0)
-    export CC=clang-6.0
-    export CXX=clang++-6.0
-    ;;
-clang-7)
-    export CC=clang-7
-    export CXX=clang++-7
+clang-*)
+    export CC=clang-${cc#clang-}
+    export CXX=clang++-${cc#clang-}
     ;;
 *)
     if [ "x$cc" != "x" ]; then
-        export CC="$cc"
+	    export CC="$cc"
     fi
     ;;
 esac
@@ -241,6 +235,7 @@ macos*)
     export PYTHON_CONFIG="python3-config"
 
     LTTNG_TOOLS_RUN_TESTS="no"
+    LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="no"
     ;;
 
 cygwin|cygwin64|msys32|msys64)
@@ -249,14 +244,13 @@ cygwin|cygwin64|msys32|msys64)
     export NPROC=nproc
 
     LTTNG_TOOLS_RUN_TESTS="no"
+    LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="no"
     ;;
 
 *)
     export MAKE=make
     export TAR=tar
     export NPROC=nproc
-
-    LTTNG_TOOLS_RUN_TESTS="yes"
 
     PYTHON2=python2
     PYTHON3=python3
@@ -288,17 +282,9 @@ if [[ $platform = sles12sp5* ]] || [[  $platform = el7* ]]; then
     CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers -Wno-shadow"
 fi
 
-case "$test_type" in
-full)
-    LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="yes"
-    ;;
-*)
-    LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="no"
-    ;;
-esac
-
 # If we have modules, build them
 if [ -d "$WORKSPACE/src/lttng-modules" ]; then
+    print_header "Build and install LTTng-modules"
     cd "$WORKSPACE/src/lttng-modules"
     $MAKE -j"$($NPROC)" V=1
     $MAKE modules_install V=1
@@ -306,6 +292,7 @@ if [ -d "$WORKSPACE/src/lttng-modules" ]; then
 fi
 
 # Print build env details
+print_header "Build environment details"
 print_os || true
 print_tooling || true
 
@@ -313,47 +300,38 @@ print_tooling || true
 cd "$SRCDIR"
 
 # Run bootstrap in the source directory prior to configure
+print_header "Bootstrap autotools"
 ./bootstrap
 
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
-
-# The switch to build without UST changed in 2.8
-if vergte "$PACKAGE_VERSION" "2.8"; then
-    NO_UST="--without-lttng-ust"
-else
-    NO_UST="--disable-lttng-ust"
-fi
-
-# Most build configs require the python bindings
-CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--enable-python-bindings")
-
-DIST_CONF_OPTS=()
+CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--disable-maintainer-mode")
+DIST_CONF_OPTS=("--disable-maintainer-mode")
 
 # Set configure options and environment variables for each build
 # configuration.
 case "$conf" in
 static)
-    echo "Static lib only configuration"
+    print_header "Conf: Static lib only"
 
-    CONF_OPTS+=("--enable-static" "--disable-shared")
+    CONF_OPTS+=("--enable-static" "--disable-shared" "--enable-python-bindings")
     ;;
 
 no-ust)
-    echo "Build without UST support"
-    CONF_OPTS+=("$NO_UST")
-    DIST_CONF_OPTS+=("$NO_UST")
+    print_header "Conf: Without UST support"
+    CONF_OPTS+=("--without-lttng-ust")
+    DIST_CONF_OPTS+=("--without-lttng-ust")
     ;;
 
 agents)
-    echo "Java and Python agents configuration"
+    print_header "Conf: Java and Python agents"
 
     export JAVA_HOME="/usr/lib/jvm/default-java"
     export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
 
-    CONF_OPTS+=("--enable-test-java-agent-all")
+    CONF_OPTS+=("--enable-python-bindings" "--enable-test-java-agent-all")
 
     # Explicitly add '--enable-test-java-agent-log4j2', it's not part of '-all' in stable 2.12/2.13
     if verlt "$PACKAGE_VERSION" "2.14"; then
@@ -369,19 +347,23 @@ agents)
     ;;
 
 relayd-only)
-    echo "Relayd only configuration"
+    print_header "Conf: Relayd only"
 
-    CONF_OPTS=("--prefix=$PREFIX" "--disable-bin-lttng" "--disable-bin-lttng-consumerd" "--disable-bin-lttng-crash" "--disable-bin-lttng-sessiond" "--disable-extras" "--disable-man-pages" "$NO_UST")
+    CONF_OPTS+=("--disable-bin-lttng" "--disable-bin-lttng-consumerd" "--disable-bin-lttng-crash" "--disable-bin-lttng-sessiond" "--disable-extras" "--disable-man-pages" "--without-lttng-ust")
     ;;
 
 debug-rcu)
-    echo "Enable RCU sanity checks for debugging"
+    print_header "Conf: RCU sanity checks for debugging"
+
+    CONF_OPTS+=("--enable-python-bindings")
 
     export CPPFLAGS="$CPPFLAGS -DDEBUG_RCU"
     ;;
 
 *)
-    echo "Standard configuration"
+    print_header "Conf: Standard"
+
+    CONF_OPTS+=("--enable-python-bindings")
 
     # Something is broken in docbook-xml on yocto
     if [[ "$platform" = yocto* ]]; then
@@ -400,7 +382,7 @@ esac
 # before continuing.
 case "$build" in
 oot)
-    echo "Out of tree build"
+    print_header "Build: Out of tree"
 
     # Create and enter a temporary build directory
     builddir=$(mktemp -d)
@@ -410,10 +392,11 @@ oot)
     ;;
 
 dist)
-    echo "Distribution in-tree build"
+    print_header "Build: Distribution in-tree"
 
     # Run configure and generate the tar file
     # in the source directory
+
     ./configure "${DIST_CONF_OPTS[@]}" || failed_configure
     $MAKE dist
 
@@ -430,7 +413,7 @@ dist)
     ;;
 
 oot-dist)
-    echo "Distribution out of tree build"
+    print_header "Build: Distribution Out of tree"
 
     # Create and enter a temporary build directory
     builddir=$(mktemp -d)
@@ -457,7 +440,7 @@ oot-dist)
     ;;
 
 *)
-    echo "Standard in-tree build"
+    print_header "Build: Standard In-tree"
     ./configure "${CONF_OPTS[@]}" || failed_configure
     ;;
 esac
@@ -465,14 +448,60 @@ esac
 # We are now inside a configured build directory
 
 # BUILD!
-$MAKE -j "$($NPROC)" V=1
+print_header "BUILD!"
+$BEAR ${BEAR:+--} $MAKE -j "$($NPROC)" V=1
 
-# Install in the workspace
-$MAKE install DESTDIR="$WORKSPACE"
+# Install in the workspace if enabled
+if [ "$LTTNG_TOOLS_MAKE_INSTALL" = "yes" ]; then
+    print_header "Install"
+
+    $MAKE install V=1 DESTDIR="$WORKSPACE"
+
+    # Cleanup rpath in executables
+    find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+
+    # Some configs don't build liblttng-ctl
+    if [ -d "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" ]; then
+        # Cleanup rpath in shared libraries
+        find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
+        # Remove libtool .la files
+        find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
+    fi
+fi
+
+# Run clang-tidy on the topmost commit
+if [ "$LTTNG_TOOLS_CLANG_TIDY" = "yes" ]; then
+    print_header "Run clang-tidy"
+
+    # This would be better by linting only the lines touched by a patch but it
+    # doesn't seem to work, the lines are always filtered and no error is
+    # reported.
+    #git diff -U0 HEAD^ | clang-tidy-diff -p1 -j "$($NPROC)" -timeout 60 -fix
+
+    # Instead, run clan-tidy on all the files touched by the patch.
+    while read -r filepath; do
+        if [[ "$filepath" =~ (\.cpp|\.hhp|\.c|\.h)$ ]]; then
+            clang-tidy --fix-errors "$(realpath "$filepath")"
+        fi
+    done < <(git diff-tree --no-commit-id --diff-filter=d --name-only -r HEAD)
+
+    # If the tree has local changes, the formatting was incorrect
+    GIT_DIFF_OUTPUT=$(git diff)
+    if [ -n "$GIT_DIFF_OUTPUT" ]; then
+        echo "Saving clang-tidy proposed fixes in clang-tidy-fixes.diff"
+        git diff > "$WORKSPACE/clang-tidy-fixes.diff"
+
+        # Restore the unfixed files so they can be viewed in the warnings web
+        # interface
+        git checkout .
+        exit_status=1
+    fi
+fi
 
 # Run tests for all configs except 'no-ust'
-failed_tests=0
 if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
+    print_header "Run test suite"
+
     # Allow core dumps
     ulimit -c unlimited
 
@@ -480,55 +509,41 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
     # lttng-sessiond --daemonize on "lttng create"
     export LTTNG_SESSIOND_PATH="/bin/true"
 
-    # Run 'unit_tests', 2.8 and up has a new test suite
-    if vergte "$PACKAGE_VERSION" "2.8"; then
-        # It is implied that tests depending on LTTNG_ENABLE_DESTRUCTIVE_TESTS
-        # only run for the root user. Note that here `destructive` means that
-        # operations are performed at the host level (add user etc.) that
-        # effectively modify the host. Running those tests are acceptable on our
-        # CI and root jobs since we always run root tests against a `snapshot`
-        # of the host.
-        if [ "$(id -u)" == "0" ]; then
-            # Allow the traversal of all directories leading to the
-            # DEPS_LIBS directory to enable test app run by temp users to
-            # access lttng-ust.
-            set_execute_traversal_bit "$DEPS_LIB"
-            # Allow `all` to interact with all deps libs.
-            chmod a+rwx -R "$DEPS_LIB"
+    # It is implied that tests depending on LTTNG_ENABLE_DESTRUCTIVE_TESTS
+    # only run for the root user. Note that here `destructive` means that
+    # operations are performed at the host level (add user etc.) that
+    # effectively modify the host. Running those tests are acceptable on our
+    # CI and root jobs since we always run root tests against a `snapshot`
+    # of the host.
+    if [ "$(id -u)" == "0" ]; then
+        # Allow the traversal of all directories leading to the
+        # DEPS_LIBS directory to enable test app run by temp users to
+        # access lttng-ust.
+        set_execute_traversal_bit "$DEPS_LIB"
+        # Allow `all` to interact with all deps libs.
+        chmod a+rwx -R "$DEPS_LIB"
 
-            export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
+        export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 
-            # Some destructive tests play with the system clock, disable timesyncd
-            systemctl stop systemd-timesyncd.service || true
-        fi
-
-        make --keep-going check || failed_tests=1
-
-        # Copy tap logs for the jenkins tap parser before cleaning the build dir
-        rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
-
-        # Copy the test suites top-level log which includes all tests failures
-        rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
-    else
-        cd tests
-        mkdir -p "$TAPDIR/unit"
-        mkdir -p "$TAPDIR/fast_regression"
-        mkdir -p "$TAPDIR/with_bindings_regression"
-        prove --merge -v --exec '' - < unit_tests --archive "$TAPDIR/unit/" || failed_tests=1
-        prove --merge -v --exec '' - < fast_regression --archive "$TAPDIR/fast_regression/" || failed_tests=1
-        prove --merge -v --exec '' - < with_bindings_regression --archive "$TAPDIR/with_bindings_regression/" || failed_tests=1
-        cd ..
+        # Some destructive tests play with the system clock, disable timesyncd
+        systemctl stop systemd-timesyncd.service || true
     fi
+
+    make --keep-going check || exit_status=1
+
+    # Copy tap logs for the jenkins tap parser before cleaning the build dir
+    rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
+
+    # Copy the test suites top-level log which includes all tests failures
+    rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
 
     if [ "$LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
+        print_header "Run long regression tests"
         cd tests
         mkdir -p "$TAPDIR/long_regression"
-        prove --merge -v --exec '' - < long_regression --archive "$TAPDIR/long_regression/" || failed_tests=1
+        prove --merge -v --exec '' - < long_regression --archive "$TAPDIR/long_regression/" || exit_status=1
         cd ..
     fi
-
-    # TAP plugin is having a hard time with .yml files.
-    find "$TAPDIR" -name "meta.yml" -exec rm -f {} \;
 else
     # The TAP plugin will fail the job if no test logs are present
     mkdir -p "$TAPDIR/no-tests"
@@ -537,20 +552,15 @@ else
 fi
 
 # Clean the build directory
-$MAKE clean
-
-# Cleanup rpath in executables
-find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-
-# Some configs don't build liblttng-ctl
-if [ -d "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" ]; then
-    # Cleanup rpath in shared libraries
-    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
-    # Remove libtool .la files
-    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -exec rm -f {} \;
+if [ "$LTTNG_TOOLS_MAKE_CLEAN" = "yes" ]; then
+    print_header "Clean"
+    $MAKE clean
 fi
 
+print_header "LTTng-tools build script ended with: $(test $exit_status == 0 && echo SUCCESS || echo FAILURE)"
+
 # Exit with failure if any of the tests failed
-exit $failed_tests
+exit $exit_status
 
 # EOF
+# vim: expandtab tabstop=4 shiftwidth=4

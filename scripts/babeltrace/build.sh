@@ -1,20 +1,8 @@
 #!/bin/bash
 #
-# Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-# Copyright (C) 2016-2020 Michael Jeanson <mjeanson@efficios.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# SPDX-FileCopyrightText: 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# SPDX-FileCopyrightText: 2016-2023 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 set -exu
 
@@ -82,25 +70,50 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
+}
+
 failed_configure() {
     # Assume we are in the configured build directory
-    echo "#################### BEGIN config.log ####################"
+    print_header "BEGIN config.log"
     cat config.log
-    echo "#################### END config.log ####################"
+    print_header "END config.log"
     exit 1
 }
 
+print_header "Babeltrace build script starting"
 
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
+# Axis
 platform=${platform:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
 
-# Controls if the tests are run
-BABELTRACE_RUN_TESTS="${BABELTRACE_RUN_TESTS:=yes}"
+# Build steps that can be overriden by the environment
+BABELTRACE_MAKE_INSTALL="${BABELTRACE_MAKE_INSTALL:-yes}"
+BABELTRACE_MAKE_CLEAN="${BABELTRACE_MAKE_CLEAN:-yes}"
+BABELTRACE_GEN_COMPILE_COMMANDS="${BABELTRACE_GEN_COMPILE_COMMANDS:-no}"
+BABELTRACE_RUN_TESTS="${BABELTRACE_RUN_TESTS:-yes}"
+BABELTRACE_CLANG_TIDY="${BABELTRACE_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/babeltrace"
 TMPDIR="$WORKSPACE/tmp"
@@ -117,12 +130,21 @@ if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-
     fi
 fi
 
+exit_status=0
+
+# Use bear to generate compile_commands.json when enabled
+BEAR=""
+if [ "$BABELTRACE_GEN_COMPILE_COMMANDS" = "yes" ]; then
+	BEAR="bear"
+fi
+
 # Create tmp directory
 rm -rf "$TMPDIR"
 mkdir -p "$TMPDIR"
 
 export TMPDIR
 export CFLAGS="-g -O2"
+export CXXFLAGS="-g -O2"
 
 # Set compiler variables
 case "$cc" in
@@ -144,15 +166,11 @@ clang-*)
     ;;
 *)
     if [ "x$cc" != "x" ]; then
-	    export CC="$cc"
+        echo ""
+        exit 1
     fi
     ;;
 esac
-
-if [ "x${CC:-}" != "x" ]; then
-    echo "Selected compiler:"
-    "$CC" -v
-fi
 
 # Set platform variables
 case "$platform" in
@@ -190,6 +208,7 @@ freebsd*)
 esac
 
 # Print build env details
+print_header "Build environment details"
 print_os || true
 print_tooling || true
 
@@ -197,6 +216,7 @@ print_tooling || true
 cd "$SRCDIR"
 
 # Run bootstrap in the source directory prior to configure
+print_header "Bootstrap autotools"
 ./bootstrap
 
 # Get source version from configure script
@@ -210,17 +230,17 @@ export BABELTRACE_MINIMAL_LOG_LEVEL=TRACE
 
 # Set configure options and environment variables for each build
 # configuration.
-CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH")
+CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--disable-maintainer-mode")
 
 # -Werror is enabled by default in stable-2.0 but won't be in 2.1
 # Explicitly disable it for consistency.
 if vergte "$PACKAGE_VERSION" "2.0"; then
-	CONF_OPTS+=("--disable-Werror")
+    CONF_OPTS+=("--disable-Werror")
 fi
 
 case "$conf" in
 static)
-    echo "Static lib only configuration"
+    print_header "Conf: Static lib only"
 
     CONF_OPTS+=("--enable-static" "--disable-shared")
 
@@ -230,7 +250,7 @@ static)
     ;;
 
 python-bindings)
-    echo "Python bindings configuration"
+    print_header "Conf: Python bindings"
 
     CONF_OPTS+=("--enable-python-bindings")
 
@@ -240,7 +260,7 @@ python-bindings)
     ;;
 
 prod)
-    echo "Production configuration"
+    print_header "Conf: Production"
 
     # Unset the developper variables
     unset BABELTRACE_DEBUG_MODE
@@ -252,13 +272,13 @@ prod)
     ;;
 
 doc)
-    echo "Documentation configuration"
+    print_header "Conf: Documentation"
 
     CONF_OPTS+=("--enable-python-bindings" "--enable-python-bindings-doc" "--enable-python-plugins" "--enable-api-doc")
     ;;
 
 asan)
-    echo "Address Sanitizer configuration"
+    print_header "Conf: Address Sanitizer"
 
     # --enable-asan was introduced after 2.0 but don't check the version, we
     # want this configuration to fail if ASAN is unavailable.
@@ -266,11 +286,11 @@ asan)
     ;;
 
 min)
-    echo "Minimal configuration"
+    print_header "Conf: Minimal"
     ;;
 
 *)
-    echo "Standard configuration"
+    print_header "Conf: Standard"
 
     # Enable the python bindings / plugins by default with babeltrace2,
     # the test suite is mostly useless without it.
@@ -295,7 +315,7 @@ esac
 # before continuing.
 case "$build" in
 oot)
-    echo "Out of tree build"
+    print_header "Build: Out of tree"
 
     # Create and enter a temporary build directory
     builddir=$(mktemp -d)
@@ -305,7 +325,7 @@ oot)
     ;;
 
 dist)
-    echo "Distribution in-tree build"
+    print_header "Build: Distribution In-tree"
 
     # Run configure and generate the tar file
     # in the source directory
@@ -325,7 +345,7 @@ dist)
     ;;
 
 oot-dist)
-    echo "Distribution out of tree build"
+    print_header "Build: Distribution Out of tree"
 
     # Create and enter a temporary build directory
     builddir=$(mktemp -d)
@@ -352,7 +372,7 @@ oot-dist)
     ;;
 
 *)
-    echo "Standard in-tree build"
+    print_header "Build: Standard In-tree"
     ./configure "${CONF_OPTS[@]}" || failed_configure
     ;;
 esac
@@ -360,41 +380,76 @@ esac
 # We are now inside a configured build directory
 
 # BUILD!
-$MAKE -j "$($NPROC)" V=1
+print_header "BUILD!"
+$BEAR ${BEAR:+--} $MAKE -j "$($NPROC)" V=1
 
-# Install in the workspace
-$MAKE install DESTDIR="$WORKSPACE"
+# Install in the workspace if enabled
+if [ "$BABELTRACE_MAKE_INSTALL" = "yes" ]; then
+    print_header "Install"
 
-# Run tests, don't fail now, we want to run the archiving steps
-failed_tests=0
+    $MAKE install V=1 DESTDIR="$WORKSPACE"
+
+    # Cleanup rpath in executables and shared libraries
+    find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
+
+    # Remove libtool .la files
+    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
+fi
+
+# Run clang-tidy on the topmost commit
+if [ "$BABELTRACE_CLANG_TIDY" = "yes" ]; then
+    print_header "Run clang-tidy"
+
+    # This would be better by linting only the lines touched by a patch but it
+    # doesn't seem to work, the lines are always filtered and no error is
+    # reported.
+    #git diff -U0 HEAD^ | clang-tidy-diff -p1 -j "$($NPROC)" -timeout 60 -fix
+
+    # Instead, run clan-tidy on all the files touched by the patch.
+    while read -r filepath; do
+        if [[ "$filepath" =~ (\.cpp|\.hhp|\.c|\.h)$ ]]; then
+            clang-tidy --fix-errors "$(realpath "$filepath")"
+        fi
+    done < <(git diff-tree --no-commit-id --diff-filter=d --name-only -r HEAD)
+
+    # If the tree has local changes, the formatting was incorrect
+    GIT_DIFF_OUTPUT=$(git diff)
+    if [ -n "$GIT_DIFF_OUTPUT" ]; then
+        echo "Saving clang-tidy proposed fixes in clang-tidy-fixes.diff"
+        git diff > "$WORKSPACE/clang-tidy-fixes.diff"
+
+        # Restore the unfixed files so they can be viewed in the warnings web
+        # interface
+        git checkout .
+        exit_status=1
+    fi
+fi
+
+# Run tests if enabled
 if [ "$BABELTRACE_RUN_TESTS" = "yes" ]; then
-	$MAKE --keep-going check || failed_tests=1
+    print_header "Run test suite"
 
-	# Copy tap logs for the jenkins tap parser before cleaning the build dir
-	rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+    # Run tests, don't fail now, we want to run the archiving steps
+    $MAKE --keep-going check || exit_status=1
 
-	# Copy the test suites top-level log which includes all tests failures
-	rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
+    # Copy tap logs for the jenkins tap parser before cleaning the build dir
+    rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
-	# The test suite prior to 1.5 did not produce TAP logs
-	if verlt "$PACKAGE_VERSION" "1.5"; then
-	    mkdir -p "$WORKSPACE/tap/no-log"
-	    echo "1..1" > "$WORKSPACE/tap/no-log/tests.log"
-	    echo "ok 1 - Test suite doesn't support logging" >> "$WORKSPACE/tap/no-log/tests.log"
-	fi
+    # Copy the test suites top-level log which includes all tests failures
+    rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
 fi
 
 # Clean the build directory
-$MAKE clean
+if [ "$BABELTRACE_MAKE_CLEAN" = "yes" ]; then
+    print_header "Clean"
+    $MAKE clean
+fi
 
-# Cleanup rpath in executables and shared libraries
-find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
-
-# Remove libtool .la files
-find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -exec rm -f {} \;
+print_header "Babeltrace build script ended with: $(test $exit_status == 0 && echo SUCCESS || echo FAILURE)"
 
 # Exit with failure if any of the tests failed
-exit $failed_tests
+exit $exit_status
 
 # EOF
+# vim: expandtab tabstop=4 shiftwidth=4

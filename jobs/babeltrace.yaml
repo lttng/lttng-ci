@@ -286,7 +286,7 @@
                 <io.jenkins.plugins.analysis.core.util.QualityGate>
                   <threshold>1</threshold>
                   <type>TOTAL</type>
-                  <status>FAILED</status>
+                  <status>{warnings_status}</status>
                 </io.jenkins.plugins.analysis.core.util.QualityGate>
               </qualityGates>
               <trendChartType>AGGREGATION_TOOLS</trendChartType>
@@ -439,7 +439,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/babeltrace/check-format.sh
+         !include-raw-escape: scripts/common/check-format.sh
 
     properties:
       - inject:
@@ -449,6 +449,9 @@
           days-to-keep: 1
 
     publishers:
+      - archive:
+          artifacts: 'clang-format-fixes.diff'
+          allow-empty: true
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
 
 - job-template:
@@ -670,42 +673,91 @@
       - stable-2.0
       - master
     jobs:
+    ## Master ##
       - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: master
           buildtype: build
           platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           filter: ''
           touchstone: ''
+          warnings_status: FAILED
       - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: master
           buildtype: portbuild
           platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
+          warnings_status: FAILED
       - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: master
           buildtype: macosbuild
           platforms: !!python/tuple [macos-amd64, macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
+          warnings_status: FAILED
       - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: master
           buildtype: winbuild
           platforms: !!python/tuple [cygwin64, msys2-mingw64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
-      - 'dev_review_babeltrace_{version}_pylint'
-      - 'dev_review_babeltrace_{version}_smokebuild':
-          platforms: !!python/tuple [jammy-amd64]
+          warnings_status: FAILED
+
+      ## Stable 2.0 ##
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: stable-2.0
+          buildtype: build
+          platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, static, prod, min]
+          filter: ''
+          touchstone: ''
+          warnings_status: WARNING
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: stable-2.0
+          buildtype: portbuild
+          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb11-ppc64el, deb11-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
+          warnings_status: WARNING
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: stable-2.0
+          buildtype: macosbuild
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
+          warnings_status: WARNING
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: stable-2.0
+          buildtype: winbuild
+          platforms: !!python/tuple [cygwin64, msys2-mingw64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
+          warnings_status: WARNING
+
+      ## ALL ##
+      - 'dev_review_babeltrace_{version}_smokebuild':
+          platforms: !!python/tuple [jammy-amd64]
+          builds: !!python/tuple [oot-dist]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
       - 'dev_review_babeltrace_{version}_check-format'
+      - 'dev_review_babeltrace_{version}_pylint'
 
 
 - project:
