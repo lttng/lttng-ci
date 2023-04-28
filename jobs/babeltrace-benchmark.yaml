@@ -35,6 +35,7 @@
     publishers:
       - archive:
           artifacts: 'results/**'
+          follow-symlinks: true
           allow-empty: false
       - workspace-cleanup:
           clean-if:

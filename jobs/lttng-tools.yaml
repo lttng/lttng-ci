@@ -444,6 +444,7 @@
 
       - archive: &lttng-tools_publisher_archive_defaults
           artifacts: 'build/**,deps/**,tap/**,log/**'
+          follow-symlinks: true
           allow-empty: false
 
       - workspace-cleanup: &lttng-tools_publisher_workspace-cleanup_defaults

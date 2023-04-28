@@ -58,6 +58,7 @@
     publishers:
       - archive:
           artifacts: 'artifacts/**, src/lttng_ivc/runtime/projects_cache/**/log/**'
+          follow-symlinks: true
           allow-empty: false
       - junit:
           results: result.xml
@@ -112,6 +113,7 @@
     publishers:
       - archive:
           artifacts: 'artifacts/**, src/lttng_ivc/runtime/projects_cache/**/log/**'
+          follow-symlinks: true
           allow-empty: false
       - junit:
           results: result.xml

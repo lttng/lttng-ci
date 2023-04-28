@@ -216,6 +216,7 @@
             </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
       - archive: &babeltrace_publisher_archive_defaults
           artifacts: 'build/**,tap/**,log/**'
+          follow-symlinks: true
           allow-empty: false
       - workspace-cleanup: &babeltrace_publisher_workspace-cleanup_defaults
           clean-if:
