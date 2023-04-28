@@ -37,8 +37,8 @@
     publishers:
       - ircbot:
           strategy: statechange-only
-          message-type: summary-scm
-          matrix-notifier: only-configurations
+          message-type: summary
+          matrix-notifier: only-parent
       - email-ext:
           recipients: 'ci-notification@lists.lttng.org'
           reply-to: ci-notification@lists.lttng.org

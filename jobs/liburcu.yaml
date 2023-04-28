@@ -167,8 +167,8 @@
             - failure: false
       - ircbot: &liburcu_publisher_ircbot_defaults
           strategy: statechange-only
-          message-type: summary-scm
-          matrix-notifier: only-configurations
+          message-type: summary
+          matrix-notifier: only-parent
       - email-ext: &liburcu_publisher_email_ext_defaults
           recipients: '{obj:email_to}'
           reply-to: ci-notification@lists.lttng.org

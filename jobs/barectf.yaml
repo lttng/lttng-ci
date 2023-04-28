@@ -49,8 +49,8 @@
             - failure: false
       - ircbot: &barectf_publisher_ircbot_defaults
           strategy: statechange-only
-          message-type: summary-scm
-          matrix-notifier: only-configurations
+          message-type: summary
+          matrix-notifier: only-parent
 
 
 ## Templates ##
