@@ -1,20 +1,8 @@
 #!/bin/bash
 #
-# Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-#               2016-2019 Michael Jeanson <mjeanson@efficios.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# SPDX-FileCopyrightText: 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# SPDX-FileCopyrightText: 2016-2023 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 set -exu
 
@@ -73,26 +61,52 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
+}
+
 failed_configure() {
     # Assume we are in the configured build directory
-    echo "#################### BEGIN config.log ####################"
+    print_header "BEGIN config.log"
     cat config.log
-    echo "#################### END config.log ####################"
+    print_header "END config.log"
 
     # End the build with failure
     exit 1
 }
 
+print_header "LTTng-UST build script starting"
+
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
+# Axis
 platform=${platform:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
 
-# Controls if the tests are run
-LTTNG_UST_RUN_TESTS="${LTTNG_UST_RUN_TESTS:=yes}"
+# Build steps that can be overriden by the environment
+LTTNG_UST_MAKE_INSTALL="${LTTNG_UST_MAKE_INSTALL:-yes}"
+LTTNG_UST_MAKE_CLEAN="${LTTNG_UST_MAKE_CLEAN:-yes}"
+LTTNG_UST_GEN_COMPILE_COMMANDS="${LTTNG_UST_GEN_COMPILE_COMMANDS:-no}"
+LTTNG_UST_RUN_TESTS="${LTTNG_UST_RUN_TESTS:-yes}"
+LTTNG_UST_CLANG_TIDY="${LTTNG_UST_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/lttng-ust"
 TMPDIR="$WORKSPACE/tmp"
@@ -120,12 +134,21 @@ export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
 export CPPFLAGS="-I$DEPS_INC"
 export LDFLAGS="-L$DEPS_LIB"
 
+exit_status=0
+
+# Use bear to generate compile_commands.json when enabled
+BEAR=""
+if [ "$LTTNG_UST_GEN_COMPILE_COMMANDS" = "yes" ]; then
+	BEAR="bear"
+fi
+
 # Create tmp directory
 rm -rf "$TMPDIR"
 mkdir -p "$TMPDIR"
 
 export TMPDIR
 export CFLAGS="-g -O2"
+export CXXFLAGS="-g -O2"
 
 # Set compiler variables
 case "$cc" in
@@ -152,11 +175,6 @@ clang-*)
     ;;
 esac
 
-if [ "x${CC:-}" != "x" ]; then
-    echo "Selected compiler:"
-    "$CC" -v
-fi
-
 # Set platform variables
 case "$platform" in
 freebsd*)
@@ -182,6 +200,7 @@ freebsd*)
 esac
 
 # Print build env details
+print_header "Build environment details"
 print_os || true
 print_tooling || true
 
@@ -189,6 +208,7 @@ print_tooling || true
 cd "$SRCDIR"
 
 # Run bootstrap in the source directory prior to configure
+print_header "Bootstrap autotools"
 ./bootstrap
 
 # Get source version from configure script
@@ -197,10 +217,10 @@ PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
 # Set configure options and environment variables for each build
 # configuration.
-CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH")
+CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--disable-maintainer-mode")
 case "$conf" in
 static)
-    echo "Static lib only configuration"
+    print_header "Conf: Static lib only"
 
     CONF_OPTS+=("--enable-static" "--disable-shared")
 
@@ -209,7 +229,7 @@ static)
     ;;
 
 agents)
-    echo "Java and Python agents configuration"
+    print_header "Conf: Java and Python agents"
 
     CONF_OPTS+=("--enable-java-agent-all" "--enable-jni-interface" "--enable-python-agent")
 
@@ -220,12 +240,13 @@ agents)
     ;;
 
 debug-rcu)
-    echo "Enable RCU sanity checks for debugging"
+    print_header "Conf: Enable RCU sanity checks for debugging"
+
     export CPPFLAGS="${CPPFLAGS} -DDEBUG_RCU"
     ;;
 
 *)
-    echo "Standard configuration"
+    print_header "Conf: Standard"
 
     # Something is broken in docbook-xml on yocto
     if [[ "$platform" = yocto* ]]; then
@@ -244,7 +265,7 @@ esac
 # before continuing.
 case "$build" in
 oot)
-    echo "Out of tree build"
+    print_header "Build: Out of tree"
 
     # Create and enter a temporary build directory
     builddir=$(mktemp -d)
@@ -254,7 +275,7 @@ oot)
     ;;
 
 dist)
-    echo "Distribution in-tree build"
+    print_header "Build: Distribution In-tree"
 
     # Run configure and generate the tar file
     # in the source directory
@@ -274,7 +295,7 @@ dist)
     ;;
 
 oot-dist)
-    echo "Distribution out of tree build"
+    print_header "Build: Distribution Out of tree"
 
     # Create and enter a temporary build directory
     builddir=$(mktemp -d)
@@ -301,7 +322,8 @@ oot-dist)
     ;;
 
 *)
-    echo "Standard in-tree build"
+    print_header "Build: Standard In-tree"
+
     ./configure "${CONF_OPTS[@]}" || failed_configure
     ;;
 esac
@@ -309,41 +331,74 @@ esac
 # We are now inside a configured build directory
 
 # BUILD!
-$MAKE -j "$($NPROC)" V=1
+print_header "BUILD!"
+$BEAR ${BEAR:+--} $MAKE -j "$($NPROC)" V=1
 
-# Install in the workspace
-$MAKE install DESTDIR="$WORKSPACE"
+# Install in the workspace if enabled
+if [ "$LTTNG_UST_MAKE_INSTALL" = "yes" ]; then
+    print_header "Install"
+
+    $MAKE install V=1 DESTDIR="$WORKSPACE"
+
+    # Cleanup rpath in executables and shared libraries
+    #find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
+
+    # Remove libtool .la files
+    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
+fi
+
+# Run clang-tidy on the topmost commit
+if [ "$LTTNG_UST_CLANG_TIDY" = "yes" ]; then
+    print_header "Run clang-tidy"
+
+    # This would be better by linting only the lines touched by a patch but it
+    # doesn't seem to work, the lines are always filtered and no error is
+    # reported.
+    #git diff -U0 HEAD^ | clang-tidy-diff -p1 -j "$($NPROC)" -timeout 60 -fix
+
+    # Instead, run clan-tidy on all the files touched by the patch.
+    while read -r filepath; do
+        if [[ "$filepath" =~ (\.cpp|\.hhp|\.c|\.h)$ ]]; then
+            clang-tidy --fix-errors "$(realpath "$filepath")"
+        fi
+    done < <(git diff-tree --no-commit-id --diff-filter=d --name-only -r HEAD)
+
+    # If the tree has local changes, the formatting was incorrect
+    GIT_DIFF_OUTPUT=$(git diff)
+    if [ -n "$GIT_DIFF_OUTPUT" ]; then
+        echo "Saving clang-tidy proposed fixes in clang-tidy-fixes.diff"
+        git diff > "$WORKSPACE/clang-tidy-fixes.diff"
+
+        # Restore the unfixed files so they can be viewed in the warnings web
+        # interface
+        git checkout .
+        exit_status=1
+    fi
+fi
 
 # Run tests, don't fail now, we want to run the archiving steps
-failed_tests=0
 if [ "$LTTNG_UST_RUN_TESTS" = "yes" ]; then
-    $MAKE --keep-going check || failed_tests=1
+    $MAKE --keep-going check || exit_status=1
 
     # Copy tap logs for the jenkins tap parser before cleaning the build dir
     rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
 
     # Copy the test suites top-level log which includes all tests failures
     rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
-
-    # The test suite prior to 2.8 did not produce TAP logs
-    if verlt "$PACKAGE_VERSION" "2.8"; then
-        mkdir -p "$WORKSPACE/tap/no-log"
-        echo "1..1" > "$WORKSPACE/tap/no-log/tests.log"
-        echo "ok 1 - Test suite doesn't support logging" >> "$WORKSPACE/tap/no-log/tests.log"
-    fi
 fi
 
 # Clean the build directory
-$MAKE clean
+if [ "$LTTNG_UST_MAKE_CLEAN" = "yes" ]; then
+    print_header "Clean"
 
-# Cleanup rpath in executables and shared libraries
-#find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
+    $MAKE clean
+fi
 
-# Remove libtool .la files
-find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -exec rm -f {} \;
+print_header "LTTng-UST build script ended with: $(test $exit_status == 0 && echo SUCCESS || echo FAILURE)"
 
 # Exit with failure if any of the tests failed
-exit $failed_tests
+exit $exit_status
 
 # EOF
+# vim: expandtab tabstop=4 shiftwidth=4

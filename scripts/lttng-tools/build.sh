@@ -217,11 +217,6 @@ clang-*)
     ;;
 esac
 
-if [ "x${CC:-}" != "x" ]; then
-    echo "Selected compiler:"
-    "$CC" -v
-fi
-
 # Set platform variables
 case "$platform" in
 macos*)
@@ -321,6 +316,7 @@ static)
 
 no-ust)
     print_header "Conf: Without UST support"
+
     CONF_OPTS+=("--without-lttng-ust")
     DIST_CONF_OPTS+=("--without-lttng-ust")
     ;;
@@ -544,7 +540,9 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
         prove --merge -v --exec '' - < long_regression --archive "$TAPDIR/long_regression/" || exit_status=1
         cd ..
     fi
-else
+fi
+
+if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" = "no-ust" ]; then
     # The TAP plugin will fail the job if no test logs are present
     mkdir -p "$TAPDIR/no-tests"
     echo "1..1" > "$TAPDIR/no-tests/tests.log"

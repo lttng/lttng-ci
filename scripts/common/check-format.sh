@@ -1,4 +1,5 @@
 #!/bin/bash
+#
 # SPDX-FileCopyrightText: 2023 Michael Jeanson <mjeanson@efficios.com>
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -32,10 +33,12 @@ git diff -U0 --no-color --relative HEAD^ | clang-format-diff-14 -p1 -i
 # If the tree has local changes, the formatting was incorrect
 GIT_DIFF_OUTPUT=$(git diff)
 if [ -n "$GIT_DIFF_OUTPUT" ]; then
-        print_header "Saving clang-format proposed fixes in clang-format-fixes.diff"
-        git diff > "$WORKSPACE/clang-format-fixes.diff"
-        exit 1
+    print_header "Saving clang-format proposed fixes in clang-format-fixes.diff"
+    git diff > "$WORKSPACE/clang-format-fixes.diff"
+    exit 1
 fi
 
 print_header "clang-format is happy!"
+
 # EOF
+# vim: expandtab tabstop=4 shiftwidth=4

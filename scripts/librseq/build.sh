@@ -1,20 +1,8 @@
 #!/bin/bash
 #
-# Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-# Copyright (C) 2019-2020 Michael Jeanson <mjeanson@efficios.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# SPDX-FileCopyrightText: 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# SPDX-FileCopyrightText: 2016-2023 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 set -exu
 
@@ -25,6 +13,8 @@ vercomp () {
         return 0
     fi
     local IFS=.
+    # Ignore the shellcheck warning, we want splitting to happen based on IFS.
+    # shellcheck disable=SC2206
     local i ver1=($1) ver2=($2)
     # fill empty fields in ver1 with zeros
     for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
@@ -71,28 +61,74 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
+}
+
 failed_configure() {
     # Assume we are in the configured build directory
-    echo "#################### BEGIN config.log ####################"
+    print_header "BEGIN config.log"
     cat config.log
-    echo "#################### END config.log ####################"
+    print_header "END config.log"
 
     # End the build with failure
     exit 1
 }
 
+print_header "Librseq build script starting"
+
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
+# Axis
 platform=${platform:-}
 conf=${conf:-}
 build=${build:-}
 cc=${cc:-}
 
+# Build steps that can be overriden by the environment
+LIBRSEQ_MAKE_INSTALL="${LIBRSEQ_MAKE_INSTALL:-yes}"
+LIBRSEQ_MAKE_CLEAN="${LIBRSEQ_MAKE_CLEAN:-yes}"
+LIBRSEQ_GEN_COMPILE_COMMANDS="${LIBRSEQ_GEN_COMPILE_COMMANDS:-no}"
+LIBRSEQ_RUN_TESTS="${LIBRSEQ_RUN_TESTS:-yes}"
 
 SRCDIR="$WORKSPACE/src/librseq"
 TMPDIR="$WORKSPACE/tmp"
 PREFIX="/build"
+LIBDIR="lib"
+LIBDIR_ARCH="$LIBDIR"
+
+# RHEL and SLES both use lib64 but don't bother shipping a default autoconf
+# site config that matches this.
+if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-release ) ]]; then
+    # Detect the userspace bitness in a distro agnostic way
+    if file -L /bin/bash | grep '64-bit' >/dev/null 2>&1; then
+        LIBDIR_ARCH="${LIBDIR}64"
+    fi
+fi
+
+exit_status=0
+
+# Use bear to generate compile_commands.json when enabled
+BEAR=""
+if [ "$LIBRSEQ_GEN_COMPILE_COMMANDS" = "yes" ]; then
+	BEAR="bear"
+fi
 
 # Create tmp directory
 rm -rf "$TMPDIR"
@@ -100,6 +136,7 @@ mkdir -p "$TMPDIR"
 
 export TMPDIR
 export CFLAGS="-g -O2"
+export CXXFLAGS="-g -O2"
 
 # Add the convenience headers in extra to the
 # include path.
@@ -130,11 +167,6 @@ clang-*)
     ;;
 esac
 
-if [ "x${CC:-}" != "x" ]; then
-    echo "Selected compiler:"
-    "$CC" -v
-fi
-
 # Set platform variables
 case "$platform" in
 *)
@@ -147,6 +179,7 @@ case "$platform" in
 esac
 
 # Print build env details
+print_header "Build environment details"
 print_os || true
 print_tooling || true
 
@@ -154,25 +187,25 @@ print_tooling || true
 cd "$SRCDIR"
 
 # Run bootstrap in the source directory prior to configure
+print_header "Bootstrap autotools"
 ./bootstrap
 
 # Get source version from configure script
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
-
 # Set configure options and environment variables for each build
 # configuration.
-CONF_OPTS=("--prefix=$PREFIX")
+CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--disable-maintainer-mode")
 case "$conf" in
 static)
-    echo "Static lib only configuration"
+    print_header "Conf: Static lib only"
 
     CONF_OPTS+=("--enable-static" "--disable-shared")
     ;;
 
 *)
-    echo "Standard configuration"
+    print_header "Conf: Standard"
     ;;
 esac
 
@@ -186,7 +219,7 @@ esac
 # before continuing.
 case "$build" in
 oot)
-    echo "Out of tree build"
+    print_header "Build: Out of tree"
 
     # Create and enter a temporary build directory
     builddir=$(mktemp -d)
@@ -196,7 +229,7 @@ oot)
     ;;
 
 dist)
-    echo "Distribution in-tree build"
+    print_header "Build: Distribution In-tree"
 
     # Run configure and generate the tar file
     # in the source directory
@@ -216,7 +249,7 @@ dist)
     ;;
 
 oot-dist)
-    echo "Distribution out of tree build"
+    print_header "Build: Distribution Out of tree"
 
     # Create and enter a temporary build directory
     builddir=$(mktemp -d)
@@ -243,7 +276,8 @@ oot-dist)
     ;;
 
 *)
-    echo "Standard in-tree build"
+    print_header "Build: Standard In-tree"
+
     ./configure "${CONF_OPTS[@]}" || failed_configure
     ;;
 esac
@@ -251,34 +285,47 @@ esac
 # We are now inside a configured build directory
 
 # BUILD!
-$MAKE -j "$($NPROC)" V=1
+print_header "BUILD!"
+$BEAR ${BEAR:+--} $MAKE -j "$($NPROC)" V=1
 
-# Install in the workspace
-$MAKE install DESTDIR="$WORKSPACE"
+# Install in the workspace if enabled
+if [ "$LIBRSEQ_MAKE_INSTALL" = "yes" ]; then
+    print_header "Install"
 
-# Run tests, don't fail now, we want to run the archiving steps
-set +e
-$MAKE --keep-going check
-ret=$?
-set -e
+    $MAKE install V=1 DESTDIR="$WORKSPACE"
 
-# Copy tap logs for the jenkins tap parser before cleaning the build dir
-rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+    # Cleanup rpath in executables and shared libraries
+    #find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
 
-# Copy the test suites top-level log which includes all tests failures
-rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
+    # Remove libtool .la files
+    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
+fi
+
+# Run tests if enabled
+if [ "$LIBRSEQ_RUN_TESTS" = "yes" ]; then
+    print_header "Run test suite"
+
+    # Run tests, don't fail now, we want to run the archiving steps
+    $MAKE --keep-going check || exit_status=1
+
+    # Copy tap logs for the jenkins tap parser before cleaning the build dir
+    rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$WORKSPACE/tap"
+
+    # Copy the test suites top-level log which includes all tests failures
+    rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
+fi
 
 # Clean the build directory
-$MAKE clean
+if [ "$LIBRSEQ_MAKE_CLEAN" = "yes" ]; then
+    print_header "Clean"
+    $MAKE clean
+fi
 
-# Cleanup rpath in executables and shared libraries
-#find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-find "$WORKSPACE/$PREFIX/lib" -name "*.so" -exec chrpath --delete {} \;
+print_header "Librseq build script ended with: $(test $exit_status == 0 && echo SUCCESS || echo FAILURE)"
 
-# Remove libtool .la files
-find "$WORKSPACE/$PREFIX/lib" -name "*.la" -exec rm -f {} \;
-
-# Exit with the return code of the test suite
-exit $ret
+# Exit with failure if any of the tests failed
+exit $exit_status
 
 # EOF
+# vim: expandtab tabstop=4 shiftwidth=4
