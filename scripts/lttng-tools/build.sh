@@ -228,18 +228,12 @@ macos*)
     export LDFLAGS="-L/opt/local/lib $LDFLAGS"
     export PYTHON="python3"
     export PYTHON_CONFIG="python3-config"
-
-    LTTNG_TOOLS_RUN_TESTS="no"
-    LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="no"
     ;;
 
 cygwin|cygwin64|msys32|msys64)
     export MAKE=make
     export TAR=tar
     export NPROC=nproc
-
-    LTTNG_TOOLS_RUN_TESTS="no"
-    LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="no"
     ;;
 
 *)
@@ -494,8 +488,8 @@ if [ "$LTTNG_TOOLS_CLANG_TIDY" = "yes" ]; then
     fi
 fi
 
-# Run tests for all configs except 'no-ust'
-if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
+# Run tests for all configs except 'no-ust' / 'relayd-only'
+if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) ]]; then
     print_header "Run test suite"
 
     # Allow core dumps
@@ -542,7 +536,7 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" != "no-ust" ]; then
     fi
 fi
 
-if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [ "$conf" = "no-ust" ]; then
+if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ "$conf" =~ (no-ust|relayd-only) ]]; then
     # The TAP plugin will fail the job if no test logs are present
     mkdir -p "$TAPDIR/no-tests"
     echo "1..1" > "$TAPDIR/no-tests/tests.log"
