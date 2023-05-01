@@ -30,3 +30,4 @@ compilers_packages:
   - clang-tidy-12
   - clang-tidy-13
   - clang-tidy-14
+  - bear
