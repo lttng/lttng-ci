@@ -11,9 +11,9 @@
       - ansicolor:
           colormap: gnome-terminal
       - timeout:
-          timeout: 20
+          timeout: 180
           fail: true
-          type: no-activity
+          type: absolute
           write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
       - workspace-cleanup
