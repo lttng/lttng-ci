@@ -1,7 +1,0 @@
-- hosts: node_powerpc
-  roles:
-    - common
-    - babeltrace
-    - liburcu
-    - lttng-ust
-    - lttng-tools

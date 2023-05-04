@@ -29,10 +29,6 @@ ci-node-deb11-arm64-04
 [node_arm64:vars]
 ansible_python_interpreter=python3
 
-[node_powerpc]
-#ci-node-sid-powerpc-01
-ci-node-sid-powerpc-03
-
 [node_ppc64el]
 ci-node-deb11-ppc64el-01
 ci-node-deb11-ppc64el-02
@@ -120,7 +116,6 @@ node_i386
 node_amd64
 node_armhf
 node_arm64
-node_powerpc
 node_ppc64el
 node_standalone
 node_sles
