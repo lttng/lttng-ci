@@ -23,7 +23,7 @@ set +u
 . "$PYENV_HOME/bin/activate"
 set -u
 
-pip install --quiet tox poetry
+pip install --quiet poetry tox
 
 cd "$SRCDIR"
 
