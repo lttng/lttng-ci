@@ -163,6 +163,7 @@
     version:
       - master
       - stable-3.0
+      - stable-3.1
     jobs:
       - 'barectf_{version}_{buildtype}':
           buildtype: linuxbuild
@@ -175,6 +176,7 @@
     version:
       - master
       - stable-3.0
+      - stable-3.1
     jobs:
       - 'dev_review_barectf_{version}_{buildtype}':
           buildtype: linuxbuild
