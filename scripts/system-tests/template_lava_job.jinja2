@@ -68,12 +68,13 @@ actions:
             - repository:
                 metadata:
                     format: Lava-Test Test Definition 1.0
-                    name: x86-env-setup
-                    description: "Basic environment setup for x86 board"
+                    name: vlttng-env-setup
+                    description: "Configure virtualenv for vlttng"
                     os:
                       - ubuntu
                     devices:
                       - x86
+                      - kvm
                 run:
                   steps:
                   {% if device_type == DeviceType.x86 %}
@@ -87,7 +88,7 @@ actions:
                     - sync
               from: inline
               name: vlttng-env-setup-inline
-              path: inline/x86-env-setup.yaml
+              path: inline/vlttng-env-setup
           {% if test_type == TestType.baremetal_tests %}
             - repository: https://github.com/lttng/lttng-ci.git
               from: git
