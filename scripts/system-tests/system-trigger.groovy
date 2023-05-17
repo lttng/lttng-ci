@@ -385,12 +385,12 @@ configurationOfInterest.each { lttngBr, linuxBr  ->
 def jobNameCanary = jobType + "_kcanary_lcanary";
 currentJobs[jobNameCanary] = [:];
 currentJobs[jobNameCanary]['config'] = [:];
-currentJobs[jobNameCanary]['config']['linuxBranch'] = 'v4.4.194';
-currentJobs[jobNameCanary]['config']['lttngBranch'] = 'v2.10.7';
-currentJobs[jobNameCanary]['config']['linuxTagID'] ='a227f8436f2b21146fc024d84e6875907475ace2';
-currentJobs[jobNameCanary]['config']['toolsCommit'] = '93fa2c9ff6b52c30173bee80445501ce8677fecc'
-currentJobs[jobNameCanary]['config']['modulesCommit'] = 'fe3ca7a9045221ffbedeac40ba7e09b1fc500e21'
-currentJobs[jobNameCanary]['config']['ustCommit'] = '0172ce8ece2102d46c7785e6bd96163225c59e49'
+currentJobs[jobNameCanary]['config']['linuxBranch'] = 'v5.15.112';
+currentJobs[jobNameCanary]['config']['lttngBranch'] = 'v2.13.9';
+currentJobs[jobNameCanary]['config']['linuxTagID'] ='9d6bde853685609a631871d7c12be94fdf8d912e'; // v5.15.112
+currentJobs[jobNameCanary]['config']['toolsCommit'] = '2ff0385718ff894b3d0e06f3961334c20c5436f8' // v2.13.9
+currentJobs[jobNameCanary]['config']['modulesCommit'] = 'da1f5a264fff33fc5a9518e519fb0084bf1074af' // v2.13.9
+currentJobs[jobNameCanary]['config']['ustCommit'] = 'de624c20694f69702b42c5d47b5bcf692293a238' // v2.13.5
 currentJobs[jobNameCanary]['status'] = 'NOT_SET';
 currentJobs[jobNameCanary]['build'] = null;
 
