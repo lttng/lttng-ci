@@ -34,7 +34,8 @@ python -u "$LTTNG_CI_PATH"/scripts/system-tests/lava2-submit.py \
                           -uu "$LTTNG_UST_REPO" \
                           -tc "$LTTNG_TOOLS_COMMIT_ID" \
                           -uc "$LTTNG_UST_COMMIT_ID" \
-                          -id "$BUILD_TAG"
+                          -id "$BUILD_TAG" \
+                          -r "$ROOTFS_URL"
 
 set +eu
 deactivate

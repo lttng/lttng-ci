@@ -182,7 +182,6 @@ def get_vlttng_cmd(
 
 def main():
     send_retry_limit = 10
-    nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz"
     test_type = None
     parser = argparse.ArgumentParser(description='Launch baremetal test using Lava')
     parser.add_argument('-t', '--type', required=True)
@@ -196,6 +195,10 @@ def main():
     parser.add_argument('-uu', '--ust-url', required=False)
     parser.add_argument('-uc', '--ust-commit', required=False)
     parser.add_argument('-d', '--debug', required=False, action='store_true')
+    parser.add_argument(
+        '-r', '--rootfs-url', required=False,
+        default="https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz"
+    )
     args = parser.parse_args()
 
     if args.type not in TestType.values:
@@ -256,7 +259,7 @@ def main():
     context['lttng_version_string'] = lttng_version_string
 
     context['kernel_url'] = args.kernel
-    context['nfsrootfs_url'] = nfsrootfs
+    context['nfsrootfs_url'] = args.rootfs_url
     context['lttng_modules_url'] = args.lmodule
     context['jenkins_build_id'] = args.build_id
 
