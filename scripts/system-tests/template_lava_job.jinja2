@@ -60,10 +60,14 @@ actions:
     - test:
         definitions:
             # Base setup #
-            - repository: https://github.com/lttng/lttng-ci.git
+            - repository: {{ ci_repo }}
               from: git
+              branch: {{ ci_branch }}
               path: lava/system-tests/setup.yml
               name: x86-env-setup
+              params:
+                CI_REPO: {{ ci_repo }}
+                CI_BRANCH: {{ ci_branch }}
             # Base vlttng setup #
             - repository:
                 metadata:
@@ -90,26 +94,35 @@ actions:
               name: vlttng-env-setup-inline
               path: inline/vlttng-env-setup
           {% if test_type == TestType.baremetal_tests %}
-            - repository: https://github.com/lttng/lttng-ci.git
+            - repository: {{ ci_repo }}
               from: git
+              branch: {{ ci_branch }}
               path: lava/system-tests/perf-tests.yml
               name: perf-tests
               params:
                 LTTNG_VERSION_STRING: {{ lttng_version_string }}
                 JENKINS_BUILD_ID: {{ jenkins_build_id }}
+                CI_REPO: {{ ci_repo }}
+                CI_BRANCH: {{ ci_branch }}
           {% elif test_type == TestType.kvm_tests %}
-            - repository: https://github.com/lttng/lttng-ci.git
+            - repository: {{ ci_repo }}
               from: git
+              branch: {{ ci_branch }}
               path: lava/system-tests/kernel-tests.yml
               name: kernel-tests
               params:
                 LTTNG_VERSION_STRING: {{ lttng_version_string }}
                 JENKINS_BUILD_ID: {{ jenkins_build_id }}
-            - repository: https://github.com/lttng/lttng-ci.git
+                CI_REPO: {{ ci_repo }}
+                CI_BRANCH: {{ ci_branch }}
+            - repository: {{ ci_repo }}
               from: git
+              branch: {{ ci_branch }}
               path: lava/system-tests/destructive-tests.yml
               name: destructive-tests
               params:
                 LTTNG_VERSION_STRING: {{ lttng_version_string }}
                 JENKINS_BUILD_ID: {{ jenkins_build_id }}
+                CI_REPO: {{ ci_repo }}
+                CI_BRANCH: {{ ci_branch }}
           {% endif %}

@@ -8,7 +8,7 @@ params:
 run:
         steps:
                 - apt install -y curl
-                - git clone https://github.com/lttng/lttng-ci ci
+                - git clone "${CI_REPO}" --branch="${CI_BRANCH}" ci
                 - export TMPDIR="/tmp"
                 - systemctl stop systemd-timesyncd.service
                 - mkdir -p coredump

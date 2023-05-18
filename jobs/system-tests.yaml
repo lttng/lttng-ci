@@ -39,6 +39,14 @@
           name: 'ROOTFS_URL'
           default: 'https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz'
           description: 'The URL at which the system root FS can be downloaded'
+      - string:
+          name: 'LTTNG_CI_REPO'
+          default: 'https://github.com/lttng/lttng-ci.git'
+          description: 'LTTng-ci git repo to checkout the CI scripts'
+      - string:
+          name: 'LTTNG_CI_BRANCH'
+          default: 'master'
+          description: 'The branch of the CI repository to clone for job scripts'
 
 - publisher:
     name: 'system_tests_email_ext_default'
@@ -98,11 +106,15 @@
           properties-content: |
             BUILD_DEVICE=kvm
             LTTNG_VERSION={lttngversion}
+            LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
+            LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
 
     scm:
       - git:
-          url: https://github.com/lttng/lttng-ci
+          url: "${{LTTNG_CI_REPO}}"
           basedir: src/lttng-ci/
+          branches:
+            - "${{LTTNG_CI_BRANCH}}"
 
     builders:
       - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
@@ -172,11 +184,15 @@
           properties-content: |
             BUILD_DEVICE=baremetal
             LTTNG_VERSION={lttngversion}
+            LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
+            LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
 
     scm:
       - git:
-          url: https://github.com/lttng/lttng-ci
+          url: "${{LTTNG_CI_REPO}}"
           basedir: src/lttng-ci/
+          branches:
+            - "${{LTTNG_CI_BRANCH}}"
 
     builders:
       - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
@@ -239,6 +255,14 @@
       - string:
           name: 'S3_STORAGE_LTTNG_MODULES'
           description: 'Path to store the LTTng Modules'
+      - string:
+          name: 'LTTNG_CI_REPO'
+          default: 'https://github.com/lttng/lttng-ci.git'
+          description: 'LTTng-ci git repo to checkout the CI scripts'
+      - string:
+          name: 'LTTNG_CI_BRANCH'
+          default: 'master'
+          description: 'The branch of the CI repository to clone for job scripts'
 
     properties:
       - build-discarder:
@@ -255,8 +279,10 @@
 
     scm:
       - git:
-          url: https://github.com/lttng/lttng-ci
+          url: "${{LTTNG_CI_REPO}}"
           basedir: src/lttng-ci/
+          branches:
+            - "${{LTTNG_CI_BRANCH}}"
 
     builders:
       - shell: !include-raw-escape: scripts/system-tests/checkout-modules.sh

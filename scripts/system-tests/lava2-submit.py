@@ -199,6 +199,8 @@ def main():
         '-r', '--rootfs-url', required=False,
         default="https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz"
     )
+    parser.add_argument('--ci-repo', required=False, default='https://github.com/lttng/lttng-ci.git')
+    parser.add_argument('--ci-branch', required=False, default='master')
     args = parser.parse_args()
 
     if args.type not in TestType.values:
@@ -264,6 +266,9 @@ def main():
     context['jenkins_build_id'] = args.build_id
 
     context['kprobe_round_nb'] = 10
+
+    context['ci_repo'] = args.ci_repo
+    context['ci_branch'] = args.ci_branch
 
     render = jinja_template.render(context)
 

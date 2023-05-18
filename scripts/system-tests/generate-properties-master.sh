@@ -31,6 +31,8 @@ signature_v2 = False" > "$WORKSPACE/s3cfg"
 
 LTTNG_CI_PATH="$WORKSPACE/src/lttng-ci"
 echo "LTTNG_CI_PATH=$LTTNG_CI_PATH" >> properties.txt
+echo "LTTNG_CI_REPO=$LTTNG_CI_REPO" >> properties.txt
+echo "LTTNG_CI_BRANCH=$LTTNG_CI_BRANCH" >> properties.txt
 KERNEL_COMMIT_ID=$KERNEL_TAG_ID
 
 echo "KERNEL_COMMIT_ID=$KERNEL_COMMIT_ID" >> properties.txt
