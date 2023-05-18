@@ -19,15 +19,20 @@ import gzip
 import os
 import shutil
 import subprocess
+import sys
 
 from datetime import datetime
 
 
 def compress(filename):
-    with open(filename, 'rb') as f_in:
-        with gzip.open('{}.gz'.format(filename), 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out)
-    os.remove(filename)
+    command = [
+        'tar', '-c', '-z',
+        '-f', filename + ".tar.gz",
+        '-C', filename,
+        './'
+    ]
+    subprocess.run(command, check=True)
+    shutil.rmtree(filename)
 
 
 packages = [
@@ -35,7 +40,6 @@ packages = [
     'automake',
     'bash-completion',
     'bison',
-    'bsdtar',
     'build-essential',
     'chrpath',
     'clang',
@@ -47,6 +51,7 @@ packages = [
     'git',
     'htop',
     'jq',
+    'libarchive-tools',
     'libdw-dev',
     'libelf-dev',
     'libffi-dev',
@@ -62,7 +67,7 @@ packages = [
     'netcat-traditional',
     'openssh-server',
     'psmisc',
-    'python-virtualenv',
+    'python3-virtualenv',
     'python3',
     'python3-dev',
     'python3-numpy',
@@ -83,20 +88,13 @@ packages = [
 def main():
     parser = argparse.ArgumentParser(description='Generate lava lttng rootfs')
     parser.add_argument("--arch", default='amd64')
-    # We are using xenial instead of bionic ++ since some syscall test depends
-    # on cat and the libc to use the open syscall. In recent libc openat is
-    # used. See these commit in lttng-tools that helps with the problem:
-    # c8e51d1559c48a12f18053997bbcff0c162691c4
-    # 192bd8fb712659b9204549f29d9a54dc2c57a9e
-    # These are only part of 2.11 and were not backported since they do not
-    # represent a *problem* per se.
-    parser.add_argument("--distribution", default='xenial')
+    parser.add_argument("--distribution", default='jammy')
     parser.add_argument("--mirror", default='http://archive.ubuntu.com/ubuntu')
     parser.add_argument(
         "--component", default='universe,multiverse,main,restricted')
     args = parser.parse_args()
 
-    name = "rootfs_{}_{}_{}.tar".format(args.arch, args.distribution,
+    name = "rootfs_{}_{}_{}".format(args.arch, args.distribution,
                                         datetime.now().strftime("%Y-%m-%d"))
 
     hostname = "linaro-server"
@@ -104,25 +102,48 @@ def main():
     root_password = "root"
     print(name)
     command = [
-        "sudo",
-        "vmdebootstrap",
+        "debootstrap",
         "--arch={}".format(args.arch),
-        "--distribution={}".format(args.distribution),
-        "--mirror={}".format(args.mirror),
-        "--debootstrapopts=components={}".format(args.component),
-        "--tarball={}".format(name),
-        "--package={}".format(",".join(packages)),
-        "--hostname={}".format(hostname),
-        "--user={}".format(user),
-        "--root-password={}".format(root_password),
-        "--no-kernel",
+        "--components={}".format(args.component),
         "--verbose",
+        args.distribution,  # SUITE
+        name,  # TARGET (directory is created)
+        args.mirror,  # MIRROR
     ]
-
     completed_command = subprocess.run(command, check=True)
+
+    # packages
+    command = [
+        'chroot', name,
+        'apt-get', 'install', '-y', ] + packages
+    completed_command = subprocess.run(command, check=True)
+
+    # hostname
+    with open(os.path.join(name, 'etc', 'hostname'), 'w', encoding='utf-8') as f:
+        f.write(hostname + "\n")
+
+    # user
+    command = [
+        'chroot', name,
+        'adduser', '--gecos', '', '--disabled-password', 'linaro',
+    ]
+    completed_process = subprocess.run(command, check=True)
+
+    command = [
+        'chroot', name, 'chpasswd',
+        ]
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
+    process.communicate(input='linaro:linaro')
+
+    # root password
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
+    process.communicate(input="root:root")
 
     compress(name)
 
 
 if __name__ == "__main__":
+    if os.getuid() != 0:
+        print("This script should be run as root: this is required by deboostrap", file=sys.stderr)
+        sys.exit(1)
     main()
