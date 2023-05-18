@@ -62,7 +62,7 @@ actions:
                   steps:
                     - chmod 755 /
                     - systemctl start systemd-timesyncd
-                    - echo nameserver 172.18.0.12 > /etc/resolv.conf
+                    - echo nameserver 172.18.0.13 > /etc/resolv.conf
                     - ip a
                     - mount /dev/sda1 /tmp
                     - rm -rf /tmp/*
