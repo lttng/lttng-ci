@@ -47,6 +47,16 @@
           name: 'LTTNG_CI_BRANCH'
           default: 'master'
           description: 'The branch of the CI repository to clone for job scripts'
+      - string:
+          name: 'LAVA_HOST'
+          default: 'lava-master-02.internal.efficios.com'
+          description: 'The hostname of the LAVA instance'
+      - choice:
+          name: 'LAVA_PROTO'
+          choices:
+            - 'http'
+            - 'https'
+          description: 'The protocol to use with the LAVA host'
 
 - publisher:
     name: 'system_tests_email_ext_default'
@@ -108,6 +118,8 @@
             LTTNG_VERSION={lttngversion}
             LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
             LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
+            LAVA_HOST=${{LAVA_HOST}}
+            LAVA_PROTO=${{LAVA_PROTO}}
 
     scm:
       - git:
@@ -186,7 +198,8 @@
             LTTNG_VERSION={lttngversion}
             LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
             LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
-
+            LAVA_HOST=${{LAVA_HOST}}
+            LAVA_PROTO=${{LAVA_PROTO}}
     scm:
       - git:
           url: "${{LTTNG_CI_REPO}}"

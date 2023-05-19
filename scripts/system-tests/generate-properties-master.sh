@@ -29,6 +29,9 @@ secret_key = echo123456
 # Enable S3 v4 signature APIs
 signature_v2 = False" > "$WORKSPACE/s3cfg"
 
+echo "LAVA_HOST=$LAVA_HOST" >> properties.txt
+echo "LAVA_PROTO=$LAVA_PROTO" >> properties.txt
+
 LTTNG_CI_PATH="$WORKSPACE/src/lttng-ci"
 echo "LTTNG_CI_PATH=$LTTNG_CI_PATH" >> properties.txt
 echo "LTTNG_CI_REPO=$LTTNG_CI_REPO" >> properties.txt

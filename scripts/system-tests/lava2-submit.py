@@ -28,7 +28,8 @@ import yaml
 from jinja2 import Environment, FileSystemLoader
 
 USERNAME = 'lava-jenkins'
-HOSTNAME = 'lava-master-02.internal.efficios.com'
+HOSTNAME = os.environ.get('LAVA_HOST', 'lava-master-02.internal.efficios.com')
+PROTO = os.environ.get('LAVA_PROTO', 'http')
 OBJSTORE_URL = "https://obj.internal.efficios.com/lava/results/"
 
 def parse_stable_version(stable_version_string):
@@ -89,8 +90,8 @@ def check_job_all_test_cases_state_count(server, job):
     for testcase in testcases:
         if testcase['result'] != 'pass':
             print(
-                "\tFAILED {}\n\t\t See http://{}{}".format(
-                    testcase['name'], HOSTNAME, testcase['url']
+                "\tFAILED {}\n\t\t See {}://{}{}".format(
+                    testcase['name'], PROTO, HOSTNAME, testcase['url']
                 )
             )
             failed_tests += 1
@@ -280,7 +281,7 @@ def main():
         return 0
 
     server = xmlrpc.client.ServerProxy(
-        'http://%s:%s@%s/RPC2' % (USERNAME, lava_api_key, HOSTNAME)
+        '%s://%s:%s@%s/RPC2' % (PROTO, USERNAME, lava_api_key, HOSTNAME)
     )
 
     for attempt in range(1, send_retry_limit + 1):
@@ -307,8 +308,8 @@ def main():
 
     print('Lava jobid:{}'.format(jobid))
     print(
-        'Lava job URL: http://lava-master-02.internal.efficios.com/scheduler/job/{}'.format(
-            jobid
+        'Lava job URL: {}://{}/scheduler/job/{}'.format(
+            PROTO, HOSTNAME, jobid
         )
     )
 
