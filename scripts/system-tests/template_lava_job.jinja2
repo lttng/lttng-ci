@@ -16,6 +16,9 @@ context:
   extra_kernel_args: cpuidle.off=1
   extra_nfsroot_args: ",nfsvers=3 nfsrootdebug"
 
+environment:
+  SHELL: "/bin/bash"
+
 {% if device_type == DeviceType.kvm %}
 tags:
   - qemu
