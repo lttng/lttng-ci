@@ -10,6 +10,9 @@ cloud05.internal.efficios.com
 #cloud07.internal.efficios.com
 #cloud08.internal.efficios.com
 
+[infra_lava]
+lava-master-03.internal.efficios.com
+
 [node_armhf]
 ci-node-deb11-armhf-01
 ci-node-deb11-armhf-02

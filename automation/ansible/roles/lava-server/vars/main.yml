@@ -1,0 +1,2 @@
+lava_allowed_hosts:
+  - "{{ ansible_facts['fqdn'] }}"

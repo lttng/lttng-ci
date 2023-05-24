@@ -1,0 +1,6 @@
+ALLOWED_HOSTS:
+  # This allows the local dispatcher to run without issues
+  - localhost
+{% for host in lava_allowed_hosts %}
+  - {{host}}
+{% endfor%}

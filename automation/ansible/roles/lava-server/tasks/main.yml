@@ -1,0 +1,93 @@
+---
+- name: Install lava-server
+  apt:
+    name:
+      - lava-server
+      - libvirt-clients
+- name: Enable apache modules
+  shell:
+    cmd: a2enmod "{{ item }}"
+    creates: "/etc/apache2/mods-enabled/{{item}}.load"
+  loop:
+    - proxy
+    - proxy_http
+    - ssl
+  notify:
+    - Restart apache
+- name: Disable default apache2 site
+  ansible.builtin.file:
+    path: /etc/apache2/sites-enable/000-default.conf
+    state: absent
+  notify:
+    - Reload apache
+- name: Enable lava-server site
+  shell:
+    cmd: a2ensite lava-server.conf
+    creates: /etc/apache2/sites-enabled/lava-server.conf
+  notify:
+    - Reload apache
+- name: Deploy internal certificate
+  import_role:
+    name: common
+    tasks_from: certs
+  notify:
+    - Reload apache
+- name: Create TLS vhost
+  copy:
+    src: vhost-tls.conf
+    dest: /etc/apache2/sites-enabled/lava-server-tls.conf
+  notify:
+    - Reload apache
+- name: Configure lava-server allowed hosts
+  ansible.builtin.template:
+    src: allowed_hosts.yaml.j2
+    dest: /etc/lava-server/settings.d/00-hosts.yaml
+    owner: lavaserver
+    group: lavaserver
+    mode: '0640'
+  notify:
+    - Restart lava-server-gunicorn
+- name: Configure lava-server LDAP integration
+  ansible.builtin.template:
+    src: ldap.yaml.j2
+    dest: /etc/lava-server/settings.d/01-ldap.yaml
+    owner: lavaserver
+    group: lavaserver
+    mode: '0640'
+  notify:
+    - Restart lava-server-gunicorn
+- name: Add lava devices
+  include_tasks: enable_device.yml
+  loop:
+    - qemu
+    - x86
+    - imx6q-wandboard
+    - cubietruck
+- name: Clone lttng-ci repo
+  become: yes
+  become_user: lavaserver
+  git:
+    dest: /var/lib/lava-server/home/lttng-ci
+    repo: https://github.com/lttng/lttng-ci
+  register: clone_result
+- name: List devices in lttng-ci repo
+  when: clone_result.before != clone_result.after
+  find:
+    paths:
+      - /var/lib/lava-server/home/lttng-ci/lava/devices/
+  register: found_lava_devices
+- name: Create device links
+  when: clone_result.before != clone_result.after
+  ansible.builtin.file:
+    src: "{{item}}"
+    path: "/etc/lava-server/dispatcher-config/devices/{{item | basename }}"
+    state: link
+  loop: "{{found_lava_devices['files'] | map(attribute='path')}}"
+- name: Configure PDU Daemon
+  import_tasks: pdudaemon.yml
+- name: Generate root SSH keypair
+  # The public key can be installed on qemu hosts
+  # lava-worker runs as root, not as lavaserver.
+  community.crypto.openssh_keypair:
+    path: /root/.ssh/id_ed25519
+    type: ed25519
