@@ -17,4 +17,4 @@
 
 # Simple deployment of lava device dictionaries
 
-ssh -t -l lava lava-master-02.internal.efficios.com 'sudo ln -s /home/lava/lttng-ci/lava/devices/* /etc/lava-server/dispatcher-config/devices/'
+ssh -t -l lavaserver lava-master-03.internal.efficios.com 'sudo ln -s /var/lib/lava-server/home/lttng-ci/lava/devices/* /etc/lava-server/dispatcher-config/devices/'

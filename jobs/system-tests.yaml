@@ -49,7 +49,7 @@
           description: 'The branch of the CI repository to clone for job scripts'
       - string:
           name: 'LAVA_HOST'
-          default: 'lava-master-02.internal.efficios.com'
+          default: 'lava-master-03.internal.efficios.com'
           description: 'The hostname of the LAVA instance'
       - choice:
           name: 'LAVA_PROTO'

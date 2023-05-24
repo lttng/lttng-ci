@@ -23,7 +23,7 @@ import xmlrpc.client
 from jinja2 import Environment, FileSystemLoader
 
 USERNAME = "lava-jenkins"
-HOSTNAME = "lava-master-02.internal.efficios.com"
+HOSTNAME = "lava-master-03.internal.efficios.com"
 DEFAULT_KERNEL_COMMIT = "a227f8436f2b21146fc024d84e6875907475ace2"
 
 
@@ -93,7 +93,7 @@ def submit(
         return 0
 
     server = xmlrpc.client.ServerProxy(
-        "http://%s:%s@%s/RPC2" % (USERNAME, lava_api_key, HOSTNAME)
+        "https://%s:%s@%s/RPC2" % (USERNAME, lava_api_key, HOSTNAME)
     )
 
     for attempt in range(10):
@@ -113,8 +113,8 @@ def submit(
 
     print("Lava jobid:{}".format(jobid), flush=True)
     print(
-        "Lava job URL: http://lava-master-02.internal.efficios.com/scheduler/job/{}".format(
-            jobid
+        "Lava job URL: https://{}/scheduler/job/{}".format(
+            HOSTNAME, jobid
         ),
         flush=True,
     )

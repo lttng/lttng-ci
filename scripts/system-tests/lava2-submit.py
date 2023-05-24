@@ -28,8 +28,8 @@ import yaml
 from jinja2 import Environment, FileSystemLoader
 
 USERNAME = 'lava-jenkins'
-HOSTNAME = os.environ.get('LAVA_HOST', 'lava-master-02.internal.efficios.com')
-PROTO = os.environ.get('LAVA_PROTO', 'http')
+HOSTNAME = os.environ.get('LAVA_HOST', 'lava-master-03.internal.efficios.com')
+PROTO = os.environ.get('LAVA_PROTO', 'https')
 OBJSTORE_URL = "https://obj.internal.efficios.com/lava/results/"
 
 def parse_stable_version(stable_version_string):
