@@ -2,9 +2,9 @@
 Description=Control and Queueing daemon for PDUs
 
 [Service]
-ExecStart=/bin/bash /home/lava//lttng-ci/lava/pdudaemon/daemon.sh
+ExecStart=/bin/bash /var/lib/lava-server/home/lttng-ci/lava/pdudaemon/daemon.sh
 Type=simple
-User=lava
+User=lavaserver
 Restart=on-abnormal
 
 [Install]
