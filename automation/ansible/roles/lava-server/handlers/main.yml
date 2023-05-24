@@ -1,0 +1,12 @@
+---
+- name: Reload apache
+  shell:
+    cmd: apache2ctl graceful
+- name: Restart apache
+  ansible.builtin.service:
+    name: apache2
+    state: restarted
+- name: Restart lava-server-gunicorn
+  ansible.builtin.service:
+    name: lava-server-gunicorn
+    state: restarted

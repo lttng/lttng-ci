@@ -1,5 +1,6 @@
 ---
 - import_playbook: hosts.yml
+- import_playbook: infra_lava.yml
 - import_playbook: node_armhf.yml
 - import_playbook: node_arm64.yml
 - import_playbook: node_ppc64el.yml

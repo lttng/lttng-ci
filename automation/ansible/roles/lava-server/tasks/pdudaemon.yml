@@ -1,0 +1,44 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+      - python3-venv
+      - python3-pip
+      - python3-pexpect
+      - python3-requests
+      - python3-systemd
+      - python3-paramiko
+      - python3-serial
+- name: Clone pdudaemon
+  become: yes
+  become_user: lavaserver
+  git:
+    dest: /var/lib/lava-server/home/pdudaemon
+    repo: https://git.internal.efficios.com/efficios/pdudaemon.git
+    version: console_server_update
+  register: pdudaemon_clone
+- name: Build pdudaemon
+  become: yes
+  become_user: lavaserver
+  when: pdudaemon_clone.before != pdudaemon_clone.after
+  shell:
+    chdir: /var/lib/lava-server/home/pdudaemon
+    cmd: "python3 ./setup.py build"
+- name: Install pdudaemon
+  when: pdudaemon_clone.before != pdudaemon_clone.after
+  shell:
+    chdir: /var/lib/lava-server/home/pdudaemon
+    cmd: "python3 setup.py install --prefix=/usr/local/"
+- name: Copy pdudaemon service file
+  when: pdudaemon_clone.before != pdudaemon_clone.after
+  copy:
+    remote_src: true
+    src: /var/lib/lava-server/home/lttng-ci/lava/pdudaemon/pdudaemon.service
+    dest: /etc/systemd/system/pdudaemon.service
+    mode: '0644'
+- name: Enable pdudaemon service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: pdudaemon.service
+    enabled: true
+    state: started

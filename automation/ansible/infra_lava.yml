@@ -1,0 +1,4 @@
+- hosts: infra_lava
+  roles:
+    - common
+    - lava-server

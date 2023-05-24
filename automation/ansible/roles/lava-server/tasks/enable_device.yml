@@ -1,0 +1,14 @@
+---
+- name: Check device type details
+  become: yes
+  become_user: lavaserver
+  register: device_details
+  ignore_errors: true
+  shell:
+    cmd: "lava-server manage device-types details {{item}}"
+- name: Enable device type
+  become: yes
+  become_user: lavaserver
+  when: device_details.rc == 1
+  shell:
+    cmd: "lava-server manage device-types add {{item}}"
