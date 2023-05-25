@@ -48,6 +48,7 @@ invalid_commits = {
         "ce67f5614a4db3b2de4d887eca52135b439b4937", # Does not build
         "80aff5efc66679fd934cef433c0e698694748385", # Does not build
         "f4f11e84942d36fcc8a597d226928bce2ccac4b3", # Does not build
+        "ae466a6e1b856d96cf5112a371b4df2b732503ec", # Does not build
         }
 
 def json_type(string):
