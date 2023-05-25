@@ -304,18 +304,23 @@ def recentLttngBranchesOfInterest = ['master',
   'stable-2.13',
   'stable-2.12']
 def recentLinuxBranchesOfInterest = ['master',
-  'linux-5.16.y',
+  'linux-6.1.y',
   'linux-5.15.y',
   'linux-5.10.y',
   'linux-5.4.y',
   'linux-4.19.y',
   'linux-4.14.y',
-  'linux-4.9.y']
+]
 
 def legacyLttngBranchesOfInterest = []
-def legacyLinuxBranchesOfInterest = []
+def legacyLinuxBranchesOfInterest = [
+    'linux-5.14.y',
+    'linux-4.18.y',
+    'linux-4.12.y',
+    'linux-4.9.y',
+]
 
-def vmLinuxBranchesOfInterest = ['linux-3.18.y']
+def vmLinuxBranchesOfInterest = []
 
 // Generate configurations of interest.
 def configurationOfInterest = [] as Set
