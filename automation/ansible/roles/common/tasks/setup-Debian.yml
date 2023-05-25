@@ -20,4 +20,8 @@
   apt: update_cache=yes cache_valid_time=86400
 
 - name: Ensure common packages are installed.
-  apt: "name={{ common_packages }} state=present"
+  apt: "name={{ common_packages + packages_Debian|default([]) }} state=present"
+
+- name: Debug common packages
+  debug:
+    msg: "{{ common_packages + packages_Debian|default([]) }}"

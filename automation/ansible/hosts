@@ -1,13 +1,14 @@
 localhost ansible_connection=local ansible_python_interpreter=python3
 
 [hosts]
-#cloud01.internal.efficios.com
+cloud01.internal.efficios.com
 cloud02.internal.efficios.com
 cloud03.internal.efficios.com
 cloud04.internal.efficios.com
 cloud05.internal.efficios.com
-#cloud06.internal.efficios.com
-#cloud07.internal.efficios.com
+cloud06.internal.efficios.com
+cloud07.internal.efficios.com
+# This host is used for tests via lava and is running ephemereal installs only
 #cloud08.internal.efficios.com
 ci-host-win11-arm64-01.internal.efficios.com
 

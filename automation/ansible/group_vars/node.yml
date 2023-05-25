@@ -1,2 +1,22 @@
 ---
 jenkins_user: true
+packages_Debian:
+  - autoconf
+  - automake
+  - bison
+  - build-essential
+  - clang
+  - clang-tools
+  - cloc
+  - default-jdk-headless
+  - flex
+  - gettext
+  - git
+  - libssl-dev
+  - libtap-harness-archive-perl
+  - libtool-bin
+  - lzop
+  - pbzip2
+  - sudo
+  - vim
+  - virtualenv
