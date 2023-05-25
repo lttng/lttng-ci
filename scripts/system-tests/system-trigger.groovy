@@ -273,7 +273,7 @@ def LaunchJob = { jobName, jobInfo ->
   for (paramdef in job.getProperty(ParametersDefinitionProperty.class).getParameterDefinitions()) {
     // If there is a default value for this parameter, use it. Don't use empty
     // default value parameters.
-    if (paramdef.getDefaultValue()) {
+    if (paramdef.getDefaultParameterValue() != null) {
       params += paramdef.getDefaultParameterValue();
     }
   }
