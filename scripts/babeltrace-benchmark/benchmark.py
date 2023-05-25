@@ -394,19 +394,20 @@ def launch_jobs(branches, git_path, wait_for_completion, debug, force):
     Lauch jobs for all missing results.
     """
     client = get_client()
+    commits_to_test = set()
     for branch, cutoff in branches.items():
-        commits = get_git_log(branch, cutoff, git_path)
-
+        commits = [x for x in get_git_log(branch, cutoff, git_path) if x not in invalid_commits]
         with tempfile.TemporaryDirectory() as workdir:
             for commit in commits:
-                if commit in invalid_commits:
-                    continue
                 b_results = get_benchmark_results(client, commit, workdir)[0]
                 if b_results and not force:
                     continue
-                lava_submit.submit(
-                    commit, wait_for_completion=wait_for_completion, debug=debug
-                )
+                commits_to_test.add(commit)
+    for index, commit in enumerate(commits_to_test):
+        print("Job {}/{}".format(index+1, len(commits_to_test)))
+        lava_submit.submit(
+            commit, wait_for_completion=wait_for_completion, debug=debug
+        )
 
 
 def main():
