@@ -24,3 +24,11 @@ bw sync -f
 ```
 ansible-playbook -i hosts [-l SUBSET] site.yaml
 ```
+
+# Bootstrapping hosts
+
+## Windows
+
+1. Configure either SSH or WinRM connection: see https://docs.ansible.com/ansible/latest/os_guide/windows_setup.html
+2. For arm64 hosts:
+  * Install the necessary optional features (eg. OpenSSH, Hyper-V) since Windows RSAT isn't available on Arm64 yet

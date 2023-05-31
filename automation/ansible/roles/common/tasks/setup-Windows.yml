@@ -1,0 +1,56 @@
+---
+
+- name: Install OpenSSH
+  ansible.windows.win_feature:
+    name: OpenSSH
+    state: present
+  # This depends on Get-WindowsFeature, provided by RSAT. Not currently available on arm
+  when: ansible_architecture != 'ARM 64-bit Processor'
+- name: Run OpenSSH automatically
+  ansible.windows.win_service:
+    name: sshd
+    start_mode: auto
+    state: started
+- name: Turn off standy
+  ansible.windows.win_command: 'C:\Windows\system32\powercfg.exe /change standby-timeout-ac 0'
+- name: Turn off hibernation
+  ansible.windows.win_command: 'C:\Windows\system32\powercfg.exe /hibernate off'
+- name: Turn off disk timeouts
+  ansible.windows.win_command: 'C:\Windows\system32\powercfg.exe /change disk-timeout-ac 0'
+- name: Install powershell
+  ansible.windows.win_package:
+    path: 'https://github.com/PowerShell/PowerShell/releases/download/v7.3.4/PowerShell-7.3.4-win-x64.msi'
+    state: 'present'
+    # get-wmiobject Win32_Product
+    product_id: '{11479679-5C7F-477F-869F-3ED956CE684D}'
+- name: Set powershell 7 as the default shell for OpenSSH
+  ansible.windows.win_regedit:
+    path: 'HKLM:\SOFTWARE\OpenSSH'
+    name: 'DefaultShell'
+    data: 'c:/progra~1/powershell/7/pwsh.exe'
+- name: Join domain
+  ansible.windows.win_domain_membership:
+    dns_domain_name: 'internal.efficios.com'
+    hostname: "{{ansible_hostname}}"
+    domain_ou_path: 'DC=internal,DC=efficios,DC=com'
+    state: 'domain'
+    domain_admin_user: "{{ lookup('community.general.bitwarden', '2443aefa-0b85-497d-aa0e-aef6011295c4', search='id', field='username')[0] }}"
+    domain_admin_password: "{{ lookup('community.general.bitwarden', '2443aefa-0b85-497d-aa0e-aef6011295c4', search='id', field='password')[0] }}"
+  register: domain_state
+- name: Install python
+  ansible.windows.win_package:
+    path: 'https://www.python.org/ftp/python/3.11.3/python-3.11.3-arm64.exe'
+    state: 'present'
+    arguments:
+      - '/InstallAllUsers=1'
+      - '/SimpleInstall'
+      - '/quiet'
+    creates_path: 'C:\Windows\py.exe'
+- name: Set administrator authorized keys
+  ansible.windows.win_template:
+    src: 'authorized_keys.j2'
+    dest: 'c:\ProgramData\ssh\administrators_authorized_keys'
+
+- name: Reboot if domain changed
+  when: domain_state.reboot_required
+  ansible.windows.win_reboot:

@@ -1,0 +1,3 @@
+{% for filename in lookup('fileglob', 'public_keys/*.pub', wantlist=true) -%}
+{{ lookup('file', filename) }}
+{% endfor %}

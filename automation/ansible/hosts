@@ -9,6 +9,10 @@ cloud05.internal.efficios.com
 #cloud06.internal.efficios.com
 #cloud07.internal.efficios.com
 #cloud08.internal.efficios.com
+ci-host-win11-arm64-01.internal.efficios.com
+
+[windows]
+ci-host-win11-arm64-01.internal.efficios.com
 
 [infra_lava]
 lava-master-03.internal.efficios.com
