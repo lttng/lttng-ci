@@ -1,4 +1,18 @@
 ---
+- name: Enable epel-release
+  # This provides some extra packages, eg. htop, python3-virtualenv
+  dnf:
+    name: epel-release
+
+- name: Enable rocky devel repository
+  yum_repository:
+    name: devel
+    description: "Rocky Linux $releasever - Devel"
+    mirrorlist: "https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=Devel-$releasever"
+    enabled: true
+    gpgcheck: true
+  when: ansible_distribution == 'Rocky'
+
 - name: Ensure common packages are installed.
   dnf:
     name: "{{ common_packages }}"
