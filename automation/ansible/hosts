@@ -32,6 +32,9 @@ ci-node-deb11-arm64-01
 ci-node-deb11-arm64-02
 ci-node-deb11-arm64-03
 ci-node-deb11-arm64-04
+ci-node-el7-arm64-01 ansible_python_interpreter=python2
+ci-node-el8-arm64-01
+ci-node-el9-arm64-01
 
 [node_arm64:vars]
 ansible_python_interpreter=python3
@@ -117,6 +120,9 @@ ci-node-sles15sp4-amd64-05-01
 ci-node-el7-amd64-02-01 ansible_python_interpreter=python2
 ci-node-el8-amd64-03-01
 ci-node-el9-amd64-02-01
+ci-node-el7-arm64-01
+ci-node-el8-arm64-01
+ci-node-el9-arm64-01
 
 [node:children]
 node_i386
