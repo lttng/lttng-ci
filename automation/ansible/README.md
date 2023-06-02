@@ -1,7 +1,7 @@
 # Required collections
 
 ```
-ansible-galaxy collection install community.general
+ansible-galaxy install -r roles/requirements.yml
 ```
 
 # Privileged data
