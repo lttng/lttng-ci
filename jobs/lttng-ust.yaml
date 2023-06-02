@@ -523,7 +523,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: master
-          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64, el7-arm64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -592,7 +592,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.13
-          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
+          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64, el7-arm64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
