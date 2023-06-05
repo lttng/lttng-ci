@@ -1,3 +1,9 @@
+# Setup on Ubuntu
+
+```
+apt install ansible ansible-mitogen
+```
+
 # Required collections
 
 ```
