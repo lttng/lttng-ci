@@ -76,12 +76,19 @@ export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 make --keep-going check || failed_tests=1
 
 if [ -f "./tests/root_regression" ]; then
-	cd "./tests" || exit 1
-	prove --nocolor --verbose --merge --exec '' - < root_regression || failed_tests=1
-	cd ..
+    cd "./tests" || exit 1
+    prove --nocolor --verbose --merge --exec '' - < root_regression || failed_tests=1
+    cd ..
+fi
+
+# This script doesn't exist in master anymore, but compatibility with old branches
+# should be retained until lttng-tools 2.13 is no longer supported
+if [ -f "./tests/root_destructive_tests" ]; then
+    cd "./tests" || exit 1
+    prove --nocolor --verbose --merge --exec '' - < root_destructive_tests || failed_tests=2
+    cd ..
+else
+    echo 'root_destructive_tests not found'
 fi
 
 exit $failed_tests
-
-
-
