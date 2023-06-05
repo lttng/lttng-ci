@@ -22,17 +22,11 @@
   when: ansible_os_family == 'Suse'
 
 - include: setup-Windows.yml
-  when: ansible_os_family == "Windows"
+  when: ansible_os_family == 'Windows'
 
-- name: Set up authorized_keys for the root user
-  authorized_key:
-    user: 'root'
-    key: "{% for key in query('fileglob', 'public_keys/*.pub') %}{{ lookup('file', key) ~ '\n'}}{% endfor %}\n{% for key in lookup('vars', 'extra_root_ssh_authorized_keys', default=[]) %}{{ key ~ '\n' }}{% endfor %}"
-    exclusive: true
+# Setup user accounts
+- include: users.yml
   when: ansible_os_family != 'Windows'
 
 - include: users-Windows.yml
-  when: ansible_os_family == "Windows"
-
-- include: users.yml
-  when: ansible_os_family != "Windows"
+  when: ansible_os_family == 'Windows'

@@ -1,4 +1,10 @@
 ---
+- name: Set up authorized_keys for the root user
+  authorized_key:
+    user: 'root'
+    key: "{% for key in query('fileglob', 'public_keys/*.pub') %}{{ lookup('file', key) ~ '\n'}}{% endfor %}\n{% for key in lookup('vars', 'extra_root_ssh_authorized_keys', default=[]) %}{{ key ~ '\n' }}{% endfor %}"
+    exclusive: true
+
 - name: Remove ubuntu user
   user:
     name: ubuntu
