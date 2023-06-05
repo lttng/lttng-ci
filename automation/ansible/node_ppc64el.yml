@@ -1,6 +1,7 @@
 - hosts: node_ppc64el
   roles:
     - common
+    - common-node
     - babeltrace
     - liburcu
     - lttng-ust

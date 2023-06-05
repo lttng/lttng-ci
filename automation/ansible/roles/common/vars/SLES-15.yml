@@ -1,26 +1,12 @@
 ---
 common_patterns:
   - base
-  - devel_basis
 
 common_packages:
-  - autoconf
-  - automake
-  - bison
   - curl
-  - flex
-  - gettext-runtime
   - git-core
-  - java-11-openjdk-devel
-  - java-11-openjdk-headless
-  - jq
-  - libopenssl-devel
-#  - libtap-harness-archive-perl
-  - libtool
   - openssh
   - psmisc
-#  - python-virtualenv
   - rsync
   - sudo
-#  - tree
   - vim

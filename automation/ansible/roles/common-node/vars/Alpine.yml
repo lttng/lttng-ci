@@ -1,0 +1,26 @@
+---
+common_node_packages:
+  - alpine-sdk
+  - autoconf
+  - automake
+  - bash
+  - bison
+  - clang
+  - cloc
+  - coreutils
+  - curl
+  - flex
+  - gettext
+  - git
+  - htop
+  - jq
+  - libtool
+  - openjdk11
+  - openssl-dev
+  - perl
+  - py-virtualenv
+  - rsync
+  - shadow
+  - sudo
+  - tree
+  - vim

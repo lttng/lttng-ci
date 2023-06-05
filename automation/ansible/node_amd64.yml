@@ -1,6 +1,7 @@
 - hosts: node_amd64
   roles:
     - common
+    - common-node
     - cross-compilers
     - compilers
     - babeltrace

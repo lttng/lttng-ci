@@ -1,6 +1,7 @@
 - hosts: node_sles
   roles:
     - common
+    - common-node
     - babeltrace
     - liburcu
     - lttng-ust

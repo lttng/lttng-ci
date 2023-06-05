@@ -1,6 +1,7 @@
 - hosts: all
   roles:
     - common
+    - common-node
     - cross-compilers
     - compilers
     - babeltrace

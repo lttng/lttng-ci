@@ -1,6 +1,7 @@
 - hosts: node_standalone
   roles:
     - common
+    - common-node
     - cross-compilers
     - babeltrace
     - liburcu

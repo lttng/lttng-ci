@@ -1,0 +1,6 @@
+---
+- name: Update apk cache.
+  apk: update_cache=yes
+
+- name: Ensure common_node packages are installed.
+  apk: "name={{ common_node_packages }} state=present"

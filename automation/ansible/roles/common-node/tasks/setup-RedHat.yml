@@ -1,0 +1,6 @@
+---
+- name: Ensure common_node packages are installed.
+  dnf:
+    name: "{{ common_node_packages }}"
+    state: installed
+    install_weak_deps: false

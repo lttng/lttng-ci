@@ -1,0 +1,6 @@
+---
+- name: Ensure common_node patterns are installed.
+  zypper: "name={{ common_node_patterns }} type=pattern state=present update_cache=yes"
+
+- name: Ensure common_node packages are installed.
+  zypper: "name={{ common_node_packages }} type=package state=present update_cache=yes"
