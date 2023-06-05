@@ -408,7 +408,6 @@
     kversion:
       - linux-3.18.y
     lttngversion:
-      - master
       - stable-2.12
       - stable-2.13
     jobs:
