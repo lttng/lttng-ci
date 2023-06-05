@@ -7,6 +7,8 @@ common_packages:
   - curl
   - emacs-nox
   - flex
+  - gcc
+  - gcc-c++
   - gettext
   - git
   - htop
@@ -15,6 +17,7 @@ common_packages:
   - jq
   - libtool
   - lzop
+  - make
   - openssh-server
   - openssl-devel
   - perl-Test-Harness
