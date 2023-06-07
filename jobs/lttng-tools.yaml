@@ -693,7 +693,7 @@
       - gerrit: &lttng-tools_trigger_gerrit_smoke_1
           trigger-on:
             - comment-added-event:
-                approval-category: 'Smoke-Build'
+                approval-category: 'Smoke-Build-Lvl1'
                 approval-value: 1
           projects:
             - project-compare-type: 'PLAIN'
@@ -736,8 +736,8 @@
       - gerrit: &lttng-tools_trigger_gerrit_smoke_2
           trigger-on:
             - comment-added-event:
-                approval-category: 'Smoke-Build'
-                approval-value: 2
+                approval-category: 'Smoke-Build-Lvl2'
+                approval-value: 1
           projects:
             - project-compare-type: 'PLAIN'
               project-pattern: 'lttng-tools'

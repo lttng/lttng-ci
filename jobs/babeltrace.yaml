@@ -396,7 +396,7 @@
       - gerrit: &babeltrace_trigger_gerrit_smoke
           trigger-on:
             - comment-added-event:
-                approval-category: 'Smoke-Build'
+                approval-category: 'Smoke-Build-Lvl1'
                 approval-value: 1
           projects:
             - project-compare-type: 'PLAIN'
