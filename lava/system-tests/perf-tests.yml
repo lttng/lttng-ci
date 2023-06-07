@@ -10,8 +10,8 @@ run:
                 - apt install -y libpfm4-dev curl
                 - git clone "${CI_REPO}" --branch="${CI_BRANCH}" ci
                 - export TMPDIR="/tmp"
-                - mkdir -p coredump
-                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+                - mkdir -p /tmp/coredump
+                - echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
                 - ulimit -c unlimited
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools
@@ -20,5 +20,5 @@ run:
                 #Need to check if the file is present for branches where the testcase was not backported
                 - lava-test-case run-tests --shell "if [ -e perf_regression ]; then prove --nocolor --verbose --merge --exec '' - < perf_regression; else echo 'perf_regression not found'; fi"
                 - popd
-                - tar czf coredump.tar.gz coredump
+                - tar czf coredump.tar.gz /tmp/coredump
                 - ./ci/lava/upload_artifact.sh coredump.tar.gz coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"

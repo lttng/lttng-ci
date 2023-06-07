@@ -22,8 +22,8 @@ run:
                 - apt install -y curl python3
                 - git clone https://github.com/lttng/lttng-ci ci
                 - export TMPDIR="/tmp"
-                - mkdir -p coredump
-                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+                - mkdir -p /tmp/coredump
+                - echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
                 - ulimit -c unlimited
                 - mkdir /tmp/ram_disk
                 - mount -t tmpfs -o size=10024m new_ram_disk /tmp/ram_disk

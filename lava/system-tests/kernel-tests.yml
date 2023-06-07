@@ -10,8 +10,8 @@ run:
                 - apt install -y curl
                 - git clone "${CI_REPO}" --branch="${CI_BRANCH}" ci
                 - export TMPDIR="/tmp"
-                - mkdir -p coredump
-                - echo "$(pwd)/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+                - mkdir -p /tmp/coredump
+                - echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
                 - ulimit -c unlimited
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools
@@ -19,5 +19,5 @@ run:
                 - systemctl stop systemd-timesyncd.service
                 - lava-test-case run-tests --shell "$(dirs -l +1)/ci/scripts/system-tests/run-test-suites.sh ${LTTNG_VERSION_STRING}"
                 - systemctl start systemd-timesyncd.service
-                - tar czf coredump.tar.gz coredump
+                - tar czf coredump.tar.gz /tmp/coredump
                 - ./ci/lava/upload_artifact.sh coredump.tar.gz coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"
