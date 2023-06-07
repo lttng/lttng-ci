@@ -394,6 +394,7 @@
       - linux-5.10.y
       - linux-5.15.y
       - linux-5.16.y
+      - linux-6.1.y
     lttngversion:
       - canary
       - master
