@@ -5,3 +5,5 @@
 *.retry
 lava/pdudaemon/venv/
 lava/pdudaemon/pdudaemon.db
+automation/ansible/roles/libvirt/files/meta-data
+automation/ansible/roles/libvirt/files/vendor-data

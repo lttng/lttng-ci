@@ -1,0 +1,85 @@
+## template: jinja
+#cloud-config
+# @see https://github.com/canonical/subiquity
+autoinstall:
+  apt:
+    disable_components: []
+    geoip: true
+    preserve_sources_list: false
+    primary:
+    - arches:
+      - amd64
+      - i386
+      uri: http://ca.archive.ubuntu.com/ubuntu
+    - arches:
+      - default
+      uri: http://ports.ubuntu.com/ubuntu-ports
+  drivers:
+    install: false
+  kernel:
+    package: linux-generic
+  keyboard:
+    layout: us
+    toggle: null
+    variant: ''
+  locale: en_US.UTF-8
+  network:
+    ethernets:
+      enp1s0:
+        dhcp4: true
+    version: 2
+  source:
+    id: ubuntu-server
+    search_drivers: false
+  ssh:
+    allow-pw: false
+    install-server: true
+    authorized-keys:
+      # yamllint disable-line rule:line-length
+      - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBnCyGcahJXys7md2yb3jP8L6hLN3D72aZCzsqUrJDsC kstewart@laptop-kstewart'
+      # yamllint disable-line rule:line-length
+      - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHVFn/ymsG8LqPvgVzyMaSVzYCVn/440ME8O6AzbZG39 mjeanson@laptop-mjeanson'
+  storage:
+    config:
+    - ptable: gpt
+      path: /dev/sda
+      wipe: superblock-recursive
+      preserve: false
+      name: ''
+      grub_device: true
+      type: disk
+      id: disk-sda
+    - device: disk-sda
+      size: 1048576
+      flag: bios_grub
+      number: 1
+      preserve: false
+      grub_device: false
+      offset: 1048576
+      type: partition
+      id: partition-0
+    - device: disk-sda
+      size: 85896200192
+      wipe: superblock
+      number: 2
+      preserve: false
+      grub_device: false
+      offset: 2097152
+      type: partition
+      id: partition-1
+    - fstype: ext4
+      volume: partition-1
+      preserve: false
+      type: format
+      id: format-0
+    - path: /
+      device: format-0
+      type: mount
+      id: mount-0
+  updates: security
+  user-data:
+    fqdn: "{{ds.meta_data.hostname}}"
+    prefer_fqdn_over_hostname: true
+    users:
+      default: {}
+  version: 1

@@ -1,0 +1,33 @@
+---
+- name: Install virtualization packages
+  apt:
+    name: ['qemu-kvm', 'libvirt-daemon-system']
+- name: Run libvirtd
+  systemd:
+    name: libvirtd
+    enabled: true
+    state: started
+- name: Download ISOs
+  loop: "{{ isos }}"
+  get_url:
+    dest: "{{item.dest}}"
+    url: "{{item.url}}"
+    checksum: "{{item.checksum}}"
+- name: Create VM disks
+  loop: "{{ lookup('vars', 'vms', default=[]) }}"
+  vars:
+    vm: "{{ vm_defaults | combine(item.vars) }}"
+  when: vm.disk != ""
+  shell:
+    cmd: "qemu-img create -f qcow2 {{vm.disk}} {{vm.disk_capacity}}"
+    creates: "{{vm.disk}}"
+- name: Define VMs
+  # Note: is vm.uuid is not set and the template is changed, those changes will not be applied
+  # Note: many changes will require the VM to be destroyed then started again
+  community.libvirt.virt:
+    command: define
+    xml: "{{ lookup('template', item.template|default('vm_template.xml.j2')) }}"
+    autostart: true
+  loop: "{{ lookup('vars', 'vms', default=[]) }}"
+  vars:
+    vm: "{{ vm_defaults | combine(item.vars) }}"
