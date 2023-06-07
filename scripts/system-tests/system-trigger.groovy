@@ -269,6 +269,10 @@ def CraftJobName = { jobType, linuxBranch, lttngBranch ->
 
 def LaunchJob = { jobName, jobInfo ->
   def job = Hudson.instance.getJob(jobName)
+  if (job == null) {
+    println(String.format("Failed to find job by name '%s'", jobName))
+    return null;
+  }
   def params = []
   for (paramdef in job.getProperty(ParametersDefinitionProperty.class).getParameterDefinitions()) {
     // If there is a default value for this parameter, use it. Don't use empty
@@ -451,7 +455,7 @@ while (ongoingJobs > 0) {
 
     // The isCancelled() method checks if the run was cancelled before
     // execution. We consider such run as being aborted.
-    if (jobBuild.isCancelled()) {
+    if (jobBuild == null || jobBuild.isCancelled()) {
       println("${jobName} was cancelled before launch.")
       isAborted = true;
       abortedRuns.add(jobName);
