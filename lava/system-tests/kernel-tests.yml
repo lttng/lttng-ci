@@ -19,5 +19,6 @@ run:
                 - systemctl stop systemd-timesyncd.service
                 - lava-test-case run-tests --shell "$(dirs -l +1)/ci/scripts/system-tests/run-test-suites.sh ${LTTNG_VERSION_STRING}"
                 - systemctl start systemd-timesyncd.service
+                - popd
                 - tar czf coredump.tar.gz /tmp/coredump
                 - ./ci/lava/upload_artifact.sh coredump.tar.gz coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"
