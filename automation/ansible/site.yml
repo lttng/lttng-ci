@@ -4,6 +4,7 @@
 - import_playbook: node_armhf.yml
 - import_playbook: node_arm64.yml
 - import_playbook: node_ppc64el.yml
+- import_playbook: node_riscv64.yml
 - import_playbook: node_i386.yml
 - import_playbook: node_amd64.yml
 - import_playbook: node_standalone.yml

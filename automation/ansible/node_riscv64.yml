@@ -1,0 +1,9 @@
+- hosts: node_riscv64
+  roles:
+    - common
+    - common-node
+    - babeltrace
+    - liburcu
+    - lttng-ust
+    - lttng-tools
+    - binutils-gdb

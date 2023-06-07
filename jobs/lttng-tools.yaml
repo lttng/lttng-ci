@@ -1733,6 +1733,30 @@
           touchstone: ''
 
 - project:
+    name: lttng-tools-mjeanson
+    job_prefix: 'dev_mjeanson_'
+    ust_job_prefix: 'dev_mjeanson_'
+    urcu_job_prefix: 'dev_mjeanson_'
+    bt_job_prefix: 'dev_mjeanson_'
+    github_user: lttng
+    github_name: lttng-tools
+    email_to: "mjeanson@efficios.com"
+    version:
+      - master
+    jobs:
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+          buildtype: portbuild
+          version: master
+          ustversion: master
+          platforms: !!python/tuple [sid-riscv64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, no-ust, agents]
+          urcuversions: !!python/tuple [master]
+          babelversions: !!python/tuple [master]
+          filter: ''
+          touchstone: ''
+
+- project:
     name: lttng-tools-views
     views:
       - LTTng-tools

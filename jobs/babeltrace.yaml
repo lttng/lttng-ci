@@ -856,6 +856,23 @@
           touchstone: ''
 
 - project:
+    name: babeltrace2-mjeanson
+    job_prefix: 'dev_mjeanson_'
+    github_user: efficios
+    github_name: babeltrace
+    email_to: "mjeanson@efficios.com"
+    version:
+      - master
+    jobs:
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
+          buildtype: portbuild
+          platforms: !!python/tuple [sid-riscv64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
+
+- project:
     name: babeltrace-views
     views:
       - Babeltrace

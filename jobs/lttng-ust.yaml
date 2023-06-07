@@ -859,6 +859,25 @@
           touchstone: '(platform == "deb11-i386")'
 
 - project:
+    name: lttng-ust-mjeanson
+    job_prefix: 'dev_mjeanson_'
+    github_user: lttng
+    github_name: lttng-ust
+    email_to: "mjeanson@efficios.com"
+    version:
+      - master
+    jobs:
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: portbuild
+          version: master
+          platforms: !!python/tuple [sid-riscv64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, agents]
+          liburcu_versions: !!python/tuple [master]
+          filter: ''
+          touchstone: ''
+
+- project:
     name: lttng-ust-views
     views:
       - LTTng-ust

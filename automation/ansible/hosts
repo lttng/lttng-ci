@@ -44,6 +44,9 @@ ansible_python_interpreter=python3
 ci-node-deb12-ppc64el-01
 ci-node-deb12-ppc64el-02
 
+[node_riscv64]
+172.16.0.138
+
 [node_i386]
 ci-node-deb11-i386-02-01
 ci-node-deb11-i386-03-01
@@ -132,6 +135,7 @@ node_amd64
 node_armhf
 node_arm64
 node_ppc64el
+node_riscv64
 node_standalone
 node_sles
 node_el
