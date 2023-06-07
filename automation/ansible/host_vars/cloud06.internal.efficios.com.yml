@@ -1,0 +1,4 @@
+---
+extra_root_ssh_authorized_keys:
+  # yamllint disable-line rule:line-length
+  - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILmmI2pn+ncFKm/fOS5+RskBGnhbMd0p399ZWEKLUQ+Q lava-master-03'
