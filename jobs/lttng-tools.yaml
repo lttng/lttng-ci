@@ -22,6 +22,16 @@
           write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
       - workspace-cleanup
+      - raw: &lttng-tools_wrapper_proc-cleaner_defaults
+          xml: |
+            <org.jenkinsci.plugins.proccleaner.PreBuildCleanup plugin="proc-cleaner-plugin">
+              <cleaner class="org.jenkinsci.plugins.proccleaner.PsCleaner">
+                <killerType>org.jenkinsci.plugins.proccleaner.PsAllKiller</killerType>
+                <killer class="org.jenkinsci.plugins.proccleaner.PsAllKiller"/>
+                <switchedOff>false</switchedOff>
+                <systemProcessesFilterOff>false</systemProcessesFilterOff>
+              </cleaner>
+            </org.jenkinsci.plugins.proccleaner.PreBuildCleanup>
 
     scm:
       - git: &lttng-tools_scm_git_default
@@ -451,6 +461,17 @@
           clean-if:
             - failure: false
 
+      - raw: &lttng-tools_publisher_proc-cleaner_defaults
+          xml: |
+            <org.jenkinsci.plugins.proccleaner.PostBuildCleanup plugin="proc-cleaner-plugin">
+              <cleaner class="org.jenkinsci.plugins.proccleaner.PsCleaner">
+                <killerType>org.jenkinsci.plugins.proccleaner.PsAllKiller</killerType>
+                <killer class="org.jenkinsci.plugins.proccleaner.PsAllKiller"/>
+                <switchedOff>false</switchedOff>
+                <systemProcessesFilterOff>false</systemProcessesFilterOff>
+              </cleaner>
+            </org.jenkinsci.plugins.proccleaner.PostBuildCleanup>
+
       - ircbot: &lttng-tools_publisher_ircbot_defaults
           strategy: statechange-only
           message-type: summary
@@ -484,8 +505,9 @@
     publishers:
       - tap: *lttng-tools_publisher_tap_defaults
       - raw: *lttng-tools_publisher_warnings-ng_defaults
-      - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
       - archive: *lttng-tools_publisher_archive_defaults
+      - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - raw: *lttng-tools_publisher_proc-cleaner_defaults
       - ircbot: *lttng-tools_publisher_ircbot_defaults
       - email-ext: *lttng-tools_publisher_email-ext_defaults
 
@@ -532,6 +554,7 @@
           timeout: 45
       - timestamps
       - workspace-cleanup
+      - raw: *lttng-tools_wrapper_proc-cleaner_defaults
 
     <<: *lttng-tools_matrix_axes_defaults
     <<: *lttng-tools_builders_defaults
@@ -656,6 +679,7 @@
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - archive: *lttng-tools_publisher_archive_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - raw: *lttng-tools_publisher_proc-cleaner_defaults
 
 - job-template:
     name: dev_review_lttng-tools_{version}_smokebuild
@@ -698,6 +722,7 @@
     publishers:
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - raw: *lttng-tools_publisher_proc-cleaner_defaults
 
 - job-template:
     name: dev_review_lttng-tools_{version}_clang-tidy
@@ -786,6 +811,7 @@
           artifacts: 'clang-tidy-fixes.diff'
           allow-empty: true
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - raw: *lttng-tools_publisher_proc-cleaner_defaults
 
 - job-template:
     name: dev_review_lttng-tools_{version}_rootbuild
@@ -815,6 +841,7 @@
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - archive: *lttng-tools_publisher_archive_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - raw: *lttng-tools_publisher_proc-cleaner_defaults
 
 - job-template:
     name: 'dev_review_lttng-tools_{version}_check-format'
@@ -899,6 +926,7 @@
           allow-empty: false
           fingerprint: true
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - raw: *lttng-tools_publisher_proc-cleaner_defaults
       - ircbot: *lttng-tools_publisher_ircbot_defaults
 
 - job-template:
