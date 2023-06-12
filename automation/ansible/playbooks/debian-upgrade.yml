@@ -1,0 +1,172 @@
+---
+- name: Set next release
+  hosts: all
+  tasks:
+    - debug:
+        msg: "{{lookup('vars', ansible_distribution+'_releases', default=[])}}"
+    - debug:
+        msg: "{{ansible_distribution_release}}"
+    - set_fact:
+        release_index: "{{lookup('ansible.utils.index_of', data=lookup('vars', ansible_distribution+'_releases', default=[]), test='eq', value=ansible_distribution_release)}}"
+    # If there is not a next release available (as defined below in Debian_releasess
+    # or Ubuntu_releases), the execution of the playbook will fail at this step.
+    - set_fact:
+        next_release: "{{lookup('vars', ansible_distribution+'_releases')[release_index|int + 1]}}"
+    - debug:
+        msg: "{{next_release}}"
+  vars:
+    # 'stable' releases ordered from oldest to newest
+    Debian_releases:
+      - buster
+      - bullseye
+      - bookworm
+    Ubuntu_releases:
+      - xenial
+      - bionic
+      - focal
+      - jammy
+- name: Run any outstanding upgrades
+  hosts: all
+  tasks:
+    - apt:
+        update_cache: true
+    - apt:
+        upgrade: dist
+    - apt:
+        autoremove: true
+        purge: true
+- name: Pre-upgrade backups
+  hosts: all
+  tasks:
+    - name: Check if /etc is a git repo
+      register: etckeeper
+      command:
+        cmd: test -d /etc/.git
+      ignore_errors: true
+    - name: Tag etc configuration
+      when: etckeeper.rc == 0
+      block:
+        - command:
+            chdir: /etc
+            argv:
+              - git
+              - tag
+              - "pre-{{next_release}}"
+        - command:
+            chdir: /etc
+            cmd: 'git gc --prune'
+    - name: Backup package state
+      block:
+        - shell:
+            cmd: "tar czf /var/backups/pre-{{next_release}}-backup.tgz /etc /var/lib/dpkg /var/lib/apt/extended_states"
+            # Mitogen doesn't seem to work with the 'archive' module, since tarfile is
+            # "present in the Mitogent importer blacklist", so a shell command is used
+            # here instead
+            warn: false
+        - shell:
+            cmd: "dpkg --get-selections '*' > /var/backups/dpkg-selections-pre-{{next_release}}.txt"
+        - file:
+            path: "{{item}}"
+            mode: '0600'
+          with_items:
+            - "/var/backups/pre-{{next_release}}-backup.tgz"
+            - "/var/backups/dpkg-selections-pre-{{next_release}}.txt"
+- name: Debian major version upgrade
+  hosts: all
+  when: ansible_distribution == 'Debian'
+  vars:
+    apt_noninteractive_environment:
+      DEBIAN_FRONTEND: noninteractive
+      APT_LISTCHANGES_FRONTEND: mail
+  tasks:
+    # @TODO: Remove pins
+    # @TODO: Should 3rd party sources be removed?
+    # @TODO: Ensure kernel package is installed
+    # @TODO: Should a 2nd sshd be started on a non-standard port in case of failure?
+    - name: dpkg audit
+      command:
+        cmd: 'dpkg --audit'
+    - name: show holds
+      command:
+        cmd: 'apt-mark showhold'
+    - name: remove all holds
+      command:
+        cmd: "apt-mark unhold '*'"
+    - name: Replace release in apt sources.list
+      replace:
+        regexp: "{{ansible_distribution_release}}"
+        replace: "{{next_release}}"
+        path: /etc/apt/sources.list
+    - name: Replace release in apt sources.list.d
+      shell:
+        cmd: "sed -i 's/{{ansible_distribution_release}}/{{next_release}}/' /etc/apt/sources.list.d/*"
+        warn: false
+      ignore_errors: true
+    - apt:
+        update_cache: true
+    # @TODO: Check required disk space and available disk space
+    - name: Download packages
+      command:
+        cmd: 'apt-get -y -d upgrade'
+        warn: false
+      environment: "{{apt_noninteractive_environment}}"
+    - name: Minimal upgrade run
+      command:
+        cmd: 'apt upgrade -y --without-new-pkgs'
+        warn: false
+      environment: "{{apt_noninteractive_environment}}"
+    - name: Full upgrade run
+      command:
+        cmd: 'apt full-upgrade -y'
+        warn: false
+      environment: "{{apt_noninteractive_environment}}"
+    # @TODO: reconfigure grub if installed
+    # `dpkg-reconfigure grub-pc` on many systems, but not all
+    # @TODO: Our instances often have an OS version identifier,
+    # it would be handy to do a replace in /etc/hostname
+    # before rebooting
+    - name: Reboot
+      command: /usr/sbin/reboot
+      async: 0
+      poll: 0
+      ignore_errors: true
+      register: last_result
+    - name: wait for the server to reboot
+      local_action: wait_for host={{ inventory_hostname }}
+                   port=22
+                   delay=1
+                   timeout=300
+                   state=started
+      when: last_result.changed
+      become: false
+    - name: Purge configuration of removed packages
+      command:
+        cmd: "apt -y purge '~c'"
+        warn: false
+      environment: "{{apt_noninteractive_environment}}"
+    - name: Purge obsolete packages
+      command:
+        cmd: "apt -y purge '~o'"
+        warn: false
+      environment: "{{apt_noninteractive_environment}}"
+- name: Ubuntu major version upgrade
+  hosts: all
+  when: ansible_distribution == 'Ubuntu'
+  tasks:
+    - name: Do release upgrade
+      command:
+        cmd: 'do-release-upgrade -m server --frontend=DistUpgradeViewNonInteractive'
+- name: Post-upgrade tasks
+  hosts: all
+  tasks:
+    - name: Mark rsyslog as auto
+      when: next_release == 'bookworm'
+      command:
+        cmd: 'apt-mark auto rsyslog'
+    - name: Autoremove any packages
+      apt:
+        autoremove: true
+        purge: true
+    - name: Clean apt cache
+      apt:
+        autoclean: true
