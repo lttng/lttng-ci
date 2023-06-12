@@ -1,5 +1,5 @@
 ---
-- name: Dist upgrade and optionnal reboot
+- name: Dist upgrade and optional reboot
   hosts: all
   vars:
     restart: 'no'
@@ -19,7 +19,9 @@
      apt: upgrade=dist
 
    - name: apt-get autoremove
-     command: apt-get -y --purge autoremove
+     command:
+       cmd: apt-get -y --purge autoremove
+       warn: false
      register: autoremove_output
      changed_when: "'The following packages will be REMOVED' in autoremove_output.stdout"
 
