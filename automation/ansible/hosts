@@ -41,8 +41,8 @@ ci-node-el9-arm64-01
 ansible_python_interpreter=python3
 
 [node_ppc64el]
-ci-node-deb11-ppc64el-01
-ci-node-deb11-ppc64el-02
+ci-node-deb12-ppc64el-01
+ci-node-deb12-ppc64el-02
 
 [node_i386]
 ci-node-deb11-i386-02-01
