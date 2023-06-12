@@ -21,3 +21,34 @@
 
 - name: Ensure common packages are installed.
   apt: "name={{ common_packages }} state=present"
+
+- name: Install unattended upgrades
+  apt:
+    name: 'unattended-upgrades'
+    state:  "{{(unattended_upgrades|bool)|ternary('present', 'absent')}}"
+
+- name: Enable extra repos for unattended upgrades
+  template:
+    dest: /etc/apt/apt.conf.d/51unattended_upgrades_extra_repos.conf
+    src: unattended_upgrades_extra_repos.conf.j2
+  vars:
+    repos_base:
+      - "${distro_id}:${distro_codename}-updates"
+      - "${distro_id}:${distro_codename}-backports"
+    repos_Ubuntu:
+      - "LP-PPA-efficios-ci:${distro_codename}"
+    repose_Debian: []
+    repos: "{{repos_base|union(lookup('vars', 'repos_' + ansible_distribution, default=[]))}}"
+
+- name: Enable unattended upgrades
+  block:
+    - copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n"
+      when: unattended_upgrades | bool
+    - file:
+        path: /etc/apt/apt.conf.d/20auto-upgrades
+        state: "{{(unattended_upgrades|bool)|ternary('file', 'absent')}}"
+        owner: root
+        group: root
+        mode: '0644'

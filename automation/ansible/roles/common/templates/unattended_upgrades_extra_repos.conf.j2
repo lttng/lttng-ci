@@ -1,0 +1,5 @@
+Unattended-Upgrade::Allowed-Origins {
+{% for entry in repos %}
+   "{{entry}}";
+{% endfor %}
+}
