@@ -50,8 +50,8 @@ ci-node-deb12-ppc64el-02
 [node_i386]
 ci-node-deb11-i386-02-01
 ci-node-deb11-i386-03-01
-ci-node-deb11-i386-05-01
-ci-node-deb11-i386-06-01
+ci-node-deb12-i386-05-01
+ci-node-deb12-i386-06-01
 
 [node_amd64]
 ci-node-bionic-amd64-02-01
