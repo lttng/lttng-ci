@@ -1,0 +1,71 @@
+---
+# @TODO: Remove pins
+# @TODO: Should 3rd party sources be removed?
+# @TODO: Ensure kernel package is installed
+# @TODO: Should a 2nd sshd be started on a non-standard port in case of failure?
+- name: dpkg audit
+  command:
+    cmd: 'dpkg --audit'
+- name: show holds
+  command:
+    cmd: 'apt-mark showhold'
+- name: remove all holds
+  command:
+    cmd: "apt-mark unhold '*'"
+- name: Replace release in apt sources.list
+  replace:
+    regexp: "{{ansible_distribution_release}}"
+    replace: "{{next_release}}"
+    path: /etc/apt/sources.list
+- name: Replace release in apt sources.list.d
+  shell:
+    cmd: "sed -i 's/{{ansible_distribution_release}}/{{next_release}}/' /etc/apt/sources.list.d/*"
+    warn: false
+  ignore_errors: true
+- apt:
+    update_cache: true
+# @TODO: Check required disk space and available disk space
+- name: Download packages
+  command:
+    cmd: 'apt-get -y -d upgrade'
+    warn: false
+  environment: "{{apt_noninteractive_environment}}"
+- name: Minimal upgrade run
+  command:
+    cmd: 'apt upgrade -y --without-new-pkgs'
+    warn: false
+  environment: "{{apt_noninteractive_environment}}"
+- name: Full upgrade run
+  command:
+    cmd: 'apt full-upgrade -y'
+    warn: false
+  environment: "{{apt_noninteractive_environment}}"
+# @TODO: reconfigure grub if installed
+# `dpkg-reconfigure grub-pc` on many systems, but not all
+# @TODO: Our instances often have an OS version identifier,
+# it would be handy to do a replace in /etc/hostname
+# before rebooting
+- name: Reboot
+  command: /usr/sbin/reboot
+  async: 0
+  poll: 0
+  ignore_errors: true
+  register: last_result
+- name: wait for the server to reboot
+  local_action: wait_for host={{ inventory_hostname }}
+               port=22
+               delay=1
+               timeout=300
+               state=started
+  when: last_result.changed
+  become: false
+- name: Purge configuration of removed packages
+  command:
+    cmd: "apt -y purge '~c'"
+    warn: false
+  environment: "{{apt_noninteractive_environment}}"
+- name: Purge obsolete packages
+  command:
+    cmd: "apt -y purge '~o'"
+    warn: false
+  environment: "{{apt_noninteractive_environment}}"
