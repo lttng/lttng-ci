@@ -1,0 +1,7 @@
+---
+vms:
+  - vars:
+      name: 'ci-rootnode-deb12-i386-01-01'
+      uuid: '061197e7-0107-425c-a449-755a7fab2fe8'
+      disk: '/var/lib/libvirt/images/ci-rootnode-deb12-i386-01-01.qcow'
+      cdrom: '/var/lib/libvirt/images/debian-12.0.0-i386-netinst.iso'
