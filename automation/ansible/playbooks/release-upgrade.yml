@@ -2,10 +2,6 @@
 - name: Set next release
   hosts: all
   tasks:
-    - debug:
-        msg: "{{lookup('vars', ansible_distribution+'_releases', default=[])}}"
-    - debug:
-        msg: "{{ansible_distribution_release}}"
     - set_fact:
         release_index: "{{lookup('ansible.utils.index_of', data=lookup('vars', ansible_distribution+'_releases', default=[]), test='eq', value=ansible_distribution_release)}}"
     # If there is not a next release available (as defined below in Debian_releasess
@@ -13,7 +9,7 @@
     - set_fact:
         next_release: "{{lookup('vars', ansible_distribution+'_releases')[release_index|int + 1]}}"
     - debug:
-        msg: "{{next_release}}"
+        msg: "Upgrading from {{ansible_distribution_release}} to {{next_release}}"
   vars:
     # 'stable' releases ordered from oldest to newest
     Debian_releases:
