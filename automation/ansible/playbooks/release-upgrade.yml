@@ -67,6 +67,24 @@
           with_items:
             - "/var/backups/pre-{{next_release}}-backup.tgz"
             - "/var/backups/dpkg-selections-pre-{{next_release}}.txt"
+- name: Update hostname
+  hosts: all
+  vars:
+    # eg. ansible-playbook -e '{"UPDATE_HOSTNAME":true}' playbooks/release-upgrade.yml
+    update_hostname: "{{lookup('vars', 'UPDATE_HOSTNAME', default='false')}}"
+  tasks:
+    - debug:
+        msg: "update_hostname: {{update_hostname}}"
+    - replace:
+        path: /etc/hostname
+        regexp: "{{ansible_distribution_release}}"
+        replace: "{{next_release}}"
+      when: update_hostname | bool
+    - replace:
+        path: /etc/hostname
+        regexp: "deb{{ansible_distribution_version}}"
+        replace: "deb{{ansible_distribution_version|int + 1 }}"
+      when: update_hostname | bool and ansible_distribution == 'Debian'
 - name: Debian major version upgrade
   hosts: all
   vars:
