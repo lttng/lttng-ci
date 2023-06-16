@@ -27,17 +27,17 @@
 # @TODO: Check required disk space and available disk space
 - name: Download packages
   command:
-    cmd: 'apt-get -y -d upgrade'
+    cmd: 'apt-get -y -d upgrade {{apt_common_options}}'
     warn: false
   environment: "{{apt_noninteractive_environment}}"
 - name: Minimal upgrade run
   command:
-    cmd: 'apt upgrade -y --without-new-pkgs'
+    cmd: 'apt upgrade -y --without-new-pkgs {{apt_common_options}}'
     warn: false
   environment: "{{apt_noninteractive_environment}}"
 - name: Full upgrade run
   command:
-    cmd: 'apt full-upgrade -y'
+    cmd: 'apt full-upgrade -y {{apt_common_options}}'
     warn: false
   environment: "{{apt_noninteractive_environment}}"
 # @TODO: reconfigure grub if installed

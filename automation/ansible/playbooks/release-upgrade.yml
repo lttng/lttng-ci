@@ -91,6 +91,7 @@
     apt_noninteractive_environment:
       DEBIAN_FRONTEND: noninteractive
       APT_LISTCHANGES_FRONTEND: mail
+    apt_common_options: "-o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confnew'"
   tasks:
     - import_tasks: ../tasks/debian_release_upgrade.yml
       when: ansible_distribution == 'Debian'
