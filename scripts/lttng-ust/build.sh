@@ -114,9 +114,6 @@ PREFIX="/build"
 LIBDIR="lib"
 LIBDIR_ARCH="$LIBDIR"
 
-# Force the normal Python install layout without 'local' on Debian / Ubuntu
-export DEB_PYTHON_INSTALL_LAYOUT="deb"
-
 # RHEL and SLES both use lib64 but don't bother shipping a default autoconf
 # site config that matches this.
 if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-release ) ]]; then

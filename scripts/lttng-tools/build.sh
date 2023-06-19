@@ -136,9 +136,6 @@ PREFIX="/build"
 LIBDIR="lib"
 LIBDIR_ARCH="$LIBDIR"
 
-# Force the normal Python install layout without 'local' on Debian / Ubuntu
-export DEB_PYTHON_INSTALL_LAYOUT="deb"
-
 # RHEL and SLES both use lib64 but don't bother shipping a default autoconf
 # site config that matches this.
 if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-release ) ]]; then
@@ -256,7 +253,9 @@ cygwin|cygwin64|msys32|msys64)
     fi
 
     P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
-    DEPS_PYTHON3="$WORKSPACE/deps/build/$LIBDIR/python$P3_VERSION/site-packages"
+
+    # Temporary fix for an issue on debian python >= 3.10, add the 'local' prefix
+    DEPS_PYTHON3="$WORKSPACE/deps/build/$LIBDIR/python$P3_VERSION/site-packages:$WORKSPACE/deps/build/local/$LIBDIR/python$P3_VERSION/dist-packages"
     if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
         DEPS_PYTHON3="$DEPS_PYTHON3:$WORKSPACE/deps/build/$LIBDIR_ARCH/python$P3_VERSION/site-packages"
     fi
