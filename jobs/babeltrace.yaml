@@ -601,7 +601,7 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
@@ -687,7 +687,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -725,7 +725,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -779,7 +779,7 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, python-bindings]
           filter: ''
