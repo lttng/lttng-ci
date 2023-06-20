@@ -29,10 +29,10 @@ ci-node-deb11-armhf-07
 ci-node-deb11-armhf-08
 
 [node_arm64]
-ci-node-deb11-arm64-01
+ci-node-deb12-arm64-01
 ci-node-deb11-arm64-02
 ci-node-deb11-arm64-03
-ci-node-deb11-arm64-04
+ci-node-deb12-arm64-04
 ci-node-el7-arm64-01 ansible_python_interpreter=python2
 ci-node-el8-arm64-01
 ci-node-el9-arm64-01
