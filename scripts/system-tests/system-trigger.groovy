@@ -441,7 +441,21 @@ currentJobs.each { jobName, jobInfo ->
 
   jobInfo['status'] = 'PENDING';
   jobInfo['build'] = LaunchJob(jobName, jobInfo);
-  ongoingJobs += 1;
+  if (jobInfo['build'] != null) {
+    ongoingJobs += 1;
+  }
+}
+
+// Some jobs may have a null build immediately if LaunchJob
+// failed for some reason, those jobs can immediately be removed.
+def jobKeys = currentJobs.collect { jobName, jobInfo ->
+    return jobName;
+}
+jobKeys.each { k ->
+  if (currentJobs.get(k)['build'] == null) {
+    println(String.format("Removing job '%s' since build is null", k));
+    currentJobs.remove(k);
+  }
 }
 
 while (ongoingJobs > 0) {
@@ -455,7 +469,7 @@ while (ongoingJobs > 0) {
 
     // The isCancelled() method checks if the run was cancelled before
     // execution. We consider such run as being aborted.
-    if (jobBuild == null || jobBuild.isCancelled()) {
+    if (jobBuild.isCancelled()) {
       println("${jobName} was cancelled before launch.")
       isAborted = true;
       abortedRuns.add(jobName);
