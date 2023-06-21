@@ -505,7 +505,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: master
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -574,7 +574,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.13
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -632,7 +632,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.12
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -689,7 +689,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.11
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -727,7 +727,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.10
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.9]
@@ -782,12 +782,12 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: master
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.14]
           filter: ''
-          touchstone: '(platform == "deb11-i386")'
+          touchstone: '(platform == "deb12-i386")'
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: master
           buildtype: freebsdbuild
@@ -821,12 +821,12 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.13
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13]
           filter: ''
-          touchstone: '(platform == "deb11-i386")'
+          touchstone: '(platform == "deb12-i386")'
 
       ## Stable 2.12 ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
@@ -851,12 +851,12 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.12
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13]
           filter: ''
-          touchstone: '(platform == "deb11-i386")'
+          touchstone: '(platform == "deb12-i386")'
 
 - project:
     name: lttng-ust-mjeanson

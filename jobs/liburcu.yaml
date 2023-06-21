@@ -333,10 +333,10 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
-          touchstone: '(build == "std") && (conf == "std") && (platform == "deb11-i386")'
+          touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
@@ -398,10 +398,10 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
-          touchstone: '(build == "std") && (conf == "std") && (platform == "deb11-i386")'
+          touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
@@ -433,7 +433,7 @@
           touchstone: '(build == "std")'
       - 'dev_review_liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb11-armhf, deb12-armhf, deb11-arm64, deb12-arm64, deb12-ppc64el, deb11-i386, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: ''
