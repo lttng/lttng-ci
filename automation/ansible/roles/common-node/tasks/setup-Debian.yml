@@ -4,3 +4,15 @@
 
 - name: Ensure common_node packages are installed.
   apt: "name={{ common_node_packages }} state=present"
+
+- name: Install linux headers
+  when: inventory_hostname in groups['node_standalone']
+  block:
+    - name: Install i386 linux headers Debian
+      when: ansible_architecture == 'i386' and ansible_distribution == 'Debian'
+      apt:
+        name: ['linux-headers-686', 'linux-headers-686-pae']
+    - name: Install linux headers Ubuntu
+      when: ansible_distribution == 'Ubuntu'
+      apt:
+        name: linux-headers-generic
