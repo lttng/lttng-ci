@@ -500,6 +500,19 @@
           send-to:
             - recipients
 
+- _lttng-tools_publishers_rootbuild: &lttng-tools_publishers_rootbuild
+    name: 'lttng-tools_publishers_rootbuild'
+    publishers:
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_wait_10_seconds_on_abort
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_collect_tap_on_failure
+      - postbuildscript: *lttng-tools_publisher_postbuildscript_clean_processes_coredumps
+      - tap: *lttng-tools_publisher_tap_defaults
+      - raw: *lttng-tools_publisher_warnings-ng_defaults
+      - archive: *lttng-tools_publisher_archive_defaults
+      - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+      - ircbot: *lttng-tools_publisher_ircbot_defaults
+      - email-ext: *lttng-tools_publisher_email-ext_defaults
+
 - _lttng-tools_publishers_win: &lttng-tools_publishers_win
     name: 'lttng-tools_publishers_win'
     publishers:
@@ -582,7 +595,7 @@
 
     <<: *lttng-tools_matrix_axes_rootbuild
     <<: *lttng-tools_builders_defaults
-    <<: *lttng-tools_publishers_defaults
+    <<: *lttng-tools_publishers_rootbuild
 
     triggers:
       - pollscm: *lttng-tools_trigger_pollscm_default
@@ -606,7 +619,7 @@
 
     <<: *lttng-tools_matrix_axes_rootbuild
     <<: *lttng-tools_builders_defaults
-    <<: *lttng-tools_publishers_defaults
+    <<: *lttng-tools_publishers_rootbuild
 
     triggers:
       - pollscm: *lttng-tools_trigger_pollscm_default
@@ -841,7 +854,6 @@
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - archive: *lttng-tools_publisher_archive_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
-      - raw: *lttng-tools_publisher_proc-cleaner_defaults
 
 - job-template:
     name: 'dev_review_lttng-tools_{version}_check-format'
