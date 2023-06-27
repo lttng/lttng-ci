@@ -18,39 +18,29 @@
 
 set -exu
 
-RUBY_VERSION=2.7
-
 # Add ssh key for deployment
 cp "$HOST_PUBLIC_KEYS" ~/.ssh/known_hosts
 cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
 
 # lttng-www dependencies
-
+export DPKG_FRONTEND=noninteractive
 # Nodejs
 # Using Debian, as root
-curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-apt-get install -y nodejs
-
-apt-add-repository ppa:brightbox/ruby-ng
-apt-get install -y ruby${RUBY_VERSION} ruby${RUBY_VERSION}-dev ruby-switch ruby-bundler
-
-ruby-switch --list
-ruby-switch --set ruby${RUBY_VERSION}
-
+apt-get update
+apt-get install -y nodejs npm
+apt-get install -y ruby ruby-bundler ruby-dev
 ruby -v
 
-apt-get install -y asciidoc xmlto python3 python3-pip
+apt-get install -y asciidoc xmlto python3 python3-pip doclifter
 
 npm install -g grunt-cli
 npm install -g sass
 
-export PATH="/root/.gem/ruby/${RUBY_VERSION}.0/bin:$PATH"
-
-bundle config set --local path "/root/.gem"
+bundle config set --local path "vendor/bundle"
 
 ./bootstrap.sh
 
-grunt build:prod
-grunt deploy:prod
+bundle exec grunt build:prod --network
+bundle exec grunt deploy:prod --network
 
 # EOF

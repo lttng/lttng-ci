@@ -2,7 +2,7 @@
     name: lttng-www
     project-type: freestyle
     defaults: global
-    node: amd64-rootnode
+    node: amd64-rootnode-jammy
 
     description: |
       This job is responsible for updating the lttng website.
