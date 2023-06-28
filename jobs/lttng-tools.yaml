@@ -452,6 +452,10 @@
               <scm/>
             </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
 
+      - junit: &lttng-tools_publisher_junit_defaults
+          results: 'src/lttng-ust-java-tests/**/target/failsafe-reports/*.xml'
+          allow-empty-results: true
+
       - archive: &lttng-tools_publisher_archive_defaults
           artifacts: 'build/**,deps/**,tap/**,log/**'
           follow-symlinks: true
@@ -718,6 +722,7 @@
 
       - tap: *lttng-tools_publisher_tap_defaults
       - raw: *lttng-tools_publisher_warnings-ng_defaults
+      - junit: *lttng-tools_publisher_junit_defaults
       - archive: *lttng-tools_publisher_archive_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
       - raw: *lttng-tools_publisher_proc-cleaner_defaults

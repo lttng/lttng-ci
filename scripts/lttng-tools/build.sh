@@ -128,6 +128,7 @@ LTTNG_TOOLS_MAKE_CLEAN="${LTTNG_TOOLS_MAKE_CLEAN:-yes}"
 LTTNG_TOOLS_GEN_COMPILE_COMMANDS="${LTTNG_TOOLS_GEN_COMPILE_COMMANDS:-no}"
 LTTNG_TOOLS_RUN_TESTS="${LTTNG_TOOLS_RUN_TESTS:-yes}"
 LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="${LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION:-no}"
+LTTNG_TOOLS_RUN_UST_JAVA_TESTS="${LTTNG_TOOLS_RUN_UST_JAVA_TESTS:-yes}"
 LTTNG_TOOLS_CLANG_TIDY="${LTTNG_TOOLS_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
@@ -523,7 +524,7 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
 
     make --keep-going check || exit_status=1
 
-    # Copy tap logs for the jenkins tap parser before cleaning the build dir
+        # Copy tap logs for the jenkins tap parser before cleaning the build dir
     rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
 
     # Copy the test suites top-level log which includes all tests failures
@@ -535,6 +536,46 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         mkdir -p "$TAPDIR/long_regression"
         prove --merge -v --exec '' - < long_regression --archive "$TAPDIR/long_regression/" || exit_status=1
         cd ..
+    fi
+
+    if [ "$LTTNG_TOOLS_RUN_UST_JAVA_TESTS" = "yes" ] && [ "$conf" = "agents" ] && \
+           [ "$platform" = "bionic-amd64" ] && [ "$LTTNG_TOOLS_MAKE_INSTALL" = "yes" ] ; then
+        print_header "Run lttng-ust-java-tests"
+        # Git Source
+        LTTNG_UST_JAVA_TESTS_GIT_SOURCE="${LTTNG_UST_JAVA_TESTS_GIT_SOURCE:-https://github.com/lttng/lttng-ust-java-tests.git}"
+        LTTNG_UST_JAVA_TESTS_GIT_BRANCH="${LTTNG_UST_JAVA_TESTS_GIT_BRANCH:-master}"
+
+        OWD="$(pwd)"
+        cd ..
+        git clone -b "${LTTNG_UST_JAVA_TESTS_GIT_BRANCH}" "${LTTNG_UST_JAVA_TESTS_GIT_SOURCE}" lttng-ust-java-tests
+        cd lttng-ust-java-tests
+
+        LTTNG_UST_JAVA_TESTS_ENV=(
+            "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/"
+            PATH="${WORKSPACE}/build/bin/:$PATH"
+            LD_LIBRARY_PATH="${WORKSPACE}/build/lib:$LD_LIBRARY_PATH"
+            LTTNG_UST_DEBUG=1
+            LTTNG_CONSUMERD32_BIN="${WORKSPACE}/build/lib/lttng/libexec/lttng-consumerd"
+            LTTNG_CONSUMERD64_BIN="${WORKSPACE}/build/lib/lttng/libexec/lttng-consumerd"
+            LTTNG_SESSION_CONFIG_XSD_PATH="${WORKSPACE}/build/share/xml/lttng"
+            BABELTRACE_PLUGIN_PATH="${WORKSPACE}/deps/build/lib/babeltrace2/plugins"
+            LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="${WORKSPACE}/deps/build/lib/babeltrace2/plugin-providers"
+        )
+        LTTNG_UST_JAVA_TESTS_MAVEN_OPTS=(
+            "-Dmaven.test.failure.ignore=true"
+            "-Dcommon-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-common.jar"
+            "-Djul-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-jul.jar"
+            "-Dlog4j-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-log4j.jar"
+            "-Dlog4j2-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-log4j2.jar"
+            "-DargLine=-Djava.library.path=${WORKSPACE}/deps/build/lib"
+            '-Dgroups=!domain:log4j2'
+        )
+        env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn -version
+        env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" lttng-sessiond -b -vvv 1>"${WORKSPACE}/log/lttng-ust-java-tests-lttng-sessiond.log" 2>&1
+        env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn "${LTTNG_UST_JAVA_TESTS_MAVEN_OPTS[@]}" clean verify || exit_status=1
+        killall lttng-sessiond
+
+        cd "${OWD}"
     fi
 fi
 

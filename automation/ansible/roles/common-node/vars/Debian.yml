@@ -19,6 +19,7 @@ common_node_packages:
   - libtap-harness-archive-perl
   - libtool-bin
   - lzop
+  - maven
   - openssh-server
   - pbzip2
   - psmisc
