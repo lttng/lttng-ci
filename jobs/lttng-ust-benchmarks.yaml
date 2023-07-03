@@ -121,7 +121,7 @@
 ## Project
 - project:
     name: lttng-ust-benchmarks
-    github_user: PSRCode
+    github_user: lttng
     github_name: lttng-ust-benchmarks
     version:
       - master
