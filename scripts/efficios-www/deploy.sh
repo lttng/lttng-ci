@@ -22,8 +22,10 @@ set -exu
 cp "$HOST_PUBLIC_KEYS" ~/.ssh/known_hosts
 cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
 
+apt-get update
+
 # Nodejs
-apt-get install -y npm
+apt-get install --no-install-recommends -y npm
 ./bootstrap-ubuntu.sh
 npm install
 
@@ -31,5 +33,27 @@ grunt build:dev --verbose
 grunt deploy:pre --verbose
 
 grunt build:prod --verbose
+
+# Check for broken internal links
+apt-get install -y linkchecker
+grunt connect:prod watch:prod &
+SERVER_PID="${!}"
+sleep 10 # While serve:prod starts up
+OUTPUT_FILE="$(mktemp -d)/linkchecker-out.csv"
+# linkchecker drops privileges to 'nobody' when run as root
+chown nobody "$(dirname "${OUTPUT_FILE}")"
+# @Note: Only internal links are checked by default
+if ! linkchecker -q -F "csv/utf-8/${OUTPUT_FILE}" http://localhost:10000/ ; then
+    echo "Linkchecker failed or found broken links"
+    cat "${OUTPUT_FILE}"
+    kill "${SERVER_PID}"
+    rm -rf "${OUTPUT_FILE}/.."
+    sleep 5 # Let serve:prod stop
+    exit 1
+else
+    rm -rf "${OUTPUT_FILE}/.."
+    kill "${SERVER_PID}"
+fi
+
 grunt deploy:prod --verbose
 # EOF
