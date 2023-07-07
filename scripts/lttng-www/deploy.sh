@@ -32,7 +32,6 @@ apt-get install -y ruby ruby-bundler ruby-dev
 ruby -v
 
 apt-get install -y asciidoc xmlto python3 python3-pip doclifter
-
 npm install -g grunt-cli
 npm install -g sass
 
@@ -41,6 +40,26 @@ bundle config set --local path "vendor/bundle"
 ./bootstrap.sh
 
 bundle exec grunt build:prod --network
+
+apt-get install -y linkchecker
+bundle exec grunt connect:prod watch:prod &
+SERVER_PID="${!}"
+sleep 10 # While serve:prod starts up
+OUTPUT_FILE="$(mktemp -d)/linkchecker-out.csv"
+chown nobody "$(dirname "${OUTPUT_FILE}")"
+# @Note: Only internal links are checked by default
+if ! linkchecker -q -F "csv/utf-8/${OUTPUT_FILE}" http://localhost:10000/ ; then
+    echo "Linkchecker failed or found broken links"
+    cat "${OUTPUT_FILE}"
+    kill "${SERVER_PID}"
+    rm -rf "${OUTPUT_FILE}/.."
+    sleep 5 # Let serve:prod stop
+    exit 1
+else
+    rm -rf "${OUTPUT_FILE}/.."
+    kill "${SERVER_PID}"
+fi
+
 bundle exec grunt deploy:prod --network
 
 # EOF
