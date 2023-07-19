@@ -549,6 +549,20 @@
     <<: *lttng-tools_publishers_defaults
 
 - job-template:
+    name: 'dev_{user}_lttng-tools_{version}_macosbuild'
+    defaults: lttng-tools
+
+    wrappers:
+      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
+      - timeout: *lttng-tools_wrapper_timeout_defaults
+      - timestamps
+      - workspace-cleanup
+
+    <<: *lttng-tools_matrix_axes_defaults
+    <<: *lttng-tools_builders_defaults
+    <<: *lttng-tools_publishers_defaults
+
+- job-template:
     name: '{job_prefix}lttng-tools_{version}_long_regression'
     defaults: lttng-tools
 
@@ -626,6 +640,20 @@
       - reverse:
             jobs: '{ust_job_prefix}lttng-ust_{version}_build'
             result: 'success'
+
+- job-template:
+    name: '{job_prefix}lttng-tools_{version}_macosbuild'
+    defaults: lttng-tools
+
+    wrappers:
+      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
+      - timeout: *lttng-tools_wrapper_timeout_defaults
+      - timestamps
+      - workspace-cleanup
+
+    <<: *lttng-tools_matrix_axes_defaults
+    <<: *lttng-tools_builders_defaults
+    <<: *lttng-tools_publishers_defaults
 
 - job-template:
     name: lttng-tools_{version}_winbuild
@@ -1093,7 +1121,7 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
           version: master
           ustversion: master
@@ -1223,7 +1251,7 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
           version: stable-2.13
           ustversion: stable-2.13
@@ -1343,7 +1371,7 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
           version: stable-2.12
           ustversion: stable-2.12
@@ -1530,7 +1558,7 @@
           babelversions: !!python/tuple [stable-1.5, master]
           filter: ''
           touchstone: ''
-      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
+      - 'dev_{user}_lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
           version: master-staging
           ustversion: master
