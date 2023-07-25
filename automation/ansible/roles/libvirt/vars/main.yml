@@ -13,9 +13,9 @@ isos:
   - url: https://releases.ubuntu.com/jammy/ubuntu-22.04.2-live-server-amd64.iso
     checksum: "sha256:5e38b55d57d94ff029719342357325ed3bda38fa80054f9330dc789cd2d43931"
     dest: /var/lib/libvirt/images/ubuntu-22.04.2-live-server-amd64.iso
-  - url: https://cdimage.debian.org/cdimage/release/12.0.0/i386/iso-cd/debian-12.0.0-i386-netinst.iso
+  - url: https://cdimage.debian.org/cdimage/archive/12.0.0/i386/iso-cd/debian-12.0.0-i386-netinst.iso
     checksum: "sha256:4f5cf17c611693d494c0a6a591b2d1e5fcd222d95e81bc555b581b2b01488f14"
     dest: /var/lib/libvirt/images/debian-12.0.0-i386-netinst.iso
-  - url: https://cdimage.debian.org/cdimage/release/12.0.0/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso
+  - url: https://cdimage.debian.org/cdimage/archive/12.0.0/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso
     checksum: "sha256:3b0e9718e3653435f20d8c2124de6d363a51a1fd7f911b9ca0c6db6b3d30d53e"
     dest: /var/lib/libvirt/images/debian-12.0.0-amd64-netinst.iso
