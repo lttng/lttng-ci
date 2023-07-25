@@ -67,3 +67,78 @@ EOF
   * Note that the trailing `/` and quoting are important
   * The will load the `user-data`, `meta-data`, and `vendor-data` files in the directory served by the python web server
 7. After the installation is complete, the system will reboot and run cloud-init for the final portion of the initial setup. Once completed, ansible can be run against it using the ubuntu user and becoming root, eg. `ansible-playbook -i hosts -u ubuntu -b ...`
+
+# LXD Cluster
+
+## Start a new cluster
+
+1. For the initial member of the cluster, set the `lxd_cluster` variable in the host variables to something similar to:
+
+```
+lxd_cluster:
+  server_name: cluster-member-name
+  enabled: true
+  member_config:
+    - entity: storage-pool
+      name: default
+      key: source
+      value: tank/lxd
+```
+
+2. Run the `site.yml` playbook on the node
+3. Verify that storage pool is configured:
+
+```
+$ lxc storage list
+| name    | driver | state   |
+| default | zfs    | created |
+```
+
+  * If not present, create it on necessary targets:
+
+```
+$ lxc storage create default zfs source=tank/lxd --target=cluster-member-name
+# Repeat for any other members
+# Then, on the member itself
+$ lxc storage create default zfs
+# The storage listed should not be in the 'pending' state
+```
+
+4. Create a metrics certificate pair for the cluster, or use an existing one
+
+```
+openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:secp384r1 -sha384 -keyout metrics.key -nodes -out metrics.crt -days 3650 -subj "/CN=metrics.local"
+lxc config trust add metrics.crt --type=metrics
+```
+
+## Adding a new host
+
+1. Generate a token for the new member: `lxc cluster add member-host-name`
+2. In the member's host_var's file set the following key:
+  * `lxd_cluster_ip`: The IP address on which the server will listen
+  * `lxd_cluster`: In a fashion similar to the following entry
+```
+lxd_cluster:
+  enabled: true
+  server_address: 172.18.0.192
+  cluster_token: 'xxx'
+  member_config:
+    - entity: storage-pool
+      name: default
+      key: source
+      value: tank/lxd
+```
+  * The `cluster_token` does not need to be kept in git after the the playbook's first run
+3. Assuming the member is in the host's group of the inventory, run the `site.yml` playbook.
+
+## Managing instances
+
+Local requirements:
+
+ * python3, python3-dnspython, samba-tool, kinit
+
+To automatically provision instances, perform certain operations, and update DNS entries:
+
+1. Update `vars/ci-instances.yml`
+2. Open a kerberos ticket with `kinit`
+3. Run the playbook, eg. `ansible-playbook -l ci-host-XX.internal.efficios.com playbooks/ci-instances.yml`

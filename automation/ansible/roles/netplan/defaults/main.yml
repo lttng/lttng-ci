@@ -1,0 +1,4 @@
+---
+netplan_manage: false
+netplan_content: ''
+netplan_apply: true

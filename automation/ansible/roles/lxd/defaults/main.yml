@@ -1,0 +1,12 @@
+---
+lxd_container_defaults:
+  ephemeral: false
+  profiles:
+    - ci-node
+  source:
+    type: image
+    mode: pull
+    server: https://images.linuxcontainers.org
+    protocol: simplestreams
+    alias: debian/bookworm/cloud/amd64
+  wait_for_container: true

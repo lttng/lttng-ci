@@ -1,0 +1,27 @@
+---
+- name: Install LXD
+  ansible.builtin.apt:
+    name: lxd
+- name: Ensure LXD service is running
+  ansible.builtin.systemd:
+    name: lxd
+    state: started
+    enabled: true
+- name: LXD Init
+  block:
+    - ansible.builtin.file:
+        path: /etc/lxd
+        state: directory
+        owner: root
+        group: root
+        mode: '0750'
+    - ansible.builtin.template:
+        dest: /etc/lxd/lxd_init.yml
+        src: init.yaml.j2
+        owner: root
+        group: root
+        mode: '0600'
+      register: lxd_init_template
+    - ansible.builtin.shell:
+        cmd: 'lxd init --preseed=true < /etc/lxd/lxd_init.yml'
+      when: lxd_init_template.changed

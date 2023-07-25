@@ -1,0 +1,12 @@
+network:
+  version: 2
+  ethernets:
+    eth0:
+      addresses:
+        - {{address}}/16
+      gateway4: 172.18.0.1
+      nameservers:
+        search:
+          - 'internal.efficios.com'
+        addresses:
+          - '172.18.0.13'

@@ -1,0 +1,34 @@
+---
+lxd_cluster_ip: 172.18.0.194
+lxd_cluster:
+  enabled: true
+  server_address: 172.18.0.194
+  member_config:
+    - entity: storage-pool
+      name: default
+      key: source
+      value: tank/lxd
+
+netplan_manage: true
+netplan_content: |
+  network:
+    version: 2
+    renderer: networkd
+    ethernets:
+      enp5s0f0:
+        dhcp4: no
+    bridges:
+      br102:
+        interfaces:
+          - enp5s0f0
+        accept-ra: false
+        addresses:
+          - 172.18.0.194/16
+        routes:
+          - to: default
+            via: 172.18.0.1
+        nameservers:
+          search:
+            - internal.efficios.com
+          addresses:
+            - 172.18.0.13

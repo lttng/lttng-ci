@@ -1,0 +1,118 @@
+---
+# The search domain for instance names
+search_domain: internal.efficios.com
+# Which DNS server to use for checks + updates
+name_server: smb-adc02.internal.efficios.com
+# The host to use for delegating lxd commands
+lxd_host: ci-host-amd64-1a.internal.efficios.com
+
+# @see https://docs.ansible.com/ansible/latest/collections/community/general/lxd_container_module.html#ansible-collections-community-general-lxd-container-module
+# @example a container instance with the default image (deb12 amd64)
+#   - meta:
+#      address: 192.168.1.2
+#     lxd:
+#       name: ci-node-example
+#
+# The meta.address is used to fill in the default lxd.config['user.network-config'] value
+# templated from the cloud_init_netconf.j2 template. Note that this does not change the
+# configuration inside an already deployed instances. The merged value of lxd is passed
+# as arguments to community.general.lxd_container task.
+#
+# When a container/vm is created, the target within the cluster is
+# determined by the allocation strategy configured for the LXD cluster. The
+# default is to allocate the instance to the cluster member with the fewest
+# instances (resource usage not considered).
+#
+# Once the instances are provisied meta.address and lxd.name are used to update the
+# DNS records in Samba. @see scripts/update_dns_entry.py.
+#
+# @example a container created on a specific cluster member
+#   - meta:
+#       address: 192.168.1.2
+#     lxd:
+#       name: ci-node-example
+#       # This only affects creation, the container is not moved if it
+#       # already exists in the cluster.
+#       target: ci-host-amd64-1a
+#
+# @example a virtual machine with the default image
+#   - meta:
+#       address: 192.168.1.2
+#     lxd:
+#       name: ci-rootnode-example
+#       type: virtual-machine
+#       profiles:
+#         - ci-rootnode
+#
+# @example a VM with an ISO attached as a cdrom
+#   - meta:
+#       address: 192.168.1.2
+#     lxd:
+#       name: ci-rootnode-example
+#       type: virtual-machine
+#       profiles:
+#         - ci-rootnode
+#       # If there are configuration errors, sometimes the state
+#       # will need to be set to stopped to apply any differences.
+#       # Some values, eg. raw.apparmor, cannot be changed while the
+#       # VM or container is online. Note that the image needs to
+#       # be readable as the user 'nobody'.
+#       # state: stopped
+#       config:
+#         raw.qemu: '-drive file=/path/to/image.iso,media=cdrom'
+#         raw.apparmor: '/path/to/image.iso rk,'
+#
+# Console access, assuming the remote 'ci' is connected to the LXD cluster:
+#   lxc console ci:ci-rootnode-example --type vga
+# Text console (may not have output depending on boot settings)
+#   lxc console ci:ci-rootnode-example
+#
+containers:
+  - meta:
+      address: 172.18.16.1
+    lxd:
+      name: ci-node-deb12-amd64-01
+    jenkins:
+      label: 'deb12-amd64 deb12'
+  - meta:
+      address: 172.18.16.2
+    lxd:
+      name: ci-node-deb12-amd64-02
+    jenkins:
+      label: 'deb12-amd64 deb12'
+  - meta:
+      address: 172.18.16.3
+    lxd:
+      name: ci-node-deb12-amd64-03
+    jenkins:
+      label: 'deb12-amd64 deb12'
+  - meta:
+      address: 172.18.16.4
+    lxd:
+      name: ci-node-deb12-amd64-04
+    jenkins:
+      label: 'deb12-amd64 deb12'
+  - meta:
+      address: 172.18.16.5
+    lxd:
+      name: ci-node-deb12-amd64-05
+    jenkins:
+      label: 'deb12-amd64 deb12'
+  - meta:
+      address: 172.18.16.6
+    lxd:
+      name: ci-node-deb12-amd64-06
+    jenkins:
+      label: 'deb12-amd64 deb12'
+  - meta:
+      address: 172.18.16.7
+    lxd:
+      name: ci-node-deb12-amd64-07
+    jenkins:
+      label: 'deb12-amd64 deb12'
+  - meta:
+      address: 172.18.16.8
+    lxd:
+      name: ci-node-deb12-amd64-08
+    jenkins:
+      label: 'deb12-amd64 deb12'

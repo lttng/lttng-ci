@@ -1,0 +1,25 @@
+---
+- name: Install ZFS on Debian
+  when: ansible_distribution == 'Debian'
+  apt:
+    name: zfs-dkms
+- name: Set ZFS module options
+  community.general.modprobe:
+    name: zfs
+    state: present
+    params: "zfs_arc_max={{zfs_arc_max}}"
+- name: Set default compression
+  community.general.zfs:
+    name: "tank"
+    state: present
+    extra_zfs_properties:
+      compression: zstd
+- name: Create datasets
+  community.general.zfs:
+    name: "tank/{{item}}"
+    state: present
+    extra_zfs_properties:
+      mountpoint: 'none'
+  with_items:
+    - libvirt
+    - lxd
