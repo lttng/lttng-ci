@@ -52,3 +52,28 @@
         owner: root
         group: root
         mode: '0644'
+- name: Install microcode for physical hosts
+  when: ansible_virtualization_role == 'host'
+  block:
+    - name: Install AMD microcode
+      when: "'AuthenticAMD' in ansible_processor"
+      ansible.builtin.apt:
+        name: amd64-microcode
+      register: amd64_microcode
+    - name: Install Intel microcode
+      when: "'GenuineIntel' in ansible_processor"
+      ansible.builtin.apt:
+        name: intel-microcode
+      register: intel_microcode
+    - name: Update initramfs
+      when: amd64_microcode.changed or intel_microcode.changed
+      ansible.builtin.command:
+        argv: ['update-initramfs', '-u', '-k', 'all']
+    - name: Set reboot required
+      when: amd64_microcode.changed or intel_microcode.changed
+      ansible.builtin.copy:
+        dest: /var/run/reboot-required
+        content: '*** System restart required ***'
+        owner: root
+        group: root
+        mode: '0644'
