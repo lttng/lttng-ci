@@ -23,3 +23,9 @@
   with_items:
     - libvirt
     - lxd
+- name: Create ISO dataset
+  community.general.zfs:
+    name: 'tank/iso'
+    state: present
+    extra_zfs_properties:
+      mountpoint: '/var/lib/iso'
