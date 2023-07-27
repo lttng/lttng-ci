@@ -77,3 +77,9 @@
         owner: root
         group: root
         mode: '0644'
+- name: Install prometheus node exporter for physical hosts
+  when: "'hosts' in group_names"
+  ansible.builtin.apt:
+    name:
+      - prometheus-node-exporter
+      - prometheus-node-exporter-collectors
