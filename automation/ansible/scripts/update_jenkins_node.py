@@ -2,6 +2,7 @@
 
 import argparse
 import configparser
+import json
 import sys
 import xml.etree.ElementTree
 
@@ -44,6 +45,10 @@ def get_argument_parser():
     parser.add_argument(
         '-m', '--message', default='',
         help='A message to set for the offline reason of a node'
+    )
+    parser.add_argument(
+        '-j', '--json', default='',
+        help='Additional config in a json dictionary which will be appended after -c items',
     )
     return parser
 
@@ -101,14 +106,12 @@ def manage_node(url, user, password, node, state, offline_message='', config={})
                     element.attrib[value['attrib']] = value['value']
                     updated = True
         if updated:
-            server.reconfig_node(
-                node,
-                xml.etree.ElementTree.tostring(
-                    node_config,
-                    xml_declaration=True,
-                    encoding='unicode'
-                )
+            xml_string = xml.etree.ElementTree.tostring(
+                node_config,
+                xml_declaration=True,
+                encoding='unicode'
             )
+            server.reconfig_node(node, xml_string)
             changed = True
         # Online/offline
         node_info = server.get_node_info(node)
@@ -146,7 +149,12 @@ if __name__ == '__main__':
             'attrib': value.split('=', 1)[1] if '=' in value else None,
             'value': value.split('=', 1)[0] if '=' in value else value,
         }
-    print(node_config)
+    if args.json:
+        for key, value in json.loads(args.json).items():
+            node_config[key] = {
+                'attrib': value.split('=', 1)[1] if '=' in value else None,
+                'value': value.split('=', 1)[0] if '=' in value else value,
+            }
     manage_node(
         args.url, args.user, args.password, args.node, args.state,
         args.message, node_config

@@ -1,0 +1,19 @@
+---
+- name: Merge defaults
+  set_fact:
+    vm: "{{vm_defaults|combine(object)}}"
+- name: Create VM disk
+  when: vm.disk
+  ansible.builtin.command:
+    argv: [
+      'qemu-img', 'create', '-f', 'qcow2',
+      "{{vm.disk}}", "{{vm.disk_capacity}}",
+    ]
+    creates: "{{vm.disk}}"
+- name: Define VM
+  # Note: is vm.uuid is not set and the template is changed, those changes will not be applied
+  # Note: many changes will require the VM to be destroyed then started again
+  community.libvirt.virt:
+    command: define
+    xml: "{{lookup('template', vm.template|default('vm_template.xml.j2'))}}"
+    autostart: true

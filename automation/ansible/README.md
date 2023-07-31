@@ -141,4 +141,4 @@ To automatically provision instances, perform certain operations, and update DNS
 
 1. Update `vars/ci-instances.yml`
 2. Open a kerberos ticket with `kinit`
-3. Run the playbook, eg. `ansible-playbook -l ci-host-XX.internal.efficios.com playbooks/ci-instances.yml`
+3. Run the playbook, eg. `ansible-playbook playbooks/ci-instances.yml`

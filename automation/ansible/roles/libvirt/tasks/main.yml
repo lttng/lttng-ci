@@ -1,12 +1,20 @@
 ---
 - name: Install virtualization packages
   apt:
-    name: ['qemu-kvm', 'libvirt-daemon-system']
+    name: ['qemu-kvm', 'libvirt-daemon-system', 'python3-libvirt']
 - name: Run libvirtd
   systemd:
     name: libvirtd
     enabled: true
     state: started
+- name: Configure extra libvirt user groups
+  ansible.builtin.user:
+    name: "{{item}}"
+    groups:
+      - libvirt
+      - libvirt-qemu
+    append: true
+  with_items: "{{libvirt_extra_users|default([])}}"
 - name: Download ISOs
   loop: "{{ isos }}"
   get_url:
