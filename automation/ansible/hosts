@@ -127,6 +127,15 @@ ci-node-bionic-amd64-06-08
 ci-node-bionic-amd64-06-09
 ci-node-bionic-amd64-06-10
 
+ci-node-deb12-amd64-01
+ci-node-deb12-amd64-02
+ci-node-deb12-amd64-03
+ci-node-deb12-amd64-04
+ci-node-deb12-amd64-05
+ci-node-deb12-amd64-06
+ci-node-deb12-amd64-07
+ci-node-deb12-amd64-08
+
 [node_standalone]
 ci-rootnode-bionic-amd64-01
 ci-rootnode-bionic-amd64-02

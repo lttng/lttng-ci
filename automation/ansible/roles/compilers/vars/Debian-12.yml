@@ -1,0 +1,25 @@
+---
+compilers_packages:
+  - gcc
+  - gcc-11
+  - gcc-12
+  - g++
+  - g++-11
+  - g++-12
+  - clang
+  - clang-13
+  - clang-14
+  - clang-15
+  - libclang-dev
+  - libclang-13-dev
+  - libclang-14-dev
+  - libclang-15-dev
+  - clang-format
+  - clang-format-13
+  - clang-format-14
+  - clang-format-15
+  - clang-tidy
+  - clang-tidy-13
+  - clang-tidy-14
+  - clang-tidy-15
+  - bear

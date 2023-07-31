@@ -74,45 +74,53 @@ containers:
       name: ci-node-deb12-amd64-01
     jenkins:
       label: 'deb12-amd64 deb12'
+      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.2
     lxd:
       name: ci-node-deb12-amd64-02
     jenkins:
       label: 'deb12-amd64 deb12'
+      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.3
     lxd:
       name: ci-node-deb12-amd64-03
     jenkins:
       label: 'deb12-amd64 deb12'
+      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.4
     lxd:
       name: ci-node-deb12-amd64-04
     jenkins:
       label: 'deb12-amd64 deb12'
+      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.5
     lxd:
       name: ci-node-deb12-amd64-05
     jenkins:
       label: 'deb12-amd64 deb12'
+      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.6
     lxd:
       name: ci-node-deb12-amd64-06
     jenkins:
       label: 'deb12-amd64 deb12'
+      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.7
     lxd:
       name: ci-node-deb12-amd64-07
     jenkins:
       label: 'deb12-amd64 deb12'
+      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.8
     lxd:
       name: ci-node-deb12-amd64-08
     jenkins:
       label: 'deb12-amd64 deb12'
+      mode: EXCLUSIVE

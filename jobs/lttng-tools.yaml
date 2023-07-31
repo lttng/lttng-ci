@@ -1059,7 +1059,7 @@
           buildtype: linuxbuild
           version: master
           ustversion: master
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [master]
@@ -1189,7 +1189,7 @@
           buildtype: linuxbuild
           version: stable-2.13
           ustversion: stable-2.13
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1309,7 +1309,7 @@
           buildtype: linuxbuild
           version: stable-2.12
           ustversion: stable-2.12
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1438,7 +1438,7 @@
           buildtype: linuxbuild
           version: stable-2.11
           ustversion: stable-2.11
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1484,7 +1484,7 @@
           buildtype: linuxbuild
           version: stable-2.10
           ustversion: stable-2.10
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1708,7 +1708,7 @@
       - 'dev_review_lttng-tools_{version}_smokebuild':
           version: master
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
@@ -1718,7 +1718,7 @@
       - 'dev_review_lttng-tools_{version}_clang-tidy':
           version: master
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support

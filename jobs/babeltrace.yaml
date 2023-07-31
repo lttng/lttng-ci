@@ -587,7 +587,7 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min, doc, asan]
           filter: '(build=="std") || (conf=="std") || (conf=="doc")'
@@ -752,7 +752,7 @@
 
       ## ALL ##
       - 'dev_review_babeltrace_{version}_smokebuild':
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [std]
           filter: ''
@@ -772,7 +772,7 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, python-bindings]
           filter: ''

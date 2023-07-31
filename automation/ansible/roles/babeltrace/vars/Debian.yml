@@ -1,6 +1,7 @@
 ---
 babeltrace_packages:
   - chrpath
+  - doxygen
   - libdw-dev
   - libelf-dev
   - libglib2.0-dev

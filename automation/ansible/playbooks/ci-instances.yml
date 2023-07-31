@@ -4,7 +4,7 @@
     - ../vars/ci-instances.yml
     - ../roles/lxd/defaults/main.yml
   vars:
-    skp_lxd: false
+    skip_lxd: false
     skip_dns: false
     skip_jenkins: false
     jenkins_config: "~/.config/jenkins_jobs/jenkins_jobs.ini"
@@ -49,6 +49,7 @@
         node_state: "{{item.jenkins.state|default('online')}}"
         node_credentials: "{{item.jenkins.credentials|default(jenkins_default_credentials)}}"
         node_message: "{{item.jenkins.message|default('Set offline by ansible')}}"
+        node_mode: "{{item.jenkins.mode|default('NORMAL')}}"
       ansible.builtin.command:
         argv: [
           '../scripts/update_jenkins_node.py', '-n', "{{node_name}}",
@@ -56,6 +57,7 @@
           '-c', "label={{node_label}}",
           '-c', "launcher/credentialsId={{node_credentials}}",
           '-c', "launcher/sshHostKeyVerificationStrategy=hudson.plugins.sshslaves.verifiers.ManuallyTrustedKeyVerificationStrategy=class",
+          '-c', "mode={{node_mode}}",
           '-s', "{{node_state}}", '-m', "{{node_message}}",
           '-f', "{{jenkins_config|expanduser}}",
         ]
