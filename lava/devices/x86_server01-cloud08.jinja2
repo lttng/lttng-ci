@@ -1,7 +1,7 @@
 {% extends 'x86.jinja2' %}
 {% set connection_command = 'telnet serial01.internal.efficios.com 7025' %}
-{% set hard_reset_command = '/usr/bin/pduclient --daemon localhost --hostname pdu01.internal.efficios.com --command reboot --port 05' %}
-{% set power_off_command = '/usr/bin/pduclient --daemon localhost --hostname pdu01.internal.efficios.com --command off --port 05' %}
-{% set power_on_command = '/usr/bin/pduclient --daemon localhost --hostname pdu01.internal.efficios.com --command on --port 05' %}
+{% set hard_reset_command = '/usr/bin/pduclient --daemon localhost --hostname pdu01.internal.efficios.com --command reboot --port 17' %}
+{% set power_off_command = '/usr/bin/pduclient --daemon localhost --hostname pdu01.internal.efficios.com --command off --port 17' %}
+{% set power_on_command = '/usr/bin/pduclient --daemon localhost --hostname pdu01.internal.efficios.com --command on --port 17' %}
 {% set soft_reset_command = 'reboot' %}
 {% set boot_interface = 'net2' %}
