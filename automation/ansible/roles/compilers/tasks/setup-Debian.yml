@@ -1,4 +1,9 @@
 ---
+- name: Add sources for gcc 4.8
+  when: ansible_distribution == 'Debian'
+  ansible.builtin.apt_repository:
+    repo: 'deb [trusted=yes] http://archive.debian.org/debian jessie main'
+
 - name: Update apt cache.
   apt: update_cache=yes cache_valid_time=86400
 
