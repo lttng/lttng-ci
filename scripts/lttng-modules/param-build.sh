@@ -94,6 +94,16 @@ tar_archive_obj() {
     cd -
 }
 
+list_gccs() {
+    local gccs
+    gccs=()
+    IFS=: read -r -a path_array <<< "$PATH"
+    while read -r gcc ; do
+        gccs+=("$gcc")
+    done < <(find "${path_array[@]}" -maxdepth 1 -regex '.*/gcc-[0-9\.]+$' -printf '%f\n' | sort -t- -k2 -V -r)
+    echo "${gccs[@]}"
+}
+
 # Find the most recent GCC version supported by the kernel sources
 select_compiler() {
     local selected_cc
@@ -104,7 +114,7 @@ select_compiler() {
 
     set +e
 
-    for cc in gcc-8 gcc-5 gcc-4.8; do
+    for cc in $(list_gccs) ; do
       if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
         selected_cc="$cc"
         break
