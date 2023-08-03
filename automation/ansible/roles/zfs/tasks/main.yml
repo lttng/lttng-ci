@@ -14,6 +14,8 @@
     state: present
     extra_zfs_properties:
       compression: zstd
+      atime: 'off'
+      xattr: 'sa'
 - name: Create datasets
   community.general.zfs:
     name: "tank/{{item}}"
@@ -29,3 +31,10 @@
     state: present
     extra_zfs_properties:
       mountpoint: '/var/lib/iso'
+- name: Create libvirt/images dataset
+  community.general.zfs:
+    name: 'tank/libvirt/images'
+    state: present
+    extra_zfs_properties:
+      mountpoint: '/var/lib/libvirt/images'
+      recordsize: '64k'
