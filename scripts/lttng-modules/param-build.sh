@@ -648,12 +648,16 @@ fi
 obj_url="$obj_url_prefix/$obj_name"
 
 set +e
-s3cmd -c "$WORKSPACE/.s3cfg" get "$obj_url"
+# In s3cmd 2.3, the return code of get when an object does not exist (64)
+# is different than in 2.2 (12). The return codes of 's3cmd info' are
+# consistent between 2.2 and 2.3.
+s3cmd -c "$WORKSPACE/.s3cfg" info "$obj_url"
 ret=$?
 set -e
 
 case "$ret" in
     "0")
+      s3cmd -c "$WORKSPACE/.s3cfg" get "$obj_url"
       extract_archive_obj
       ;;
 
