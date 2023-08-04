@@ -166,13 +166,21 @@ build_linux_kernel() {
         # Disable riscv64 config generation, we don't have a toolchain on bionic
         sed -i 's/riscv64 //' debian.master/etc/kernelconfig
 
+        fakeroot debian/rules clean KW_DEFCONFIG_DIR=.
+
         # Hack for kernel Ubuntu-hwe-5.8
-        if [ ! -f "debian/compat" ]; then
+        # The debian/control file is produced by the clean target above, so this
+        # check needs to happen afterwards.
+        if [ ! -f "debian/compat" ] && ! grep -q debhelper-compat debian/control; then
             echo "10" > "debian/compat"
         fi
 
-        fakeroot debian/rules clean KW_DEFCONFIG_DIR=.
-        fakeroot debian/rules genconfigs KW_DEFCONFIG_DIR=.
+        # genconfigs check can fail in certain cases, eg. when a more recent
+        # compiler exposes kernel configuration flags which aren't set in the
+        # Ubuntu annotations.
+        # In any case, the configuration will be updated with any missing values
+        # later in our build script.
+        fakeroot debian/rules genconfigs KW_DEFCONFIG_DIR=. do_skip_checks=true
         cp CONFIGS/"${ubuntu_config}" .config
         ;;
 
