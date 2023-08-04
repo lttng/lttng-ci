@@ -5,4 +5,5 @@ cross_compilers_packages:
   - gcc-i686-linux-gnu
   - gcc-powerpc64le-linux-gnu
   - gcc-powerpc-linux-gnu
+  - gcc-riscv64-linux-gnu
   - gcc-s390x-linux-gnu
