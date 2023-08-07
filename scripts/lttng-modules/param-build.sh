@@ -18,13 +18,22 @@
 set -exu
 
 # Parameters
-arch=${arch:-amd64}
+platforms=${platforms:-}
+# Derive arch from label if it isn't set
+if [ -z "${arch:-}" ] ; then
+    # Labels may be platform specific, eg. jammy-amd64, deb12-armhf
+    regex='[[:alnum:]]+-([[:alnum:]]+)'
+    if [[ "${platforms}" =~ ${regex} ]] ; then
+        arch="${BASH_REMATCH[1]}"
+    else
+        arch="${platforms:-}"
+    fi
+fi
 cross_arch=${cross_arch:-}
 ktag=${ktag:-}
 kgitrepo=${kgitrepo:-}
 mversion=${mversion:-}
 mgitrepo=${mgitrepo:-}
-
 
 ## FUNCTIONS ##
 
@@ -648,9 +657,9 @@ url_hash="$(echo -n "$kgitrepo" | md5sum | awk '{ print $1 }')"
 obj_name="linux.tar.bz2"
 
 if [ "x${cross_arch}" = "x" ]; then
-	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/$arch/native"
+	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platform}/$arch/native"
 else
-	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/${cross_arch}"
+	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platform}/${cross_arch}"
 fi
 
 obj_url="$obj_url_prefix/$obj_name"

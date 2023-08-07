@@ -444,8 +444,8 @@
     axes:
       - axis:
           type: slave
-          name: arch
-          values: '{obj:arch}'
+          name: platforms
+          values: '{obj:platforms}'
 
     properties:
       - build-discarder:
@@ -496,8 +496,8 @@
     axes:
       - axis:
           type: slave
-          name: arch
-          values: '{obj:arch}'
+          name: platforms
+          values: '{obj:platforms}'
 
     properties:
       - build-discarder:
@@ -534,6 +534,62 @@
     publishers:
       - workspace-cleanup
 
+
+- job-template:
+    name: dev_mjeanson_lttng-modules_PARAM_crossbuild
+    defaults: lttng-modules
+    description: |
+      This is a parametrized job used by 'master' jobs to build any combinations
+      of lttng-modules and linux kernel versions.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+          type: user-defined
+          name: cross_arch
+          values: '{obj:cross_arch}'
+      - axis:
+          type: slave
+          name: platforms
+          values: '{obj:platforms}'
+
+    properties:
+      - build-discarder:
+          days-to-keep: 2
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: 'master'
+          description: 'The lttng-modules branch to build.'
+      - string:
+          name: 'mgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
+          description: 'The lttng-modules git repository url.'
+      - string:
+          name: 'ktag'
+          default: ''
+          description: 'The linux kernel git tag to build against.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
+          description: 'The linux kernel git repository url.'
+
+    concurrent: true
+
+    scm: []
+
+    triggers: []
+
+    builders:
+      - shell:
+          !include-raw-escape: scripts/lttng-modules/param-build.sh
+
+    publishers:
+      - workspace-cleanup
 
 - job-template:
     name: lttng-modules_PARAM_crossbuild
@@ -750,7 +806,7 @@
 
 # Parametrized kernel and modules build jobs
       - 'lttng-modules_PARAM_build':
-          arch: !!python/tuple [amd64]
+          platforms: !!python/tuple [amd64]
       - 'lttng-modules_PARAM_crossbuild':
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
 
@@ -785,7 +841,10 @@
     email_to: ''
     jobs:
       - 'dev_mjeanson_lttng-modules_PARAM_build':
-          arch: !!python/tuple [amd64]
+          platforms: !!python/tuple [deb12-amd64]
+      - 'dev_mjeanson_lttng-modules_PARAM_crossbuild':
+          platforms: !!python/tuple [deb12-amd64]
+          cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
       - 'dev_mjeanson_lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
             - master
