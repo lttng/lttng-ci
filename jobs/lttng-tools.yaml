@@ -1795,6 +1795,18 @@
           babelversions: !!python/tuple [master]
           filter: ''
           touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_rootbuild':
+          version: master
+          buildtype: build
+          ustversion: master
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
+          ustversion: master
+          babelversions: !!python/tuple [master]
+          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          touchstone: ''
 
 - project:
     name: lttng-tools-views

@@ -871,6 +871,13 @@
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
+      - '{job_prefix}babeltrace_{version}_{buildtype}':
+          buildtype: build
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
 
 - project:
     name: babeltrace-views

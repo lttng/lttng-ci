@@ -460,6 +460,12 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: ''
+      - '{job_prefix}liburcu_{version}_{buildtype}':
+          buildtype: build
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, agents, static, tls_fallback, debug-rcu]
+          touchstone: ''
 
 - project:
     name: liburcu-views
