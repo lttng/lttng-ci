@@ -1,6 +1,7 @@
 ---
 lttng_modules_packages:
   - bc
+  - cpio
   - dctrl-tools
   - dwarves
   - kernel-wedge
