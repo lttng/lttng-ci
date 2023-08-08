@@ -12,6 +12,10 @@
       when: ansible_architecture == 'i386' and ansible_distribution == 'Debian'
       apt:
         name: ['linux-headers-686', 'linux-headers-686-pae']
+    - name: Install amd64 linux headers Debian
+      when: ansible_architecture == 'x86_64' and ansible_distribution == 'Debian'
+      apt:
+        name: ['linux-headers-amd64']
     - name: Install linux headers Ubuntu
       when: ansible_distribution == 'Ubuntu'
       apt:
