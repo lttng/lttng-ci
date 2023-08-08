@@ -167,7 +167,7 @@
     jobs:
       - 'barectf_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
 
 - project:
     name: review-barectf
@@ -180,7 +180,7 @@
     jobs:
       - 'dev_review_barectf_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
 
 - project:
     name: barectf-views

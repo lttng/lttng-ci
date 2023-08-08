@@ -320,20 +320,20 @@
     jobs:
       - 'librseq_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
           touchstone: '(build == "std") && (conf == "std")'
       - 'librseq_{version}_{cctype}':
           cctype: gccbuild
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
           ccs: !!python/tuple [gcc-9, gcc-10, gcc-11, gcc-12]
           touchstone: '(build == "std") && (conf == "std") && (cc == "gcc-11")'
       - 'librseq_{version}_{cctype}':
           cctype: clangbuild
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
           ccs: !!python/tuple [clang-11, clang-12, clang-13, clang-14]
@@ -354,7 +354,7 @@
     jobs:
       - 'dev_review_librseq_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
           touchstone: '(build == "std") && (conf == "std")'

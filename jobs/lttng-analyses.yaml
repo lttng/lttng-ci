@@ -105,7 +105,7 @@
 - job-template:
     name: lttng-analyses_{version}_pylint
     defaults: lttng-analyses
-    node: 'jammy-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -113,7 +113,7 @@
 
     builders:
        - copyartifact:
-           project: dev_upstream_babeltrace_{babeltrace_version}_linuxbuild/platform=jammy-amd64,build=std,conf=python-bindings
+           project: dev_upstream_babeltrace_{babeltrace_version}_linuxbuild/platform=deb12-amd64,build=std,conf=python-bindings
            which-build: last-successful
            stable: false
            filter: 'build/**'
@@ -139,7 +139,7 @@
       - master
     jobs:
       - 'lttng-analyses_{version}_linuxbuild':
-          platforms: !!python/tuple [jammy-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           babeltrace_versions: !!python/tuple [stable-1.5]
       - 'lttng-analyses_{version}_pylint':
           babeltrace_version: stable-1.5

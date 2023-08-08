@@ -487,7 +487,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: master
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, master]
@@ -556,7 +556,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: stable-2.13
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, master]
@@ -614,7 +614,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: stable-2.12
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, master]
@@ -680,7 +680,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: stable-2.11
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.11]
@@ -718,7 +718,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: stable-2.10
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.9]

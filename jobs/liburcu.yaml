@@ -321,7 +321,7 @@
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
@@ -392,7 +392,7 @@
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [jammy-amd64, deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
