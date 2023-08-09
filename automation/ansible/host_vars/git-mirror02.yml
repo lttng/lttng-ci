@@ -1,0 +1,61 @@
+---
+cgit_sections:
+  - section: git
+    clone-url: git://git-mirror.internal.efficios.com/git/$CGIT_REPO_URL
+    scan-path: /storage/git-mirror/gitdaemon/export/git
+  - section: kernel
+    clone-url: git://git-mirror.internal.efficios.com/kernel/$CGIT_REPO_URL
+    project-list: /storage/git-mirror/gitdaemon/kernel/projects.list
+    scan-path: /storage/git-mirror/gitdaemon/export/kernel
+  - section: lttng
+    clone-url: git://git-mirror.internal.efficios.com/lttng/$CGIT_REPO_URL
+    project-list: /storage/git-mirror/gitdaemon/lttng/projects.list
+    scan-path: /storage/git-mirror/gitdaemon/export/lttng
+  - section: efficios
+    clone-url: git://git-mirror.internal.efficios.com/efficios/$CGIT_REPO_URL
+    project-list: /storage/git-mirror/gitdaemon/efficios/projects.list
+    scan-path: /storage/git-mirror/gitdaemon/export/efficios
+cgit_export_links:
+  efficios: '../efficios'
+  lttng: '../lttng'
+  git: '../git'
+  kernel: '../kernel/pub/scm/linux/kernel/git'
+
+git_daemon_conf:
+  GIT_DAEMON_ENABLE: 'true'
+  GIT_DAEMON_USER: 'gitdaemon'
+  GIT_DAEMON_OPTIONS: '"--export-all --max-connections=128"'
+  GIT_DAEMON_BASE_PATH: '/storage/git-mirror/gitdaemon/export'
+  GIT_DAEMON_DIRECTORY: '/storage/git-mirror/gitdaemon/export'
+
+grokmirror_instances:
+  efficios.com:
+    core:
+      toplevel: '/storage/git-mirror/gitdaemon/efficios'
+      log: '/var/log/grokmirror/efficioscom.log'
+    remote:
+      site: 'https://git.efficios.com'
+    pull:
+      exclude: '*/deliverable/*'
+  lttng.org:
+    core:
+      toplevel: '/storage/git-mirror/gitdaemon/lttng'
+      log: '/var/log/grokmirror/lttngorg.log'
+    remote:
+      site: 'https://git.lttng.org'
+  kernel.org:
+    core:
+      toplevel: '/storage/git-mirror/gitdaemon/kernel'
+      log: '/var/log/grokmirror/kernelorg.log'
+    remote:
+      site: 'https://git.kernel.org'
+    pull:
+      projectslist_trimtop: '/pub/scm/linux/kernel/git'
+      include:
+        - '/pub/scm/linux/kernel/git/torvalds/linux.git'
+        - '/pub/scm/linux/kernel/git/stable/linux.git'
+        - '/pub/scm/linux/kernel/git/next/linux-next.git'
+        - '/pub/scm/linux/kernel/git/rt/linux-rt-devel.git'
+        - '/pub/scm/linux/kernel/git/rt/linux-stable-rt.git'
+        - '/pub/scm/linux/kernel/git/rseq/linux-rseq.git'
+      refresh: '3600'

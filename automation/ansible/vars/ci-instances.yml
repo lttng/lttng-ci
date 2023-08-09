@@ -83,6 +83,22 @@ libvirt_host: ci-host-amd64-1b.internal.efficios.com
 #
 containers:
   - meta:
+      address: 172.18.18.1
+    lxd:
+      name: git-mirror02
+      target: ci-host-amd64-1c
+      config:
+        # Using a privileged container here means we can avoid doing
+        # uid/gid mapping and reduce the work done during file IO
+        security.privileged: 'true'
+      devices:
+        git-mirror:
+          path: /storage/git-mirror
+          # This was created manually:
+          #   zfs create -o mountpoint=/storage/git-mirror tank/lxd/custom/git-mirror
+          source: /storage/git-mirror
+          type: disk
+  - meta:
       address: 172.18.16.1
     lxd:
       name: ci-node-deb12-amd64-01

@@ -1,0 +1,22 @@
+---
+- name: Create storage directory
+  ansible.builtin.file:
+    path: "{{mirror.core.toplevel}}"
+    state: directory
+    owner: gitdaemon
+    group: gitdaemon
+
+- name: Deploy config file
+  ansible.builtin.template:
+    dest: "/etc/grokmirror/{{name}}.conf"
+    src: grokmirror.conf.j2
+  vars:
+    name: "{{name}}"
+    data: "{{grokmirror_instance_defaults|combine(mirror, recursive=true)}}"
+  notify:
+    - Restart grok-pull
+
+- name: Systemd service
+  ansible.builtin.systemd:
+    name: "grok-pull@{{name}}"
+    state: started

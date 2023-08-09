@@ -10,3 +10,7 @@
 - import_playbook: node_standalone.yml
 - import_playbook: node_sles.yml
 - import_playbook: node_el.yml
+- hosts: gitmirror
+  roles:
+    - common
+    - gitmirror

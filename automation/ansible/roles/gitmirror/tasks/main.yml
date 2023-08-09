@@ -1,0 +1,137 @@
+---
+- name: Install cgit
+  ansible.builtin.apt:
+    name: ['cgit', 'apache2']
+- include_role:
+    name: common
+    tasks_from: certs
+- name: Configure cgit
+  ansible.builtin.template:
+    src: cgitrc.j2
+    dest: /etc/cgitrc
+- name: Configure apache2
+  block:
+    - name: Enable cgit configuration
+      ansible.builtin.command:
+        argv: ['a2enconf', 'cgit.conf']
+        creates: /etc/apache2/conf-enabled/cgit.conf
+      notify:
+        - Restart apache
+    - name: Disable default site
+      ansible.builtin.command:
+        argv: ['a2dissite', '000-default.conf']
+        removes: /etc/apache2/sites-enabled/000-default.conf
+      notify:
+        - Restart apache
+    - name: Enable https
+      ansible.builtin.command:
+        argv: ['a2enmod', 'ssl']
+        creates: '/etc/apache2/mods-enabled/ssl.conf'
+      notify:
+        - Restart apache
+    - name: Enable cgid
+      ansible.builtin.command:
+        argv: ['a2enmod', 'cgid']
+        creates: '/etc/apache2/mods-enabled/cgid.conf'
+      notify:
+        - Restart apache
+    - name: Manage apache2 cgit site configuration
+      ansible.builtin.template:
+        src: apache2.conf.j2
+        dest: /etc/apache2/sites-available/cgit.conf
+      notify:
+        - Restart apache
+    - name: Enable cgit site configuration
+      ansible.builtin.command:
+        argv: ['a2ensite', 'cgit.conf']
+        creates: /etc/apache2/sites-enabled/cgit.conf
+      notify:
+        - Restart apache
+- name: Install git-daemon
+  ansible.builtin.apt:
+    name: ['git-daemon-sysvinit']
+- name: Create git-daemon base path
+  when: git_daemon_conf.GIT_DAEMON_BASE_PATH
+  ansible.builtin.file:
+    path: "{{git_daemon_conf.GIT_DAEMON_BASE_PATH}}"
+    state: directory
+    owner: gitdaemon
+    group: gitdaemon
+- name: Configure git-daemon
+  with_items: "{{git_daemon_conf|dict2items}}"
+  community.general.ini_file:
+    path: /etc/default/git-daemon
+    option: "{{item.key}}"
+    value: "{{item.value}}"
+    no_extra_spaces: true
+  notify:
+    - Restart git-daemon
+- name: Create git-daemon group
+  ansible.builtin.group:
+    system: true
+    name: gitdaemon
+- name: Add www-data to the git-daemon group
+  ansible.builtin.user:
+    name: www-data
+    append: true
+    groups: ['gitdaemon']
+- name: Install grokmirror
+  block:
+    - ansible.builtin.copy:
+        src: files/grokmirror_2.0.11-1_all.deb
+        dest: /root/grokmirror.deb
+      register: grokmirror_deb
+    - when: grokmirror_deb.changed
+      ansible.builtin.command:
+        argv: ['apt', 'install', '-y', '/root/grokmirror.deb']
+    - ansible.builtin.file:
+        state: directory
+        dest: /etc/grokmirror
+- name: Create grokmirror log directory
+  ansible.builtin.file:
+    state: directory
+    dest: /var/log/grokmirror
+    owner: gitdaemon
+    group: root
+    mode: '0755'
+- ansible.builtin.file:
+    state: directory
+    dest: /storage/git-mirror/gitdaemon
+    owner: gitdaemon
+    group: gitdaemon
+- name: Create grokmirror configs
+  include_tasks:
+    file: mirror_instance.yml
+  with_items: "{{grokmirror_instances|dict2items}}"
+  vars:
+    name: "{{item.key}}"
+    mirror: "{{item.value}}"
+- name: Create legacy pull directory
+  ansible.builtin.file:
+    state: directory
+    dest: /storage/git-mirror/gitdaemon/git
+    owner: gitdaemon
+    group: gitdaemon
+- name: Create legacy pull script
+  ansible.builtin.copy:
+    src: update.sh
+    dest: /storage/git-mirror/gitdaemon/git/update.sh
+    mode: '0750'
+    owner: gitdaemon
+    group: gitdaemon
+- name: Install cron
+  ansible.builtin.apt:
+    name: cron
+- name: Manage legacy pull cron job
+  ansible.builtin.cron:
+    name: gitmirror
+    cron_file: gitmirror
+    minute: '*/30'
+    job: 'cd /storage/git-mirror/gitdaemon/git && ./update.sh >/dev/null 2>&1'
+    user: gitdaemon
+- name: Link cgit export directories
+  with_items: "{{cgit_export_links|dict2items}}"
+  ansible.builtin.file:
+    state: link
+    src: "{{item.value}}"
+    path: "/storage/git-mirror/gitdaemon/export/{{item.key}}"

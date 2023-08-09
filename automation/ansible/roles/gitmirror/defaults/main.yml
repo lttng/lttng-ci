@@ -1,0 +1,73 @@
+---
+cgit_configuration:
+  - ['root-title', 'EfficiOS local git mirror']
+  - ['root-desc', 'mirror of common repositories used by the CI']
+  - ['enable-git-config', '1']
+  - ['enable-index-links', '1']
+  - ['enable-log-filecount', '1']
+  - ['enable-log-linecount', '1']
+  - ['css', '/cgit-css/cgit.css']
+  - ['logo', '/cgit-css/cgit.png']
+  - ['favicon', '/cgit-css/favicon.ico']
+cgit_export_links: {}
+cgit_sections: {}
+cgit_tls_cert: '/etc/ssl/certs/internal.efficios.com.pem'
+cgit_tls_key: '/etc/ssl/private/internal.efficios.com.key'
+
+git_daemon_conf:
+  GIT_DAEMON_ENABLE: 'false'
+  GIT_DAEMON_USER: 'gitdaemon'
+  GIT_DAEMON_BASE_PATH: '/var/lib'
+  GIT_DAEMON_DIRECTORY: '/var/lib/git'
+
+grokmirror_instances: {}
+grokmirror_instance_defaults:
+  core:
+    manifest: '${toplevel}/manifest.js.gz'
+    loglevel: 'info'
+    objstore: '${toplevel}/objstore'
+  manifest:
+    pretty: 'no'
+    fetch_objstore: 'no'
+    ignore:
+      - /testing/*
+      - /private/*
+    check_export_ok: 'no'
+  remote:
+    manifest: '${site}/manifest.js.gz'
+  pull:
+    projectslist: '${core:toplevel}/projects.list'
+    projectslist_trimtop: ''
+    post_update_hook: ''
+    purge: 'yes'
+    purgeprotect: '5'
+    default_owner: 'Grokmirror User'
+    remotename: '_grokmirror'
+    pull:threads: '2'
+    retries: '3'
+    include: '*'
+    refresh: '600'
+  fsck:
+    frequency: '30'
+    statusfile: '${core:toplevel}/fsck.status.js'
+    ignore_errors:
+      - 'notice:'
+      - 'warning: disabling bitmap writing'
+      - 'ignoring extra bitmap file'
+      - 'missingTaggerEntry'
+      - 'missingSpaceBeforeDate'
+    reclone_on_errors:
+      - 'fatal: bad tree object'
+      - 'fatal: Failed to traverse parents'
+      - 'missing commit'
+      - 'missing blob'
+      - 'missing tree'
+      - 'broken link'
+    repack: 'yes'
+    extra_repack_flags: ''
+    extra_repack_flags_full: '--window=250 --depth=50'
+    commitgraph: 'yes'
+    prune: 'yes'
+    precious: 'yes'
+    baselines: ''
+    islandcores: ''

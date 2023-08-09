@@ -1,0 +1,13 @@
+---
+- name: Restart apache
+  ansible.builtin.systemd:
+    name: apache2
+    state: restarted
+- name: Restart git-daemon
+  ansible.builtin.systemd:
+    name: git-daemon
+    state: restarted
+- name: Restart grok-pull
+  ansible.builtin.systemd:
+    name: "grok-pull@{{name}}"
+    state: restarted

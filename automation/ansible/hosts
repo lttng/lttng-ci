@@ -182,3 +182,6 @@ node
 
 [py3_hosts:vars]
 ansible_python_interpreter=python3
+
+[gitmirror]
+git-mirror02
