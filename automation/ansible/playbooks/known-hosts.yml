@@ -1,0 +1,22 @@
+---
+# Note: this playbook requires ansible-core >= 2.11
+#
+- name: Generate local known_hosts files using ssh-keyscan
+  hosts: localhost
+  tasks:
+    - block:
+        - name: Scan keys
+          ansible.builtin.command:
+            argv: "{{ ['ssh-keyscan' ] + all_hosts }}"
+          register: keyscan_results
+        - ansible.builtin.known_hosts:
+            path: ../known_hosts
+            name: "{{ keyscan_host }}"
+            key: "{{ keyscan_key }}"
+          when: keyscan_results.rc == 0
+          vars:
+            keyscan_host: "{{ item | split(' ') | first }}"
+            keyscan_key: "{{ item }}"
+          with_items: "{{ keyscan_results.stdout | split('\n') }}"
+      vars:
+        all_hosts: "{{ groups['all'] | difference(['localhost']) }}"
