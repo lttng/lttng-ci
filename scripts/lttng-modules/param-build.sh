@@ -657,9 +657,9 @@ url_hash="$(echo -n "$kgitrepo" | md5sum | awk '{ print $1 }')"
 obj_name="linux.tar.bz2"
 
 if [ "x${cross_arch}" = "x" ]; then
-	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platform}/$arch/native"
+	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platforms}/$arch/native"
 else
-	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platform}/${cross_arch}"
+	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platforms}/${cross_arch}"
 fi
 
 obj_url="$obj_url_prefix/$obj_name"
