@@ -199,11 +199,6 @@ build_linux_kernel() {
             export ARCH="i386"
         fi
 
-        # allyesconfig is mostly broken for kernels of the 2.6 series
-        if verlt "$kversion" "3.0"; then
-            vanilla_config="defconfig"
-        fi
-
         make "${vanilla_config}"
         ;;
     esac
@@ -309,14 +304,6 @@ build_linux_kernel() {
     scripts/config --enable CONFIG_PERF_EVENTS
     scripts/config --enable CONFIG_EVENT_TRACING
     scripts/config --enable CONFIG_KRETPROBES
-
-    # FIXME: disable objtool on vmlinux, it OOMs on allyesconfig
-    sed -i 's/objtool_link vmlinux.o//' scripts/link-vmlinux.sh || true
-    # Starting with v6.1-rc6
-    sed -i 's/^objtool-enabled := .*/objtool-enabled := /' scripts/Makefile.vmlinux_o || true
-
-    # Disable SORTTAB
-    sed -i 's/is_enabled CONFIG_BUILDTIME_TABLE_SORT/is_enabled CONFIG_NONEXISTANT/' scripts/link-vmlinux.sh || true
 
     # Debug
     #cat .config
@@ -591,37 +578,37 @@ elif [ "x${arch}" != "x" ]; then
     case "$arch" in
         "i386")
             karch="x86"
-            vanilla_config="allyesconfig"
+            vanilla_config="allmodconfig"
             ubuntu_config="i386-config.flavour.generic"
             ;;
 
         "amd64")
             karch="x86"
-            vanilla_config="allyesconfig"
+            vanilla_config="allmodconfig"
             ubuntu_config="amd64-config.flavour.generic"
             ;;
 
         "armhf")
             karch="arm"
-            vanilla_config="allyesconfig"
+            vanilla_config="allmodconfig"
             ubuntu_config="armhf-config.flavour.generic"
             ;;
 
         "arm64")
             karch="arm64"
-            vanilla_config="allyesconfig"
+            vanilla_config="allmodconfig"
             ubuntu_config="arm64-config.flavour.generic"
             ;;
 
         "powerpc")
             karch="powerpc"
-            vanilla_config="allyesconfig"
+            vanilla_config="allmodconfig"
             ubuntu_config="powerpc-config.flavour.powerpc-smp"
             ;;
 
         "ppc64el")
             karch="powerpc"
-            vanilla_config="allyesconfig"
+            vanilla_config="allmodconfig"
             ubuntu_config="ppc64el-config.flavour.generic"
             ;;
 
