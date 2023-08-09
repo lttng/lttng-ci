@@ -44,7 +44,7 @@ profiles:
   name: default
 - config:
     boot.autostart: "true"
-    limits.cpu: "4"
+    limits.cpu: "8"
     limits.memory: "8192MB"
     user.vendor-data: |-
       #cloud-config
@@ -71,7 +71,7 @@ profiles:
   name: ci-node
 - config:
     boot.autostart: "true"
-    limits.cpu: "4"
+    limits.cpu: "8"
     limits.memory: "8192MB"
   description: "CI root node (VM)"
   devices:
