@@ -29,11 +29,15 @@ if [ -z "${arch:-}" ] ; then
         arch="${platforms:-}"
     fi
 fi
+
 cross_arch=${cross_arch:-}
 ktag=${ktag:-}
 kgitrepo=${kgitrepo:-}
 mversion=${mversion:-}
 mgitrepo=${mgitrepo:-}
+make_args=()
+
+DEBUG=${DEBUG:-}
 
 ## FUNCTIONS ##
 
@@ -55,7 +59,6 @@ vergt() {
     # shellcheck disable=SC2015
     [ "$1" = "$2" ] && return 1 || vergte "$1" "$2"
 }
-
 
 git_clone_modules_sources() {
     mkdir -p "$MODULES_GIT_DIR"
@@ -124,7 +127,16 @@ select_compiler() {
     set +e
 
     for cc in $(list_gccs) ; do
-      if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
+        if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
+            cc_version=$(echo "${cc}" | cut -d'-' -f2)
+            if { verlt "${kversion}" "5.17"; } && { vergt "${cc_version}" "11"; } ; then
+                # Using gcc-12+ with '-Wuse-after-free' breaks the build of older
+                # kernels (in particular, objtool). Some releases on LTS
+                # branches between 4.x and 5.15 can be built with gcc-12.
+                # @see https://lore.kernel.org/lkml/20494.1643237814@turing-police/
+                # @see https://gitlab.com/linux-kernel/stable/-/commit/52a9dab6d892763b2a8334a568bd4e2c1a6fde66
+                continue
+            fi
         selected_cc="$cc"
         break
       fi
@@ -132,35 +144,106 @@ select_compiler() {
 
     set -e
 
+    # Force gcc-4.8 for kernels before 4.4
+    if { verlt "$kversion" "4.4"; }; then
+        selected_cc='gcc-4.8'
+    fi
+
     if [ "x$selected_cc" = "x" ]; then
       echo "Found no suitable compiler."
       exit 1
     fi
 
-    # Force gcc-4.8 for kernels before 3.18
-    if { verlt "$kversion" "3.18"; }; then
-      selected_cc=gcc-4.8
-    fi
-
+    _KAFLAGS=()
+    _KCFLAGS=()
+    _KCPPFLAGS=()
+    _HOSTCFLAGS=()
     if [ "$selected_cc" != "gcc-4.8" ]; then
         # Older kernel Makefiles do not expect the compiler to default to PIE
-        KAFLAGS="-fno-pie"
-        KCFLAGS="-fno-pie -no-pie -fno-stack-protector"
-        KCPPFLAGS="-fno-pie"
-        export KAFLAGS KCFLAGS KCPPFLAGS
+        _KAFLAGS+=(-fno-pie)
+        _KCFLAGS+=(
+            -fno-pie
+            -no-pie
+            -fno-stack-protector
+        )
+        _KCPPFLAGS+=(-fno-pie)
     fi
 
+    selected_cc_version="$(echo "${selected_cc}" | cut -d'-' -f2)"
+    if { vergte "${selected_cc_version}" "10"; } && { verlt "${kversion}" "5.10"; } ; then
+        # gcc-10 changed the default from '-fcommon' to '-fno-common', which
+        # causes a linker failure. '-fcommon' can be set on the HOSTCFLAGS
+        # to avoid the issue.
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/e33a814e772cdc36436c8c188d8c42d019fda639
+        _HOSTCFLAGS+=(-fcommon)
+    fi
+
+    if [ "${cross_arch:-}" == "armhf" ] ; then
+        if { verlt "${kversion}" "5.14"; } ; then
+            # Work-around for producing instructions that aren't valid for the
+            # default architectures.
+            # Eg. Error: selected processor does not support `cpsid i' in ARM mode
+            _KCFLAGS+=(-march=armv7-a -mfpu=vfpv3-d16)
+            _KCPPFLAGS+=(-march=armv7-a -mfpu=vfpv3-d16)
+        fi
+    fi
+
+    if { vergt "${selected_cc_version}" "8"; } && { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.17"; } ; then
+        # This was added to -Wall in gcc 9 but some kernels do not include the fixes
+        # @see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=88583
+        _KCFLAGS+=(-Wno-error=packed-not-aligned)
+    fi
+
+    export KAFLAGS="${_KAFLAGS[*]}"
+    export KCFLAGS="${_KCFLAGS[*]}"
+    export KCPPFLAGS="${_KCPPFLAGS[*]}"
+    export HOSTCFLAGS="${_HOSTCFLAGS[*]}"
     export CC="${CROSS_COMPILE:-}${selected_cc}"
     export HOSTCC="${selected_cc}"
 
+    make_args=(
+        CC="${CC}"
+        HOSTCC="${HOSTCC}"
+        HOSTCFLAGS="${HOSTCFLAGS:-}"
+    )
+    if [ -n "${DEBUG}" ] ; then
+        make_args+=(
+            V=1
+        )
+    fi
     cd -
 }
 
+patch_linux_kernel() {
+    local commit_hash
+    commit_hash="$1"
+    set +e
+    git -C "${LINUX_GIT_REF_REPO_DIR}" format-patch -n1 --stdout "${commit_hash}" | patch -p1
+    set -e
+    if [ "$?" -gt 1 ] ; then
+        echo "Serious issue patching"
+        exit 1
+    fi
+}
 
 build_linux_kernel() {
     cd "$LINUX_SRCOBJ_DIR"
 
-    kversion=$(make -s kernelversion)
+    kversion=$(make -s kernelversion "${make_args[@]}")
+
+    if { verlt "${kversion}" "3.3"; } && [ "${vanilla_config}" = "imx_v6_v7_defconfig" ] ; then
+        # imx_v6_v7 didn't exist before 06965c39b4c63933fa0a1cde2237ef85477c5655
+        if { verlt "${kversion}" "3.2"; } ; then
+            vanilla_config='mx5_defconfig'
+        else
+            vanilla_config='mx51_defconfig'
+        fi
+    fi
+
+    if { verlt "${kversion}" "3.13"; } && [ "${vanilla_config}" = "pseries_le_defconfig" ] ; then
+        # pseries_le_deconfig was introduced in f53e462e907cbaed29c49c0f10f5b8f614e1bf1d
+        vanilla_config='pseries_defconfig'
+    fi
 
     # Generate kernel configuration
     case "$ktag" in
@@ -199,9 +282,19 @@ build_linux_kernel() {
             export ARCH="i386"
         fi
 
-        make "${vanilla_config}"
+        make "${vanilla_config}" "${make_args[@]}"
         ;;
     esac
+
+    if [ "${vanilla_config}" = "pseries_defconfig" ] && [ "${cross_arch}" = "ppc64el" ] ; then
+        # @see diff <(git show v3.13:arch/powerpc/configs/pseries_defconfig) <(git show v3.13:arch/powerpc/configs/pseries_le_defconfig)
+        scripts/config --enable CONFIG_CPU_LITTLE_ENDIAN
+        scripts/config --enable CONFIG_CMA
+        scripts/config --disable CONFIG_XMON_DEFAULT
+        # scripts/config --disable CONFIG_VIRTUALIZATION
+        # scripts/config --disable CONFIG_KVM_BOOK3S_64
+        scripts/config --disable CONFIG_KVM_BOOK3S_64_HV
+    fi
 
     # oldnoconfig was renamed in 4.19
     if vergte "$kversion" "4.19"; then
@@ -224,6 +317,130 @@ build_linux_kernel() {
       if [ -f "arch/x86/kvm/vmx.c" ]; then
         sed -i 's/ R"/ R "/g; s/"R"/" R "/g' arch/x86/kvm/vmx.c
       fi
+    fi
+
+    if { verlt "${kversion}" "5.11"; } && { vergte "${kversion}" "4.10"; } ; then
+        # Binutils > 2.35 strips empty symbol tables, causing obltool to fail
+        # in certain cases when files are empty.
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/1d489151e9f9d1647110277ff77282fe4d96d09b
+        #
+        # There doesn't seem to be any LD/AS/AR flags to control this behaviour,
+        # therefore patching tools/objtool/elf.c is attempted.
+        patch_linux_kernel 1d489151e9f9d1647110277ff77282fe4d96d09b
+        if { verlt "${kversion}" "4.18"; } ; then
+            patch_linux_kernel e81e0724432542af8d8c702c31e9d82f57b1ff31
+        fi
+    fi
+
+    if { vergt "${selected_cc_version}" "7"; } && { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.17"; } ; then
+        # Builds fail due to -Werror=restrict in pager.o and str_error_r.o
+        if { verlt "${kversion}" "4.16"; } ; then
+            # This is patched since objtool's Makefile doesn't respect HOSTCFLAGS
+            # @see https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ad343a98e74e85aa91d844310e797f96fee6983b
+            patch_linux_kernel ad343a98e74e85aa91d844310e797f96fee6983b
+        fi
+        if { verlt "${kversion}" "4.17"; } ; then
+            # This is patched since objtool's Makefile doesn't respect HOSTCFLAGS
+            # @see https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=854e55ad289ef8888e7991f0ada85d5846f5afb9
+            patch_linux_kernel 854e55ad289ef8888e7991f0ada85d5846f5afb9
+        fi
+
+        # More recent compiler optimizations expose build errors with netronome.
+        # It seems easier to disable the driver than to attempt patching.
+        scripts/config --disable CONFIG_NET_VENDOR_NETRONOME
+        scripts/config --disable CONFIG_MICREL_PHY
+
+        # Duplicate decalarations of __force_order
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/df6d4f9db79c1a5d6f48b59db35ccd1e9ff9adfc
+        # However, kaslr_64.c doesn't exit in 4.15, 4.16, it's named pagetable.c
+        if [ -f arch/x86/boot/compressed/pagetable.c ] ; then
+            sed -i '/^unsigned long __force_order;$/d' arch/x86/boot/compressed/pagetable.c
+        fi
+    fi
+
+    if { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.18"; } ; then
+        # Some old kernels fail to build when make is too new
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/9feeb638cde083c737e295c0547f1b4f28e99583
+        patch_linux_kernel 9564a8cf422d7b58f6e857e3546d346fa970191e
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/9feeb638cde083c737e295c0547f1b4f28e99583
+        patch_linux_kernel 9feeb638cde083c737e295c0547f1b4f28e99583
+    fi
+
+    if { vergte "${kversion}" "4.12"; } && { verlt "${kversion}" "4.18"; } ; then
+        # Old kernels can fail to build while on newer host kernels
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/dfbd199a7cfe3e3cd8531e1353cdbd7175bfbc5e
+        #
+        patch_linux_kernel dfbd199a7cfe3e3cd8531e1353cdbd7175bfbc5e
+    fi
+
+    if { vergte "${kversion}" "3.18"; } && { verlt "${kversion}" "4.4"; } ; then
+        # Compatibility with binutils >= ~ 2.31
+        patch_linux_kernel b21ebf2fb4cde1618915a97cc773e287ff49173e
+    fi
+
+    # The above patch only partially applies linux 3.17, and has been, so a
+    # rebased version is used instead.
+    if { vergte "${kversion}" "3.17"; } && { verlt "${kversion}" "3.18"; } ; then
+        cat <<'EOF' | patch -p1
+diff --git a/arch/x86/kernel/machine_kexec_64.c b/arch/x86/kernel/machine_kexec_64.c
+index 48598105..0652c5b6 100644
+--- a/arch/x86/kernel/machine_kexec_64.c
++++ b/arch/x86/kernel/machine_kexec_64.c
+@@ -516,6 +516,7 @@ int arch_kexec_apply_relocations_add(const Elf64_Ehdr *ehdr,
+ 				goto overflow;
+ 			break;
+ 		case R_X86_64_PC32:
++		case R_X86_64_PLT32:
+ 			value -= (u64)address;
+ 			*(u32 *)location = value;
+ 			break;
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index e69f9882..7c6bc9fe 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -180,6 +180,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+ 				goto overflow;
+ 			break;
+ 		case R_X86_64_PC32:
++		case R_X86_64_PLT32:
+ 			val -= (u64)loc;
+ 			*(u32 *)loc = val;
+ #if 0
+diff --git a/arch/x86/tools/relocs.c b/arch/x86/tools/relocs.c
+index bbb1d225..8deeacbc 100644
+--- a/arch/x86/tools/relocs.c
++++ b/arch/x86/tools/relocs.c
+@@ -763,6 +763,7 @@ static int do_reloc64(struct section *sec, Elf_Rel *rel, ElfW(Sym) *sym,
+ 	switch (r_type) {
+ 	case R_X86_64_NONE:
+ 	case R_X86_64_PC32:
++	case R_X86_64_PLT32:
+ 		/*
+ 		 * NONE can be ignored and PC relative relocations don't
+ 		 * need to be adjusted.
+EOF
+    fi
+
+    if ( { vergte "${kversion}" "3.15"; } && { verlt "${kversion}" "4.4"; } ) ||
+       ( { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.17"; } ); then
+        # While the original motivation of this patch is for fixing builds using
+        # clang, the same error occurs between linux >= 3.15 and < 4.4, and in
+        # 4.15, 4.16.
+        #
+        # This patch only partially applies due to changes in kernel/Makefile,
+        # so a supplementary patch is needed
+        #
+        # Without this patch, builds fail with
+        #   Cannot find symbol for section 2: .text.
+        #   kernel/elfcore.o: failed
+        #
+        # @see https://github.com/linuxppc/issues/issues/388
+        # @see https://lore.kernel.org/lkml/20201204165742.3815221-2-arnd@kernel.org/
+        #
+        patch_linux_kernel 6e7b64b9dd6d96537d816ea07ec26b7dedd397b9
+        if grep -q elfcore.o kernel/Makefile ; then
+            sed -i '/^.* += elfcore.o$/d' kernel/Makefile
+        fi
     fi
 
     # Newer binutils don't accept 3 operand 'cmp' instructions on ppc64
@@ -253,9 +470,21 @@ build_linux_kernel() {
       echo "header-y += linkage.h" >> include/linux/Kbuild
     fi
 
+    if [ "${cross_arch}" = "powerpc" ] ; then
+        if { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.16"; } ; then
+            # Avoid register errors such as
+            # aes_generic.c:(.text+0x4e0): undefined reference to `_restgpr_31_x'
+            # @see https://gitlab.com/linux-kernel/stable/-/commit/148b974deea927f5dbb6c468af2707b488bfa2de
+            make_args+=(
+                CFLAGS_aes_generic.o=''
+            )
+        fi
+    fi
+
     # GCC 4.8
     if [ "$HOSTCC" == "gcc-4.8" ]; then
-      scripts/config --disable CONFIG_CC_STACKPROTECTOR_STRONG
+        scripts/config --disable CONFIG_CC_STACKPROTECTOR_STRONG
+        scripts/config --disable CONFIG_PPC_OF_BOOT_TRAMPOLINE
     fi
 
     # Don't try to sign modules
@@ -291,6 +520,7 @@ build_linux_kernel() {
 
     # Don't fail the build on warnings
     scripts/config --disable CONFIG_WERROR
+    scripts/config --enable CONFIG_PPC_DISABLE_WERROR
 
     # Set required options
     scripts/config --enable CONFIG_TRACEPOINTS
@@ -305,18 +535,19 @@ build_linux_kernel() {
     scripts/config --enable CONFIG_EVENT_TRACING
     scripts/config --enable CONFIG_KRETPROBES
 
-    # Debug
-    #cat .config
+    if [ -n "${DEBUG}" ] ; then
+        cat .config
+    fi
 
-    make "$update_conf_target" CC="$CC"
-    make -j"$NPROC" CC="$CC"
+    make "$update_conf_target" "${make_args[@]}"
+    make -j"$NPROC" "${make_args[@]}"
 
-    krelease=$(make -s kernelrelease CC="$CC")
+    krelease=$(make -s kernelrelease "${mark_args[@]}")
 
     # Save the kernel and modules
     mkdir -p "$LINUX_INSTOBJ_DIR/boot"
-    make INSTALL_MOD_PATH="$LINUX_INSTOBJ_DIR" INSTALL_MOD_STRIP=1 modules_install CC="$CC"
-    make INSTALL_MOD_PATH="$LINUX_INSTOBJ_DIR" INSTALL_PATH="$LINUX_INSTOBJ_DIR/boot" install CC="$CC"
+    make INSTALL_MOD_PATH="$LINUX_INSTOBJ_DIR" INSTALL_MOD_STRIP=1 modules_install "${make_args[@]}"
+    make INSTALL_MOD_PATH="$LINUX_INSTOBJ_DIR" INSTALL_PATH="$LINUX_INSTOBJ_DIR/boot" install "${make_args[@]}"
     rm -f "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source" "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/build"
     ln -s ../../../../sources "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source"
     ln -s ../../../../sources "$LINUX_INSTOBJ_DIR/lib/modules/${krelease}/source"
@@ -420,21 +651,21 @@ extract_distro_headers() {
     make clean
 
     # And regen the modules support files
-    make modules_prepare CC="$CC"
+    make modules_prepare "${make_args[@]}"
 
     # On powerpc 32bits this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
         if [ "x$(scripts/config -s CONFIG_PPC64)" = "xy" ] && vergte "${kversion}" "5.4"; then
             :
         else
-            make arch/powerpc/lib/crtsavres.o CC="$CC"
+            make arch/powerpc/lib/crtsavres.o "${make_args[@]}"
         fi
     fi
 
     # On arm64 between 4.13 and 4.15 this object is required to build with ftrace support
     if [ "${karch}" = "arm64" ]; then
         if [ -f "arch/arm64/kernel/ftrace-mod.S" ]; then
-            make arch/arm64/kernel/ftrace-mod.o CC="$CC"
+            make arch/arm64/kernel/ftrace-mod.o "${make_args[@]}"
         fi
     fi
 
@@ -473,7 +704,7 @@ build_modules() {
         set +e
 
         # Build modules
-        KERNELDIR="${kdir}" make -j"${NPROC}" V=1 CC="$CC"
+        KERNELDIR="${kdir}" make -j"${NPROC}" V=1 "${make_args[@]}"
 	ret=$?
 
         set -e
@@ -492,7 +723,7 @@ build_modules() {
     else # Regular build
 
         # Build modules against full kernel sources
-        KERNELDIR="${kdir}" make -j"${NPROC}" V=1 CC="$CC"
+        KERNELDIR="${kdir}" make -j"${NPROC}" V=1 "${make_args[@]}"
 
         # Install modules to build dir
         KERNELDIR="${kdir}" make INSTALL_MOD_PATH="${outdir}" modules_install
@@ -695,6 +926,14 @@ case "$ret" in
 esac
 
 select_compiler
+
+selected_cc_version="$(echo "${selected_cc}" | cut -d'-' -f2)"
+# lttng-modules requires gcc >= 5.1 for aarch64
+# @see https://github.com/lttng/lttng-modules/commit/be06402dbdbea2f3394e60ec15c5d3356e2be416
+if { verlt "${selected_cc_version}" "5.1"; } && [ "${cross_arch}" = "arm64" ] ; then
+    echo "Building lltng-modules on aarch64 requires gcc >= 5.1"
+    exit 0
+fi
 
 ## BUILD modules
 # Either we downloaded a pre-build kernel or we built it and uploaded
