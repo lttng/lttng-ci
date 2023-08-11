@@ -1695,6 +1695,16 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          buildtype: linuxbuild
+          version: master
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, no-ust, agents]
+          urcuversions: !!python/tuple [stable-0.14]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: ''
+          touchstone: ''
       - 'dev_review_lttng-tools_{version}_rootbuild':
           version: master
           buildtype: build
@@ -1739,6 +1749,16 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          version: stable-2.13
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, no-ust, agents]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: ''
+          touchstone: ''
       - 'dev_review_lttng-tools_{version}_rootbuild':
           version: stable-2.13
           buildtype: build
@@ -1755,6 +1775,16 @@
           version: stable-2.12
           buildtype: build
           platforms: !!python/tuple [bionic-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, no-ust, agents]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: ''
+          touchstone: ''
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          version: stable-2.12
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
