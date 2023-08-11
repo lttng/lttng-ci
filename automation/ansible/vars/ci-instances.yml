@@ -725,7 +725,7 @@ containers:
   #
   - jenkins:
       name: 'ci-rootnode-deb12-amd64-1a-01'
-      label: 'deb12 deb12-amd64-rootnode'
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       mode: EXCLUSIVE
       config:
         remoteFS: '/root'
@@ -774,7 +774,7 @@ containers:
     meta:
       address: 172.18.17.2
   - jenkins:
-      label: 'deb12 deb12-amd64-rootnode'
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-1b-01'
       mode: EXCLUSIVE
       config:
@@ -799,7 +799,7 @@ containers:
     meta:
       address: 172.18.17.3
   - jenkins:
-      label: 'deb12 deb12-amd64-rootnode'
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-1c-01'
       mode: EXCLUSIVE
       config:
@@ -822,7 +822,7 @@ containers:
     meta:
       address: 172.18.17.4
   - jenkins:
-      label: 'deb12 deb12-amd64-rootnode'
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-1d-01'
       config:
         remoteFS: '/root'
@@ -846,7 +846,7 @@ containers:
     meta:
       address: 172.18.17.5
   - jenkins:
-      label: 'deb12 deb12-amd64-rootnode'
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-2a-01'
       mode: EXCLUSIVE
       config:
@@ -870,7 +870,7 @@ containers:
     meta:
       address: 172.18.17.6
   - jenkins:
-      label: 'deb12 deb12-amd64-rootnode'
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-2b-01'
       mode: EXCLUSIVE
       config:
@@ -895,7 +895,7 @@ containers:
     meta:
       address: 172.18.17.7
   - jenkins:
-      label: 'deb12 deb12-amd64-rootnode'
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-2c-01'
       mode: EXCLUSIVE
       config:
@@ -920,7 +920,7 @@ containers:
     meta:
       address: 172.18.17.8
   - jenkins:
-      label: 'deb12 deb12-amd64-rootnode'
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-2d-01'
       mode: EXCLUSIVE
       config:
