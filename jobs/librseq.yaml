@@ -254,7 +254,7 @@
 - job-template:
     name: librseq_{version}_scan-build
     defaults: librseq
-    node: 'amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -274,7 +274,7 @@
 - job-template:
     name: librseq_{version}_coverity
     defaults: librseq
-    node: 'amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
