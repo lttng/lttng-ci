@@ -63,8 +63,8 @@ export LTTNG_CONSUMERD64_BIN="$WORKSPACE/deps/lttng-tools/build/lib/lttng/libexe
 
 cd "$SRCDIR"
 
-make
+make PYTHON="$PYTHON3"
 
-./benchmarks.py
+"$PYTHON3" ./benchmarks.py
 
 # EOF

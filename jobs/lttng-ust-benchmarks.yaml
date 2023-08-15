@@ -24,9 +24,9 @@
     triggers:
       - reverse:
           jobs:
-            - liburcu_master_build
-            - lttng-tools_master_build
-            - lttng-ust_master_build
+            - liburcu_master_linuxbuild
+            - lttng-tools_master_linuxbuild
+            - lttng-ust_master_linuxbuild
           result: 'success'
 
     properties:
@@ -46,32 +46,32 @@
     defaults: lttng-ust-benchmarks
 
     project-type: freestyle
-    node: bionic-amd64
+    node: deb12-amd64
 
     builders:
       - copyartifact:
-          project: liburcu_master_build/platform=bionic-amd64,build=std,conf=std
+          project: liburcu_master_linuxbuild/platform=deb12-amd64,build=std,conf=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps/liburcu'
           do-not-fingerprint: true
       - copyartifact:
-          project: babeltrace_{babeltrace_version}_build/platform=bionic-amd64,build=std,conf=std
+          project: babeltrace_{babeltrace_version}_linuxbuild/platform=deb12-amd64,build=std,conf=std
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps/babeltrace'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-tools_master_build/platform=bionic-amd64,babeltrace_version={babeltrace_version},build=std,conf=agents,liburcu_version=master
+          project: lttng-tools_master_linuxbuild/platform=deb12-amd64,babeltrace_version={babeltrace_version},build=std,conf=agents,liburcu_version=master
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps/lttng-tools'
           do-not-fingerprint: true
       - copyartifact:
-          project: lttng-ust_master_build/platform=bionic-amd64,build=std,conf=std,liburcu_version=master/
+          project: lttng-ust_master_linuxbuild/platform=deb12-amd64,build=std,conf=std,liburcu_version=master/
           which-build: last-successful
           stable: false
           filter: 'build/**'
@@ -127,6 +127,6 @@
       - master
     jobs:
       - 'lttng-ust-benchmarks_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           babeltrace_version: stable-2.0
 
