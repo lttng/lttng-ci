@@ -21,20 +21,31 @@
         - file:
             credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
             variable: HOST_PUBLIC_KEYS
+
     properties:
       - build-discarder:
           num-to-keep: 5
 
     triggers:
       - timed: '@daily'
+
     builders:
       - shell:
           !include-raw: scripts/babeltrace-www/deploy.sh
 
     scm:
-      - babeltrace-www
+      - git:
+          url: https://git.internal.efficios.com/efficios/bt2-www.git
+          basedir: ./
+          skip-tag: true
+          branches:
+            - master
 
     publishers:
+      - archive:
+          artifacts: 'site/**,prod/**'
+          follow-symlinks: true
+          allow-empty: false
       - ircbot:
           strategy: statechange-only
           message-type: summary
@@ -61,13 +72,3 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
-
-- scm:
-    name: babeltrace-www
-    scm:
-      - git:
-          url: https://git.internal.efficios.com/efficios/bt2-www.git
-          basedir: ./
-          skip-tag: true
-          branches:
-            - master
