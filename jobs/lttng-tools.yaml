@@ -919,7 +919,7 @@
 - job-template:
     name: lttng-tools_{version}_release
     defaults: lttng-tools
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -938,13 +938,13 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_build/platform=bionic-amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'babeltrace_{babelversion}_build/platform=bionic-amd64,conf=std,build=std'
+          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},platform=bionic-amd64,conf=agents,build=std'
+          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=agents,build=std'
       - shell:
           !include-raw-escape: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
       - shell:
@@ -977,7 +977,7 @@
 - job-template:
     name: lttng-tools_{version}_scan-build
     defaults: lttng-tools
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -986,10 +986,10 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_build/platform=bionic-amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},platform=bionic-amd64,conf=std,build=std'
+          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=std,build=std'
       - shell:
           !include-raw-escape: scripts/common/scan-build.sh
 
@@ -1003,7 +1003,7 @@
 - job-template:
     name: lttng-tools_{version}_coverity
     defaults: lttng-tools
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -1023,10 +1023,10 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_build/platform=bionic-amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_build/liburcu_version={urcuversion},platform=bionic-amd64,conf=std,build=std'
+          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=std,build=std'
       - shell:
           !include-raw-escape: scripts/common/coverity.sh
 
@@ -1148,10 +1148,10 @@
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_long_regression':
-          buildtype: build
+          buildtype: linuxbuild
           version: master
           ustversion: master
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [master]
@@ -1159,7 +1159,7 @@
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_rootbuild':
-          buildtype: build
+          buildtype: linuxbuild
           version: master
           ustversion: master
           platforms: !!python/tuple [deb12-amd64]
@@ -1278,10 +1278,10 @@
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_long_regression':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.13
           ustversion: stable-2.13
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1398,10 +1398,10 @@
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_long_regression':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.12
           ustversion: stable-2.12
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1542,10 +1542,10 @@
     jobs:
       # Master
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: master-staging
           ustversion: master
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [master]
@@ -1577,10 +1577,10 @@
 
       # stable-2.13
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.13-staging
           ustversion: stable-2.13
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1601,10 +1601,10 @@
 
       # stable-2.12
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.12-staging
           ustversion: stable-2.12
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1635,10 +1635,10 @@
     jobs:
       # stable-2.11
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.11-staging
           ustversion: stable-2.11
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.11]
@@ -1659,10 +1659,10 @@
 
       # stable-2.10
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.10-staging
           ustversion: stable-2.10
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.9]
@@ -1701,12 +1701,12 @@
           filter: ''
           touchstone: ''
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          buildtype: linuxbuild
           version: master
+          buildtype: linuxbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
-          urcuversions: !!python/tuple [stable-0.14]
+          urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
