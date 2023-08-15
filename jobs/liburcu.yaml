@@ -250,7 +250,7 @@
 - job-template:
     name: liburcu_{version}_scan-build
     defaults: liburcu
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -271,7 +271,7 @@
 - job-template:
     name: liburcu_{version}_coverity
     defaults: liburcu
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -426,8 +426,8 @@
       - master
     jobs:
       - 'dev_review_liburcu_{version}_{buildtype}':
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std")'
