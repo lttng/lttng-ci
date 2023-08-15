@@ -7,3 +7,19 @@ cross_compilers_packages:
   - gcc-powerpc-linux-gnu
   - gcc-riscv64-linux-gnu
   - gcc-s390x-linux-gnu
+  - gcc-12-aarch64-linux-gnu
+  - gcc-12-arm-linux-gnueabihf
+  - gcc-12-i686-linux-gnu
+  - gcc-12-powerpc64le-linux-gnu
+  - gcc-12-powerpc-linux-gnu
+  - gcc-12-riscv64-linux-gnu
+  - gcc-12-s390x-linux-gnu
+  - gcc-11-aarch64-linux-gnu
+  - gcc-11-arm-linux-gnueabihf
+  - gcc-11-i686-linux-gnu
+  - gcc-11-powerpc64le-linux-gnu
+  - gcc-11-s390x-linux-gnu
+  # Not in Debian bookworm, but in testing/unstable, so they will
+  # be fetched from a snapshot source instead
+  - gcc-11-powerpc-linux-gnu
+  - gcc-11-riscv64-linux-gnu

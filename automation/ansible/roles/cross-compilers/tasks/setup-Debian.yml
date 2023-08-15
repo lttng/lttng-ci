@@ -2,5 +2,16 @@
 - name: Update apt cache.
   apt: update_cache=yes cache_valid_time=86400
 
+- name: Add snapshot soures for gcc-11-powerpc/riscv64
+  when: ansible_distribution == 'Debian'
+  block:
+    - ansible.builtin.copy:
+        dest: /etc/apt/preferences.d/snapshot.pref
+        content: "Package: *\nPin: origin \"snapshot.debian.org\"\nPin-Priority: 400\n"
+    - ansible.builtin.apt_repository:
+        repo: 'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20230109T091852Z/ bookworm main'
+    - ansible.builtin.apt:
+        update_cache: true
+
 - name: Ensure cross-compilers packages are installed.
   apt: "name={{ cross_compilers_packages }} state=present"
