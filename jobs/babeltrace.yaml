@@ -148,13 +148,14 @@
           properties-content: |
             LD_LIBRARY_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib
             PKG_CONFIG_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib/pkgconfig
-            platform=bionic-amd64
+            platform=deb12-amd64
             conf=std
             build=std
       - shell: |
-          wget http://ftp.gnome.org/pub/gnome/sources/glib/2.28/glib-2.28.6.tar.gz
-          tar xvf glib-2.28.6.tar.gz
+          curl -OL 'https://ftp.gnome.org/pub/gnome/sources/glib/2.28/glib-2.28.6.tar.gz'
+          tar xf glib-2.28.6.tar.gz
           cd glib-2.28.6
+          sed -i 's/sys\/types\.h/sys\/sysmacros\.h/' gio/gdbusmessage.c # Fix build failure with recent glibc
           mkdir BUILD_RESULT
           ./configure --prefix=$WORKSPACE/glib-2.28.6/BUILD_RESULT
           make -j `nproc` >/dev/null 2>&1 # Hide warnings
@@ -368,7 +369,7 @@
     triggers:
       - gerrit: *babeltrace_trigger_gerrit_defaults
 
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     builders:
       - shell:
@@ -458,7 +459,7 @@
 - job-template:
     name: babeltrace_{version}_release
     defaults: babeltrace
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -488,7 +489,7 @@
 - job-template:
     name: babeltrace_{version}_scan-build
     defaults: babeltrace
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -509,7 +510,7 @@
 - job-template:
     name: babeltrace_{version}_coverity
     defaults: babeltrace
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -540,7 +541,7 @@
 - job-template:
     name: babeltrace_{version}_pylint
     defaults: babeltrace
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -561,7 +562,7 @@
 - job-template:
     name: '{job_prefix}babeltrace_{version}_glib-2.28.6'
     defaults: babeltrace
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     <<: *babeltrace_builders_glib-2-28-6
     <<: *babeltrace_publishers_defaults
@@ -650,10 +651,10 @@
           touchstone: ''
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, prod]
-          ccs: !!python/tuple [clang-3.9, clang-4.0, clang-6.0, clang-7]
+          ccs: !!python/tuple [clang-13, clang-14, clang-15]
           filter: ''
           touchstone: ''
       - 'babeltrace_{version}_release':
@@ -677,8 +678,8 @@
     ## Master ##
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           filter: ''
@@ -715,8 +716,8 @@
       ## Stable 2.0 ##
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           filter: ''
@@ -812,8 +813,8 @@
       - stable-1.5-staging
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, python-bindings]
           filter: ''
@@ -841,8 +842,8 @@
           version:
             - master-staging
       - '{job_prefix}babeltrace_{version}_{buildtype}':
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           filter: ''

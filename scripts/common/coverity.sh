@@ -177,9 +177,8 @@ tar czf $RESULTS_ARCHIVE $RESULTS_DIR_NAME
 
 # Upload results
 echo -e "\033[33;1mUploading Coverity Scan Analysis results...\033[0m"
-set +x
 response=$(curl \
-  --silent --write-out "\n%{http_code}\n" \
+  --write-out "\n%{http_code}\n" \
   --form project="$COVERITY_SCAN_PROJECT_NAME" \
   --form token="$COVERITY_SCAN_TOKEN" \
   --form email="$COVERITY_SCAN_NOTIFICATION_EMAIL" \
@@ -187,7 +186,6 @@ response=$(curl \
   --form version="$COVERITY_SCAN_VERSION" \
   --form description="$COVERITY_SCAN_DESCRIPTION" \
   "$UPLOAD_URL")
-set -x
 status_code=$(echo "$response" | sed -n '$p')
 if [ "${status_code:0:1}" == "2" ]; then
   echo -e "\033[33;1mCoverity Scan upload successful.\033[0m"
