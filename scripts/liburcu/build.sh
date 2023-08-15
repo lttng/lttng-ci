@@ -243,6 +243,12 @@ debug-rcu)
     fi
     ;;
 
+atomic-builtins)
+    print_header  "Conf: Enable the use of compiler atomic builtins."
+
+    CONF_OPTS+=("--enable-compiler-atomic-builtins")
+    ;;
+
 *)
     print_header "Conf: Standard"
     ;;

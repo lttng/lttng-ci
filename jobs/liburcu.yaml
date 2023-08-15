@@ -320,11 +320,27 @@
       - master
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
+          version: master
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist]
+          confs: !!python/tuple [std, static, atomic-builtins, tls_fallback, debug-rcu]
+          touchstone: '(build == "std") && (conf == "std")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
+          version: stable-0.14
           buildtype: linuxbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
+      - '{job_prefix}liburcu_{version}_{buildtype}':
+          version: stable-0.13
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist]
+          confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
+          touchstone: '(build == "std") && (conf == "std")'
+      # Common
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: build
           platforms: !!python/tuple [bionic-amd64]
