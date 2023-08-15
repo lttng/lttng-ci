@@ -2,7 +2,7 @@
     name: lttng-www
     project-type: freestyle
     defaults: global
-    node: amd64-rootnode-jammy
+    node: amd64-rootnode
 
     description: |
       This job is responsible for updating the lttng website.
@@ -32,9 +32,19 @@
           !include-raw: scripts/lttng-www/deploy.sh
 
     scm:
-      - lttng-www
+      - git:
+          url: git@git.efficios.com:lttng-www.git
+          credentials-id: 63a5abb5-9056-47e2-b419-f5946c1b8f08
+          basedir: ./
+          skip-tag: true
+          branches:
+            - master
 
     publishers:
+      - archive:
+          artifacts: 'site/**,prod/**'
+          follow-symlinks: true
+          allow-empty: false
       - ircbot:
           strategy: statechange-only
           message-type: summary
@@ -61,15 +71,3 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
-
-- scm:
-    name: lttng-www
-    scm:
-      - git:
-          url: git@git.efficios.com:lttng-www.git
-          credentials-id: 63a5abb5-9056-47e2-b419-f5946c1b8f08
-          basedir: ./
-          skip-tag: true
-          branches:
-            - master
-

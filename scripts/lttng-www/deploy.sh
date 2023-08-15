@@ -18,48 +18,76 @@
 
 set -exu
 
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
+}
+
 # Add ssh key for deployment
 cp "$HOST_PUBLIC_KEYS" ~/.ssh/known_hosts
 cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
 
 # lttng-www dependencies
 export DPKG_FRONTEND=noninteractive
-# Nodejs
-# Using Debian, as root
 apt-get update
-apt-get install -y nodejs npm
-apt-get install -y ruby ruby-bundler ruby-dev
+
+print_header "Install web tooling dependencies"
+apt-get install -y nodejs node-grunt-cli npm ruby-bundler ruby-dev python3-pip python3-venv
+
 ruby -v
 
-apt-get install -y asciidoc xmlto python3 python3-pip doclifter
-npm install -g grunt-cli
-npm install -g sass
+apt-get install -y xmlto doclifter linkchecker
+
+python3 -m venv build_venv
+# shellcheck disable=SC1091
+source build_venv/bin/activate
 
 bundle config set --local path "vendor/bundle"
 
-./bootstrap.sh
+./bootstrap-debian.sh
 
-bundle exec grunt build:prod --network
+print_header "Build website with grunt"
+bundle exec grunt build:prod
 
-apt-get install -y linkchecker
+print_header "Check links"
 bundle exec grunt connect:prod watch:prod &
 SERVER_PID="${!}"
 sleep 10 # While serve:prod starts up
-OUTPUT_FILE="$(mktemp -d)/linkchecker-out.csv"
-chown nobody "$(dirname "${OUTPUT_FILE}")"
+
+OUTPUT_DIR="$(mktemp -d)"
+OUTPUT_FILE="${OUTPUT_DIR}/linkchecker-out.csv"
+
+# linkchecker drops privileges to 'nobody' when run as root
+chown nobody "${OUTPUT_DIR}"
+
 # @Note: Only internal links are checked by default
 if ! linkchecker -q -F "csv/utf-8/${OUTPUT_FILE}" http://localhost:10000/ ; then
     echo "Linkchecker failed or found broken links"
     cat "${OUTPUT_FILE}"
     kill "${SERVER_PID}"
-    rm -rf "${OUTPUT_FILE}/.."
+    rm -rf "${OUTPUT_DIR}"
     sleep 5 # Let serve:prod stop
     exit 1
 else
-    rm -rf "${OUTPUT_FILE}/.."
+    rm -rf "${OUTPUT_DIR}"
     kill "${SERVER_PID}"
 fi
 
+print_header "Deploy website"
 bundle exec grunt deploy:prod --network
 
 # EOF
