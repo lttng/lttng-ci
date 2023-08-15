@@ -1289,7 +1289,7 @@
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_rootbuild':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.13
           ustversion: stable-2.13
           platforms: !!python/tuple [deb12-amd64]
@@ -1409,7 +1409,7 @@
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_rootbuild':
-          buildtype: build
+          buildtype: linuxbuild
           version: stable-2.12
           ustversion: stable-2.12
           platforms: !!python/tuple [deb12-amd64]
@@ -1712,7 +1712,7 @@
           touchstone: ''
       - 'dev_review_lttng-tools_{version}_rootbuild':
           version: master
-          buildtype: build
+          buildtype: linuxbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
@@ -1766,7 +1766,7 @@
           touchstone: ''
       - 'dev_review_lttng-tools_{version}_rootbuild':
           version: stable-2.13
-          buildtype: build
+          buildtype: linuxbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
@@ -1798,7 +1798,7 @@
           touchstone: ''
       - 'dev_review_lttng-tools_{version}_rootbuild':
           version: stable-2.12
-          buildtype: build
+          buildtype: linuxbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
@@ -1832,7 +1832,7 @@
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_rootbuild':
           version: master
-          buildtype: build
+          buildtype: linuxbuild
           ustversion: master
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
