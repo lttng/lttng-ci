@@ -411,7 +411,7 @@
 - job-template:
     name: lttng-ust_{version}_scan-build
     defaults: lttng-ust
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -420,7 +420,7 @@
     builders:
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: liburcu_master_build/platform=bionic-amd64,conf=std,build=std
+          project: liburcu_master_linuxbuild/platform=deb12-amd64,conf=std,build=std
       - shell:
           !include-raw-escape: scripts/common/scan-build.sh
 
@@ -436,7 +436,7 @@
 - job-template:
     name: lttng-ust_{version}_coverity
     defaults: lttng-ust
-    node: 'bionic-amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -456,7 +456,7 @@
     builders:
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: liburcu_master_build/platform=bionic-amd64,conf=std,build=std
+          project: liburcu_master_linuxbuild/platform=deb12-amd64,conf=std,build=std
       - shell:
           !include-raw-escape: scripts/common/coverity.sh
 
@@ -762,8 +762,8 @@
     ## master ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: master
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.14]
@@ -801,8 +801,8 @@
       ## Stable 2.13 ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.13
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13]
@@ -831,8 +831,8 @@
       ## Stable 2.12 ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.12
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13]
