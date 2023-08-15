@@ -2,7 +2,7 @@
     name: efficios-www
     project-type: freestyle
     defaults: global
-    node: amd64-rootnode-jammy
+    node: amd64-rootnode
 
     description: |
       This job is responsible for updating the efficios website.
@@ -21,6 +21,7 @@
         - file:
             credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
             variable: HOST_PUBLIC_KEYS
+
     properties:
       - build-discarder:
           num-to-keep: 5
@@ -28,14 +29,25 @@
     triggers:
       - pollscm:
           cron: "@hourly"
+
     builders:
       - shell:
           !include-raw: scripts/efficios-www/deploy.sh
 
     scm:
-      - efficios-www
+      - git:
+          url: git@git.internal.efficios.com:efficios/efficios-www.git
+          credentials-id: f3c907b6-7485-49e1-afe1-4df24fac4ca1
+          basedir: ./
+          skip-tag: true
+          branches:
+            - master
 
     publishers:
+      - archive:
+          artifacts: 'site/**,prod/**'
+          follow-symlinks: true
+          allow-empty: false
       - ircbot:
           strategy: statechange-only
           message-type: summary
@@ -62,14 +74,3 @@
           matrix-trigger: only-parent
           send-to:
             - recipients
-
-- scm:
-    name: efficios-www
-    scm:
-      - git:
-          url: git@git.internal.efficios.com:efficios/efficios-www.git
-          credentials-id: f3c907b6-7485-49e1-afe1-4df24fac4ca1
-          basedir: ./
-          skip-tag: true
-          branches:
-            - master

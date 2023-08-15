@@ -18,42 +18,71 @@
 
 set -exu
 
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
+}
+
 # Add ssh key for deployment
 cp "$HOST_PUBLIC_KEYS" ~/.ssh/known_hosts
 cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
 
+export DEBIAN_FRONTEND=noninteractive
 apt-get update
 
-# Nodejs
+print_header "Install web tooling dependencies"
 apt-get install --no-install-recommends -y npm
 ./bootstrap-ubuntu.sh
+
+print_header "Install NPM stuff"
 npm install
 
+print_header "Build website with grunt"
 grunt build:dev --verbose
 grunt deploy:pre --verbose
 
 grunt build:prod --verbose
 
 # Check for broken internal links
+print_header "Check links"
 apt-get install -y linkchecker
 grunt connect:prod watch:prod &
 SERVER_PID="${!}"
 sleep 10 # While serve:prod starts up
-OUTPUT_FILE="$(mktemp -d)/linkchecker-out.csv"
+
+OUTPUT_DIR="$(mktemp -d)"
+OUTPUT_FILE="${OUTPUT_DIR}/linkchecker-out.csv"
+
 # linkchecker drops privileges to 'nobody' when run as root
-chown nobody "$(dirname "${OUTPUT_FILE}")"
+chown nobody "${OUTPUT_DIR}"
+
 # @Note: Only internal links are checked by default
 if ! linkchecker -q -F "csv/utf-8/${OUTPUT_FILE}" http://localhost:10000/ ; then
     echo "Linkchecker failed or found broken links"
     cat "${OUTPUT_FILE}"
     kill "${SERVER_PID}"
-    rm -rf "${OUTPUT_FILE}/.."
+    rm -rf "${OUTPUT_DIR}"
     sleep 5 # Let serve:prod stop
     exit 1
 else
-    rm -rf "${OUTPUT_FILE}/.."
+    rm -rf "${OUTPUT_DIR}"
     kill "${SERVER_PID}"
 fi
 
+print_header "Deploy website"
 grunt deploy:prod --verbose
 # EOF
