@@ -179,6 +179,7 @@ macos*)
     export TAR=tar
     export NPROC="getconf _NPROCESSORS_ONLN"
     export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    export CFLAGS="$CFLAGS -Wno-\#pragma-messages" # Fix warnings with clang14
     export CPPFLAGS="-I/opt/local/include"
     export LDFLAGS="-L/opt/local/lib"
     export PYTHON="python3"
