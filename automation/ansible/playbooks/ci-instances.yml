@@ -46,7 +46,7 @@
           '-s', "{{name_server}}",
         ]
     - name: Update Jenkins nodes
-      when: not skip_jenkins and inventory_hostname == 'localhost'
+      when: item.jenkins|default(false) and not skip_jenkins and inventory_hostname == 'localhost'
       with_items: "{{containers}}"
       vars:
         node_name: "{{item.jenkins.node_name|default(item.lxd.name|default(item.vm.name))}}"
