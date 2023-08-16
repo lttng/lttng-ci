@@ -94,16 +94,6 @@ ci-node-bionic-amd64-03-08
 ci-node-bionic-amd64-03-09
 ci-node-bionic-amd64-03-10
 
-ci-node-jammy-amd64-04-01
-ci-node-jammy-amd64-04-02
-ci-node-jammy-amd64-04-03
-ci-node-jammy-amd64-04-04
-ci-node-jammy-amd64-04-04
-ci-node-jammy-amd64-04-05
-ci-node-jammy-amd64-04-06
-ci-node-jammy-amd64-04-07
-ci-node-jammy-amd64-04-08
-
 ci-node-bionic-amd64-05-01
 ci-node-bionic-amd64-05-02
 ci-node-bionic-amd64-05-03
