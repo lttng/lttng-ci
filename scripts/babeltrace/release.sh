@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Copyright (C) 2015 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
-# Copyright (C) 2020 Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2023 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ vercomp () {
         return 0
     fi
     local IFS=.
+    # Ignore the shellcheck warning, we want splitting to happen based on IFS.
+    # shellcheck disable=SC2206
     local i ver1=($1) ver2=($2)
     # fill empty fields in ver1 with zeros
     for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
@@ -102,7 +104,7 @@ PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 # Version specific configurations
 if vergte "$PACKAGE_VERSION" "2.0"; then
   BASENAME="babeltrace2"
-  CONF_OPTS=("--enable-python-bindings" "--enable-python-bindings-doc" "--enable-python-plugins")
+  CONF_OPTS=("--enable-python-bindings" "--enable-python-bindings-doc" "--enable-python-plugins" "--disable-Werror")
 
   # Enable dev mode by default for BT 2.0 builds
   #export BABELTRACE_DEBUG_MODE=1
