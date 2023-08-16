@@ -944,3 +944,28 @@ containers:
       host: 'ci-host-amd64-2d.internal.efficios.com'
     meta:
       address: 172.18.17.9
+  - jenkins:
+      label: 'deb12 deb12-amd64-rootnode amd64-rootnode-linux5'
+      name: 'ci-rootnode-deb12-amd64-1c-02'
+      mode: EXCLUSIVE
+      config:
+        remoteFS: '/root'
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1c.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-deb12-amd64-1c-02'
+        launcher/delegate: 'hudson.plugins.sshslaves.SSHLauncher=class'
+        launcher/delegate/port: '22'
+        launcher/delegate/host: 'ci-rootnode-deb12-amd64-1c-02.internal.efficios.com'
+        launcher/delegate/credentialsId: 'bb5a81cf-346b-43fc-8586-3dc5e43801be'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1c.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-deb12-amd64-1c-02'
+        snapshotName: ''
+        beforeJobSnapshotName: 'base-configuration'
+        startupWaitingPeriodSeconds: '20'
+        launcher/waitTimeMs: '20000'
+        shutdownMethod: 'destroy'
+    vm:
+      name: 'ci-rootnode-deb12-amd64-1c-02'
+      disk: '/var/lib/libvirt/images/ci-rootnode-deb12-amd64-1c-02.qcow'
+      host: 'ci-host-amd64-1c.internal.efficios.com'
+    meta:
+      address: 172.18.17.10

@@ -1417,7 +1417,7 @@
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
-          filter: '(node=="amd64-rootnode" && platform=="deb12-amd64")'
+          filter: '(node=="amd64-rootnode-linux5" && platform=="deb12-amd64")'
           touchstone: ''
       - 'lttng-tools_{version}_release':
           version: v2.12
@@ -1804,7 +1804,7 @@
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
-          filter: '(node=="amd64-rootnode" && platform=="deb12-amd64")'
+          filter: '(node=="amd64-rootnode-linux5" && platform=="deb12-amd64")'
           touchstone: ''
 
 - project:
