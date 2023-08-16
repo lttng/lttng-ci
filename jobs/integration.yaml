@@ -19,6 +19,11 @@
     project-type: freestyle
     concurrent: true
     node: 'amd64-rootnode'
+
+    properties:
+      - build-discarder:
+          days-to-keep: 2
+
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -27,6 +32,7 @@
           timeout: 6
           fail: true
           type: no-activity
+
     parameters:
         - string:
             name: 'ARTIFACT_ID'
@@ -45,16 +51,18 @@
                     - 32bit-relayd
                     - 32bit-cli
                     - canary
+
     builders:
       - copyartifact:
-          project: 'babeltrace_${BT_VERSION}_build/platform=bionic-amd64,conf=std,build=std'
+          project: 'babeltrace_${BT_VERSION}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
           which-build: last-successful
           stable: false
           filter: 'build/**'
           target: 'deps-64'
           do-not-fingerprint: true
       - shell:
-          !include-raw-escape: scripts/integration/32-64/build.sh
+          !include-raw: scripts/integration/32-64/build.sh
+
     publishers:
       - postbuildscript:
           mark-unstable-if-failed: true

@@ -32,7 +32,7 @@ pipeline {
 		 * have this guarantee since we used 2 different jobs
 		 */
 		stage('Checkout all sources') {
-			agent { label 'bionic-amd64' }
+			agent { label 'deb12-amd64' }
 			steps {
 				dir("src/userspace-rcu") {
 					checkout([$class: 'GitSCM', branches: [[name: '{{ urcu_version }}']], extensions: [], gitTool: 'Default', userRemoteConfigs: [[url: 'https://github.com/urcu/userspace-rcu']]])
@@ -53,9 +53,10 @@ pipeline {
 		}
 
 		stage('Build') {
+			/* Build the i386 and amd64 artifacts in parallel */
 			parallel {
 				stage('Build amd64 deps') {
-					agent { label 'bionic-amd64' }
+					agent { label 'deb12-amd64' }
 					stages {
 						stage('Clean workspace') {
 							steps {
@@ -101,10 +102,10 @@ pipeline {
 									'''
 								}
 
-								/* Move the artifact of the recently build project to the deps file and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+								/* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
 								sh '''
 									cp -rv build/ $BASEDIR_64
-									rm -rv build/
+									rm -rvf build/
 								'''
 
 								dir("src/lttng-ust") {
@@ -121,10 +122,10 @@ pipeline {
 									'''
 								}
 
-								/* Move the artifact of the recently build project to the deps file and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+								/* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
 								sh '''
 									cp -rv build/ $BASEDIR_64
-									rm -rv build/
+									rm -rvf build/
 								'''
 
 								stash name: "amd64-deps-lttng-tools", includes: 'deps-64/**'
@@ -133,7 +134,7 @@ pipeline {
 					}
 				}
 				stage('Build i386, including lttng-tools') {
-					agent { label 'bionic-i386' }
+					agent { label 'deb12-i386' }
 					stages {
 						stage('Clean workspace') {
 							steps {
@@ -176,10 +177,10 @@ pipeline {
 									'''
 								}
 
-								/* Move the artifact of the recently build project to the deps file and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+								/* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
 								sh '''
 									cp -rv build/ $BASEDIR_32
-									rm -rv build/
+									rm -rvf build/
 								'''
 
 
@@ -197,10 +198,10 @@ pipeline {
 									'''
 								}
 
-								/* Move the artifact of the recently build project to the deps file and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+								/* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
 								sh '''
 									cp -rv build/ $BASEDIR_32
-									rm -rv build/
+									rm -rvf build/
 								'''
 
 								dir("src/lttng-tools") {
@@ -217,10 +218,10 @@ pipeline {
 									'''
 								}
 
-								/* Move the artifact of the recently build project to the deps file and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+								/* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
 								sh '''
 									cp -rv build/ $BASEDIR_32
-									rm -rv build/
+									rm -rvf build/
 								'''
 
 								stash name: "i386-deps-lttng-tools", includes: 'deps-32/**'
@@ -236,7 +237,7 @@ pipeline {
 			}
 		}
 		stage('Object store') {
-			agent { label 'bionic-amd64' }
+			agent { label 'deb12-amd64' }
 			environment {
 				S3_PREFIX = "s3://jenkins/32-64-bit-integration"
 			}

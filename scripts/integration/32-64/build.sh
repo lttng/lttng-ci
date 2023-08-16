@@ -2,6 +2,7 @@
 # shellcheck disable=SC2103
 #
 # Copyright (C) 2022 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# Copyright (C) 2023 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +21,8 @@ set -eux
 
 BASEDIR_64="$WORKSPACE/deps-64/build"
 BASEDIR_32="$WORKSPACE/deps-32/build"
+PREFIX="/build"
+
 export CPPFLAGS="-I$BASEDIR_64/include"
 export LDFLAGS="-L$BASEDIR_64/lib"
 export CFLAGS="-g -O0"
@@ -27,19 +30,33 @@ export CXXFLAGS="-g -O0"
 export PKG_CONFIG_PATH="$BASEDIR_64/lib/pkgconfig"
 export LD_LIBRARY_PATH="$BASEDIR_64/lib:$BASEDIR_32/lib"
 export PATH="$PATH:$BASEDIR_64/bin"
+
 export BABELTRACE_PLUGIN_PATH="$BASEDIR_64/lib/babeltrace2/plugins/"
 export LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="$BASEDIR_64/lib/babeltrace2/plugin-providers/"
-PREFIX="/build"
+
 export JAVA_HOME="/usr/lib/jvm/default-java"
 DEPS_JAVA="$WORKSPACE/deps-64/build/share/java"
 export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
+
 export PYTHON2="python2"
 export PYTHON3="python3"
-P2_VERSION=$($PYTHON2 -c "import sys;print(sys.version[:3])")
-P3_VERSION=$($PYTHON3 -c "import sys;print(sys.version[:3])")
-DEPS_PYTHON2="$WORKSPACE/deps-64/build/lib/python$P2_VERSION/site-packages"
+
+if command -v $PYTHON2 >/dev/null 2>&1; then
+    P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
+    DEPS_PYTHON2="$WORKSPACE/deps/build/lib/python$P2_VERSION/site-packages"
+
+    PYTHON_TEST_ARG="--enable-test-python-agent-all"
+else
+    PYTHON_TEST_ARG="--enable-test-python3-agent"
+fi
+
+P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 DEPS_PYTHON3="$WORKSPACE/deps-64/build/lib/python$P3_VERSION/site-packages"
-export PYTHONPATH="$DEPS_PYTHON2:$DEPS_PYTHON3"
+
+# Most build configs require access to the babeltrace 2 python bindings.
+# This also makes the lttngust python agent available for `agents` builds.
+export PYTHONPATH="${DEPS_PYTHON2:-}${DEPS_PYTHON2:+:}$DEPS_PYTHON3"
+
 export LTTNG_CONSUMERD32_BIN="$BASEDIR_32/lib/lttng/libexec/lttng-consumerd"
 export LTTNG_CONSUMERD32_LIBDIR="$BASEDIR_32/lib"
 export LTTNG_CONSUMERD64_BIN="$BASEDIR_64/lib/lttng/libexec/lttng-consumerd"
@@ -80,7 +97,7 @@ popd
 pushd src/lttng-tools
 
 ./bootstrap
-./configure --prefix="$PREFIX" --enable-test-java-agent-all --enable-test-python-agent-all
+./configure --prefix="$PREFIX" --enable-test-java-agent-all $PYTHON_TEST_ARG
 popd
 
 # Deativate health test, simply because there is little value for this integration testing
