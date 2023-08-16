@@ -153,15 +153,15 @@
     jobs:
       - 'lttng-ivc-{version}':
           version: master
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ivc-{version}':
           version: staging
-          platforms: !!python/tuple [bionic-amd64]
+          platforms: !!python/tuple [deb12-amd64]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ivc-{version}-modules':
          version: master
-         platforms: !!python/tuple [bionic-amd64]
+         platforms: !!python/tuple [deb12-amd64]
          slave: !!python/tuple [amd64-rootnode]
          liburcu_version: !!python/tuple [master]
 

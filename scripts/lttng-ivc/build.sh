@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2017 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
+# Copyright (C) 2017 Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 set -xu
 
 PYTHON3="python3"
-P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 
 # Tox does not support long path venv for whatever reason.
 PYENV_HOME=$(mktemp -d)
@@ -27,6 +26,7 @@ PYENV_HOME=$(mktemp -d)
 virtualenv --system-site-packages -p $PYTHON3 "$PYENV_HOME"
 
 set +ux
+# shellcheck disable=SC1091
 . "$PYENV_HOME/bin/activate"
 set -ux
 
@@ -36,12 +36,16 @@ pip install --quiet tox
 TOXWORKDIR=$(mktemp -d)
 export TOXWORKDIR
 
-cd src/
+cd src/ || exit 1
+
+# Required to build tools < 2.11 with GCC >= 10
+export CFLAGS="-fcommon"
 
 # Run test suite via tox
 tox -v -- --junit-xml="${WORKSPACE}/result.xml"
 
 # Remove base venv
+deactivate
 rm -rf "$PYENV_HOME"
 
 # Save
