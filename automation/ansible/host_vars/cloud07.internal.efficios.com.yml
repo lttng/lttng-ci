@@ -1,7 +1,0 @@
----
-vms:
-  - vars:
-      name: 'ci-rootnode-jammy-amd64-07-01'
-      uuid: '7aabc59c-eb3d-478c-b29b-b6d940be7435'
-      disk: '/var/lib/libvirt/images/ci-rootnode-jammy-amd64-07-01.qcow'
-      cdrom: '/var/lib/libvirt/images/ubuntu-22.04.2-live-server-amd64.iso'

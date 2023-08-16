@@ -214,12 +214,6 @@ ci-node-deb12-amd64-2c-09
 ci-node-deb12-amd64-2c-10
 
 [node_standalone]
-ci-rootnode-bionic-amd64-01
-ci-rootnode-bionic-amd64-02
-ci-rootnode-bionic-amd64-03
-ci-rootnode-bionic-amd64-06
-ci-rootnode-jammy-amd64-07-01
-ci-rootnode-deb11-i386-01
 ci-rootnode-deb12-amd64-1a-01
 ci-rootnode-deb12-amd64-1b-01
 ci-rootnode-deb12-amd64-1c-01
@@ -229,7 +223,6 @@ ci-rootnode-deb12-amd64-2b-01
 ci-rootnode-deb12-amd64-2c-01
 ci-rootnode-deb12-amd64-2d-01
 ci-rootnode-deb12-i386-1a-01
-ci-rootnode-deb12-i386-01-01
 
 [node_sles]
 ci-node-sles12sp5-amd64-03-01
