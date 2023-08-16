@@ -853,3 +853,11 @@
           kverfloor: v3.0
           kverceil: ''
           kverfilter: stable-head
+      - 'dev_mjeanson_lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - master
+          buildtype: crossbuild
+          parambuildtype: crossbuild
+          kverfloor: v4.4
+          kverceil: ''
+          kverfilter: lts-head
