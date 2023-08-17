@@ -128,7 +128,7 @@ LTTNG_TOOLS_MAKE_CLEAN="${LTTNG_TOOLS_MAKE_CLEAN:-yes}"
 LTTNG_TOOLS_GEN_COMPILE_COMMANDS="${LTTNG_TOOLS_GEN_COMPILE_COMMANDS:-no}"
 LTTNG_TOOLS_RUN_TESTS="${LTTNG_TOOLS_RUN_TESTS:-yes}"
 LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="${LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION:-no}"
-LTTNG_TOOLS_RUN_UST_JAVA_TESTS="${LTTNG_TOOLS_RUN_UST_JAVA_TESTS:-yes}"
+LTTNG_TOOLS_RUN_UST_JAVA_TESTS="${LTTNG_TOOLS_RUN_UST_JAVA_TESTS:-no}"
 LTTNG_TOOLS_CLANG_TIDY="${LTTNG_TOOLS_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
@@ -538,8 +538,7 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         cd ..
     fi
 
-    if [ "$LTTNG_TOOLS_RUN_UST_JAVA_TESTS" = "yes" ] && [ "$conf" = "agents" ] && \
-           [ "$platform" = "bionic-amd64" ] && [ "$LTTNG_TOOLS_MAKE_INSTALL" = "yes" ] ; then
+    if [ "$LTTNG_TOOLS_RUN_UST_JAVA_TESTS" = "yes" ] && [ "$LTTNG_TOOLS_MAKE_INSTALL" = "yes" ] && [ "$conf" = "agents" ] ; then
         print_header "Run lttng-ust-java-tests"
         # Git Source
         LTTNG_UST_JAVA_TESTS_GIT_SOURCE="${LTTNG_UST_JAVA_TESTS_GIT_SOURCE:-https://github.com/lttng/lttng-ust-java-tests.git}"
@@ -551,7 +550,6 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         cd lttng-ust-java-tests
 
         LTTNG_UST_JAVA_TESTS_ENV=(
-            "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/"
             PATH="${WORKSPACE}/build/bin/:$PATH"
             LD_LIBRARY_PATH="${WORKSPACE}/build/lib:$LD_LIBRARY_PATH"
             LTTNG_UST_DEBUG=1
