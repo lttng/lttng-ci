@@ -66,10 +66,14 @@ ci-node-deb12-ppc64el-02
 172.16.0.138
 
 [node_i386]
-ci-node-deb12-i386-02-01
-ci-node-deb12-i386-03-01
-ci-node-deb12-i386-05-01
-ci-node-deb12-i386-06-01
+ci-node-deb12-i386-1a-01
+ci-node-deb12-i386-1b-01
+ci-node-deb12-i386-1c-01
+ci-node-deb12-i386-1d-01
+ci-node-deb12-i386-2a-01
+ci-node-deb12-i386-2b-01
+ci-node-deb12-i386-2c-01
+ci-node-deb12-i386-2d-01
 
 [node_amd64]
 ci-node-bionic-amd64-02-01
