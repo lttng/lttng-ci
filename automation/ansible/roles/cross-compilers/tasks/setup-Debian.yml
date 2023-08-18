@@ -15,3 +15,31 @@
 
 - name: Ensure cross-compilers packages are installed.
   apt: "name={{ cross_compilers_packages }} state=present"
+
+- name: Install legacy cross compilers
+  when: ansible_distribution == 'Debian' and ansible_architecture == 'x86_64'
+  block:
+    # This step needs to happen after the cross compiler packages are installed
+    # so the libgcc cross libraries can be copied
+    - name: Copy gcc-cross libs
+      ansible.builtin.command:
+        argv: ['cp', '-r', "/usr/lib/gcc-cross/{{item}}/12/", "/usr/lib/gcc-cross/{{item}}/4.8.5"]
+        creates: "/usr/lib/gcc-cross/{{item}}/4.8.5"
+      with_items:
+        - aarch64-linux-gnu
+        - arm-linux-gnueabihf
+        - i686-linux-gnu
+        - powerpc64le-linux-gnu
+        - powerpc-linux-gnu
+        - riscv64-linux-gnu
+        - s390x-linux-gnu
+    - name: Download legacy compiler binaries
+      # These binaries built from files/Containerfile
+      ansible.builtin.get_url:
+        url: https://obj.internal.efficios.com/jenkins/gcc-4.8-x86_64-linux-gnu-cross.tgz
+        dest: /root/gcc-4.8-x86_64-linux-gnu-cross.tgz
+      register: cross_download
+    - name: Extract legacy compiler binaries
+      when: cross_download.changed
+      ansible.builtin.command:
+        argv: ['tar', '-C', '/', '-xzf', '/root/gcc-4.8-x86_64-linux-gnu-cross.tgz']

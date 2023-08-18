@@ -1,0 +1,38 @@
+FROM docker.io/debian:bookworm
+
+#
+# Create the container: podman build -t . gcc-4.8
+# Build the cross compilers:
+#   mkdir -p ~/gcc-4.8
+#   for i in aarch64-linux-gnu arm-linux-gnueabihf i686-linux-gnu powerpc64le-linux-gnu powerpc-linux-gnu riscv64-linux-gnu s390x-linux-gnu ; do podman run --rm -e "TARGET=$i" -v ~/gcc-4.8:/output localhost/gcc-4.8 ; done
+#   tar -czf ~/gcc-4.8.tgz -C ~/gcc-4.8 ./
+
+RUN echo 'deb-src http://deb.debian.org/debian bookworm main contrib' >> /etc/apt/sources.list
+RUN apt-get update
+
+RUN apt-get -y --force-yes build-dep gcc-12
+RUN apt-get -y --force-yes install wget
+#RUN apt-get -y --force-yes install -t jessie cross-gcc-dev
+RUN mkdir -p /src/build /src/patches /output
+WORKDIR /src
+RUN wget -q -O - https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-4.8.5.tar.gz | tar -xzf -
+WORKDIR /src/patches
+
+# This patch fixes builds with more recent versions of texinfo
+RUN wget -q https://aur.archlinux.org/cgit/aur.git/plain/gcc.texi.49.patch?h=gcc48 -O 01-texi.patch.0
+
+# This patch updates the program search directions and installation directories
+# to match those used by the Debian packages, so we can piggy-back on the modern
+# toolchain binaries (eg. binutils--arch64-linux-gnu)
+RUN wget -q https://salsa.debian.org/toolchain-team/gcc/-/raw/gcc-4.8-debian/debian/patches/cross-install-location.diff -O 02-cross_install_dir.patch.2
+
+WORKDIR /src/build
+COPY script.sh /usr/bin/build-gcc.sh
+CMD /usr/bin/build-gcc.sh
+
+# @TODO: missing crtbegin.o eg., libgcc-4.8-dev-arm64-cross
+# This can be "worked around" by copying the system libc-cross
+# eg.
+#   cp -r /usr/lib/gcc-cross/aarch64-linux-gnu/12/ /usr/lib/gcc-cross/aarch64-linux-gnu/4.8.5
+#   make
+#
