@@ -2,8 +2,12 @@
 binutils_gdb_packages:
   - ccache
   - dejagnu
+  - elfutils
+  - fpc
   - gfortran
   - gnat
   - guile-2.2-dev
   - libgmp-dev
+  - libmpfr-dev
   - libreadline-dev
+  - systemtap-sdt-dev
