@@ -4,9 +4,10 @@ SRC_DIR="${SRC_DIR:-/src/gcc-releases-gcc-4.8.5}"
 PATCH_DIR="${PATCH_DIR:-/src/patches}"
 TARGET="${TARGET:-aarch64-linux-gnu}"
 HOST="${HOST:-x86_64-linux-gnu}"
-CONFIGURE_ARGS="${CONFIGURE_ARGS:-}"
-MAKE_ARGS="${MAKE_ARGS:-}"
-MAKE_INSTALL_ARGS="${MAKE_INSTALL_ARGS:-}"
+CONFIGURE_ARGS=(${CONFIGURE_ARGS:-})
+MAKE_ARGS=(${MAKE_ARGS:-})
+MAKE_INSTALL_ARGS=(${MAKE_INSTALL_ARGS:-})
+DEBUG="${DEBUG:-}"
 
 OWD="$(pwd)"
 cd "${SRC_DIR}" || exit 1
@@ -18,9 +19,12 @@ while read -r line ; do
     fi
     patch -p"${PATCH_LEVEL}" < "${line}"
 done < <(find "${PATCH_DIR}" -type f)
-cd "${OWD}"
+cd "${OWD}" || exit 1
 
 TARGET_ARGS=()
+CFLAGS=(-std=gnu99)
+CXXFLAGS=(-std=gnu++98)
+# apt-get install -y gcc-"${TARGET}"
 case "${TARGET}" in
     aarch64-linux-gnu)
         TARGET_ARGS+=(
@@ -42,8 +46,13 @@ case "${TARGET}" in
         )
         ;;
     powerpc64le-linux-gnu)
+        # Disable multilib so that ppc64el kernel can be built, since
+        # legacy Makefiles compile vdso in 32bits unconditionally.
+        # @see https://bugzilla.redhat.com/show_bug.cgi?id=1237363
+        # @see https://bugzilla.redhat.com/show_bug.cgi?id=1205236
+        # @see https://bugs.launchpad.net/ubuntu/trusty/+source/linux/+bug/1433809/
         TARGET_ARGS+=(
-            --enable-secureplt
+            --disable-multilib
             --enable-targets=powerpcle-linux
             --with-cpu=power8
             --with-long-double-128
@@ -74,6 +83,7 @@ case "${TARGET}" in
         ;;
 esac
 
+START=$(date +%s)
 "${SRC_DIR}/configure" --build="${HOST}" --host="${HOST}" --enable-languages=c,c++ \
             --program-prefix="${TARGET}-" --target="${TARGET}" --program-suffix=-4.8 \
             --prefix=/usr/ --with-system-zlib \
@@ -81,14 +91,20 @@ esac
             --disable-nls --disable-shared --enable-host-shared \
             --disable-bootstrap --enable-threads=posix --enable-default-pie \
             --with-sysroot=/ --includedir=/usr/"${TARGET}"/include \
-            --without-target-system-zlib --enable-multiarch
-            ${TARGET_ARGS[@]} ${CONFIGURE_ARGS} \
-            CFLAGS='-std=gnu99' CXXFLAGS='-std=gnu++98'
+            --without-target-system-zlib --enable-multiarch \
+            "${TARGET_ARGS[@]}" "${CONFIGURE_ARGS[@]}" \
+            CFLAGS="${CFLAGS[*]}" CXXFLAGS="${CXXFLAGS[*]}"
 
-make -j"${NPROC:-$(nproc)}" ${MAKE_ARGS} \
-      CFLAGS='-std=gnu99' CXXFLAGS='-std=gnu++98'
+NPROC="${NPROC:=$(nproc)}"
+make -j"${NPROC}" "${MAKE_ARGS[@]}" CFLAGS="${CFLAGS[*]}" CXXFLAGS="${CXXFLAGS[*]}"
+# Do not use -jN with make install, it often breaks.
+make install "${MAKE_INSTALL_ARGS[@]}"
 
-make install ${MAKE_INSTALL_ARGS}
-mkdir -p /output/usr/lib/ /output/usr/bin/
-cp -r /usr/lib/gcc-cross /output/usr/lib/
+mkdir -p "/output/usr/lib/gcc-cross/${TARGET}" /output/usr/bin/
+
+if [ -n "${DEBUG}" ] ; then
+    echo $(($(date +%s) - START)) > "/output/${TARGET}.time"
+fi
+
+cp -r /usr/lib/gcc-cross/"${TARGET}"/4* "/output/usr/lib/gcc-cross/${TARGET}/"
 cp /usr/bin/*-4.8 /output/usr/bin/
