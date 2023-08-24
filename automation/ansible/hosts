@@ -1,13 +1,6 @@
 localhost ansible_connection=local ansible_python_interpreter=python3
 
 [hosts]
-cloud01.internal.efficios.com
-cloud02.internal.efficios.com
-cloud03.internal.efficios.com
-cloud04.internal.efficios.com
-cloud05.internal.efficios.com
-cloud06.internal.efficios.com
-cloud07.internal.efficios.com
 ci-host-amd64-1a.internal.efficios.com
 ci-host-amd64-1b.internal.efficios.com
 ci-host-amd64-1c.internal.efficios.com
