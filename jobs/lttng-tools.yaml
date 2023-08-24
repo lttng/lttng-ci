@@ -622,7 +622,7 @@
     triggers:
       - pollscm: *lttng-tools_trigger_pollscm_default
       - reverse:
-            jobs: '{ust_job_prefix}lttng-ust_{version}_build'
+            jobs: '{ust_job_prefix}lttng-ust_{version}_{buildtype}'
             result: 'success'
 
 - job-template:
@@ -646,7 +646,7 @@
     triggers:
       - pollscm: *lttng-tools_trigger_pollscm_default
       - reverse:
-            jobs: '{ust_job_prefix}lttng-ust_{version}_build'
+            jobs: '{ust_job_prefix}lttng-ust_{version}_{buildtype}'
             result: 'success'
 
 - job-template:
