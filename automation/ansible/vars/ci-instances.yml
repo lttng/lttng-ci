@@ -1040,3 +1040,39 @@ containers:
       host: 'ci-host-amd64-1c.internal.efficios.com'
     meta:
       address: 172.18.17.10
+  # VMs for running tests using lava
+  - jenkins: {}
+    meta: {}
+    vm:
+      name: 'lava-node-amd64-01'
+      disk: '/var/lib/libvirt/images/lava-node-amd64-01.qcow'
+      disk_capacity: '10G'
+      host: 'ci-host-amd64-2d.internal.efficios.com'
+  - jenkins: {}
+    meta: {}
+    vm:
+      name: 'lava-node-amd64-02'
+      disk: '/var/lib/libvirt/images/lava-node-amd64-02.qcow'
+      disk_capacity: '10G'
+      host: 'ci-host-amd64-2d.internal.efficios.com'
+  - jenkins: {}
+    meta: {}
+    vm:
+      name: 'lava-node-amd64-03'
+      disk: '/var/lib/libvirt/images/lava-node-amd64-03.qcow'
+      disk_capacity: '10G'
+      host: 'ci-host-amd64-2d.internal.efficios.com'
+  - jenkins: {}
+    meta: {}
+    vm:
+      name: 'lava-node-amd64-04'
+      disk: '/var/lib/libvirt/images/lava-node-amd64-04.qcow'
+      disk_capacity: '10G'
+      host: 'ci-host-amd64-2d.internal.efficios.com'
+  - jenkins: {}
+    meta: {}
+    vm:
+      name: 'lava-node-amd64-05'
+      disk: '/var/lib/libvirt/images/lava-node-amd64-05.qcow'
+      disk_capacity: '10G'
+      host: 'ci-host-amd64-2d.internal.efficios.com'

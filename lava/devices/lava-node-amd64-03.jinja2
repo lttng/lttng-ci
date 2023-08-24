@@ -1,8 +1,8 @@
 {% extends 'x86.jinja2' %}
-{% set connection_command = 'virsh --connect qemu+ssh://cloud06.internal.efficios.com/system console --force lava-node-amd64-03' %}
-{% set hard_reset_command = 'virsh --connect qemu+ssh://cloud06.internal.efficios.com/system reset lava-node-amd64-03' %}
-{% set power_off_command = 'virsh --connect qemu+ssh://cloud06.internal.efficios.com/system reset lava-node-amd64-03' %}
-{% set power_on_command = 'virsh --connect qemu+ssh://cloud06.internal.efficios.com/system reset lava-node-amd64-03' %}
+{% set connection_command = 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system console --force lava-node-amd64-03' %}
+{% set hard_reset_command = 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-03' %}
+{% set power_off_command = 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-03' %}
+{% set power_on_command = 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-03' %}
 {% set soft_reset_command = 'reboot' %}
 {% set boot_interface = 'net0' %}
 {% set boot_character_delay = '100' %}
