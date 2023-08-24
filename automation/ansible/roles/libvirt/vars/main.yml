@@ -19,3 +19,8 @@ isos:
   - url: https://cdimage.debian.org/cdimage/archive/12.0.0/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso
     checksum: "sha256:3b0e9718e3653435f20d8c2124de6d363a51a1fd7f911b9ca0c6db6b3d30d53e"
     dest: /var/lib/iso/debian-12.0.0-amd64-netinst.iso
+  # Patched iPXE.iso with serial console + reboot + infinite timeout for LAVA
+  # @see https://wiki.internal.efficios.com/lava#special_ipxe_boot_image_for_vms
+  - url: obj.internal.efficios.com/lava/ipxe.iso
+    checksum: "sha256:063bcfc9f9797636a97ccbf9dc5f52f54a85b87b0d143150102f80b8533b2f20"
+    dest: /var/lib/iso/ipxe.iso
