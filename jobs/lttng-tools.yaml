@@ -1076,17 +1076,6 @@
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          buildtype: build
-          version: master
-          ustversion: master
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std, oot, dist]
-          confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
-          urcuversions: !!python/tuple [master]
-          babelversions: !!python/tuple [stable-2.0, master]
-          filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
-          touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: master
           ustversion: master
@@ -1206,17 +1195,6 @@
           filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
           touchstone: ''
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          buildtype: build
-          version: stable-2.13
-          ustversion: stable-2.13
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std, oot, dist]
-          confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
-          urcuversions: !!python/tuple [stable-0.13]
-          babelversions: !!python/tuple [stable-2.0]
-          filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
-          touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.13
           ustversion: stable-2.13
@@ -1319,17 +1297,6 @@
           version: stable-2.12
           ustversion: stable-2.12
           platforms: !!python/tuple [deb12-amd64]
-          builds: !!python/tuple [std, oot, dist]
-          confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
-          urcuversions: !!python/tuple [stable-0.13]
-          babelversions: !!python/tuple [stable-2.0]
-          filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
-          touchstone: ''
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          buildtype: build
-          version: stable-2.12
-          ustversion: stable-2.12
-          platforms: !!python/tuple [bionic-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1696,16 +1663,6 @@
     ## Master ##
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           version: master
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std, oot, dist, oot-dist]
-          confs: !!python/tuple [std, no-ust, agents]
-          urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
-          babelversions: !!python/tuple [stable-2.0]
-          filter: ''
-          touchstone: ''
-      - 'dev_review_lttng-tools_{version}_{buildtype}':
-          version: master
           buildtype: linuxbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
@@ -1750,16 +1707,6 @@
     ## Stable 2.13 ##
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           version: stable-2.13
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std, oot, dist, oot-dist]
-          confs: !!python/tuple [std, no-ust, agents]
-          urcuversions: !!python/tuple [stable-0.13]
-          babelversions: !!python/tuple [stable-2.0]
-          filter: ''
-          touchstone: ''
-      - 'dev_review_lttng-tools_{version}_{buildtype}':
-          version: stable-2.13
           buildtype: linuxbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
@@ -1780,16 +1727,6 @@
           touchstone: ''
 
     ## Stable 2.12 ##
-      - 'dev_review_lttng-tools_{version}_{buildtype}':
-          version: stable-2.12
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std, oot, dist, oot-dist]
-          confs: !!python/tuple [std, no-ust, agents]
-          urcuversions: !!python/tuple [stable-0.13]
-          babelversions: !!python/tuple [stable-2.0]
-          filter: ''
-          touchstone: ''
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           version: stable-2.12
           buildtype: linuxbuild

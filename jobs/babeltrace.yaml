@@ -594,13 +594,6 @@
           filter: '(build=="std") || (conf=="std") || (conf=="doc")'
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
-          buildtype: build
-          platforms: !!python/tuple [bionic-amd64]
-          builds: !!python/tuple [std, oot, dist, oot-dist]
-          confs: !!python/tuple [std, static, prod, min, doc, asan]
-          filter: '(build=="std") || (conf=="std") || (conf=="doc")'
-          touchstone: '(build == "std") && (conf == "std")'
-      - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
