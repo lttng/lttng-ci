@@ -755,7 +755,6 @@
 # Ubuntu normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           uversion:
-            - xenial
             - bionic
             - focal
             - jammy
@@ -796,7 +795,6 @@
 # Ubuntu cross builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           uversion:
-            - xenial
             - bionic
           buildtype: crossbuild
           parambuildtype: crossbuild
