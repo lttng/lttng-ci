@@ -95,7 +95,7 @@ upload_archive_obj() {
 
 
 extract_archive_obj() {
-    tar -xf "$WORKSPACE/$obj_name" -C "$LINUX_OBJ_DIR"
+    tar -xf "$WORKSPACE/$obj_name" -C "$LINUX_OBJ_DIR" -I pbzip2
     rm -f "$WORKSPACE/$obj_name"
 }
 
