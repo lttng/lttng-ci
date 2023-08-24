@@ -607,6 +607,10 @@
           type: user-defined
           name: cross_arch
           values: '{obj:cross_arch}'
+      - axis:
+          type: slave
+          name: platforms
+          values: '{obj:platforms}'
 
     properties:
       - build-discarder:
@@ -806,6 +810,7 @@
       - 'lttng-modules_PARAM_build':
           platforms: !!python/tuple [deb12-amd64]
       - 'lttng-modules_PARAM_crossbuild':
+          platforms: !!python/tuple [deb12-amd64]
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
 
 # Misc jobs
