@@ -230,6 +230,7 @@ build_linux_kernel() {
     cd "$LINUX_SRCOBJ_DIR"
 
     kversion=$(make -s kernelversion "${make_args[@]}")
+    pahole_version="$(pahole --version | tr -d 'v')"
 
     if { verlt "${kversion}" "3.3"; } && [ "${vanilla_config}" = "imx_v6_v7_defconfig" ] ; then
         # imx_v6_v7 didn't exist before 06965c39b4c63933fa0a1cde2237ef85477c5655
@@ -478,6 +479,28 @@ EOF
             make_args+=(
                 CFLAGS_aes_generic.o=''
             )
+        fi
+    fi
+
+    if [ "$(scripts/config --state CONFIG_DEBUG_INFO_BTF)" == "y" ] &&
+           { vergte "${pahole_version}" "1.24"; } &&
+           { vergte "${kversion}" "5.10"; } && { verlt "${kversion}" "6.0"; } ;then
+        # Some kernels Eg. Ubuntu-hwe-5.13-5.13.0-52.59_20.04.1
+        # fail with the following error:
+        #   BTFIDS  vmlinux
+        #   FAILED: load BTF from vmlinux: Invalid argument
+        #
+        # When CONFIG_DEBUG_INFO_BTF is set, certain versions of pahole require
+        # `--skip_encoding_btf_enum64` to be passed as the kernel doesn't define
+        # BTF_KIND_ENUM64.
+        #
+        # Introduced in 341dfcf8d78eaa3a2dc96dea06f0392eb2978364 (~v5.10)
+        # @see https://lore.kernel.org/bpf/20220825171620.cioobudss6ovyrkc@altlinux.org/t/
+        #
+        if [ -f "scripts/pahole-flags.sh" ] ; then
+            sed -i 's/ -J ${PAHOLE_FLAGS} / -J ${PAHOLE_FLAGS} --skip_encoding_btf_enum64 /' scripts/link-vmlinux.sh
+        else
+            sed -i 's/ -J ${extra_paholeopt} / -J ${extra_paholeopt} --skip_encoding_btf_enum64 /' scripts/link-vmlinux.sh
         fi
     fi
 
