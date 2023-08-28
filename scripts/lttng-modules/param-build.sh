@@ -542,7 +542,7 @@ EOF
     make "$update_conf_target" "${make_args[@]}"
     make -j"$NPROC" "${make_args[@]}"
 
-    krelease=$(make -s kernelrelease "${mark_args[@]}")
+    krelease=$(make -s kernelrelease "${make_args[@]}")
 
     # Save the kernel and modules
     mkdir -p "$LINUX_INSTOBJ_DIR/boot"
