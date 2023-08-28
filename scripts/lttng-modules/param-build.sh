@@ -149,7 +149,7 @@ select_compiler() {
         selected_cc='gcc-4.8'
     fi
 
-    if [ "x$selected_cc" = "x" ]; then
+    if [ -z "$selected_cc" ]; then
       echo "Found no suitable compiler."
       exit 1
     fi
@@ -623,12 +623,12 @@ extract_distro_headers() {
 
     # Copy arch includes
     (find arch -name include -type d -print0 | \
-        xargs -0 -n1 -i: find : -type f) | \
+        xargs -0 -n1 -I '{}' find '{}' -type f) | \
         cpio -pd --preserve-modification-time "${LINUX_HDROBJ_DIR}"
 
     # Copy arch scripts
     (find arch -name scripts -type d -print0 | \
-        xargs -0 -n1 -i: find : -type f) | \
+        xargs -0 -n1 -I '{}' find '{}' -type f) | \
         cpio -pd --preserve-modification-time "${LINUX_HDROBJ_DIR}"
 
     # Cleanup scripts
@@ -637,7 +637,7 @@ extract_distro_headers() {
 
     # On powerpc 32bits this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
-        if [ "x$(scripts/config -s CONFIG_PPC64)" = "xy" ] && vergte "${kversion}" "5.4"; then
+        if [ "$(scripts/config -s CONFIG_PPC64)" = "y" ] && vergte "${kversion}" "5.4"; then
             :
         else
             cp -a --parents arch/powerpc/lib/crtsavres.[So] "${LINUX_HDROBJ_DIR}/"
@@ -701,7 +701,7 @@ extract_distro_headers() {
 
     # On powerpc 32bits this object is required to link modules
     if [ "${karch}" = "powerpc" ]; then
-        if [ "x$(scripts/config -s CONFIG_PPC64)" = "xy" ] && vergte "${kversion}" "5.4"; then
+        if [ "$(scripts/config -s CONFIG_PPC64)" = "y" ] && vergte "${kversion}" "5.4"; then
             :
         else
             make arch/powerpc/lib/crtsavres.o "${make_args[@]}"
@@ -920,7 +920,7 @@ signature_v2 = False" > "$WORKSPACE/.s3cfg"
 url_hash="$(echo -n "$kgitrepo" | md5sum | awk '{ print $1 }')"
 obj_name="linux.tar.bz2"
 
-if [ "x${cross_arch}" = "x" ]; then
+if [ -z "${cross_arch}" ]; then
 	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platforms}/$arch/native"
 else
 	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platforms}/${cross_arch}"
