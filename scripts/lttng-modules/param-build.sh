@@ -346,8 +346,12 @@ build_linux_kernel() {
             patch_linux_kernel 854e55ad289ef8888e7991f0ada85d5846f5afb9
         fi
 
+    fi
+
+    if { vergt "${selected_cc_version}" "9"; } && { verlt "${kversion}" "5.6"; } ; then
         # Duplicate decalarations of __force_order
         # @see https://gitlab.com/linux-kernel/stable/-/commit/df6d4f9db79c1a5d6f48b59db35ccd1e9ff9adfc
+        patch_linux_kernel df6d4f9db79c1a5d6f48b59db35ccd1e9ff9adfc
         # However, kaslr_64.c doesn't exit in 4.15, 4.16, it's named pagetable.c
         if [ -f arch/x86/boot/compressed/pagetable.c ] ; then
             sed -i '/^unsigned long __force_order;$/d' arch/x86/boot/compressed/pagetable.c
