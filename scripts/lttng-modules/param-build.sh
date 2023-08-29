@@ -346,11 +346,6 @@ build_linux_kernel() {
             patch_linux_kernel 854e55ad289ef8888e7991f0ada85d5846f5afb9
         fi
 
-        # More recent compiler optimizations expose build errors with netronome.
-        # It seems easier to disable the driver than to attempt patching.
-        scripts/config --disable CONFIG_NET_VENDOR_NETRONOME
-        scripts/config --disable CONFIG_MICREL_PHY
-
         # Duplicate decalarations of __force_order
         # @see https://gitlab.com/linux-kernel/stable/-/commit/df6d4f9db79c1a5d6f48b59db35ccd1e9ff9adfc
         # However, kaslr_64.c doesn't exit in 4.15, 4.16, it's named pagetable.c
@@ -538,6 +533,27 @@ EOF
     scripts/config --disable CONFIG_MFD_WM8994
     scripts/config --disable CONFIG_DRM_RADEON
     scripts/config --disable CONFIG_SND_SOC_WM5100
+    # More recent compiler optimizations (from gcc 8 onwards )expose build errors
+    # with netronome on older kernels.
+    # Observed in 4.11-rt, 4.15-4.17, 5.0-rt - 5.16-rt
+    # It seems easier to disable the driver than to attempt patching.
+    # Eg.
+    #   In function ‘ur_load_imm_any’,
+    #   inlined from ‘jeq_imm’ at drivers/net/ethernet/netronome/nfp/bpf/jit.c:3146:13:
+    #   ./include/linux/compiler.h:350:45: error: call to ‘__compiletime_assert_1062’ declared with attribute error: FIELD_FIT: value too large for the field
+    #   350 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+    #
+    scripts/config --disable CONFIG_NET_VENDOR_NETRONOME
+    # Eg.
+    #  In function ‘memcpy’,
+    #  inlined from ‘kszphy_get_strings’ at drivers/net/phy/micrel.c:664:3:
+    #  ./include/linux/string.h:305:25: error: call to ‘__read_overflow2’ declared with attribute error: detected read beyond size of object passed as 2nd parameter
+    #  305 |                         __read_overflow2();
+    #      |                         ^~~~~~~~~~~~~~~~~~
+    #  make[3]: *** [scripts/Makefile.build:308: drivers/net/phy/micrel.o] Error 1
+    #
+    scripts/config --disable CONFIG_MICREL_PHY
+
 
     # IGBVF won't build with recent gcc on 2.6.38.x
     if { vergte "$kversion" "2.6.37" && verlt "$kversion" "2.6.38"; }; then
