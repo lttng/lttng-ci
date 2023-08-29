@@ -367,8 +367,11 @@ build_linux_kernel() {
         patch_linux_kernel 9feeb638cde083c737e295c0547f1b4f28e99583
     fi
 
-    if { vergte "${kversion}" "4.12"; } && { verlt "${kversion}" "4.18"; } ; then
-        # Old kernels can fail to build while on newer host kernels
+    if { vergte "${kversion}" "4.12"; } && { verlt "${kversion}" "4.19"; } ; then
+        # Old kernels can fail to build while on newer host kernels with errors
+        # such as:
+        #   In file included from scripts/selinux/genheaders/genheaders.c:19:
+        #   ./security/selinux/include/classmap.h:249:2: error: #error New address family defined, please update secclass_map.
         # @see https://gitlab.com/linux-kernel/stable/-/commit/dfbd199a7cfe3e3cd8531e1353cdbd7175bfbc5e
         #
         patch_linux_kernel dfbd199a7cfe3e3cd8531e1353cdbd7175bfbc5e
