@@ -453,6 +453,18 @@ EOF
         fi
     fi
 
+    if { vergte "${kversion}" "4.5"; } && { verlt "${kversion}" "4.8"; } ; then
+	# Kernels between v4.5 and v4.8 built with gcc >= 8 on arm will hit an
+	# assembler error :
+        #
+        #  kernel/.tmp_fork.s: Assembler messages:
+        #  kernel/.tmp_fork.s:1790: Error: .err encountered
+	#
+	# @see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85745
+        #
+        patch_linux_kernel 9f73bd8bb445e0cbe4bcef6d4cfc788f1e184007
+    fi
+
     # Newer binutils don't accept 3 operand 'cmp' instructions on ppc64
     # Convert them to 'cmpw' which was previously done silently
     if verlt "$kversion" "4.9"; then
