@@ -424,10 +424,10 @@ index bbb1d225..8deeacbc 100644
 EOF
     fi
 
-    if ( { vergte "${kversion}" "3.15"; } && { verlt "${kversion}" "4.4"; } ) ||
+    if ( { vergte "${kversion}" "3.14"; } && { verlt "${kversion}" "4.4"; } ) ||
        ( { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.17"; } ); then
         # While the original motivation of this patch is for fixing builds using
-        # clang, the same error occurs between linux >= 3.15 and < 4.4, and in
+        # clang, the same error occurs between linux >= 3.14 and < 4.4, and in
         # 4.15, 4.16.
         #
         # This patch only partially applies due to changes in kernel/Makefile,
