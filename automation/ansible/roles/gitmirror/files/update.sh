@@ -9,7 +9,7 @@ update_git() {
     local origin="$2"
 
     if [ ! -d "${repodir}" ] ; then
-        git clone --bare "${origin}" "${repodir}"
+        git clone --mirror "${origin}" "${repodir}"
     fi
 
     pushd "$repodir"
