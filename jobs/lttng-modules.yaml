@@ -758,6 +758,9 @@
 
 # Ubuntu normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
+          mversion:
+            - master
+            - stable-2.13
           uversion:
             - bionic
             - focal
@@ -766,6 +769,19 @@
           parambuildtype: build
           kverfloor: ''
           kverceil: ''
+          kverfilter: stable-head
+
+      - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
+          mversion:
+            - stable-2.12
+          uversion:
+            - bionic
+            - focal
+            - jammy
+          buildtype: build
+          parambuildtype: build
+          kverfloor: ''
+          kverceil: Ubuntu-hwe-5.18.0-0.0
           kverfilter: stable-head
 
 # Vanilla crossbuilds
@@ -798,12 +814,30 @@
 
 # Ubuntu cross builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
+          mversion:
+            - master
+            - stable-2.13
           uversion:
             - bionic
+            - focal
+            - jammy
           buildtype: crossbuild
           parambuildtype: crossbuild
           kverfloor: ''
           kverceil: ''
+          kverfilter: stable-head
+
+      - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
+          mversion:
+            - stable-2.12
+          uversion:
+            - bionic
+            - focal
+            - jammy
+          buildtype: crossbuild
+          parambuildtype: crossbuild
+          kverfloor: ''
+          kverceil: Ubuntu-hwe-5.18.0-0.0
           kverfilter: stable-head
 
 # Parametrized kernel and modules build jobs
