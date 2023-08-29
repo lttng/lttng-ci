@@ -445,6 +445,13 @@ EOF
             sed -i '/^.* += elfcore.o$/d' kernel/Makefile
         fi
     fi
+    # Same as above for the v4.4 branch
+    if ( { vergte "${kversion}" "4.4"; } && { verlt "${kversion}" "4.4.257"; } ); then
+        patch_linux_kernel 3140b0740b31cc63cf2ee08bc3f746b423eb068d
+        if grep -q elfcore.o kernel/Makefile ; then
+            sed -i '/^.* += elfcore.o$/d' kernel/Makefile
+        fi
+    fi
 
     # Newer binutils don't accept 3 operand 'cmp' instructions on ppc64
     # Convert them to 'cmpw' which was previously done silently
