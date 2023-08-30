@@ -348,11 +348,35 @@ build_linux_kernel() {
     if { vergt "${selected_cc_version}" "9"; } && { verlt "${kversion}" "5.6"; } ; then
         # Duplicate decalarations of __force_order
         # @see https://gitlab.com/linux-kernel/stable/-/commit/df6d4f9db79c1a5d6f48b59db35ccd1e9ff9adfc
-        patch_linux_kernel df6d4f9db79c1a5d6f48b59db35ccd1e9ff9adfc
         # However, kaslr_64.c doesn't exit in 4.15, 4.16, it's named pagetable.c
         if [ -f arch/x86/boot/compressed/pagetable.c ] ; then
             sed -i '/^unsigned long __force_order;$/d' arch/x86/boot/compressed/pagetable.c
         fi
+        if [ -f arch/x86/boot/compressed/kaslr_64.c ] ; then
+            patch_linux_kernel df6d4f9db79c1a5d6f48b59db35ccd1e9ff9adfc
+        fi
+    fi
+
+    if { vergte "${kversion}" "4.18"; } && { verlt "${kversion}" "4.19"; } ; then
+        # In some cases, compiling net/bpfilter can fail with the following error:
+        #   net/bpfilter/main.c:9:10: fatal error: include/uapi/linux/bpf.h: No such file or directory
+        #   make[2]: *** [scripts/Makefile.host:107: net/bpfilter/main.o] Error 1
+        #
+        # While the issue is potentially in a number of old versions, it has only
+        # been observed in v4.18-rt
+        #
+        patch_linux_kernel 303a339f30a9441c4695d3d2cc78f1b33cd959ff
+    fi
+
+    if { vergte "${kversion}" "4.18"; } && { verlt "${kversion}" "4.19"; } ; then
+        # In some cases, compiling net/bpfilter can fail with the following error:
+        #   net/bpfilter/main.c:9:10: fatal error: include/uapi/linux/bpf.h: No such file or directory
+        #   make[2]: *** [scripts/Makefile.host:107: net/bpfilter/main.o] Error 1
+        #
+        # While the issue is potentially in a number of old versions, it has only
+        # been observed in v4.18-rt
+        #
+        patch_linux_kernel 303a339f30a9441c4695d3d2cc78f1b33cd959ff
     fi
 
     if { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.18"; } ; then
@@ -373,7 +397,7 @@ build_linux_kernel() {
         patch_linux_kernel dfbd199a7cfe3e3cd8531e1353cdbd7175bfbc5e
     fi
 
-    if { vergte "${kversion}" "3.18"; } && { verlt "${kversion}" "4.4"; } ; then
+    if { vergte "${kversion}" "3.18"; } && { verlt "${kversion}" "4.16"; } ; then
         # Compatibility with binutils >= ~ 2.31
         patch_linux_kernel b21ebf2fb4cde1618915a97cc773e287ff49173e
     fi
@@ -422,10 +446,11 @@ EOF
     fi
 
     if ( { vergte "${kversion}" "3.14"; } && { verlt "${kversion}" "4.4"; } ) ||
-       ( { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.17"; } ); then
+       ( { vergte "${kversion}" "4.8"; } && { verlt "${kversion}" "4.18"; } ); then
         # While the original motivation of this patch is for fixing builds using
         # clang, the same error occurs between linux >= 3.14 and < 4.4, and in
         # 4.15, 4.16.
+        # For rt-linux, the error has been observed in 4.8, 4.11, and 4.13.
         #
         # This patch only partially applies due to changes in kernel/Makefile,
         # so a supplementary patch is needed
@@ -462,12 +487,53 @@ EOF
         patch_linux_kernel 9f73bd8bb445e0cbe4bcef6d4cfc788f1e184007
     fi
 
+    if [ "${kversion}" == "4.6.7" ] ; then
+        # Hacky patch to deal with the following build error:
+        #   Cannot find symbol for section 7: .text.unlikely.
+        #   kernel/kexec_file.o: failed
+        #   make[1]: *** [scripts/Makefile.build:291: kernel/kexec_file.o] Error 1
+        #
+        # This error happens with binutils 2.36 and 2.37, but should probably not
+        # be an issue with binutils 2.38.
+        # @see https://github.com/linuxppc/issues/issues/388
+        # @see https://github.com/bminor/binutils-gdb/commit/c09c8b42021180eee9495bd50d8b35e683d3901b
+        #
+        # There is some sort of config (unspecified in past discussions) which
+        # provokes the error, and there was never a potential fix merged in
+        # this discussion, in part because the build systems of the kernel
+        # switched to objtool instead.
+        #
+        # @see https://lore.kernel.org/all/20210215162209.5e2a475b@gandalf.local.home/
+        #
+        sed -i 's/return txtname;/return shdr0->sh_size ? txtname : NULL;/' scripts/recordmcount.h
+
+        # After applying the above patch, the build continues but fails with
+        # head64.c:(.text.exit+0x5): undefined reference to `__gcov_exit'
+        #
+        scripts/config --disable CONFIG_GCOV_KERNEL
+    fi
+
     # Newer binutils don't accept 3 operand 'cmp' instructions on ppc64
     # Convert them to 'cmpw' which was previously done silently
     if verlt "$kversion" "4.9"; then
 	    find arch/powerpc/ -name "*.S" -print0 | xargs -0 sed -i "s/\(cmp\)\(\s\+[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+\)/cmpw\2/"
 	    find arch/powerpc/ -name "*.S" -print0 | xargs -0 sed -i "s/\(cmpli\)\(\s\+[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+\)/cmplwi\2/"
 	    sed -i "s/\$pie \-o \"\$ofile\"/\$pie --no-dynamic-linker -o \"\$ofile\"/" arch/powerpc/boot/wrapper
+    fi
+
+    if [ "$(scripts/config --state CONFIG_EXTCON_ADC_JACK)" != "n" ] &&
+           ( { vergte "${kversion}" "4.2"; } && { verlt "${kversion}" "4.12"; } ); then
+        # 73b6ecdb93e8e77752cae9077c424fcdc6f23c39 introduced a change where
+        # extcon-adc-jack.h has an incompatible pointer type.
+        # In GCC >= 5 this will provoke a warning and build failure.
+        # Eg.
+        #   drivers/extcon/extcon-adc-jack.c: In function ‘adc_jack_probe’:
+        #   drivers/extcon/extcon-adc-jack.c:111:64: error: passing argument 2 of ‘devm_extcon_dev_allocate’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+        #   make[2]: *** [scripts/Makefile.build:295: drivers/extcon/extcon-adc-jack.o] Error 1
+        #
+        # 8a522bf2d4f788306443d36b26b54f0aedcdfdbe (in 4.11) has a fix for this warning
+        #
+        patch_linux_kernel 8a522bf2d4f788306443d36b26b54f0aedcdfdbe
     fi
 
     # Fix a typo in v2.6.36.x
