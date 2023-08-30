@@ -12,6 +12,18 @@
         group: root
         mode: '0640'
       register: netplan_default_yaml
+    - name: Disable ifupdown on Debian
+      when: ansible_distribution == "Debian"
+      block:
+        - name: Disable ifupdown networking
+          ansible.builtin.systemd:
+            name: networking.service
+            masked: true
+        - name: Enable systemd-networkd
+          ansible.builtin.systemd:
+            name: systemd-networkd
+            enabled: true
+            state: started
     - name: Apply netplan
       when: netplan_default_yaml.changed and netplan_apply
       ansible.builtin.command:
