@@ -10,3 +10,7 @@
     - lttng-modules
     - lttng-analyses
     - libs-i386
+    # Standalone (root) nodes should use fixed IP addresses
+    # DHCP can be flaky during destructive tests which change
+    # the date of the system.
+    - netplan
