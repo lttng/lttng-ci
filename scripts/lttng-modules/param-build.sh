@@ -387,7 +387,8 @@ build_linux_kernel() {
         patch_linux_kernel 9feeb638cde083c737e295c0547f1b4f28e99583
     fi
 
-    if { vergte "${kversion}" "4.12"; } && { verlt "${kversion}" "4.19"; } ; then
+    if ( { vergte "${kversion}" "4.12"; } && { verlt "${kversion}" "4.20.17"; } ) || \
+       ( { vergte "${kversion}" "5.0"; } && { verlt "${kversion}" "5.0.12"; } ) ; then
         # Old kernels can fail to build while on newer host kernels with errors
         # such as:
         #   In file included from scripts/selinux/genheaders/genheaders.c:19:
@@ -487,7 +488,8 @@ EOF
         patch_linux_kernel 9f73bd8bb445e0cbe4bcef6d4cfc788f1e184007
     fi
 
-    if [ "${kversion}" == "4.6.7" ] ; then
+    if ( { vergte "${kversion}" "4.4"; } && { verlt "${kversion}" "4.4.136"; } ) ||
+       ( { vergte "${kversion}" "4.5"; } && { verlt "${kversion}" "4.8"; } ); then
         # Hacky patch to deal with the following build error:
         #   Cannot find symbol for section 7: .text.unlikely.
         #   kernel/kexec_file.o: failed
@@ -511,6 +513,11 @@ EOF
         # head64.c:(.text.exit+0x5): undefined reference to `__gcov_exit'
         #
         scripts/config --disable CONFIG_GCOV_KERNEL
+    fi
+
+    if { vergte "${kversion}" "4.5"; } && { verlt "${kversion}" "4.5.5"; } ; then
+        # drivers/staging/wilc1000/wilc_spi.c:123:34: error: storage size of ‘wilc1000_spi_ops’ isn’t known
+        patch_linux_kernel ce7b516f3f9e11fe4ee06fad0d7e853bb6e8f160
     fi
 
     # Newer binutils don't accept 3 operand 'cmp' instructions on ppc64
