@@ -275,7 +275,7 @@ esac
 $MAKE -j "$($NPROC)" V=1 MAKEINFO=true
 
 # Install in the workspace
-$MAKE install DESTDIR="$WORKSPACE"
+$MAKE install DESTDIR="$WORKSPACE" MAKEINFO=true
 
 case "$platform" in
 macos-*)
