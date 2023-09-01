@@ -330,7 +330,7 @@ build_linux_kernel() {
         fi
     fi
 
-    if { vergt "${selected_cc_version}" "7"; } && { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.17"; } ; then
+    if { vergt "${selected_cc_version}" "7"; } && { vergte "${kversion}" "4.14"; } && { verlt "${kversion}" "4.17"; } ; then
         # Builds fail due to -Werror=restrict in pager.o and str_error_r.o
         if { verlt "${kversion}" "4.16"; } ; then
             # This is patched since objtool's Makefile doesn't respect HOSTCFLAGS
@@ -383,6 +383,17 @@ build_linux_kernel() {
         # Some old kernels fail to build when make is too new
         # @see https://gitlab.com/linux-kernel/stable/-/commit/9feeb638cde083c737e295c0547f1b4f28e99583
         patch_linux_kernel 9564a8cf422d7b58f6e857e3546d346fa970191e
+    fi
+
+    if { vergte "${kversion}" "4.14"; } && { verlt "${kversion}" "4.14.55"; } ; then
+        # Some old kernels fail to build when make is too new
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/9feeb638cde083c737e295c0547f1b4f28e99583
+        patch_linux_kernel e82885490a611f2b75a6c27cd7bb09665c1740be
+    fi
+
+    if ( { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.18"; } ) || \
+       ( { vergte "${kversion}" "4.14"; } && { verlt "${kversion}" "4.14.56"; } ) ; then
+        # Some old kernels fail to build when make is too new
         # @see https://gitlab.com/linux-kernel/stable/-/commit/9feeb638cde083c737e295c0547f1b4f28e99583
         patch_linux_kernel 9feeb638cde083c737e295c0547f1b4f28e99583
     fi
@@ -541,6 +552,17 @@ EOF
         # 8a522bf2d4f788306443d36b26b54f0aedcdfdbe (in 4.11) has a fix for this warning
         #
         patch_linux_kernel 8a522bf2d4f788306443d36b26b54f0aedcdfdbe
+    fi
+
+    if ( { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.15.2"; } ) || \
+       ( { vergte "${kversion}" "4.14"; } && { verlt "${kversion}" "4.14.18"; } ) ; then
+        # Fix an objtool Segmentation fault
+        patch_linux_kernel dd12561854824fd1f05baf2a1b794faa046e2425
+    fi
+
+    if { vergte "${kversion}" "4.14"; } && { verlt "${kversion}" "4.14.268"; } ; then
+        # Builds fail due to -Werror=use-after-free in sigchain.o and help.o
+        patch_linux_kernel e89bb266b710ce056f141f29f091fd468a4a8185
     fi
 
     # Fix a typo in v2.6.36.x
