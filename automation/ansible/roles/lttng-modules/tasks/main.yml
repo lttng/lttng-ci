@@ -21,6 +21,7 @@
   when: ansible_os_family == 'Suse'
 
 - name: checkout repo
+  when: jenkins_user|bool and lttng_modules_checkout_repo
   git: repo=git://git-mirror.internal.efficios.com/git/linux-all.git
        dest=/home/jenkins/gitcache/linux-stable.git
        bare=yes
