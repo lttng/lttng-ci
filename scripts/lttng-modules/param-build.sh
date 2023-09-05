@@ -448,52 +448,19 @@ build_linux_kernel() {
         patch_linux_kernel dfbd199a7cfe3e3cd8531e1353cdbd7175bfbc5e
     fi
 
-    if { vergte "${kversion}" "3.18"; } && { verlt "${kversion}" "4.16"; } ; then
-        # Compatibility with binutils >= ~ 2.31
+    # Compatibility with binutils >= ~ 2.31
+    if { vergte "${kversion}" "3.19"; } && { verlt "${kversion}" "4.16"; } ; then
         patch_linux_kernel b21ebf2fb4cde1618915a97cc773e287ff49173e
     fi
-
-    # The above patch only partially applies linux 3.17, and has been, so a
-    # rebased version is used instead.
-    if { vergte "${kversion}" "3.17"; } && { verlt "${kversion}" "3.18"; } ; then
-        cat <<'EOF' | patch -p1
-diff --git a/arch/x86/kernel/machine_kexec_64.c b/arch/x86/kernel/machine_kexec_64.c
-index 48598105..0652c5b6 100644
---- a/arch/x86/kernel/machine_kexec_64.c
-+++ b/arch/x86/kernel/machine_kexec_64.c
-@@ -516,6 +516,7 @@ int arch_kexec_apply_relocations_add(const Elf64_Ehdr *ehdr,
- 				goto overflow;
- 			break;
- 		case R_X86_64_PC32:
-+		case R_X86_64_PLT32:
- 			value -= (u64)address;
- 			*(u32 *)location = value;
- 			break;
-diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index e69f9882..7c6bc9fe 100644
---- a/arch/x86/kernel/module.c
-+++ b/arch/x86/kernel/module.c
-@@ -180,6 +180,7 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
- 				goto overflow;
- 			break;
- 		case R_X86_64_PC32:
-+		case R_X86_64_PLT32:
- 			val -= (u64)loc;
- 			*(u32 *)loc = val;
- #if 0
-diff --git a/arch/x86/tools/relocs.c b/arch/x86/tools/relocs.c
-index bbb1d225..8deeacbc 100644
---- a/arch/x86/tools/relocs.c
-+++ b/arch/x86/tools/relocs.c
-@@ -763,6 +763,7 @@ static int do_reloc64(struct section *sec, Elf_Rel *rel, ElfW(Sym) *sym,
- 	switch (r_type) {
- 	case R_X86_64_NONE:
- 	case R_X86_64_PC32:
-+	case R_X86_64_PLT32:
- 		/*
- 		 * NONE can be ignored and PC relative relocations don't
- 		 * need to be adjusted.
-EOF
+    if { vergte "${kversion}" "3.17"; } && { verlt "${kversion}" "3.18.69"; } ; then
+        patch_linux_kernel edb9d2d5e647e7a8521b0d35f8452deb02dfd138
+    fi
+    if { vergte "${kversion}" "3.17"; } && { verlt "${kversion}" "3.18.100"; } ; then
+        patch_linux_kernel 3be6583f0b6f1bf1ee650ebf473d9dee36836527
+        patch_linux_kernel 12d839211d080f6a9c370398c41a260365d34c62
+    fi
+    if { vergte "${kversion}" "3.16"; } && { verlt "${kversion}" "3.16.82"; } ; then
+        patch_linux_kernel ad10e6d464796f2a481de4039a43b9cfca034e1c
     fi
 
     if ( { vergte "${kversion}" "3.14"; } && { verlt "${kversion}" "4.4"; } ) ||
