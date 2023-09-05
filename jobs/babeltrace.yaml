@@ -666,6 +666,7 @@
     github_name: babeltrace
     version:
       - stable-2.0
+      - ctf2
       - master
     jobs:
     ## Master ##
@@ -698,6 +699,44 @@
           warnings_status: FAILED
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
+          buildtype: winbuild
+          platforms: !!python/tuple [cygwin64, msys2-mingw64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
+          warnings_status: FAILED
+
+      ## ctf2 temp branch ##
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: ctf2
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, static, prod, min]
+          filter: ''
+          touchstone: ''
+          warnings_status: FAILED
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: ctf2
+          buildtype: portbuild
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          filter: ''
+          touchstone: ''
+          warnings_status: FAILED
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: ctf2
+          buildtype: macosbuild
+          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, prod]
+          filter: ''
+          touchstone: ''
+          warnings_status: FAILED
+      - 'dev_review_babeltrace_{version}_{buildtype}':
+          version: ctf2
           buildtype: winbuild
           platforms: !!python/tuple [cygwin64, msys2-mingw64]
           builds: !!python/tuple [std]
