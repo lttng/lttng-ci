@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2016-2019 Michael Jeanson <mjeanson@efficios.com>
+# Copyright (C) 2016-2023 Michael Jeanson <mjeanson@efficios.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,18 +18,7 @@
 set -exu
 
 # Parameters
-platforms=${platforms:-}
-# Derive arch from label if it isn't set
-if [ -z "${arch:-}" ] ; then
-    # Labels may be platform specific, eg. jammy-amd64, deb12-armhf
-    regex='[[:alnum:]]+-([[:alnum:]]+)'
-    if [[ "${platforms}" =~ ${regex} ]] ; then
-        arch="${BASH_REMATCH[1]}"
-    else
-        arch="${platforms:-}"
-    fi
-fi
-
+platform=${platforms:-}
 cross_arch=${cross_arch:-}
 ktag=${ktag:-}
 kgitrepo=${kgitrepo:-}
@@ -38,6 +27,18 @@ mgitrepo=${mgitrepo:-}
 make_args=()
 
 DEBUG=${DEBUG:-}
+
+# Derive arch from label if it isn't set
+if [ -z "${arch:-}" ] ; then
+    # Labels may be platform specific, eg. jammy-amd64, deb12-armhf
+    regex='[[:alnum:]]+-([[:alnum:]]+)'
+    if [[ "${platform}" =~ ${regex} ]] ; then
+        arch="${BASH_REMATCH[1]}"
+    else
+        arch="${platform:-}"
+    fi
+fi
+
 
 ## FUNCTIONS ##
 
@@ -58,6 +59,25 @@ vergte() {
 vergt() {
     # shellcheck disable=SC2015
     [ "$1" = "$2" ] && return 1 || vergte "$1" "$2"
+}
+
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
 }
 
 git_clone_modules_sources() {
@@ -106,6 +126,7 @@ tar_archive_obj() {
     cd -
 }
 
+# List all GCC versions present in the PATH
 list_gccs() {
     local gccs
     gccs=()
@@ -118,35 +139,33 @@ list_gccs() {
 
 # Find the most recent GCC version supported by the kernel sources
 select_compiler() {
-    local selected_cc
 
+    # Enter linux source dir
     cd "$LINUX_SRCOBJ_DIR"
 
     kversion=$(make -s kernelversion)
 
-    set +e
-
-    for cc in $(list_gccs) ; do
-        if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
-            cc_version=$(echo "${cc}" | cut -d'-' -f2)
-            if { verlt "${kversion}" "5.17"; } && { vergt "${cc_version}" "11"; } ; then
-                # Using gcc-12+ with '-Wuse-after-free' breaks the build of older
-                # kernels (in particular, objtool). Some releases on LTS
-                # branches between 4.x and 5.15 can be built with gcc-12.
-                # @see https://lore.kernel.org/lkml/20494.1643237814@turing-police/
-                # @see https://gitlab.com/linux-kernel/stable/-/commit/52a9dab6d892763b2a8334a568bd4e2c1a6fde66
-                continue
-            fi
-        selected_cc="$cc"
-        break
-      fi
-    done
-
-    set -e
-
-    # Force gcc-4.8 for kernels before 4.4
     if { verlt "$kversion" "4.4"; }; then
+        # Force gcc-4.8 for kernels before 4.4
         selected_cc='gcc-4.8'
+        selected_cc_version=$(echo "${selected_cc}" | cut -d'-' -f2)
+    else
+        for cc in $(list_gccs) ; do
+            if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
+                cc_version=$(echo "${cc}" | cut -d'-' -f2)
+                if { verlt "${kversion}" "5.17"; } && { vergt "${cc_version}" "11"; } ; then
+                    # Using gcc-12+ with '-Wuse-after-free' breaks the build of older
+                    # kernels (in particular, objtool). Some releases on LTS
+                    # branches between 4.x and 5.15 can be built with gcc-12.
+                    # @see https://lore.kernel.org/lkml/20494.1643237814@turing-police/
+                    # @see https://gitlab.com/linux-kernel/stable/-/commit/52a9dab6d892763b2a8334a568bd4e2c1a6fde66
+                    continue
+                fi
+                selected_cc="$cc"
+                selected_cc_version="$cc_version"
+                break
+            fi
+        done
     fi
 
     if [ -z "$selected_cc" ]; then
@@ -154,10 +173,27 @@ select_compiler() {
       exit 1
     fi
 
+    # lttng-modules requires gcc >= 5.1 for aarch64
+    # @see https://github.com/lttng/lttng-modules/commit/be06402dbdbea2f3394e60ec15c5d3356e2be416
+    if { verlt "${selected_cc_version}" "5.1"; } && [ "${cross_arch}" = "arm64" ] ; then
+        echo "Building lttng-modules on aarch64 requires gcc >= 5.1"
+        exit 1
+    fi
+
+    cd -
+}
+
+export_kbuild_flags() {
+    local _KAFLAGS
+    local _KCFLAGS
+    local _KCPPFLAGS
+    local _HOSTCFLAGS
+
     _KAFLAGS=()
     _KCFLAGS=()
     _KCPPFLAGS=()
     _HOSTCFLAGS=()
+
     if [ "$selected_cc" != "gcc-4.8" ]; then
         # Older kernel Makefiles do not expect the compiler to default to PIE
         _KAFLAGS+=(-fno-pie)
@@ -169,7 +205,6 @@ select_compiler() {
         _KCPPFLAGS+=(-fno-pie)
     fi
 
-    selected_cc_version="$(echo "${selected_cc}" | cut -d'-' -f2)"
     if { vergte "${selected_cc_version}" "10"; } && { verlt "${kversion}" "5.10"; } ; then
         # gcc-10 changed the default from '-fcommon' to '-fno-common', which
         # causes a linker failure. '-fcommon' can be set on the HOSTCFLAGS
@@ -178,14 +213,12 @@ select_compiler() {
         _HOSTCFLAGS+=(-fcommon)
     fi
 
-    if [ "${cross_arch:-}" == "armhf" ] ; then
-        if { verlt "${kversion}" "5.14"; } ; then
-            # Work-around for producing instructions that aren't valid for the
-            # default architectures.
-            # Eg. Error: selected processor does not support `cpsid i' in ARM mode
-            _KCFLAGS+=(-march=armv7-a -mfpu=vfpv3-d16)
-            _KCPPFLAGS+=(-march=armv7-a -mfpu=vfpv3-d16)
-        fi
+    if { verlt "${kversion}" "5.14"; } && [ "${cross_arch:-}" == "armhf" ] ; then
+        # Work-around for producing instructions that aren't valid for the
+        # default architectures.
+        # Eg. Error: selected processor does not support `cpsid i' in ARM mode
+        _KCFLAGS+=(-march=armv7-a -mfpu=vfpv3-d16)
+        _KCPPFLAGS+=(-march=armv7-a -mfpu=vfpv3-d16)
     fi
 
     if { vergt "${selected_cc_version}" "8"; } && { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.17"; } ; then
@@ -206,20 +239,26 @@ select_compiler() {
         HOSTCC="${HOSTCC}"
         HOSTCFLAGS="${HOSTCFLAGS:-}"
     )
+
     if [ -n "${DEBUG}" ] ; then
         make_args+=(
             V=1
         )
     fi
-    cd -
 }
 
 patch_linux_kernel() {
     local commit_hash
     commit_hash="$1"
+
+    # Show the title of the patch in the build log
+    git -C "${LINUX_GIT_REF_REPO_DIR}" show --oneline -s "${commit_hash}"
+
+    # Apply patch, don't fail if it doesn't apply cleanly
     set +e
     git -C "${LINUX_GIT_REF_REPO_DIR}" format-patch -n1 --stdout "${commit_hash}" | patch -p1
     set -e
+
     if [ "$?" -gt 1 ] ; then
         echo "Serious issue patching"
         exit 1
@@ -488,13 +527,13 @@ EOF
     fi
 
     if { vergte "${kversion}" "4.5"; } && { verlt "${kversion}" "4.8"; } ; then
-	# Kernels between v4.5 and v4.8 built with gcc >= 8 on arm will hit an
-	# assembler error :
+        # Kernels between v4.5 and v4.8 built with gcc >= 8 on arm will hit an
+        # assembler error :
         #
         #  kernel/.tmp_fork.s: Assembler messages:
         #  kernel/.tmp_fork.s:1790: Error: .err encountered
-	#
-	# @see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85745
+        #
+        # @see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85745
         #
         patch_linux_kernel 9f73bd8bb445e0cbe4bcef6d4cfc788f1e184007
     fi
@@ -534,9 +573,9 @@ EOF
     # Newer binutils don't accept 3 operand 'cmp' instructions on ppc64
     # Convert them to 'cmpw' which was previously done silently
     if verlt "$kversion" "4.9"; then
-	    find arch/powerpc/ -name "*.S" -print0 | xargs -0 sed -i "s/\(cmp\)\(\s\+[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+\)/cmpw\2/"
-	    find arch/powerpc/ -name "*.S" -print0 | xargs -0 sed -i "s/\(cmpli\)\(\s\+[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+\)/cmplwi\2/"
-	    sed -i "s/\$pie \-o \"\$ofile\"/\$pie --no-dynamic-linker -o \"\$ofile\"/" arch/powerpc/boot/wrapper
+        find arch/powerpc/ -name "*.S" -print0 | xargs -0 sed -i "s/\(cmp\)\(\s\+[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+\)/cmpw\2/"
+        find arch/powerpc/ -name "*.S" -print0 | xargs -0 sed -i "s/\(cmpli\)\(\s\+[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+,\s*[a-zA-Z0-9]\+\)/cmplwi\2/"
+        sed -i "s/\$pie \-o \"\$ofile\"/\$pie --no-dynamic-linker -o \"\$ofile\"/" arch/powerpc/boot/wrapper
     fi
 
     if [ "$(scripts/config --state CONFIG_EXTCON_ADC_JACK)" != "n" ] &&
@@ -611,8 +650,10 @@ EOF
         # @see https://lore.kernel.org/bpf/20220825171620.cioobudss6ovyrkc@altlinux.org/t/
         #
         if [ -f "scripts/pahole-flags.sh" ] ; then
+            # shellcheck disable=SC2016
             sed -i 's/ -J ${PAHOLE_FLAGS} / -J ${PAHOLE_FLAGS} --skip_encoding_btf_enum64 /' scripts/link-vmlinux.sh
         else
+            # shellcheck disable=SC2016
             sed -i 's/ -J ${extra_paholeopt} / -J ${extra_paholeopt} --skip_encoding_btf_enum64 /' scripts/link-vmlinux.sh
         fi
     fi
@@ -862,7 +903,7 @@ build_modules() {
 
         # Build modules
         KERNELDIR="${kdir}" make -j"${NPROC}" V=1 "${make_args[@]}"
-	ret=$?
+        ret=$?
 
         set -e
 
@@ -916,6 +957,7 @@ cd "$WORKSPACE"
 # Create build directories
 mkdir -p "${LINUX_SRCOBJ_DIR}" "${LINUX_HDROBJ_DIR}" "${LINUX_INSTOBJ_DIR}" "${MODULES_OUTPUT_KSRC_DIR}" "${MODULES_OUTPUT_KHDR_DIR}"
 
+print_header "Clone LTTng-modules sources"
 git_clone_modules_sources
 
 # Setup cross compile env if available
@@ -1015,6 +1057,7 @@ fi
 # First get the kernel build from the object store, or build it, if it's
 # not available.
 
+set +x
 echo "# Setup endpoint
 host_base = obj.internal.efficios.com
 host_bucket = obj.internal.efficios.com
@@ -1027,14 +1070,15 @@ secret_key = echo123456
 
 # Enable S3 v4 signature APIs
 signature_v2 = False" > "$WORKSPACE/.s3cfg"
+set -x
 
 url_hash="$(echo -n "$kgitrepo" | md5sum | awk '{ print $1 }')"
 obj_name="linux.tar.bz2"
 
 if [ -z "${cross_arch}" ]; then
-	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platforms}/$arch/native"
+    obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platform}/$arch/native"
 else
-	obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platforms}/${cross_arch}"
+    obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platform}/${cross_arch}"
 fi
 
 obj_url="$obj_url_prefix/$obj_name"
@@ -1049,12 +1093,17 @@ set -e
 
 case "$ret" in
     "0")
+      print_header "Get sources and prebuilt kernel"
       s3cmd -c "$WORKSPACE/.s3cfg" get "$obj_url"
       extract_archive_obj
+
+      print_header "Select compiler and set build flags"
+      select_compiler
+      export_kbuild_flags
       ;;
 
     "12")
-      echo "File not found"
+      print_header "Clone kernel sources"
 
       # Build all the things and upload
       # then finish the module build...
@@ -1062,16 +1111,19 @@ case "$ret" in
       git_clone_linux_sources
       git_export_linux_sources
 
+      print_header "Select compiler and set build flags"
       select_compiler
+      export_kbuild_flags
 
       ## PREPARE FULL LINUX SOURCE TREE
+      print_header "Build kernel from source"
       build_linux_kernel
 
       ## EXTRACT DISTRO STYLE KERNEL HEADERS / DEVEL
       extract_distro_headers
 
+      print_header "Upload kernel to object storage"
       tar_archive_obj
-
       upload_archive_obj
 
       ;;
@@ -1082,15 +1134,6 @@ case "$ret" in
       ;;
 esac
 
-select_compiler
-
-selected_cc_version="$(echo "${selected_cc}" | cut -d'-' -f2)"
-# lttng-modules requires gcc >= 5.1 for aarch64
-# @see https://github.com/lttng/lttng-modules/commit/be06402dbdbea2f3394e60ec15c5d3356e2be416
-if { verlt "${selected_cc_version}" "5.1"; } && [ "${cross_arch}" = "arm64" ] ; then
-    echo "Building lltng-modules on aarch64 requires gcc >= 5.1"
-    exit 0
-fi
 
 ## BUILD modules
 # Either we downloaded a pre-build kernel or we built it and uploaded
@@ -1098,11 +1141,14 @@ fi
 
 cd "$WORKSPACE"
 
-# Build modules against full kernel sources
+print_header "Build modules against full kernel sources"
 build_modules "${LINUX_SRCOBJ_DIR}" "${MODULES_OUTPUT_KSRC_DIR}"
 
-# Build modules against kernel headers
+print_header "Build modules against kernel headers"
 build_modules "${LINUX_HDROBJ_DIR}" "${MODULES_OUTPUT_KHDR_DIR}"
+
+
+print_header "Check for built modules in install directory"
 
 # Make sure some modules were actually built
 tree "${MODULES_OUTPUT_KSRC_DIR}"
