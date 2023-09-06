@@ -121,20 +121,17 @@ fi
 export BABELTRACE_PLUGIN_PATH="$DEPS_LIB/babeltrace2/plugins/"
 export LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="$DEPS_LIB/babeltrace2/plugin-providers/"
 
-PYTHON2=python2
 PYTHON3=python3
 
 # Set default python to python3 for the bindings
 export PYTHON="$PYTHON3"
 export PYTHON_CONFIG="/usr/bin/$PYTHON3-config"
 
-P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 
-UST_PYTHON2="$WORKSPACE/deps/build/lib/python$P2_VERSION/site-packages"
 UST_PYTHON3="$WORKSPACE/deps/build/lib/python$P3_VERSION/site-packages"
 
-export PYTHONPATH="$UST_PYTHON2:$UST_PYTHON3"
+export PYTHONPATH="$UST_PYTHON3"
 
 
 
@@ -155,7 +152,7 @@ cd "$SRCDIR"
 eval "$(grep '^PACKAGE_VERSION=' ./configure)"
 PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
-CONF_OPTS=("--enable-python-bindings" "--enable-test-java-agent-all" "--enable-test-python-agent-all")
+CONF_OPTS=("--enable-python-bindings" "--enable-test-java-agent-all" "--enable-test-python3-agent")
 
 TARBALL_FILE="lttng-tools-$PACKAGE_VERSION.tar.bz2"
 
