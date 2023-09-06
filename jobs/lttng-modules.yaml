@@ -239,7 +239,8 @@
     scm: []
 
     triggers:
-      - timed: "@hourly"
+      # Check for new kernel tags everay day at 22:00
+      - timed: "0 22 * * *"
 
     builders:
       - system-groovy:
@@ -262,6 +263,11 @@
 
     node: 'master'
 
+    triggers:
+      # Check for new commits every hour
+      - pollscm:
+          cron: "@hourly"
+
     <<: *lttng-modules_build_parameters_defaults
     <<: *lttng-modules_build_builders_defaults
 
@@ -278,6 +284,9 @@
       <p>Job is managed by Jenkins Job Builder.</p>
 
     node: 'master'
+
+    # This is a test job, no triggers
+    triggers: []
 
     parameters:
       - string:
@@ -372,8 +381,9 @@
     <<: *lttng-modules_build_builders_defaults
 
     triggers:
+      # Check for new commits every friday at midnight
       - pollscm:
-          cron: "@midnight"
+          cron: "0 0 * * 5"
 
 - job-template:
     name: lttng-modules_{mversion}_{buildtype}-{uversion}
@@ -388,6 +398,13 @@
       <p>Job is managed by Jenkins Job Builder.</p>
 
     node: 'master'
+
+    triggers:
+      # Check for new commits every hour
+      - pollscm:
+          cron: "@hourly"
+      # Also run every saturday at midnight to catch new ubuntu kernel tags
+      - timed: "0 0 * * 6"
 
     <<: *lttng-modules_build_parameters_ubuntu
     <<: *lttng-modules_build_builders_defaults
@@ -426,6 +443,13 @@
       <p>Job is managed by Jenkins Job Builder.</p>
 
     node: 'master'
+
+    triggers:
+      # Check for new commits every hour
+      - pollscm:
+          cron: "@hourly"
+      # Also run every sunday at midnight to catch new rt kernel tags
+      - timed: "0 0 * * 7"
 
     <<: *lttng-modules_build_parameters_rt
     <<: *lttng-modules_build_rt_builders_defaults
