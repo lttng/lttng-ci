@@ -674,7 +674,7 @@
 - job-template:
     name: lttng-modules_{mversion}_coverity
     defaults: lttng-modules
-    node: 'amd64'
+    node: 'deb12-amd64'
 
     triggers:
       - pollscm:
@@ -693,7 +693,7 @@
 
     builders:
       - shell: |
-         git clone --depth=1 -b v5.5 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+         git clone --depth=1 -b v6.1 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
          cd src/linux
          make allyesconfig
          sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config
