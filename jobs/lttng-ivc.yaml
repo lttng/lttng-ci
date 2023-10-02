@@ -144,7 +144,7 @@
 ## Project
 - project:
     name: lttng-ivc
-    github_user: lttng
+    github_user: mjeanson
     github_name: lttng-ivc
     email_to: "ci-notification@lists.lttng.org"
     version:
@@ -162,6 +162,6 @@
       - 'lttng-ivc-{version}-modules':
          version: master
          platforms: !!python/tuple [deb12-amd64]
-         slave: !!python/tuple [amd64-rootnode]
+         slave: !!python/tuple [amd64-rootnode-linux5]
          liburcu_version: !!python/tuple [master]
 
