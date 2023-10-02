@@ -288,11 +288,14 @@ build_linux_kernel() {
     # Generate kernel configuration
     case "$ktag" in
       Ubuntu*)
-        if [ "${cross_arch}" = "powerpc" ]; then
-          if vergte "${kversion}" "4.10"; then
-            echo "Ubuntu removed big endian powerpc configuration from kernel >= 4.10. Don't try to build it."
-            exit 0
-          fi
+        if [ "${cross_arch}" = "powerpc" ] && vergte "${kversion}" "4.10"; then
+          echo "Ubuntu removed big endian powerpc configuration from kernel >= 4.10. Don't try to build it."
+          exit 0
+        fi
+
+        if [ "${cross_arch}" = "riscv64" ] && verlt "${kversion}" "6.2"; then
+          echo "Ubuntu added RISC-V config to their 'regular' kernels in v6.2. Don't try to build it."
+          exit 0
         fi
 
         fakeroot debian/rules clean KW_DEFCONFIG_DIR=.
