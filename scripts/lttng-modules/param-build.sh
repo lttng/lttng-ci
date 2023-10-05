@@ -143,7 +143,13 @@ select_compiler() {
     # Enter linux source dir
     cd "$LINUX_SRCOBJ_DIR"
 
-    kversion=$(make -s kernelversion)
+    # Get the kernel version using the host toolchain, some cross-compiled arch may be broken
+    kversion=$(unset ARCH; unset CROSS_COMPILE; make -s kernelversion)
+
+    if [ "${cross_arch}" = "riscv64" ] && verlt "${kversion}" "5.12"; then
+        echo "RISC-V support was upstreamed in kernel v4.19 but kprobes support was only added in v5.12. Don't try to build it."
+        exit 0
+    fi
 
     if { verlt "$kversion" "4.4"; }; then
         # Force gcc-4.8 for kernels before 4.4
@@ -773,6 +779,12 @@ extract_distro_headers() {
         fi
     fi
 
+    # On riscv with 5.14 the vsdo objects are required
+    if [ "${karch}" = "riscv" ] && \
+           ( { vergte "${kversion}" "5.14"; } && { verlt "${kversion}" "5.15"; } ); then
+            cp -a --parents arch/riscv/kernel/vdso/*.o "${LINUX_HDROBJ_DIR}/"
+    fi
+
     # Newer kernels need objtool to build modules when CONFIG_STACK_VALIDATION=y
     if [ -f tools/objtool/objtool ]; then
       cp -a --parents tools/objtool/objtool "${LINUX_HDROBJ_DIR}/"
@@ -962,6 +974,13 @@ if [ "x${cross_arch}" != "x" ]; then
             ubuntu_config="ppc64el-config.flavour.generic"
             ;;
 
+        "riscv64")
+            karch="riscv"
+            cross_compile="riscv64-linux-gnu-"
+            vanilla_config="defconfig"
+            ubuntu_config="riscv64-config.flavour.generic"
+            ;;
+
         *)
             echo "Unsupported cross arch $cross_arch"
             exit 1
@@ -1010,6 +1029,12 @@ elif [ "x${arch}" != "x" ]; then
             karch="powerpc"
             vanilla_config="allmodconfig"
             ubuntu_config="ppc64el-config.flavour.generic"
+            ;;
+
+        "riscv64")
+            karch="riscv"
+            vanilla_config="allmodconfig"
+            ubuntu_config="riscv64-config.flavour.generic"
             ;;
 
         *)

@@ -869,7 +869,7 @@
           platforms: !!python/tuple [deb12-amd64]
       - 'lttng-modules_PARAM_crossbuild':
           platforms: !!python/tuple [deb12-amd64]
-          cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
+          cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, riscv64]
 
 # Misc jobs
       - 'lttng-modules_ALL_trigger-vanilla'
