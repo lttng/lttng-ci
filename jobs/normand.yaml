@@ -1,0 +1,184 @@
+---
+## Defaults ##
+- defaults:
+    name: normand
+    description: |
+      <p>
+        <em><strong><a href="https://github.com/efficios/normand">Normand</a></strong></em>
+        is a text-to-binary processor with its own language.
+      <p>
+        Job is managed by Jenkins Job Builder.
+
+    project-type: freestyle
+
+    wrappers:
+      - ansicolor: &normand_wrapper_ansicolor_defaults
+          colormap: xterm
+      - timeout: &normand_wrapper_timeout_defaults
+          timeout: 20
+          fail: true
+          type: no-activity
+      - timestamps
+      - workspace-cleanup
+
+    scm:
+      - git:
+          url: https://github.com/{github_user}/{github_name}.git
+          browser: githubweb
+          browser-url: https://github.com/{github_user}/{github_name}
+          branches:
+            - origin/{version}
+          basedir: src/normand
+          skip-tag: true
+
+    triggers:
+      - github
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - build-discarder:
+          num-to-keep: 10
+          artifact-num-to-keep: 2
+      - github:
+          url: https://github.com/{github_user}/{github_name}
+
+    publishers:
+      - workspace-cleanup: &normand_publisher_workspace_cleanup_defaults
+          clean-if:
+            - failure: false
+      - ircbot: &normand_publisher_ircbot_defaults
+          strategy: statechange-only
+          message-type: summary
+          matrix-notifier: only-parent
+
+
+## Templates ##
+- job-template:
+    name: normand_{version}_{buildtype}
+    defaults: normand
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: platform
+         values: '{obj:platforms}'
+
+    builders:
+      - shell:
+         !include-raw-escape: scripts/normand/build.sh
+
+    publishers:
+      - workspace-cleanup: *normand_publisher_workspace_cleanup_defaults
+      - ircbot: *normand_publisher_ircbot_defaults
+      - email-ext:
+         recipients: '{obj:email_to}'
+         reply-to: ci-notification@lists.lttng.org
+         always: false
+         unstable: false
+         first-failure: true
+         first-unstable: true
+         not-built: false
+         aborted: false
+         regression: false
+         failure: false
+         second-failure: false
+         improvement: false
+         still-failing: false
+         success: false
+         fixed: false
+         fixed-unhealthy: true
+         still-unstable: false
+         pre-build: false
+         matrix-trigger: only-parent
+         send-to:
+           - recipients
+
+- job-template:
+    name: dev_review_normand_{version}_{buildtype}
+    defaults: normand
+    concurrent: true
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+         type: slave
+         name: platform
+         values: '{obj:platforms}'
+
+    scm:
+      - git:
+          url: https://review.lttng.org/normand
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/normand
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'normand'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
+
+    properties:
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
+
+    builders:
+      - shell:
+         !include-raw-escape: scripts/normand/build.sh
+
+    publishers:
+      - workspace-cleanup: *normand_publisher_workspace_cleanup_defaults
+
+
+## Views ##
+- view-template:
+    name: Normand
+    view-type: list
+    regex: 'normand[-_].*'
+
+
+## Projects ##
+- project:
+    name: normand
+    github_user: efficios
+    github_name: normand
+    email_to: 'ci-notification@lists.lttng.org, cc:pproulx@efficios.com'
+    version:
+      - master
+    jobs:
+      - 'normand_{version}_{buildtype}':
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+
+- project:
+    name: review-normand
+    github_user: efficios
+    github_name: normand
+    version:
+      - master
+    jobs:
+      - 'dev_review_normand_{version}_{buildtype}':
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+
+- project:
+    name: normand-views
+    views:
+      - Normand
