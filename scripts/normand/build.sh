@@ -12,14 +12,14 @@ if [[ -d "$VENV" ]]; then
 fi
 
 # Create virtual environment and enter it
-python3 -m venv "$VENV"
+virtualenv -p python3 "$VENV"
 set +u
 # shellcheck disable=SC1090,SC1091
 . "$VENV/bin/activate"
 set -u
 
 # Install Poetry and pytest
-pip install --quiet poetry pytest
+pip install poetry pytest
 
 # Install the cloned version of Normand.
 #
