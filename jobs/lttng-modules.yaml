@@ -786,7 +786,6 @@
             - master
             - stable-2.13
           uversion:
-            - bionic
             - focal
             - jammy
           buildtype: build
@@ -799,7 +798,6 @@
           mversion:
             - stable-2.12
           uversion:
-            - bionic
             - focal
             - jammy
           buildtype: build
@@ -842,7 +840,6 @@
             - master
             - stable-2.13
           uversion:
-            - bionic
             - focal
             - jammy
           buildtype: crossbuild
@@ -855,7 +852,6 @@
           mversion:
             - stable-2.12
           uversion:
-            - bionic
             - focal
             - jammy
           buildtype: crossbuild

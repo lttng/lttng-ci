@@ -17,8 +17,6 @@
       - bullseye
       - bookworm
     Ubuntu_releases:
-      - xenial
-      - bionic
       - focal
       - jammy
 - name: Run any outstanding upgrades

@@ -43,10 +43,6 @@ popd
 # Ubuntu kernels
 ##
 
-update_git ubuntu-xenial.git/ https://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/xenial
-
-update_git ubuntu-bionic.git/ git://kernel.ubuntu.com/ubuntu/ubuntu-bionic.git
-
 update_git ubuntu-focal.git/ git://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/focal
 
 update_git ubuntu-jammy.git/ git://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/jammy

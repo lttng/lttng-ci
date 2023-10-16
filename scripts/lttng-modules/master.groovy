@@ -359,20 +359,6 @@ if (uversion != null) {
       ]
       break
 
-    case 'bionic':
-      matchStrs = [
-        ~/^refs\/tags\/(Ubuntu-4\.15\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-5\.4-5\.4\.0-.*_18\.04\.\d+)$/,
-      ]
-      break
-
-    case 'xenial':
-      matchStrs = [
-        ~/^refs\/tags\/(Ubuntu-4\.4\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-4\.15\.0-.*_16\.04\.\d+)$/,
-      ]
-      break
-
     default:
       println "Unsupported Ubuntu version: ${uversion}"
       throw new InterruptedException()
