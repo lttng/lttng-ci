@@ -34,15 +34,14 @@ fi
 virtualenv --system-site-packages -p ${PYTHON3} "$PYENV_HOME"
 
 set +ux
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "$PYENV_HOME/bin/activate"
 set -ux
 
 if [ -f "$SRCDIR/dev-requirements.txt" ]; then
     pip install -r "$SRCDIR/dev-requirements.txt"
 else
-    pip install --quiet black
-    pip install --quiet flake8
+    pip install black flake8 isort
 fi
 
 exit_code=0
@@ -51,5 +50,14 @@ cd "$SRCDIR"
 
 black --diff --check . | tee ../../black.out || exit_code=1
 flake8 --output-file=../../flake8.out --tee || exit_code=1
+
+ISORT_UNSUPPORTED_BRANCH_REGEX='.*(stable-1\.5|stable-2\.0)$'
+
+if [[ ! ${GIT_BRANCH:-} =~ $ISORT_UNSUPPORTED_BRANCH_REGEX ]] && \
+    [[ ! ${GERRIT_BRANCH:-} =~ $ISORT_UNSUPPORTED_BRANCH_REGEX ]]; then
+    isort . --diff --check | tee ../../isort.out || exit_code=1
+else
+    echo "isort is not supported on the 'stable-2.0' branch" > ../../isort.out
+fi
 
 exit $exit_code

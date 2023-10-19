@@ -554,7 +554,7 @@
     publishers:
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - archive:
-          artifacts: 'black.out,flake8.out'
+          artifacts: 'black.out,flake8.out,isort.out'
           allow-empty: false
       - ircbot: *babeltrace_publisher_ircbot_defaults
       - email-ext: *babeltrace_publisher_email-ext_defaults
