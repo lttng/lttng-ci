@@ -1049,7 +1049,7 @@
 - view-template:
     name: 'LTTng-tools'
     view-type: list
-    regex: 'lttng-tools[-_].*'
+    regex: 'lttng-(docs|tools)[-_].*'
 
 
 ## Projects

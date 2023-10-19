@@ -1,0 +1,95 @@
+---
+## Defaults:
+- defaults:
+    name: lttng-docs
+    node: 'deb12-amd64'
+    description: |
+      The lttng-docs project provides the online documentation for the
+      LTTng project at https://lttng.org/docs
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+    concurrent: true
+
+    triggers:
+      - pollscm: &lttng-docs_trigger_pollscm_default
+          cron: "@daily"
+
+    properties:
+      - inject: &lttng-docs_property_inject_defaults
+          properties-content: |
+            PROJECT_NAME=lttng-docs
+      - build-discarder:
+          num-to-keep: 20
+          artifact-num-to-keep: 3
+      - github:
+          url: 'https://github.com/{github_user}/lttng-docs'
+
+    scm:
+      - git:
+          url: https://github.com/{github_user}/lttng-docs.git
+          branches:
+            - '{version}'
+          skip-tap: true
+          basedir: src/lttng-docs
+
+    builders:
+      - shell: |
+          #!/bin/bash -e
+          cd src/lttng-docs
+          # Temporary
+          virtualenv venv
+          source venv/bin/activate
+          pip3 install termcolor lxml asciidoc
+          make -j$(nproc)
+          make -j$(nproc) check
+          deactivate
+
+    publishers:
+      workspace-cleanup:
+        clean-if:
+          - failure: false
+
+- job-template:
+    name: '{job_prefix}lttng-docs_{version}'
+    defaults: lttng-docs
+
+- job-template:
+    name: 'dev_review_lttng-docs_{version}'
+    defaults: lttng-docs
+    scm:
+      - git:
+          url: https://review.lttng.org/lttng-docs
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          skip-tag: true
+          basedir: src/lttng-docs
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-docs'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
+    properties:
+      - inject: *lttng-docs_property_inject_defaults
+      - build-discarder:
+          days-to-keep: 3
+
+## Projects
+- project:
+    name: lttng-docs
+    job_prefix: ''
+    github_user: lttng
+    version:
+      - master
+    jobs:
+      - '{job_prefix}lttng-docs_{version}': {}
+      - 'dev_review_lttng-docs_{version}': {}
