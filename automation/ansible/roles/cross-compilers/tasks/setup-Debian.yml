@@ -8,8 +8,10 @@
     - ansible.builtin.copy:
         dest: /etc/apt/preferences.d/snapshot.pref
         content: "Package: *\nPin: origin \"snapshot.debian.org\"\nPin-Priority: 400\n"
+      when: cross_compilers_debian_bookworm_snapshot
     - ansible.builtin.apt_repository:
         repo: 'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20230109T091852Z/ bookworm main'
+        state: "{{cross_compilers_debian_bookworm_snapshot|ternary('present', 'absent')}}"
     - ansible.builtin.apt:
         update_cache: true
 
@@ -17,7 +19,7 @@
   apt: "name={{ cross_compilers_packages }} state=present"
 
 - name: Install legacy cross compilers
-  when: ansible_distribution == 'Debian' and ansible_architecture == 'x86_64'
+  when: ansible_distribution == 'Debian' and ansible_architecture == 'x86_64' and compilers_legacy_install
   block:
     # This step needs to happen after the cross compiler packages are installed
     # so the libgcc cross libraries can be copied
