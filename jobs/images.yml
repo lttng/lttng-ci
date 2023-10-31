@@ -1,0 +1,258 @@
+---
+## Anchors
+- _images_parameters_default: &images_parameters_imagebuilder_defaults
+    name: 'images_parameters_imagebuilder_defaults'
+    parameters:
+      - string: &images_parameters_OS
+          name: 'OS'
+          description: 'OS name'
+          default: 'debian'
+          required: true
+      - string: &images_parameters_RELEASE
+          name: 'RELEASE'
+          description: 'OS release number or name'
+          default: 'bookworm'
+          required: true
+      - choice: &images_parameters_ARCH
+          name: 'ARCH'
+          description: 'Target architecture'
+          choices:
+            - amd64
+            - i386
+            - arm64
+            - armhf
+            - ppc64el
+            - s390x
+            - riscv64
+      - string: &images_parameters_VARIANT
+          name: 'VARIANT'
+          default: 'cloud'
+          description: 'The base image variant to build off of'
+          required: true
+      - choice: &images_parameters_IMAGE_TYPE
+          name: 'IMAGE_TYPE'
+          choices:
+            - 'lxd'
+            - 'vm'
+          description: 'The type of image to create'
+      - choice:
+          name: 'PROFILE'
+          choices:
+            - 'ci-node'
+            - 'developer'
+          description: 'The ansible group to apply to the image'
+          required: true
+      - string: &images_parameters_LXD_HOST
+          name: 'LXD_HOST'
+          default: 'ci-host-amd64-1a.internal.efficios.com'
+          description: 'The address of the LXD cluster to publish to'
+          required: true
+      - string: &images_parameters_LXD_INSTANCE_PROFILE
+          name: 'LXD_INSTANCE_PROFILE'
+          default: 'ci-rootnode'
+          description: 'The LXD instance profile to use for temporary instances when building images'
+          required: true
+      - string: &images_parameters_GIT_URL
+          name: 'GIT_URL'
+          default: 'https://github.com/lttng/lttng-ci.git'
+          description: 'The source of the repo containing the ansible playbooks'
+          required: true
+      - string: &images_parameters_GIT_BRANCH
+          name: 'GIT_BRANCH'
+          default: 'master'
+          description: 'The branch or commit of the ansible playbook repo to checkout'
+          required: true
+      - bool: &images_parameters_TEST
+          name: 'TEST'
+          default: true
+          description: 'Enable to launch a container of the published image as a test'
+
+- _images_parameters_default: &images_parameters_distrobuilder_defaults
+    name: 'images_parameters_distrobuilder_defaults'
+    parameters:
+      - string:
+          <<: *images_parameters_OS
+      - string:
+          <<: *images_parameters_RELEASE
+      - choice:
+          <<: *images_parameters_ARCH
+      - string:
+          <<: *images_parameters_VARIANT
+      - choice:
+          <<: *images_parameters_IMAGE_TYPE
+      - string:
+          <<: *images_parameters_LXD_HOST
+      - string:
+          <<: *images_parameters_LXD_INSTANCE_PROFILE
+      - string:
+          <<: *images_parameters_GIT_URL
+      - string:
+          <<: *images_parameters_GIT_BRANCH
+      - bool:
+          <<: *images_parameters_TEST
+      - string:
+          name: 'DISTROBUILDER_GIT_URL'
+          default: 'https://github.com/lxc/distrobuilder.git'
+      - string:
+          name: 'DISTROBUILDER_GIT_BRANCH'
+          default: 'main'
+      - string:
+          name: 'LXC_CI_GIT_URL'
+          default: 'https://github.com/lxc/lxc-ci.git'
+      - string:
+          name: 'LXC_CI_GIT_BRANCH'
+          default: 'main'
+      - string:
+          name: 'GO_VERSION'
+          default: '1.21.3'
+
+- _images_properties_defaults: &images_properties_defaults
+    name: 'images_properties_defaults'
+    properties:
+      - build-discarder:
+          num-to-keep: 20
+      - throttle:
+          option: project
+          max-total: 4
+          matrix-builds: false
+
+- _images_parameters_debian_defaults: &images_parameters_debian_defaults
+    name: 'image_parameters_debian_defaults'
+    parameters:
+      - bool:
+          name: 'SKIP_BASE_IMAGES'
+          default: false
+      - bool:
+          name: 'SKIP_PROFILE_IMAGES'
+          default: false
+      - choice: &images_parameters_arch_filter
+          name: 'ARCH_FILTER'
+          choices:
+            - all
+            - amd64
+            - i386
+            - arm64
+            - armhf
+            - ppc64el
+            - riscv64
+            - s390x
+      - choice: &images_parameters_image_type_filter
+          name: 'IMAGE_TYPE_FILTER'
+          choices:
+            - all
+            - lxd
+            - vm
+      - choice: &images_parameters_profile_filter
+          name: 'PROFILE_FILTER'
+          choices:
+            - all
+            - ci-node
+            - developer
+      - choice:
+          name: 'RELEASE_FILTER'
+          choices:
+            - all
+            - bullseye
+            - bookworm
+            - trixie
+            - sid
+      - string:
+          <<: *images_parameters_GIT_URL
+      - string:
+          <<: *images_parameters_GIT_BRANCH
+
+## Defaults
+- defaults:
+    name: imagebuilder
+    concurrent: true
+    description: |
+      <p>Job is managed by Jenkins Job Builder</p>
+    project-type: freestyle
+    publishers:
+      - workspace-cleanup
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - ssh-user-private-key:
+              credential-id: 'f3c907b6-7485-49e1-afe1-4df24fac4ca1'
+              key-file-variable: SSH_PRIVATE_KEY
+              username-variable: SSH_USERNAME
+              passphrase-variable: SSH_PASSWORD
+          - file:
+              credential-id: 'f3f08275-59ef-42ff-9de5-9beafc7435b8'
+              variable: LXD_CLIENT_CERT
+          - file:
+              credential-id: '0debf23b-191b-4cdf-8a25-04e9a7092a67'
+              variable: LXD_CLIENT_KEY
+      - inject: {}
+
+## Templates
+- job-template:
+    name: images_imagebuilder_{OS}
+    defaults: imagebuilder
+    description: |
+      This pipeline starts distrobuilder and imagebuilder jobs for {OS}
+
+      <p>Job is managed by Jenkins Job Builder</p>
+    project-type: pipeline
+    <<: *images_parameters_debian_defaults
+    IMAGE_TYPES:
+      - lxd
+      - vm
+    PROFILES:
+      - ci-node
+      - developer
+    dsl: !include-jinja2: pipelines/images/default.groovy
+
+- job-template:
+    name: images_distrobuilder
+    defaults: imagebuilder
+    node: 'deb12-amd64-rootnode'
+    <<: *images_parameters_distrobuilder_defaults
+    <<: *images_properties_defaults
+    builders:
+      - shell: !include-raw-escape: pipelines/images/distrobuild.sh
+
+- job-template:
+    name: images_imagebuilder
+    defaults: imagebuilder
+    node: 'deb12-amd64-rootnode'
+    <<: *images_parameters_imagebuilder_defaults
+    <<: *images_properties_defaults
+    builders:
+       - shell: !include-raw-escape: pipelines/images/imagebuild.sh
+
+
+## Views
+- view-template:
+    name: 'Images'
+    view-type: list
+    regex: 'image.*'
+
+## Projects
+
+- project:
+    name: images_imagebuilder_OS
+    OS:
+      - debian
+    ARCHES:
+      - i386
+      - amd64
+    RELEASES:
+      - bullseye
+      - bookworm
+      - trixie
+      - sid
+    jobs:
+      - 'images_imagebuilder_{OS}'
+- project:
+    name: images_basejobs
+    jobs:
+      - 'images_imagebuilder'
+      - 'images_distrobuilder'
+- project:
+    name: images_imagebuilder_views
+    views:
+      - Images
