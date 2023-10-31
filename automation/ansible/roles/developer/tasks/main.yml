@@ -1,0 +1,34 @@
+---
+- name: Include OS-specific variables
+  ansible.builtin.include_vars: "{{item}}"
+  with_first_found:
+    - files:
+        - "{{ansible_distribution}}-{{ansible_distribution_major_version}}.yml"
+        - "{{ansible_distribution}}-{{ansible_distribution_release}}.yml"
+        - "{{ansible_distribution}}.yml"
+        - "{{ansible_os_family}}.yml"
+      skip: true
+- name: OS-specific setup
+  ansible.builtin.include_tasks: "{{item}}"
+  with_first_found:
+    - files:
+        - "setup-{{ansible_os_family}}.yml"
+      skip: true
+- name: Install vlttng
+  block:
+    - name: Install requirements to run pip
+      ansible.builtin.package:
+        name: "{{developer_pip_requirements}}"
+    - name: Install vlttng using pip
+      when: ansible_python_version is version("3.11", ">=")
+      ansible.builtin.pip:
+        name: vlttng
+        extra_args: "{{(ansible_python_version is version('3.11', '>='))|ternary('--break-system-packages', '')}}"
+- name: Install developer TUI tools
+  when: developer_install_tui
+  ansible.builtin.package:
+    name: "{{developer_tui_packages}}"
+- name: Install developer GUI tools
+  when: developer_install_gui
+  ansible.builtin.package:
+    name: "{{developer_gui_packages}}"
