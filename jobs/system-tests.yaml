@@ -62,7 +62,7 @@
     name: 'system_tests_email_ext_default'
     publishers:
       - email-ext:
-          recipients: 'ci-notification@lists.lttng.org, cc:francis.deslauriers@efficios.com'
+          recipients: 'ci-notification@lists.lttng.org'
           reply-to: ci-notification@lists.lttng.org
           always: false
           unstable: false
