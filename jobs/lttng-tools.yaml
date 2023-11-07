@@ -684,9 +684,6 @@
             - '$GERRIT_REFSPEC'
           basedir: src/lttng-tools
           skip-tag: true
-          # Work-around for hangs while cloning lttng-tools from gerrit
-          # @see https://support.efficios.com/issues/1532
-          git-tool: jgit
 
     triggers:
       - gerrit: &lttng-tools_trigger_gerrit_default
