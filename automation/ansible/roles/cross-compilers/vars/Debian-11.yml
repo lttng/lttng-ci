@@ -1,0 +1,25 @@
+---
+cross_compilers_packages:
+  - gcc-aarch64-linux-gnu
+  - gcc-arm-linux-gnueabihf
+  - gcc-i686-linux-gnu
+  - gcc-powerpc64le-linux-gnu
+  - gcc-powerpc-linux-gnu
+  - gcc-riscv64-linux-gnu
+  - gcc-s390x-linux-gnu
+
+  - gcc-10-aarch64-linux-gnu
+  - gcc-10-arm-linux-gnueabihf
+  - gcc-10-i686-linux-gnu
+  - gcc-10-powerpc64le-linux-gnu
+  - gcc-10-powerpc-linux-gnu
+  - gcc-10-riscv64-linux-gnu
+  - gcc-10-s390x-linux-gnu
+
+  - gcc-9-aarch64-linux-gnu
+  - gcc-9-arm-linux-gnueabihf
+  - gcc-9-i686-linux-gnu
+  - gcc-9-powerpc64le-linux-gnu
+  - gcc-9-powerpc-linux-gnu
+  - gcc-9-riscv64-linux-gnu
+  - gcc-9-s390x-linux-gnu
