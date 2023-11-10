@@ -23,3 +23,8 @@ cross_compilers_packages:
   - gcc-9-powerpc-linux-gnu
   - gcc-9-riscv64-linux-gnu
   - gcc-9-s390x-linux-gnu
+
+cross_compilers_packages_exclude_i386:
+  - gcc-i686-linux-gnu
+  - gcc-10-i686-linux-gnu
+  - gcc-9-i686-linux-gnu

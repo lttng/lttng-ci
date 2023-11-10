@@ -16,7 +16,8 @@
         update_cache: true
 
 - name: Ensure cross-compilers packages are installed.
-  apt: "name={{ cross_compilers_packages }} state=present"
+  ansible.builtin.apt:
+    name: "{{ cross_compilers_packages | difference(lookup('vars', 'cross_compilers_packages_exclude_{{ansible_userspace_architecture}}', default=[]))}}"
 
 - name: Install legacy cross compilers
   when: ansible_distribution == 'Debian' and ansible_architecture == 'x86_64' and compilers_legacy_install
