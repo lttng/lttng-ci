@@ -1,5 +1,0 @@
----
-- name: Ensure lttng_scope build dependencies are installed.
-  dnf:
-    name: "{{ lttng_scope_packages }}"
-    state: installed
