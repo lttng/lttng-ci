@@ -78,11 +78,6 @@ lttng-ust)
     BUILD_TYPE="autotools"
     export CLASSPATH="/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
     ;;
-lttng-scope|ctf-java|libdelorean-java|jabberwocky)
-    CONF_OPTS=()
-    BUILD_TYPE="maven"
-    MVN_BIN="$HOME/tools/hudson.tasks.Maven_MavenInstallation/default/bin/mvn"
-    ;;
 *)
     echo "Generic project, no configure options."
     CONF_OPTS=()
