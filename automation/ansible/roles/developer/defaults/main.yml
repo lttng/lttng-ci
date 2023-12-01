@@ -1,0 +1,18 @@
+---
+developer_install_gui: false
+developer_gui_packages: []
+
+developer_install_tui: true
+developer_tui_packages:
+  - emacs-nox
+  - gdb
+  - pkg-config
+  - tmux
+  - vim-nox
+  # wget may be used by some vlttng commands
+  - wget
+
+developer_install_vlttng: true
+developer_pip_requirements:
+  - python3-pip
+  - python3-setuptools
