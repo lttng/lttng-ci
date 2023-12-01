@@ -1,13 +1,28 @@
-- job:
+- defaults:
     name: efficios-www
     project-type: freestyle
-    defaults: global
     node: amd64-rootnode
+
+    builders:
+      - shell:
+          !include-raw: scripts/efficios-www/deploy.sh
 
     description: |
       This job is responsible for updating the efficios website.
 
       <p>Job is managed by Jenkins Job Builder.</p>
+
+    properties:
+      - build-discarder:
+          num-to-keep: 5
+    scm:
+      - git:
+          url: git@git.internal.efficios.com:efficios/efficios-www.git
+          credentials-id: f3c907b6-7485-49e1-afe1-4df24fac4ca1
+          basedir: ./
+          skip-tag: true
+          branches:
+            - master
 
     wrappers:
       - ansicolor
@@ -21,27 +36,68 @@
         - file:
             credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
             variable: HOST_PUBLIC_KEYS
+      - inject:
+          properties-content: |
+            DEPLOY_TARGET=deploy:prod
+
+- job:
+    name: dev_review_efficios-www
+    defaults: efficios-www
 
     properties:
       - build-discarder:
-          num-to-keep: 5
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-build'
+
+    scm:
+      - git:
+          url: ssh://jenkins@review.lttng.org:29418/efficios-www.git
+          credentials-id: f3c907b6-7485-49e1-afe1-4df24fac4ca1
+          basedir: ./
+          branches:
+            - '$GERRIT_REFSPEC'
+          refspec: 'refs/changes/*:refs/changes/*'
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'efficios-www'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: 'master'
+
+    wrappers:
+      - ansicolor
+      - timestamps
+      - credentials-binding:
+        - ssh-user-private-key:
+            credential-id: f3c907b6-7485-49e1-afe1-4df24fac4ca1
+            key-file-variable: KEY_FILE_VARIABLE
+            username-variable: USER_NAME_VARIABLE
+            passphrase-variable: PASSPHRASE_VARIABLE
+        - file:
+            credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
+            variable: HOST_PUBLIC_KEYS
+      - inject:
+          properties-content: |
+            DEPLOY_TARGET=deploy:pre
+
+- job:
+    name: efficios-www
+    defaults: efficios-www
 
     triggers:
       - pollscm:
           cron: "@hourly"
-
-    builders:
-      - shell:
-          !include-raw: scripts/efficios-www/deploy.sh
-
-    scm:
-      - git:
-          url: git@git.internal.efficios.com:efficios/efficios-www.git
-          credentials-id: f3c907b6-7485-49e1-afe1-4df24fac4ca1
-          basedir: ./
-          skip-tag: true
-          branches:
-            - master
 
     publishers:
       - archive:
