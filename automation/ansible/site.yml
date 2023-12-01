@@ -14,3 +14,20 @@
   roles:
     - common
     - gitmirror
+- hosts: ci_node:developer
+  roles:
+    - common
+    - common-node
+    - cross-compilers
+    - compilers
+    - babeltrace
+    - binutils-gdb
+    - liburcu
+    - lttng-ust
+    - lttng-tools
+    - lttng-modules
+    - lttng-analyses
+    - libs-i386
+- hosts: developer
+  roles:
+    - developer
