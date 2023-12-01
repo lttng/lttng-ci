@@ -436,6 +436,18 @@ switch (kverfilter) {
     println('Filter kernel versions to keep only the latest point release of each lts branch and the current stable.')
 
     def lts_kversions = []
+    // Old LTS entries are kept so that "lts-head" is still meaningful in kernel
+    // version ranges that are supported by lttng-modules but no longer supported
+    // upstream, eg. lttng-modules stable-2.13 supports >= 3.0
+    lts_kversions.add(kversionFactory.factory("v3.0"))  // LTS until October 2013
+    lts_kversions.add(kversionFactory.factory("v3.2"))  // LTS until May 2018
+    lts_kversions.add(kversionFactory.factory("v3.4"))  // LTS until October 2016
+    lts_kversions.add(kversionFactory.factory("v3.10")) // LTS until November 2017
+    lts_kversions.add(kversionFactory.factory("v3.12")) // LTS until May 2017
+    lts_kversions.add(kversionFactory.factory("v3.14")) // LTS until August 2016
+    lts_kversions.add(kversionFactory.factory("v3.16")) // LTS until October 2014
+    lts_kversions.add(kversionFactory.factory("v3.18")) // LTS until January 2017
+    lts_kversions.add(kversionFactory.factory("v4.1"))  // LTS until May 2018
     lts_kversions.add(kversionFactory.factory("v4.4"))  // SLTS until 2026
     lts_kversions.add(kversionFactory.factory("v4.9"))  // LTS until January 2023
     lts_kversions.add(kversionFactory.factory("v4.14")) // LTS until January 2024
