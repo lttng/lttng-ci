@@ -23,3 +23,4 @@ cross_compilers_packages:
   # be fetched from a snapshot source instead
   - gcc-11-powerpc-linux-gnu
   - gcc-11-riscv64-linux-gnu
+cross_compilers_debian_bookworm_snapshot: true
