@@ -1,7 +1,6 @@
-- job:
+- defaults:
     name: lttng-www
     project-type: freestyle
-    defaults: global
     node: amd64-rootnode
 
     description: |
@@ -9,36 +8,96 @@
 
       <p>Job is managed by Jenkins Job Builder.</p>
 
-    wrappers:
-      - ansicolor
-      - timestamps
-      - credentials-binding:
-        - ssh-user-private-key:
-            credential-id: 63a5abb5-9056-47e2-b419-f5946c1b8f08
-            key-file-variable: KEY_FILE_VARIABLE
-            username-variable: USER_NAME_VARIABLE
-            passphrase-variable: PASSPHRASE_VARIABLE
-        - file:
-            credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
-            variable: HOST_PUBLIC_KEYS
-    properties:
-      - build-discarder:
-          num-to-keep: 5
-
-    triggers:
-      - timed: '@daily'
-    builders:
-      - shell:
-          !include-raw: scripts/lttng-www/deploy.sh
-
     scm:
       - git:
           url: git@git.efficios.com:lttng-www.git
           credentials-id: 63a5abb5-9056-47e2-b419-f5946c1b8f08
           basedir: ./
-          skip-tag: true
           branches:
             - master
+          skip-tag: true
+
+    wrappers:
+      - ansicolor
+      - timestamps
+      - credentials-binding:
+        - file:
+            credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
+            variable: HOST_PUBLIC_KEYS
+        - ssh-user-private-key:
+            credential-id: 63a5abb5-9056-47e2-b419-f5946c1b8f08
+            key-file-variable: KEY_FILE_VARIABLE
+            username-variable: USER_NAME_VARIABLE
+            passphrase-variable: PASSPHRASE_VARIABLE
+      - inject:
+          properties-content: |
+            DEPLOY_TARGET=deploy:prod
+
+    properties:
+      - build-discarder:
+          num-to-keep: 5
+
+    builders:
+      - shell:
+          !include-raw: scripts/lttng-www/deploy.sh
+
+- job:
+    name: dev_review_lttng-www
+    defaults: lttng-www
+
+    scm:
+      - git:
+          url: ssh://jenkins@review.lttng.org:29418/lttng-www.git
+          credentials-id: f3c907b6-7485-49e1-afe1-4df24fac4ca1
+          basedir: ./
+          branches:
+            - '$GERRIT_REFSPEC'
+          refspec: 'refs/changes/*:refs/changes/*'
+          skip-tag: true
+
+    properties:
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-build'
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-www'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: 'master'
+
+    wrappers:
+      - ansicolor
+      - timestamps
+      - credentials-binding:
+        - file:
+            credential-id: d023f830-9ab0-409f-b977-8cd0e1944dd5
+            variable: HOST_PUBLIC_KEYS
+        - ssh-user-private-key:
+            credential-id: 63a5abb5-9056-47e2-b419-f5946c1b8f08
+            key-file-variable: KEY_FILE_VARIABLE
+            username-variable: USER_NAME_VARIABLE
+            passphrase-variable: PASSPHRASE_VARIABLE
+      - inject:
+          properties-content: |
+            DEPLOY_TARGET=deploy:preprod
+
+- job:
+    name: lttng-www
+    defaults: lttng-www
+
+    triggers:
+      - timed: '@daily'
 
     publishers:
       - archive:

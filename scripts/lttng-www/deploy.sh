@@ -37,6 +37,9 @@ print_header() {
     set -x
 }
 
+# Fail out early if this is not set
+echo "Deploy target: ${DEPLOY_TARGET}"
+
 # Add ssh key for deployment
 cp "$HOST_PUBLIC_KEYS" ~/.ssh/known_hosts
 cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
@@ -88,6 +91,6 @@ else
 fi
 
 print_header "Deploy website"
-bundle exec grunt deploy:prod --network
+bundle exec grunt "${DEPLOY_TARGET}" --network
 
 # EOF
