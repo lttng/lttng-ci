@@ -37,6 +37,9 @@ print_header() {
     set -x
 }
 
+# Fail early if not set
+echo "Deploy target: ${DEPLOY_TARGET}"
+
 # Add ssh key for deployment
 cp "$HOST_PUBLIC_KEYS" ~/.ssh/known_hosts
 cp "$KEY_FILE_VARIABLE" ~/.ssh/id_rsa
@@ -84,5 +87,5 @@ else
 fi
 
 print_header "Deploy website"
-grunt deploy:prod --verbose
+grunt "${DEPLOY_TARGET}" --verbose
 # EOF
