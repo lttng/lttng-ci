@@ -345,7 +345,7 @@
     <<: *babeltrace_publishers_review
 
 - job-template:
-    name: 'dev_review_babeltrace_{version}_pylint'
+    name: 'dev_review_babeltrace_{version}_lint'
     defaults: babeltrace
     concurrent: true
 
@@ -359,7 +359,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/babeltrace/pylint.sh
+         !include-raw-escape: scripts/babeltrace/lint.sh
 
     properties:
       - inject:
@@ -369,6 +369,9 @@
           days-to-keep: 1
 
     publishers:
+      - archive:
+          artifacts: 'black.out,flake8.out,isort.out,clang-format.out'
+          allow-empty: false
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
 
 - job-template:
@@ -525,7 +528,7 @@
       - ircbot: *babeltrace_publisher_ircbot_defaults
 
 - job-template:
-    name: babeltrace_{version}_pylint
+    name: babeltrace_{version}_lint
     defaults: babeltrace
     node: 'deb12-amd64'
 
@@ -535,12 +538,12 @@
 
     builders:
        - shell:
-          !include-raw-escape: scripts/babeltrace/pylint.sh
+          !include-raw-escape: scripts/babeltrace/lint.sh
 
     publishers:
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - archive:
-          artifacts: 'black.out,flake8.out,isort.out'
+          artifacts: 'black.out,flake8.out,isort.out,clang-format.out'
           allow-empty: false
       - ircbot: *babeltrace_publisher_ircbot_defaults
       - email-ext: *babeltrace_publisher_email-ext_defaults
@@ -639,7 +642,7 @@
       - 'babeltrace_{version}_release':
           version: v2.0
       - 'babeltrace_{version}_scan-build'
-      - 'babeltrace_{version}_pylint'
+      - 'babeltrace_{version}_lint'
       - 'babeltrace_{version}_coverity':
           version: master
       - '{job_prefix}babeltrace_{version}_glib-2.28.6':
@@ -777,7 +780,7 @@
           filter: ''
           touchstone: ''
       - 'dev_review_babeltrace_{version}_check-format'
-      - 'dev_review_babeltrace_{version}_pylint'
+      - 'dev_review_babeltrace_{version}_lint'
 
 
 - project:

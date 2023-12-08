@@ -60,4 +60,9 @@ else
     echo "isort is not supported on the 'stable-2.0' branch" > ../../isort.out
 fi
 
+if [[ -f tools/format-cpp.sh ]]; then
+    FORMATTER="clang-format-15 -i" tools/format-cpp.sh
+    git diff --exit-code | tee ../../clang-format.out || exit_code=1
+fi
+
 exit $exit_code
