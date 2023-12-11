@@ -97,3 +97,8 @@
         repo: 'deb http://deb.debian.org/debian bookworm-backports main'
     - ansible.builtin.apt:
         upgrade: 'yes'
+    - name: Use HTTP/1.1 with git HTTP operations
+      community.general.git_config:
+        file: '/etc/gitconfig'
+        name: 'http.version'
+        value: 'HTTP/1.1'
