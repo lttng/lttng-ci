@@ -36,7 +36,8 @@ SRCDIR="$WORKSPACE/src/$PROJECT_NAME"
 TMPDIR="$WORKSPACE/tmp"
 
 NPROC=$(nproc)
-export CFLAGS="-O0 -g -DDEBUG"
+export CFLAGS="-O0 -g"
+export CXXFLAGS="-O0 -g"
 
 # Directory to archive the scan-build report
 SCAN_BUILD_ARCHIVE="${WORKSPACE}/scan-build-archive"

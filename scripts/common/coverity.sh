@@ -34,8 +34,8 @@ TMPDIR="$WORKSPACE/tmp"
 
 NPROC=$(nproc)
 PLATFORM=$(uname)
-export CFLAGS="-O0 -g -DDEBUG"
-export CXXFLAGS="-O0 -g -DDEBUG"
+export CFLAGS="-O0 -g"
+export CXXFLAGS="-O0 -g"
 
 # Cache the tool installer in the home directory since we delete the workspace
 # on each build
