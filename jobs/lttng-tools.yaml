@@ -336,21 +336,6 @@
           condition-kind: strings-match
           on-evaluation-failure: run
           condition-string1: '${{platform}}'
-          condition-string2: 'msys2-mingw32'
-          steps:
-            - inject:
-               properties-content: 'MSYSTEM=MINGW32'
-            - shell:
-               !include-raw-escape:
-                 - scripts/common/msys2-shebang
-                 - scripts/common/cygpath-prefix
-                 - scripts/common/print.sh
-                 - scripts/lttng-tools/build.sh
-
-      - conditional-step:
-          condition-kind: strings-match
-          on-evaluation-failure: run
-          condition-string1: '${{platform}}'
           condition-string2: 'msys2-mingw64'
           steps:
             - inject:
