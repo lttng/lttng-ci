@@ -367,7 +367,7 @@
           touchstone: '(build == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: macosbuild
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'

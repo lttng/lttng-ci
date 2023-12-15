@@ -609,7 +609,7 @@
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
@@ -677,7 +677,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
           buildtype: macosbuild
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
@@ -715,7 +715,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: ctf2
           buildtype: macosbuild
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
@@ -753,7 +753,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
           buildtype: macosbuild
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''
@@ -839,7 +839,7 @@
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -868,7 +868,7 @@
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           filter: ''

@@ -1108,7 +1108,7 @@
           buildtype: macosbuild
           version: master
           ustversion: master
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [master]
@@ -1227,7 +1227,7 @@
           buildtype: macosbuild
           version: stable-2.13
           ustversion: stable-2.13
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1336,7 +1336,7 @@
           buildtype: macosbuild
           version: stable-2.12
           ustversion: stable-2.12
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1523,7 +1523,7 @@
           buildtype: macosbuild
           version: master-staging
           ustversion: master
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           urcuversions: !!python/tuple [master]
