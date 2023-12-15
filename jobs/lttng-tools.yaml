@@ -336,10 +336,10 @@
           condition-kind: strings-match
           on-evaluation-failure: run
           condition-string1: '${{platform}}'
-          condition-string2: 'msys2-mingw64'
+          condition-string2: 'msys2-ucrt64'
           steps:
             - inject:
-               properties-content: 'MSYSTEM=MINGW64'
+               properties-content: 'MSYSTEM=UCRT64'
             - shell:
                !include-raw-escape:
                  - scripts/common/msys2-shebang

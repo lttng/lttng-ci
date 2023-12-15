@@ -109,10 +109,10 @@
           condition-kind: strings-match
           on-evaluation-failure: run
           condition-string1: {{ '${{platform}}' }}
-          condition-string2: 'msys2-mingw64'
+          condition-string2: 'msys2-ucrt64'
           steps:
             - inject:
-               properties-content: 'MSYSTEM=MINGW64'
+               properties-content: 'MSYSTEM=UCRT64'
             - shell:
                !include-raw-escape:
                  - scripts/common/msys2-shebang
@@ -623,7 +623,7 @@
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: winbuild
-          platforms: !!python/tuple [cygwin64, msys2-mingw64]
+          platforms: !!python/tuple [cygwin64, msys2-ucrt64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -686,7 +686,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
           buildtype: winbuild
-          platforms: !!python/tuple [cygwin64, msys2-mingw64]
+          platforms: !!python/tuple [cygwin64, msys2-ucrt64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -724,7 +724,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: ctf2
           buildtype: winbuild
-          platforms: !!python/tuple [cygwin64, msys2-mingw64]
+          platforms: !!python/tuple [cygwin64, msys2-ucrt64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
@@ -762,7 +762,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
           buildtype: winbuild
-          platforms: !!python/tuple [cygwin64, msys2-mingw64]
+          platforms: !!python/tuple [cygwin64, msys2-ucrt64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
