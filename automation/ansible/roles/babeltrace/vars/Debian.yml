@@ -8,5 +8,6 @@ babeltrace_packages:
   - libpopt-dev
   - python3-dev
   - python3-sphinx
+  - shellcheck
   - swig
   - uuid-dev
