@@ -17,8 +17,8 @@
           num-to-keep: 5
     scm:
       - git:
-          url: git@git.internal.efficios.com:efficios/efficios-www.git
-          credentials-id: f3c907b6-7485-49e1-afe1-4df24fac4ca1
+          url: git@git.efficios.com:efficios-www.git
+          credentials-id: 63a5abb5-9056-47e2-b419-f5946c1b8f08
           basedir: ./
           skip-tag: true
           branches:
