@@ -75,8 +75,11 @@ packages = [
     'python3-pip',
     'python3-setuptools',
     'python3-sphinx',
+    'rsync',
     'stress',
     'swig',
+    'systemd-timesyncd',
+    'systemtap-sdt-dev',
     'texinfo',
     'tree',
     'uuid-dev',
@@ -88,10 +91,10 @@ packages = [
 def main():
     parser = argparse.ArgumentParser(description='Generate lava lttng rootfs')
     parser.add_argument("--arch", default='amd64')
-    parser.add_argument("--distribution", default='jammy')
-    parser.add_argument("--mirror", default='http://archive.ubuntu.com/ubuntu')
+    parser.add_argument("--distribution", default='bookworm')
+    parser.add_argument("--mirror", default='https://deb.debian.org/debian')
     parser.add_argument(
-        "--component", default='universe,multiverse,main,restricted')
+        "--component", default='main')
     args = parser.parse_args()
 
     name = "rootfs_{}_{}_{}".format(args.arch, args.distribution,

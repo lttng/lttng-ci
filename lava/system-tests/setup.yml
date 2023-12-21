@@ -3,24 +3,21 @@ metadata:
     name: x86-env-setup
     description: "Basic environment setup for x86 board"
     os:
+      - debian
       - ubuntu
     devices:
       - x86
 run:
   steps:
     - chmod 755 /
-    - systemctl start systemd-timesyncd
     - echo nameserver 172.18.0.13 > /etc/resolv.conf
     - ip a
     - groupadd tracing
     - depmod -a
-    - locale-gen en_US.UTF-8
     - apt-get update
     - apt-get upgrade
-    - apt-get install -y systemtap-sdt-dev openssh-server
-    - pip3 install 'pip==20.3'
+    - pip3 install vlttng --break-system-packages
     - hash -r
-    - pip3 install vlttng
     - git clone "${CI_REPO}" --branch="${CI_BRANCH}" ci
     - mkdir -p /root/.ssh
     - chmod 700 /root/.ssh

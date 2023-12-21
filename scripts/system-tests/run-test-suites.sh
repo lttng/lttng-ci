@@ -68,16 +68,28 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+function cleanup
+{
+    timedatectl set-ntp true
+}
+
+trap cleanup EXIT SIGINT SIGTERM
+
 lttng_version="$1"
 failed_tests=0
 
 export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
+timedatectl set-ntp false
 
+# When make check is interrupted, the default test driver
+# (`config/test-driver`) will still delete the log and trs
+# files for the currently running test.
+#
 timeout 90m make --keep-going check || failed_tests=1
 
 if [ -f "./tests/root_regression" ]; then
     cd "./tests" || exit 1
-    prove --nocolor --verbose --merge --exec '' - < root_regression || failed_tests=1
+    prove --nocolor --verbose --merge --exec '' - < root_regression || failed_tests=2
     cd ..
 fi
 
@@ -85,7 +97,7 @@ fi
 # should be retained until lttng-tools 2.13 is no longer supported
 if [ -f "./tests/root_destructive_tests" ]; then
     cd "./tests" || exit 1
-    prove --nocolor --verbose --merge --exec '' - < root_destructive_tests || failed_tests=2
+    prove --nocolor --verbose --merge --exec '' - < root_destructive_tests || failed_tests=3
     cd ..
 else
     echo 'root_destructive_tests not found'
@@ -95,4 +107,5 @@ if [[ "${failed_tests}" != "0" ]] ; then
     find tests/ -iname '*.trs' -print0 -or -iname '*.log' -print0 | tar czf /tmp/coredump/logs.tgz --null -T -
 fi
 
+timedatectl set-ntp true
 exit $failed_tests

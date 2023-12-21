@@ -7,7 +7,6 @@ params:
     LTTNG_VERSION_STRING: "invalid_version_string"
 run:
         steps:
-                - apt install -y libpfm4-dev curl
                 - git clone "${CI_REPO}" --branch="${CI_BRANCH}" ci
                 - export TMPDIR="/tmp"
                 - mkdir -p /tmp/coredump
