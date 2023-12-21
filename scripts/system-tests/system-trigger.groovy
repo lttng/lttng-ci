@@ -308,6 +308,7 @@ def recentLttngBranchesOfInterest = ['master',
   'stable-2.13',
   'stable-2.12']
 def recentLinuxBranchesOfInterest = ['master',
+  'linux-6.6.y',
   'linux-6.1.y',
   'linux-5.15.y',
   'linux-5.10.y',
