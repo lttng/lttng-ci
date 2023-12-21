@@ -380,6 +380,12 @@
       - 'vm_tests_k{kversion}_l{lttngversion}'
       - 'baremetal_tests_k{kversion}_l{lttngversion}'
 
+## Views
+- view-template:
+    name: 'System tests'
+    view-type: list
+    regex: 'vm_tests_.*|baremetal_tests_.*|baremetal_benchmarks_.*|system_.*'
+
 # Test against particular linux version.
 - project:
     name: system-tests
@@ -437,3 +443,8 @@
     jobs:
       - 'build_kernel_PARAM'
       - 'system_ALL_{test_type}_trigger'
+
+- project:
+    name: system-tests-views
+    views:
+      - 'System tests'
