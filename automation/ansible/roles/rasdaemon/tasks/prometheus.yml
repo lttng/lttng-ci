@@ -1,0 +1,25 @@
+---
+- name: Install rasdaemon prometheus exporter requirements
+  ansible.builtin.package:
+    name: "{{rasdaemon_prometheus_exporter_prerequisites}}"
+- name: Install rasdaemon prometheus exporter
+  ansible.builtin.copy:
+    dest: '/usr/local/bin/rasdaemon-exporter'
+    src: 'rasdaemon-exporter.py'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  notify:
+    - Restart rasdaemon-exporter
+- name: Deploy rasdaemon prometheus exporter service
+  ansible.builtin.template:
+    src: 'rasdaemon-exporter.service.j2'
+    dest: '/etc/systemd/system/rasdaemon-exporter.service'
+  notify:
+    - Systemd daemon-reload
+    - Restart rasdaemon-exporter
+- name: Ensure rasdaemon prometheus exporter service is running
+  ansible.builtin.service:
+    name: rasdaemon-exporter
+    enabled: "{{rasdaemon_prometheus_exporter}}"
+    state: "{{rasdaemon_prometheus_exporter|ternary('started', 'stopped')}}"

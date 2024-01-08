@@ -1,0 +1,10 @@
+---
+- name: Install rasdaemon
+  ansible.builtin.package:
+    name: rasdaemon
+- name: Ensure rasdaemon is running
+  ansible.builtin.service:
+    name: rasdaemon
+    state: started
+    enabled: true
+- ansible.builtin.include: prometheus.yml

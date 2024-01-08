@@ -1,0 +1,10 @@
+[Unit]
+Description=Rasdaemon Prometheus Exporter
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/rasdaemon-exporter -l "{{rasdaemon_prometheus_exporter_bind_address}}" -p "{{rasdaemon_prometheus_exporter_port}}"
+
+[Install]
+WantedBy=multi-user.target

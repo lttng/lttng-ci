@@ -1,0 +1,8 @@
+---
+- name: Systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+- name: Restart rasdaemon-exporter
+  ansible.builtin.service:
+    name: rasdaemon-exporter
+    state: restarted

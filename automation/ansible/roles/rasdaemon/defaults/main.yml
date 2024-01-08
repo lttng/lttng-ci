@@ -1,0 +1,6 @@
+---
+rasdaemon_prometheus_exporter: true
+rasdaemon_prometheus_exporter_bind_address: '0.0.0.0'
+rasdaemon_prometheus_exporter_port: 9797
+rasdaemon_prometheus_exporter_prerequisites:
+  - python3
