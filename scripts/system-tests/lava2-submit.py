@@ -83,7 +83,7 @@ def check_job_all_test_cases_state_count(server, job):
     """
     print("Testcase result:")
     content = server.results.get_testjob_results_yaml(str(job))
-    testcases = yaml.unsafe_load(content)
+    testcases = yaml.load(content)
 
     passed_tests = 0
     failed_tests = 0
@@ -105,7 +105,7 @@ def print_test_output(server, job):
     Parse the attachment of the testcase to fetch the stdout of the test suite
     """
     job_finished, log = server.scheduler.jobs.logs(str(job))
-    logs = yaml.unsafe_load(log.data.decode('ascii'))
+    logs = yaml.load(log.data.decode('ascii'))
     print_line = False
     for line in logs:
         if line['lvl'] != 'target':
