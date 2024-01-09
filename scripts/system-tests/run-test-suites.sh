@@ -91,4 +91,8 @@ else
     echo 'root_destructive_tests not found'
 fi
 
+if [[ "${failed_tests}" != "0" ]] ; then
+    find tests/ -iname '*.trs' -print0 -or -iname '*.log' -print0 | tar czf /tmp/coredump/logs.tgz --null -T -
+fi
+
 exit $failed_tests
