@@ -1,0 +1,11 @@
+metadata:
+  format: Lava-Test Test Definition 1.0
+  name: lttng-upload-artifacts
+  description: "Upload build artifacts"
+params:
+  JENKINS_BUILD_ID: "invalid_jenkins_build_id"
+run:
+  steps:
+    - git clone "${CI_REPO}" --branch="${CI_BRANCH}" ci
+    - tar czf coredump.tar.gz /tmp/coredump
+    - ./ci/lava/upload_artifact.sh coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"

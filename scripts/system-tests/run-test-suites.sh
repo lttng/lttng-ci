@@ -73,7 +73,7 @@ failed_tests=0
 
 export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 
-make --keep-going check || failed_tests=1
+timeout 90m make --keep-going check || failed_tests=1
 
 if [ -f "./tests/root_regression" ]; then
     cd "./tests" || exit 1
