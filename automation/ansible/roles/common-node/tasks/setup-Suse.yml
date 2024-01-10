@@ -4,3 +4,27 @@
 
 - name: Ensure common_node packages are installed.
   zypper: "name={{ common_node_packages }} type=package state=present update_cache=yes"
+
+- name: Install maven from upstream binary
+  when: ansible_distribution_major_version == "12"
+  block:
+    - name: Create directory in /opt
+      ansible.builtin.file:
+        path: '/opt/apache'
+        state: 'directory'
+    - name: Download release
+      ansible.builtin.get_url:
+        url: 'https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz'
+        checksum: 'sha512:https://downloads.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz.sha512'
+        dest: '/opt/apache'
+    - name: Unarchive release
+      ansible.builtin.unarchive:
+        dest: '/opt/apache/'
+        src: '/opt/apache/apache-maven-3.9.6-bin.tar.gz'
+        remote_src: true
+        creates: '/opt/apache/apache-maven-3.9.6'
+    - name: Link /opt/apache/maven to latest version
+      ansible.builtin.file:
+        dest: '/opt/apache/maven'
+        state: 'link'
+        src: '/opt/apache/apache-maven-3.9.6'

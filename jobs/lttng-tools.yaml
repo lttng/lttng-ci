@@ -155,7 +155,7 @@
               ;;
           esac
           # Run java tests only on 'linuxbuild' jobs
-          if [ "{buildtype}" = "linuxbuild" ]; then
+          if [ "{buildtype}" = "linuxbuild" ] || [ "{buildtype}" = "slesbuild" ]; then
             echo "LTTNG_TOOLS_RUN_UST_JAVA_TESTS=yes" >> env.properties
           else
             echo "LTTNG_TOOLS_RUN_UST_JAVA_TESTS=no" >> env.properties

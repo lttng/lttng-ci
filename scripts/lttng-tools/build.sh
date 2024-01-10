@@ -322,7 +322,9 @@ no-ust)
 agents)
     print_header "Conf: Java and Python agents"
 
-    export JAVA_HOME="/usr/lib/jvm/default-java"
+    if [[ -z "${JAVA_HOME:-}" ]] ; then
+        export JAVA_HOME="/usr/lib/jvm/default-java"
+    fi
     export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
 
     CONF_OPTS+=("--enable-python-bindings" "--enable-test-java-agent-all")
@@ -551,14 +553,17 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         cd lttng-ust-java-tests
 
         LTTNG_UST_JAVA_TESTS_ENV=(
-            PATH="${WORKSPACE}/build/bin/:$PATH"
-            LD_LIBRARY_PATH="${WORKSPACE}/build/lib:$LD_LIBRARY_PATH"
+            # Some ci nodes (eg. SLES12) don't have maven distributed by their
+            # package manager. As a result, the maven binary is deployed in
+            # '/opt/apache/maven/bin'.
+            PATH="${WORKSPACE}/build/bin/:$PATH:/opt/apache/maven/bin/"
+            LD_LIBRARY_PATH="${WORKSPACE}/build/${LIBDIR}/:${WORKSPACE}/build/${LIBDIR_ARCH}:$LD_LIBRARY_PATH"
             LTTNG_UST_DEBUG=1
-            LTTNG_CONSUMERD32_BIN="${WORKSPACE}/build/lib/lttng/libexec/lttng-consumerd"
-            LTTNG_CONSUMERD64_BIN="${WORKSPACE}/build/lib/lttng/libexec/lttng-consumerd"
+            LTTNG_CONSUMERD32_BIN="${WORKSPACE}/build/${LIBDIR_ARCH}/lttng/libexec/lttng-consumerd"
+            LTTNG_CONSUMERD64_BIN="${WORKSPACE}/build/${LIBDIR_ARCH}/lttng/libexec/lttng-consumerd"
             LTTNG_SESSION_CONFIG_XSD_PATH="${WORKSPACE}/build/share/xml/lttng"
-            BABELTRACE_PLUGIN_PATH="${WORKSPACE}/deps/build/lib/babeltrace2/plugins"
-            LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="${WORKSPACE}/deps/build/lib/babeltrace2/plugin-providers"
+            BABELTRACE_PLUGIN_PATH="${WORKSPACE}/deps/build/${LIBDIR_ARCH}/babeltrace2/plugins"
+            LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="${WORKSPACE}/deps/build/${LIBDIR_ARCH}/babeltrace2/plugin-providers"
         )
         LTTNG_UST_JAVA_TESTS_MAVEN_OPTS=(
             "-Dmaven.test.failure.ignore=true"
@@ -566,10 +571,11 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
             "-Djul-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-jul.jar"
             "-Dlog4j-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-log4j.jar"
             "-Dlog4j2-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-log4j2.jar"
-            "-DargLine=-Djava.library.path=${WORKSPACE}/deps/build/lib"
+            "-DargLine=-Djava.library.path=${WORKSPACE}/deps/build/${LIBDIR_ARCH}"
             '-Dgroups=!domain:log4j2'
         )
         env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn -version
+        mkdir -p "${WORKSPACE}/log"
         env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" lttng-sessiond -b -vvv 1>"${WORKSPACE}/log/lttng-ust-java-tests-lttng-sessiond.log" 2>&1
         env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn "${LTTNG_UST_JAVA_TESTS_MAVEN_OPTS[@]}" clean verify || exit_status=1
         killall lttng-sessiond
