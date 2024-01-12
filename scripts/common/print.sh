@@ -12,6 +12,19 @@ print_blue() {
 	echo -e "${COLOR_BLUE}$1${COLOR_NONE}"
 }
 
+print_hardware() {
+    if command -v lscpu >/dev/null 2>&1; then
+        print_blue "CPU Details"
+        lscpu
+    fi
+
+    print_blue "Memory Details"
+    free
+
+    print_blue "Storage Details"
+    df -H -T
+}
+
 print_os() {
     set +ex
 

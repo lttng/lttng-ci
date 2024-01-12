@@ -201,6 +201,7 @@ esac
 
 # Print build env details
 print_header "Build environment details"
+print_hardware || true
 print_os || true
 print_tooling || true
 
