@@ -91,6 +91,12 @@ actions:
                     - mount /dev/sda /tmp
                   {% endif %}
                     - rm -rf /tmp/*
+                    # With the Debian bookwrom rootfs, without
+                    # this being set, the babeltrace2 'bt2' python
+                    # bindings are not correctly installed in the
+                    # vlttng directory.
+                    - export SETUPTOOLS_USE_DISTUTILS=stdlib
+                    - source /root/python-venv/bin/activate
                     - {{ vlttng_cmd }}
                     - ln -s {{ vlttng_path }} /root/lttngvenv
                     - sync

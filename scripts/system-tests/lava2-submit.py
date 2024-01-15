@@ -198,7 +198,7 @@ def main():
     parser.add_argument('-d', '--debug', required=False, action='store_true')
     parser.add_argument(
         '-r', '--rootfs-url', required=False,
-        default="https://obj.internal.efficios.com/lava/rootfs_amd64_bookworm_2024-01-12.tar.gz"
+        default="https://obj.internal.efficios.com/lava/rootfs_amd64_bookworm_2024-01-15.tar.gz"
     )
     parser.add_argument('--ci-repo', required=False, default='https://github.com/lttng/lttng-ci.git')
     parser.add_argument('--ci-branch', required=False, default='master')

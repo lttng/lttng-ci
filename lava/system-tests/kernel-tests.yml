@@ -12,6 +12,7 @@ run:
                 - mkdir -p /tmp/coredump
                 - echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
                 - ulimit -c unlimited
+                - source /root/python-venv/bin/activate
                 - source /root/lttngvenv/activate
                 - pushd /root/lttngvenv/src/lttng-tools
                 - lava-test-case build-test-suite --shell "make"

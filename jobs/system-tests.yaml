@@ -37,7 +37,7 @@
           description: 'LTTng-UST git repo to checkout the UST id'
       - string:
           name: 'ROOTFS_URL'
-          default: 'https://obj.internal.efficios.com/lava/rootfs_amd64_bookworm_2024-01-12.tar.gz'
+          default: 'https://obj.internal.efficios.com/lava/rootfs_amd64_bookworm_2024-01-15.tar.gz'
           description: 'The URL at which the system root FS can be downloaded'
       - string:
           name: 'LTTNG_CI_REPO'
