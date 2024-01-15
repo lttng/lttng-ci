@@ -71,6 +71,15 @@ verne() {
 function cleanup
 {
     timedatectl set-ntp true
+    # The false dates used in the tests are far in the past
+    # and it may take some time for the ntp update to actually
+    # happen.
+    # If the date is still in the past, it is possible that
+    # subsequent steps will fail (eg. TLS certificates cannot
+    # be validated).
+    while [[ "$(date +%Y)" -lt "2024" ]] ; do
+        sleep 1
+    done
 }
 
 trap cleanup EXIT SIGINT SIGTERM
@@ -107,5 +116,4 @@ if [[ "${failed_tests}" != "0" ]] ; then
     find tests/ -iname '*.trs' -print0 -or -iname '*.log' -print0 | tar czf /tmp/coredump/logs.tgz --null -T -
 fi
 
-timedatectl set-ntp true
 exit $failed_tests
