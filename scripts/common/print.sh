@@ -18,8 +18,13 @@ print_hardware() {
         lscpu
     fi
 
-    print_blue "Memory Details"
-    free
+    if command -v free >/dev/null 2>&1; then
+        print_blue "Memory Details"
+        free -m
+    else
+        print_blue "Memory Details"
+        vmstat free
+    fi
 
     print_blue "Storage Details"
     df -H -T
