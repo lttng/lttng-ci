@@ -144,7 +144,7 @@
 ## Project
 - project:
     name: lttng-ivc
-    github_user: mjeanson
+    github_user: lttng
     github_name: lttng-ivc
     email_to: "ci-notification@lists.lttng.org"
     version:
