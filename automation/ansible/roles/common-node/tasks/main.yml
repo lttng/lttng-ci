@@ -20,3 +20,20 @@
 
 - include: setup-Suse.yml
   when: ansible_os_family == 'Suse'
+
+- when: common_node_rootfs_readonly_reboot|default(false)
+  block:
+    - name: Install readonly reboot script
+      ansible.builtin.copy:
+        dest: '/usr/sbin/readonly_root_reboot.sh'
+        src: 'readonly_root_reboot.sh'
+        owner: 'root'
+        group: 'root'
+        mode: '0750'
+    - name: Add cronjob
+      ansible.builtin.cron:
+        name: 'readonly_root_reboot'
+        job: '/usr/sbin/readonly_root_reboot.sh'
+        cron_file: 'readonly_root_reboot'
+        minute: '*/10'
+        user: 'root'

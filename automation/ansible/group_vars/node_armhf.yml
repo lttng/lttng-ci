@@ -1,0 +1,6 @@
+---
+# The SATA controllers on the boards that are running the armhf
+# nodes are somewhat flaky, and the root filesystem often ends
+# up readonly due to errors. When the FS goes read-only, jobs
+# will fail so the easiest action is to have the node reboot.
+common_node_rootfs_readonly_reboot: true
