@@ -1,0 +1,59 @@
+From 114e4e9470260a839d55aad2421fb646af12697b Mon Sep 17 00:00:00 2001
+From: Paul Beeler <pbeeler80@gmail.com>
+Date: Mon, 11 May 2015 22:27:25 -0600
+Subject: [PATCH] Graphite: Add missing isl headers
+
+Signed-off-by: Paul Beeler <pbeeler80@gmail.com>
+# Patch modified from original source
+# https://github.com/SaberMod/GCC_SaberMod/commit/114e4e9470260a839d55aad2421fb646af12697b.patch
+---
+ gcc/graphite-isl-ast-to-gimple.c | 1 +
+ gcc/graphite-optimize-isl.c      | 1 +
+ gcc/graphite-poly.h              | 6 ++++++
+ 3 files changed, 8 insertions(+), 2 deletions(-)
+
+--- a/gcc/graphite-isl-ast-to-gimple.c
++++ b/gcc/graphite-isl-ast-to-gimple.c
+@@ -21,9 +21,10 @@ along with GCC; see the file COPYING3.  If not see
+ #include "config.h"
+ 
+ #ifdef HAVE_isl
++#include <isl/id.h>
+ #include <isl/constraint.h>
+ #include <isl/set.h>
+ #include <isl/union_set.h>
+ #include <isl/map.h>
+ #include <isl/union_map.h>
+ #include <isl/ast_build.h>
+
+ /* Since ISL-0.13, the extern is in val_gmp.h.  */
+diff --git a/gcc/graphite-optimize-isl.c b/gcc/graphite-optimize-isl.c
+index 8bdf7443018..d602e672ca8 100644
+--- a/gcc/graphite-optimize-isl.c
++++ b/gcc/graphite-optimize-isl.c
+@@ -28,6 +28,7 @@ along with GCC; see the file COPYING3.  If not see
+ #include <isl/band.h>
+ #include <isl/aff.h>
+ #include <isl/options.h>
++#include <isl/union_set.h>
+ #endif
+ 
+ #include "system.h"
+diff --git a/gcc/graphite-poly.h b/gcc/graphite-poly.h
+index afc0121f611..06d91faa1ba 100644
+--- a/gcc/graphite-poly.h
++++ b/gcc/graphite-poly.h
+@@ -22,6 +22,13 @@ along with GCC; see the file COPYING3.  If not see
+ #ifndef GCC_GRAPHITE_POLY_H
+ #define GCC_GRAPHITE_POLY_H
+ 
++#ifdef HAVE_isl
++#include <isl/constraint.h>
++#include <isl/set.h>
++#include <isl/space.h>
++#include <isl/map.h>
++#endif
++
+ typedef struct poly_dr *poly_dr_p;
+ 
+ typedef struct poly_bb *poly_bb_p;

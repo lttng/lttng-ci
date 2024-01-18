@@ -35,13 +35,23 @@
         - powerpc-linux-gnu
         - riscv64-linux-gnu
         - s390x-linux-gnu
-    - name: Download legacy compiler binaries
+    - name: Download gcc-4.8 cross compiler binaries
       # These binaries built from files/Containerfile
       ansible.builtin.get_url:
         url: https://obj.internal.efficios.com/jenkins/gcc-4.8-x86_64-linux-gnu-cross.tgz
         dest: /root/gcc-4.8-x86_64-linux-gnu-cross.tgz
-      register: cross_download
-    - name: Extract legacy compiler binaries
-      when: cross_download.changed
+      register: cross_gcc48_download
+    - name: Extract gcc-4.8 cross compiler binaries
+      when: cross_gcc48_download.changed
       ansible.builtin.command:
         argv: ['tar', '-C', '/', '-xzf', '/root/gcc-4.8-x86_64-linux-gnu-cross.tgz']
+
+    - name: Download gcc-5.5 cross compiler binaries
+      ansible.builtin.get_url:
+        url: https://obj.internal.efficios.com/jenkins/gcc-5.5-x86_64-linux-gnu-cross.tgz
+        dest: /root/gcc-5.5-x86_64-linux-gnu-cross.tgz
+      register: cross_gcc55_download
+    - name: Extract gcc-5.5 cross compiler binaries
+      when: cross_gcc55_download.changed
+      ansible.builtin.command:
+        argv: ['tar', '-xzf', '/root/gcc-5.5-x86_64-linux-gnu-cross.tgz', '-C', '/']

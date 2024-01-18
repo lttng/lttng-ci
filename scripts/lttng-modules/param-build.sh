@@ -151,9 +151,27 @@ select_compiler() {
         exit 0
     fi
 
+    if [ "${cross_arch}" = "arm64" ] && verlt "${kversion}" "3.7"; then
+        echo "ARM64 support was added as of v3.7. Don't try to build it."
+        exit 0
+    fi
+
+    if [ "${cross_arch}" = "arm64" ] && verlt "${kversion}" "3.18"; then
+        echo "lttng-modules requires gcc >= 5.1 for ARM64 due to compiler bugs in gcc."
+        echo "gcc-5 support was added to the kernel as of v3.18. Don't this to build it."
+        exit 0
+    fi
+
     if { verlt "$kversion" "4.4"; }; then
         # Force gcc-4.8 for kernels before 4.4
         selected_cc='gcc-4.8'
+        # Due to compiler bugs in gcc on arm64, lttng-modules disallows
+        # compilation with gcc < 5.1.
+        if [[ "${cross_arch}" == "arm64" ]] ; then
+            selected_cc='gcc-5.5'
+            export PATH="${PATH:-}:/usr/local/gcc5.5/bin"
+            export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}:/usr/local/gcc5.5/lib"
+        fi
         selected_cc_version=$(echo "${selected_cc}" | cut -d'-' -f2)
     else
         for cc in $(list_gccs) ; do
@@ -200,7 +218,7 @@ export_kbuild_flags() {
     _KCPPFLAGS=()
     _HOSTCFLAGS=()
 
-    if [ "$selected_cc" != "gcc-4.8" ]; then
+    if { vergte "$selected_cc_version" "6"; }; then
         # Older kernel Makefiles do not expect the compiler to default to PIE
         _KAFLAGS+=(-fno-pie)
         _KCFLAGS+=(
