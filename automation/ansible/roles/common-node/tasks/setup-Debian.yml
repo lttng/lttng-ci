@@ -6,7 +6,7 @@
   apt: "name={{ common_node_packages }} state=present"
 
 - name: Install linux headers
-  when: inventory_hostname in groups['node_standalone']|default([])
+  when: ansible_virtualization_role == "host" or (ansible_virtualization_role == "guest" and ansible_virtualization_type == "kvm")
   block:
     - name: Install i386 linux headers Debian
       when: ansible_architecture == 'i386' and ansible_distribution == 'Debian'
