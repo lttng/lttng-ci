@@ -1,7 +1,0 @@
----
-- name: Update apk cache.
-  apk: update_cache=yes
-
-- name: Ensure lttng-analyses build dependencies are installed.
-  apk: "name={{ lttng_analyses_packages }} state=present"
-

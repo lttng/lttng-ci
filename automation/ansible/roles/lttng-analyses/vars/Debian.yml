@@ -1,5 +1,0 @@
----
-__lttng_analyses_packages:
-  - virtualenv
-  - python3-pyparsing
-  - python3-progressbar

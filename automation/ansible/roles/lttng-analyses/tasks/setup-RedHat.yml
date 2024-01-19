@@ -1,5 +1,0 @@
----
-- name: Ensure lttng-analyses build dependencies are installed.
-  dnf:
-    name: "{{ lttng_analyses_packages }}"
-    state: installed
