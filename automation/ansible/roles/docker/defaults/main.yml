@@ -1,0 +1,13 @@
+---
+
+docker_upstream: true
+docker_upstream_packages:
+  - 'docker-ce'
+  - 'docker-ce-cli'
+  - 'containerd.io'
+  - 'docker-buildx-plugin'
+  - 'docker-compose-plugin'
+
+docker_Debian_packages:
+  - 'docker.io'
+  - 'docker-compose'

@@ -30,3 +30,4 @@
 - hosts: developer
   roles:
     - developer
+    - docker
