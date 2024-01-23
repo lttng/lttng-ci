@@ -6,6 +6,7 @@
     owner: 'root'
     group: 'root'
     src: 'internal.efficios.com.pem'
+  register: cert
 - name: Deploy internal certificate key
   ansible.builtin.copy:
     dest: /etc/ssl/private/internal.efficios.com.key
@@ -13,3 +14,9 @@
     owner: 'root'
     group: 'root'
     content: "{{lookup('community.general.bitwarden', 'TLS Certificate internal.efficios.com', collection_id='35c5d8b1-2520-4450-a479-aef50131b930')[0]['notes'] }}"
+  register: key
+- name: Deploy combined cert+key
+  # haproxy uses a combined certificate and key file
+  when: cert.changed or key.changed
+  ansible.builtin.shell:
+    cmd: 'cat /etc/ssl/certs/internal.efficios.com.pem /etc/ssl/private/internal.efficios.com.key > /etc/ssl/private/internal.efficios.com.pem'
