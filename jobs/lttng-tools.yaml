@@ -212,6 +212,20 @@
 - _lttng-tools_builders_review: &lttng-tools_builders_review
     name: 'lttng-tools_builders_review'
     builders:
+      - shell: |
+          #!/bin/bash
+          set -exu
+          # Run java tests only on 'linuxbuild' and 'slesbuild' jobs
+          if [ "{buildtype}" = "linuxbuild" ] || [ "{buildtype}" = "slesbuild" ]; then
+            echo "LTTNG_TOOLS_RUN_UST_JAVA_TESTS=yes" >> env.properties
+          else
+            echo "LTTNG_TOOLS_RUN_UST_JAVA_TESTS=no" >> env.properties
+          fi
+          if [ "{buildtype}" = "slesbuild" ] ; then
+            echo "TAP_AUTOTIME=0" >> env.properties
+          fi
+      - inject:
+          properties-file: env.properties
       - shell:
          !include-raw-escape: scripts/lttng-tools/gerrit-depends-on.sh
 
@@ -1496,6 +1510,17 @@
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
+          babelversions: !!python/tuple [stable-2.0]
+          filter: ''
+          touchstone: ''
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          version: master
+          buildtype: slesbuild
+          ustversion: master
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
