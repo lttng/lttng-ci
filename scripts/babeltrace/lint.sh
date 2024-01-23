@@ -65,4 +65,8 @@ if [[ -f tools/format-cpp.sh ]]; then
     git diff --exit-code | tee ../../clang-format.out || exit_code=1
 fi
 
+if [[ -f tools/shellcheck.sh ]]; then
+    tools/shellcheck.sh | tee ../../shellcheck.out || exit_code=1
+fi
+
 exit $exit_code
