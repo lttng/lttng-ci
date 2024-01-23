@@ -68,6 +68,7 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+# shellcheck disable=SC2317
 function cleanup
 {
     timedatectl set-ntp true
@@ -82,6 +83,47 @@ function cleanup
     done
 }
 
+function test_timeout
+{
+    local TIMEOUT=0
+    local TIMEOUT_MINUTES="${1:-90}"
+    shift 1
+    PID=''
+    "${@}" &
+    PID="${!}"
+    while true; do
+        sleep 1m
+        if ! ps -q "${PID}" > /dev/null ; then
+            # The process ID doesn't exist anymore
+            break
+        fi
+        TIMEOUT=$((TIMEOUT+1))
+        if [[ "${TIMEOUT}" -ge "${TIMEOUT_MINUTES}" ]]; then
+            echo "Command '${@}' timed out (${TIMEOUT} minutes) " \
+                 "attempting to get backtraces for lttng/babeltrace binaries"
+            apt-get install -y --force-yes gdb
+            # Abort all lttng-sessiond, lttng, lttng-relayd, lttng-consumerd,
+            # and babeltrace process so there are coredumps available.
+            PIDS=$(pgrep 'babeltrace*|[l]ttng*')
+            for P in ${PIDS}; do
+                OUTFILE=$(mktemp -t "backtrace-${P}.XXXXXX")
+                ps -f "${P}" | tee -a "${OUTFILE}"
+                gdb -p "${P}" --batch -ex 'thread apply all bt' 2>&1 | tee -a "${OUTFILE}"
+                mv "${OUTFILE}" /tmp/coredump/
+            done
+
+            # Send sigterm to make
+            kill "${PID}"
+
+            # Cleanup, to hopefully not interfere with future tests
+            apt-get purge -y gdb
+            apt-get autoremove -y
+        fi
+    done
+    wait "${PID}"
+    return "${?}"
+}
+
 trap cleanup EXIT SIGINT SIGTERM
 
 lttng_version="$1"
@@ -93,8 +135,7 @@ timedatectl set-ntp false
 # When make check is interrupted, the default test driver
 # (`config/test-driver`) will still delete the log and trs
 # files for the currently running test.
-#
-timeout 90m make --keep-going check || failed_tests=1
+test_timeout 90 make --keep-going check || failed_tests=1
 
 if [ -f "./tests/root_regression" ]; then
     cd "./tests" || exit 1
