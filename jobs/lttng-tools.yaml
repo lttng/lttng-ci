@@ -418,6 +418,7 @@
           include-comment-diagnostics: true
           output-tap-to-console: false
           todo-is-failure: false
+          remove-yaml-if-corrupted: true
 
       - raw: &lttng-tools_publisher_warnings-ng_defaults
           xml: |
