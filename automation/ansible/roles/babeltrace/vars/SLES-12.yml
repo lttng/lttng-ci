@@ -1,0 +1,12 @@
+---
+babeltrace_packages:
+  - chrpath
+  - glib2-devel
+  - libdw-devel
+  - libelf-devel
+  - libuuid-devel
+  - popt-devel
+  - python3-devel
+  - python3-typing
+#  - python3-sphinx
+  - swig

@@ -1,0 +1,15 @@
+---
+common_patterns:
+  - base
+
+common_packages:
+  - curl
+  - git-core
+  - openssh
+  - psmisc
+  - sudo
+  - tree
+  - vim
+
+common_sles_connect_repos:
+   - sle-sdk
