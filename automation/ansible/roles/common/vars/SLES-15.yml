@@ -10,3 +10,9 @@ common_packages:
   - rsync
   - sudo
   - vim
+
+common_sles_connect_repos:
+  - sle-module-basesystem
+  - sle-module-desktop-applications
+  - sle-module-development-tools
+  - sle-module-python3

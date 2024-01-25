@@ -1,4 +1,10 @@
 ---
+- name: Connect SLES Repo
+  when: ansible_distribution == 'SLES'
+  ansible.builtin.command:
+    argv: ['suseconnect', '-p', "{{item}}/{{ansible_distribution_version}}/{{ansible_architecture}}"]
+  with_items: "{{common_sles_connect_repos}}"
+
 - name: Ensure common patterns are installed.
   zypper: "name={{ common_patterns }} type=pattern state=present update_cache=yes"
 

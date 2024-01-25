@@ -11,3 +11,5 @@ common_packages:
   - sudo
   - tree
   - vim
+
+common_sles_connect_repos: []
