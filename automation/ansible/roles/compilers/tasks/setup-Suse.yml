@@ -1,0 +1,3 @@
+---
+- name: Ensure common_node packages are installed.
+  zypper: "name={{ compilers_packages }} type=package state=present update_cache=yes"

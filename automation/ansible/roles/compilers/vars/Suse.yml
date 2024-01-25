@@ -1,2 +1,4 @@
 ---
-compilers_packages: []
+compilers_packages:
+  - gcc
+  - gcc-c++

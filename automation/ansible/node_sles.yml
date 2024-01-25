@@ -2,6 +2,7 @@
   roles:
     - common
     - common-node
+    - compilers
     - babeltrace
     - liburcu
     - lttng-ust
