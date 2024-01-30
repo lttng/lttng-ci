@@ -523,7 +523,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: yoctobuild
           version: master
-          platforms: !!python/tuple [yocto23-powerpcspe, yocto23-powerpc, yocto31-ppc64]
+          platforms: !!python/tuple [yocto23-powerpcspe, yocto40-powerpc, yocto40-ppc64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -583,7 +583,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: yoctobuild
           version: stable-2.13
-          platforms: !!python/tuple [yocto23-powerpcspe, yocto23-powerpc, yocto31-ppc64]
+          platforms: !!python/tuple [yocto23-powerpcspe, yocto40-powerpc, yocto40-ppc64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -632,7 +632,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: yoctobuild
           version: stable-2.12
-          platforms: !!python/tuple [yocto23-powerpcspe, yocto23-powerpc, yocto31-ppc64]
+          platforms: !!python/tuple [yocto23-powerpcspe, yocto40-powerpc, yocto40-ppc64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13]
