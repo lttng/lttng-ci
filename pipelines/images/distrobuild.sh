@@ -181,6 +181,10 @@ if [[ "${ARCH}" == "i386" ]] ; then
     rm -rf "${TMP_DIR}"
 fi
 
+# When using `lxc image import` two images cannot have the same alias -
+# only the last image imported will keep the alias. Therefore, the
+# image type is appended as part of the alias.
+IMAGE_NAME="${IMAGE_NAME}/${IMAGE_TYPE}"
 lxc image import "${BUILD_DIR}/incus.tar.xz" "${ROOTFS}" --alias="${IMAGE_NAME}" ci:
 
 if [[ "${TEST}" == "true" ]] ; then

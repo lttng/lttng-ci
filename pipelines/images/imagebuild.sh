@@ -91,7 +91,7 @@ set +e
 TRIES_MAX=3
 TRIES=0
 while [[ "${TRIES}" -lt "${TRIES_MAX}" ]] ; do
-    if ! INSTANCE_NAME=$(lxc -q launch -e "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" "${SOURCE_IMAGE_NAME}") ; then
+    if ! INSTANCE_NAME=$(lxc -q launch -e "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" "${SOURCE_IMAGE_NAME}/${IMAGE_TYPE}") ; then
         # Try from images
         if ! INSTANCE_NAME=$(lxc -q launch -e "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" images:"${SOURCE_IMAGE_NAME}") ; then
             TRIES=$((TRIES + 1))
