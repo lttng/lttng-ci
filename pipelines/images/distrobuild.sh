@@ -112,6 +112,12 @@ EXTENSIONS=(
 IMAGE_FILE=''
 for IMAGE_DIR in "${IMAGE_DIRS[@]}" ; do
     for EXTENSION in "${EXTENSIONS[@]}" ; do
+        if [ -f "${IMAGE_DIR}/${OS}-${RELEASE}.${EXTENSION}" ] ; then
+            IMAGE_FILE="${IMAGE_DIR}/${OS}-${RELEASE}.${EXTENSION}"
+            break 2;
+        fi
+    done
+    for EXTENSION in "${EXTENSIONS[@]}" ; do
         if [ -f "${IMAGE_DIR}/${OS}.${EXTENSION}" ] ; then
             IMAGE_FILE="${IMAGE_DIR}/${OS}.${EXTENSION}"
             break 2;
