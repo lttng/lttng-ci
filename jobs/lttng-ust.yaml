@@ -667,6 +667,16 @@
           touchstone: ''
           liburcu_version: stable-0.14
           babeltrace_version: stable-2.0
+      - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
+          version: master
+          buildtype: slesbuild
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          filter: ''
+          touchstone: ''
+          liburcu_version: stable-0.14
+          babeltrace_version: stable-2.0
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: master
           buildtype: portbuild
