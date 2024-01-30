@@ -1,0 +1,292 @@
+---
+# based on https://github.com/lxc/lxc-ci/blob/main/images/opensuse.yaml
+image:
+  distribution: 'sles'
+  release: '15.4'
+  architecture: 'amd64'
+  variant: cloud
+
+environment:
+  variables:
+    - key: SLES_REGISTRATION_CODE
+      value: XXSLES_REGISTRATION_CODE_amd64XX
+
+# This rootfs requires some preparation
+# 1. Download the SLES qemu-kvm minimal image
+# 2. Use qemu-nbd to map the image to a device
+#   `qemu-nbd -c /dev/nbd0 /path/to/SLES-qemu-kvm.img`
+# 3. Mount the principal btrfs partition on /mnt
+#   * Note: the SLES images make extensive use of btrfs subvols
+#   for /home, /opt, /root/, /srv, various direcotries inside /var,
+#   /boot/grub2/*, /usr/local/, and more. The mappings can be found
+#   in /etc/fstab.
+#   * For lxd/incus, the rootfs will be ext4; however, to prepare the
+#   initial archive many of the subvols will need to mounted.
+# 4. Bind mount /dev/ to /mnt/dev
+#   `for i in dev proc sys ; do mount -o bind /$i /mnt/$i ; done`
+# 5. ***Using chroot in /mnt*** mount the subvols
+#   `chroot /mnt mount -a`
+#
+# @TODO: Register and install more or the packages (eg., kernel) to avoid
+# redoing the work each time an image is built from the rootfs.
+#
+# 6. Outside the chroot, prepare the archive file
+#   `tar -czf /path/to/rootfs.tgz -C /mnt --exclude './.snapshots/*' \
+#   --exclude './dev/*' --exclude './proc/*' --exclude './sys/*' ./`
+# 7. Unmount bind mounts
+#   `for i in $(findmnt -R -l -k -n -o TARGET /mnt) ; do umount $i; done; umount /mnt`
+# 8. Disconnect the nbd device
+#   `qemu-nbd -d /dev/nbd0`
+#
+source:
+  downloader: rootfs-http
+  url: https://obj.internal.efficios.com/jenkins/rootfs_amd64_sles15sp4.tar.gz
+
+targets:
+  lxc:
+    create_message: |
+      You just created an {{ image.description }} container.
+    config:
+    - type: all
+      before: 5
+      content: |-
+        lxc.include = LXC_TEMPLATE_CONFIG/opensuse.common.conf
+
+    - type: user
+      before: 5
+      content: |-
+        lxc.include = LXC_TEMPLATE_CONFIG/opensuse.userns.conf
+
+    - type: all
+      after: 4
+      content: |-
+        lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+
+    - type: user
+      after: 4
+      content: |-
+        lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+    - type: all
+      content: |-
+        lxc.arch = {{ image.architecture_kernel }}
+
+files:
+  - name: hostname
+    path: /etc/hostname
+    generator: hostname
+
+  - name: hosts
+    path: /etc/hosts
+    generator: hosts
+
+  - path: /etc/machine-id
+    generator: dump
+
+  - path: /var/lib/dbus/machine-id
+    generator: remove
+
+  - name: ifcfg-eth0
+    path: /etc/sysconfig/network/ifcfg-eth0
+    generator: dump
+    content: |-
+      STARTMODE='auto'
+      BOOTPROTO='dhcp'
+
+  - name: user-data
+    generator: cloud-init
+    variants:
+      - cloud
+
+  - name: vendor-data
+    generator: cloud-init
+    variants:
+      - cloud
+
+  - generator: fstab
+    types:
+      - vm
+
+  - generator: incus-agent
+    types:
+      - vm
+
+  - path: /etc/dracut.conf.d/incus.conf
+    generator: dump
+    content: |-
+      add_drivers+=" virtio_scsi virtio_pci sd_mod "
+    types:
+      - vm
+
+  - path: /etc/fstab
+    generator: dump
+    content: "# empty fstab to silence cloud-init warnings"
+    types:
+      - container
+    variants:
+      - cloud
+
+packages:
+  manager: zypper
+  update: false
+  cleanup: true
+  sets:
+    - packages:
+        - jeos-firstboot
+        - jeos-licenses
+      action: remove
+
+    - packages:
+        - elfutils
+        - file
+        - glib2-tools
+        - gzip
+        - hostname
+        - iproute2
+        - iputils
+        - openssh-server
+        - pigz
+        - rsync
+        - sudo
+        - which
+        - xz
+      action: install
+
+    - packages:
+        - shim
+      action: install
+      types:
+        - vm
+      architectures:
+        - amd64
+
+    - packages:
+        - e2fsprogs
+      action: install
+      types:
+        - vm
+
+actions:
+  - trigger: post-unpack
+    action: |-
+      #!/bin/sh
+      set -eux
+
+      systemd-machine-id-setup
+      mount -t tmpfs tmpfs /sys/firmware
+    types:
+      - vm
+
+  - trigger: post-unpack
+    action: |-
+      #!/bin/sh
+      set -eu
+      set +x
+      suseconnect -r $SLES_REGISTRATION_CODE
+      set -x
+
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      set -eux
+      # These services don't run properly in containers
+      systemctl disable chronyd.service
+      systemctl disable auditd.service
+      systemctl disable klog.service
+    types:
+      - container
+
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      set -eux
+
+      # Install cloud-init from various RPMs
+      suseconnect --product sle-module-public-cloud/15.4/x86_64
+      zypper --non-interactive --gpg-auto-import-keys install cloud-init-config-suse cloud-init
+
+      # Enable the cloud-init systemd service
+      systemctl enable cloud-init.service cloud-config.service cloud-final.service
+    variants:
+      - cloud
+
+  - trigger: post-files
+    action: |-
+      #!/bin/sh
+      set -eux
+
+      # This gets around the kernel-default installation failing
+      dracut --regenerate-all --force
+      mount -t tmpfs tmpfs /sys/firmware
+      mkdir /sys/firmware/efi
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+
+      if which shim-install; then
+        shim-install --no-nvram --removable
+        shim-install --no-nvram
+      else
+        grub2-install --no-nvram --removable
+        grub2-install --no-nvram
+      fi
+
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+      sed -i "s#root=[^ ]*#root=/dev/sda2#g" /boot/grub2/grub.cfg
+      zypper --non-interactive install kernel-default
+
+      # If this isn't re-done, the VM won't boot
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+
+      if which shim-install; then
+        shim-install --no-nvram --removable
+        shim-install --no-nvram
+      else
+        grub2-install --no-nvram --removable
+        grub2-install --no-nvram
+      fi
+
+      grub2-mkconfig -o /boot/grub2/grub.cfg
+      sed -i "s#root=[^ ]*#root=/dev/sda2#g" /boot/grub2/grub.cfg
+
+      umount /sys/firmware
+    types:
+      - vm
+
+  - trigger: post-files
+    action: |-
+      #!/bin/sh
+      set -eux
+      suseconnect -d
+      umount -l /etc/resolv.conf || true
+      rm /etc/resolv.conf
+      ln -sf /var/run/netconfig/resolv.conf /etc/resolv.conf
+
+  - trigger: post-files
+    action: |-
+      #!/bin/sh
+      set -eux
+
+      # Automatic disk resize
+      cat << EOF > /etc/systemd/system/incus-growpart.service
+      [Unit]
+      Description=Incus - grow root partition
+
+      [Service]
+      Type=oneshot
+      ExecStartPre=-/usr/sbin/growpart /dev/sda 2
+      ExecStart=/usr/sbin/resize2fs /dev/sda2
+
+      [Install]
+      WantedBy=default.target
+      EOF
+      systemctl enable incus-growpart
+    types:
+      - vm
+
+  - trigger: post-files
+    action: |-
+      #!/bin/sh
+      set -eux
+
+      # By default, sles systems don't check authorized_keys2,
+      # renable it.
+      sed -E -i 's/^AuthorizedKeysFile[\t ]+.ssh\/authorized_keys$/AuthorizedKeysFile .ssh\/authorized_keys .ssh\/authorized_keys2/g' /etc/ssh/sshd_config

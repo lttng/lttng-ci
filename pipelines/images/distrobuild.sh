@@ -52,7 +52,7 @@ if [[ ! "${MISSING_VARS}" == "0" ]] ; then
 fi
 
 # Optional variables
-INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-30}"
+INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-60}"
 VM_ARG=()
 
 # Install lxd-client
@@ -127,6 +127,16 @@ done
 
 if [[ "${IMAGE_FILE}" == "" ]] ; then
     fail 1 "Unable to find image file for '${OS}' in ${IMAGE_DIRS[@]}"
+fi
+
+if grep -q -E 'XX[A-Za-z0-9_]+XX' "${IMAGE_FILE}" ; then
+    while read -r VAR ; do
+        echo "${VAR}"
+        SHELLVAR=$(echo "${VAR}" | sed 's/^XX//g' | sed 's/XX$//g')
+        set +x
+        sed -i "s/${VAR}/${!SHELLVAR:-VARIABLENOTFOUND}/g" "${IMAGE_FILE}"
+        set -x
+    done < <(grep -E -o 'XX[A-Za-z0-9_]+XX' "${IMAGE_FILE}")
 fi
 
 DISTROBUILDER_ARGS=(

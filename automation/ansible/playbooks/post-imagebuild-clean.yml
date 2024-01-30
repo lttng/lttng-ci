@@ -1,0 +1,23 @@
+---
+- hosts: all
+  tasks:
+    - when: ansible_os_family == 'Debian'
+      ansible.builtin.command:
+        argv: ['apt-get', 'clean']
+    - when: ansible_os_family == 'Suse'
+      ansible.builtin.command:
+        argv: ['zypper', 'clean']
+    - when: ansible_distribution == 'SLES'
+      block:
+        - ansible.builtin.command:
+            argv: ['SUSEConnect', '-d']
+        - ansible.builtin.command:
+            argv: ['SUSEConnect', '--cleanup']
+    - ansible.builtin.command:
+        argv: ['cloud-init', 'clean']
+      ignore_errors: true
+    - ansible.builtin.shell:
+        cmd: 'history -cw'
+    - ansible.builtin.file:
+        path: /root/.ssh/authorized_keys2
+        state: absent

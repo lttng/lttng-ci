@@ -116,51 +116,6 @@
           max-total: 4
           matrix-builds: false
 
-- _images_parameters_debian_defaults: &images_parameters_debian_defaults
-    name: 'image_parameters_debian_defaults'
-    parameters:
-      - bool:
-          name: 'SKIP_BASE_IMAGES'
-          default: false
-      - bool:
-          name: 'SKIP_PROFILE_IMAGES'
-          default: false
-      - choice: &images_parameters_arch_filter
-          name: 'ARCH_FILTER'
-          choices:
-            - all
-            - amd64
-            - i386
-            - arm64
-            - armhf
-            - ppc64el
-            - riscv64
-            - s390x
-      - choice: &images_parameters_image_type_filter
-          name: 'IMAGE_TYPE_FILTER'
-          choices:
-            - all
-            - lxd
-            - vm
-      - choice: &images_parameters_profile_filter
-          name: 'PROFILE_FILTER'
-          choices:
-            - all
-            - ci-node
-            - developer
-      - choice:
-          name: 'RELEASE_FILTER'
-          choices:
-            - all
-            - bullseye
-            - bookworm
-            - trixie
-            - sid
-      - string:
-          <<: *images_parameters_GIT_URL
-      - string:
-          <<: *images_parameters_GIT_BRANCH
-
 ## Defaults
 - defaults:
     name: imagebuilder
@@ -186,6 +141,13 @@
           - file:
               credential-id: '0debf23b-191b-4cdf-8a25-04e9a7092a67'
               variable: LXD_CLIENT_KEY
+          - text:
+              credential-id: SLES_REGISTRATION_CODE_amd64
+              variable: SLES_REGISTRATION_CODE_amd64
+          # When it needs to match ansible_architecture
+          - text:
+              credential-id: SLES_REGISTRATION_CODE_amd64
+              variable: SLES_REGISTRATION_CODE_x86_64
       - inject: {}
 
 ## Templates
@@ -197,7 +159,7 @@
 
       <p>Job is managed by Jenkins Job Builder</p>
     project-type: pipeline
-    <<: *images_parameters_debian_defaults
+    parameters: '{obj:parameters}'
     IMAGE_TYPES:
       - lxd
       - vm
@@ -245,6 +207,91 @@
       - bookworm
       - trixie
       - sid
+    jobs:
+      - 'images_imagebuilder_{OS}'
+    parameters:
+      - bool: &images_parameters_SKIP_BASE_IMAGES
+          name: 'SKIP_BASE_IMAGES'
+          default: false
+      - bool: &images_parameters_SKIP_PROFILE_IMAGES
+          name: 'SKIP_PROFILE_IMAGES'
+          default: false
+      - choice: &images_parameters_ARCH_FILTER
+          name: 'ARCH_FILTER'
+          choices:
+            - all
+            - amd64
+            - i386
+            - arm64
+            - armhf
+            - ppc64el
+            - riscv64
+            - s390x
+      - choice: &images_parameters_IMAGE_TYPE_FILTER
+          name: 'IMAGE_TYPE_FILTER'
+          choices:
+            - all
+            - lxd
+            - vm
+      - choice: &images_parameters_PROFILE_FILTER
+          name: 'PROFILE_FILTER'
+          choices:
+            - all
+            - ci-node
+            - developer
+      - choice:
+          name: 'RELEASE_FILTER'
+          choices:
+            - all
+            - bullseye
+            - bookworm
+            - trixie
+            - sid
+      - string:
+          <<: *images_parameters_GIT_URL
+      - string:
+          <<: *images_parameters_GIT_BRANCH
+
+- project:
+    name: images_imagebuilder_SLES
+    OS:
+      - sles
+    ARCHES:
+      - amd64
+    RELEASES:
+      # 12.5 Doesn't currently work well with LXD either as a container or a VM
+      #   * 12.5 has systemd 228, which doesn't support cgroups v2. Hosts _could_
+      #   be configured to disable the unified cgroup hierarchy in order to have
+      #   this version systemd work correctly.
+      #   * Running as a QEMU VM, virtio_scsi isn't correctly able to bring the
+      #   virtual disks online. The version of lxd currently deployed doesn't
+      #   support the io.bus option to use virtio-blk instead.
+      # - '12.5'
+      - '15.4'
+    parameters:
+      - bool:
+          <<: *images_parameters_SKIP_BASE_IMAGES
+          default: true
+      - bool:
+          <<: *images_parameters_SKIP_PROFILE_IMAGES
+      - choice:
+          <<: *images_parameters_ARCH_FILTER
+          choices:
+            - all
+            - amd64
+      - choice:
+          <<: *images_parameters_IMAGE_TYPE_FILTER
+      - choice:
+          <<: *images_parameters_PROFILE_FILTER
+      - choice:
+          name: 'RELEASE_FILTER'
+          choices:
+            - 'all'
+            - '15.4'
+      - string:
+          <<: *images_parameters_GIT_URL
+      - string:
+          <<: *images_parameters_GIT_BRANCH
     jobs:
       - 'images_imagebuilder_{OS}'
 - project:

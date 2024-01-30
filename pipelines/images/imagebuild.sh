@@ -49,7 +49,7 @@ if [[ ! "${MISSING_VARS}" == "0" ]] ; then
 fi
 
 # Default optional variables
-INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-30}"
+INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-60}"
 NETWORK_SLEEP="${NETWORK_SLEEP:-15}"
 
 # Dependencies
@@ -189,11 +189,9 @@ LANG=C ANSIBLE_STRATEGY=linear ansible-playbook site.yml \
     -l "${INSTANCE_IP}" -i fake-inventory
 
 # Cleanup instance side
-# @TODO: Distro switch for apt/dnf/yum/etc.
-lxc exec "${INSTANCE_NAME}" -- apt-get clean
-lxc exec "${INSTANCE_NAME}" -- rm -rf /root/.ssh/authorized_keys2
-lxc exec "${INSTANCE_NAME}" -- cloud-init clean
-lxc exec "${INSTANCE_NAME}" -- bash -c 'history -cw'
+LANG=C ANSIBLE_STRATEGY=linear ansible-playbook \
+       playbooks/post-imagebuild-clean.yml \
+       -l "${INSTANCE_IP}" -i fake-inventory
 
 # Publish
 lxc publish "${INSTANCE_NAME}" --alias "${TARGET_IMAGE_NAME}" -f
