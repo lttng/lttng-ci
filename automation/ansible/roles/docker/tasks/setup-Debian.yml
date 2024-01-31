@@ -1,0 +1,16 @@
+---
+- when: ansible_distribution_release in ['trixie', 'sid']
+  ansible.builtin.set_fact:
+    docker_upstream: false
+- ansible.builtin.set_fact:
+    docker_packages: "{{docker_upstream|ternary(docker_upstream_packages, lookup('vars', 'docker_' + ansible_distribution + '_packages', default=[]))}}"
+- when: docker_upstream
+  block:
+    - name: Add upstream docker apt key
+      ansible.builtin.apt_key:
+        url: 'https://download.docker.com/linux/debian/gpg'
+    - name: Add upstream docker sources
+      when: ansible_distribution == 'Debian'
+      ansible.builtin.apt_repository:
+        filename: 'docker'
+        repo: "deb https://download.docker.com/linux/debian {{ansible_distribution_release}} stable"

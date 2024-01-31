@@ -1,0 +1,12 @@
+---
+
+- name: Add SLES products
+  when: ansible_distribution == 'SLES'
+  ansible.builtin.command:
+    argv: ['suseconnect', '-p', "{{product}}/{{ansible_distribution_version}}/{{ansible_architecture}}"]
+  loop: "{{docker_sles_products|default([])}}"
+  loop_control:
+    loop_var: product
+
+- ansible.builtin.set_fact:
+    docker_packages: "{{docker_SLES_packages}}"

@@ -11,3 +11,9 @@ docker_upstream_packages:
 docker_Debian_packages:
   - 'docker.io'
   - 'docker-compose'
+
+docker_sles_products:
+  - 'sle-module-containers'
+
+docker_SLES_packages:
+  - 'docker'

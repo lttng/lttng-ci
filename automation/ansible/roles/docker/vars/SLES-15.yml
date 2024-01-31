@@ -1,0 +1,4 @@
+---
+
+# Docker upstream only supports SLES s390x
+docker_upstream: false
