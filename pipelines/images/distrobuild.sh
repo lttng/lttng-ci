@@ -81,7 +81,7 @@ fi
 
 # Get go
 apt-get install -y wget
-wget "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O - | tar -C /usr/local -xzf -
+wget -q "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O - | tar -C /usr/local -xzf -
 export PATH="${PATH}:/usr/local/go/bin"
 
 # Install distrobuilder
