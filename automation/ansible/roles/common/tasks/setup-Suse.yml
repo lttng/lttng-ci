@@ -1,4 +1,31 @@
 ---
+- name: Register with SLES
+  when: ansible_distribution == 'SLES'
+  block:
+    - name: Check registration
+      ansible.builtin.command:
+        argv: ['SUSEConnect', '--status']
+      register: registration_status
+      ignore_errors: true
+    - name: Cleanup registration
+      when: registration_status.rc != 0
+      ansible.builtin.command:
+        argv[ 'SUSEConnect', '--cleanup']
+    - ansible.builtin.set_fact:
+        registration_status_data: "{{registration_status.stdout|ansible.builtin.from_json|first}}"
+    - name: Get key from host environment
+      when: registration_status_data['status'] == 'Not Registered'
+      ansible.builtin.set_fact:
+        registration_key: "{{lookup('ansible.builtin.env', 'SLES_REGISTRATION_CODE_' + ansible_architecture, default='')}}"
+    - name: Get key from bitwarden
+      when: registration_key|default('') == '' and registration_status_data['status'] == 'Not Registered'
+      ansible.builtin.set_fact:
+        registration_key: "{{lookup('community.general.bitwarden', 'bec75018-99e8-4064-9cd9-addd011947e5', search='id', field='SLES_REGISTRATION_CODE_' +ansible_architecture)[0]}}"
+    - name: Perform registration
+      when: registration_status_data['status'] == 'Not Registered'
+      ansible.builtin.command:
+        argv: ['SUSEConnect', '-r', "{{registration_key}}"]
+
 - name: Connect SLES Repo
   when: ansible_distribution == 'SLES'
   ansible.builtin.command:
