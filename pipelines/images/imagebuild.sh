@@ -132,7 +132,10 @@ done
 
 # Wait for cloud-init to finish
 if [[ "${VARIANT}" == "cloud" ]] ; then
-    lxc exec "${INSTANCE_NAME}" -- cloud-init status -w
+    # It's possible for cloud-init to fail, but to still be able to continue.
+    # Eg., a profile asks for netplan.io on a system that doesn't have that
+    # package available.
+    lxc exec "${INSTANCE_NAME}" -- cloud-init status -w || true
 fi
 
 # Wait for instance to have an ip address (@TODO: is there a better approach?)
