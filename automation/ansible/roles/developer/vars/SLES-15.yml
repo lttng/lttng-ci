@@ -1,0 +1,14 @@
+---
+developer_tui_packages:
+  - emacs-nox
+  - gdb
+  - pkg-config
+  - tmux
+  # - vim-nox
+  - vim
+  # wget may be used by some vlttng commands
+  - wget
+
+developer_sles_products:
+  # provides tmux
+  - PackageHub

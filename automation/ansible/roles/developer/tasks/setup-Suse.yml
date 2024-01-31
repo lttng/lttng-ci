@@ -1,0 +1,7 @@
+---
+
+- name: Activate required products
+  when: ansible_distribution == 'SLES'
+  ansible.builtin.command:
+    argv: ['suseconnect', '-p', "{{item}}/{{ansible_distribution_version}}/{{ansible_architecture}}"]
+  with_items: "{{developer_sles_products|default([])}}"
