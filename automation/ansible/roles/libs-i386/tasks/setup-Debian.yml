@@ -12,6 +12,3 @@
 - name: Update apt cache.
   apt: update_cache=yes
   when: dpkg_i386_is_enabled.rc == 1
-
-- name: Ensure libs-i386 packages are installed.
-  apt: "name={{ libs_i386_packages }} state=present"

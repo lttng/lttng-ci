@@ -1,0 +1,7 @@
+---
+__libs_i386_packages:
+  - liblzma5-32bit
+  - libnuma1-32bit
+  - libpopt0-32bit
+  - libxml2-2-32bit
+  - zlib-devel-32bit

@@ -8,6 +8,9 @@
     libs_i386_packages: "{{ __libs_i386_packages | list }}"
   when: libs_i386_packages is not defined
 
-# Setup/install tasks.
 - include: setup-Debian.yml
   when: ansible_os_family == 'Debian'
+
+# Install libs from the default package manager
+- ansible.builtin.package:
+    name: "{{libs_i386_packages}}"
