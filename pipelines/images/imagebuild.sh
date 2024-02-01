@@ -111,7 +111,7 @@ INSTANCE_NAME="$(echo "${INSTANCE_NAME}" | cut -d ':' -f 2 | tr -d ' ')"
 set -e
 
 CLEANUP+=(
-    "lxc stop ${INSTANCE_NAME}"
+    "lxc stop -f ${INSTANCE_NAME}"
 )
 
 # VMs may take more time to start, wait until instance is running
@@ -197,21 +197,25 @@ LANG=C ANSIBLE_STRATEGY=linear ansible-playbook \
        -l "${INSTANCE_IP}" -i fake-inventory
 
 # Publish
-lxc publish "${INSTANCE_NAME}" --alias "${TARGET_IMAGE_NAME}" -f
+if FINGERPRINT=$(lxc publish "${INSTANCE_NAME}" -f 2>&1 | grep -E -o '[A-Fa-f0-9]{64}') ; then
+    echo "Published instance with fingerprint '${FINGERPRINT}'"
+else
+    fail 1 "No fingerprint for published instance"
+fi
 
 TRIES=0
 
 if [[ "${TEST}" == "true" ]] ; then
     set +e
     while [[ "${TRIES}" -lt "${TRIES_MAX}" ]] ; do
-        if ! INSTANCE_NAME=$(lxc -q launch -e "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" "${TARGET_IMAGE_NAME}")  ; then
+        if ! INSTANCE_NAME=$(lxc -q launch -e "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" "${FINGERPRINT}")  ; then
             TRIES=$((TRIES + 1))
             echo "Failed to launch instance try ${TRIES}/${TRIES_MAX}"
             if [[ "${TRIES}" -lt "${TRIES_MAX}" ]] ; then
                 sleep $((1 + RANDOM % 10))
                 continue
             fi
-            fail 1 "Failed to launch an instance using newly published image '${TARGET_IMAGE_NAME}'"
+            fail 1 "Failed to launch an instance using newly published image '${FINGERPRINT}'"
         else
             INSTANCE_NAME="$(echo "${INSTANCE_NAME}" | cut -d':' -f2 | tr -d ' ')"
             CLEANUP+=(
@@ -222,3 +226,6 @@ if [[ "${TEST}" == "true" ]] ; then
     done
     set -e
 fi
+
+lxc image alias delete "${TARGET_IMAGE_NAME}" || true
+lxc image alias create "${TARGET_IMAGE_NAME}" "${FINGERPRINT}"

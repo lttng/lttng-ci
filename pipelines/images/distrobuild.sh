@@ -195,18 +195,23 @@ fi
 # only the last image imported will keep the alias. Therefore, the
 # image type is appended as part of the alias.
 IMAGE_NAME="${IMAGE_NAME}/${IMAGE_TYPE}"
-lxc image import "${BUILD_DIR}/incus.tar.xz" "${ROOTFS}" --alias="${IMAGE_NAME}" ci:
+
+if FINGERPRINT=$(lxc image import "${BUILD_DIR}/incus.tar.xz" "${ROOTFS}" 2>&1 | grep -E -o '[A-Fa-f0-9]{64}') ; then
+    echo "Image imported with fingerprint '${FINGERPRINT}'"
+else
+    fail 1 "No fingerprint for imported image"
+fi
 
 if [[ "${TEST}" == "true" ]] ; then
     set +e
     INSTANCE_NAME=''
-    if INSTANCE_NAME="$(lxc -q launch -e ${VM_ARG[@]} -p default -p "${LXD_INSTANCE_PROFILE}" "${IMAGE_NAME}")" ; then
+    if INSTANCE_NAME="$(lxc -q launch -e ${VM_ARG[@]} -p default -p "${LXD_INSTANCE_PROFILE}" "${FINGERPRINT}")" ; then
         INSTANCE_NAME="$(echo "${INSTANCE_NAME}" | cut -d':' -f2 | tr -d ' ')"
         CLEANUP+=(
-            "lxc stop ${INSTANCE_NAME}"
+            "lxc stop -f ${INSTANCE_NAME}"
         )
     else
-        fail 1 "Failed to launch instance using image '${IMAGE_NAME}'"
+        fail 1 "Failed to launch instance using image '${FINGERPRINT}'"
     fi
     TIME_REMAINING="${INSTANCE_START_TIMEOUT}"
     INSTANCE_STATUS=''
@@ -223,3 +228,6 @@ if [[ "${TEST}" == "true" ]] ; then
     done
     set -e
 fi
+
+lxc image alias delete "${IMAGE_NAME}" || true
+lxc image alias create "${IMAGE_NAME}" "${FINGERPRINT}"
