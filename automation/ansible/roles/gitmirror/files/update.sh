@@ -47,6 +47,8 @@ update_git ubuntu-focal.git/ git://git.launchpad.net/~ubuntu-kernel/ubuntu/+sour
 
 update_git ubuntu-jammy.git/ git://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/jammy
 
+update_git ubuntu-noble.git/ git://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/noble
+
 ##
 # GDB repos
 ##
