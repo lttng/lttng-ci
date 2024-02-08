@@ -357,6 +357,7 @@ if (uversion != null) {
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-5\.4\.0-\d{1,3}?\.[\d]+)$/,
         ~/^refs\/tags\/(Ubuntu-hwe-5\.13-5\.13\.0-.*_20\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-5\.15-5\.15\.0-.*_20\.04\.\d+)$/,
       ]
       break
 
