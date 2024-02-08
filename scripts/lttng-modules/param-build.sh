@@ -322,7 +322,10 @@ build_linux_kernel() {
           exit 0
         fi
 
-        fakeroot debian/rules clean KW_DEFCONFIG_DIR=.
+        FAKEROOT_ARGS=(
+            'KW_DEFCONFIG_DIR=.'
+        )
+        fakeroot debian/rules clean "${FAKEROOT_ARGS[@]}"
 
         # Hack for kernel Ubuntu-hwe-5.8
         # The debian/control file is produced by the clean target above, so this
@@ -336,7 +339,19 @@ build_linux_kernel() {
         # Ubuntu annotations.
         # In any case, the configuration will be updated with any missing values
         # later in our build script.
-        fakeroot debian/rules genconfigs KW_DEFCONFIG_DIR=. do_skip_checks=true
+        FAKEROOT_ARGS+=('do_skip_checks=true')
+
+        # Some Ubuntu tags default the toolchain using `gcc?=gcc-XX` in
+        # `debian/rules.d/0-common-vars.mk`. This may fail if the gcc version
+        # used as a default isn't available.
+        # For example, Ubuntu-6.8.0-7.7 sets `gcc?=gcc-13`, and that version
+        # of gcc isn't available on the deb12-amd64 ci-nodes.
+        # Work has also already been done in `select_compiler` to make our
+        # own decision of which compiler to use. As a result of both cases,
+        # our compiler choice should be passed into genconfigs.
+        FAKEROOT_ARGS+=("gcc=${selected_cc}")
+
+        fakeroot debian/rules genconfigs "${FAKEROOT_ARGS[@]}"
         cp CONFIGS/"${ubuntu_config}" .config
         ;;
 

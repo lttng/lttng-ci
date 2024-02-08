@@ -360,6 +360,12 @@ if (uversion != null) {
       ]
       break
 
+    case 'noble':
+      matchStrs = [
+        ~/^refs\/tags\/(Ubuntu-6\.8\.0-\d{1,3}?\.[\d]+)$/,
+      ]
+      break
+
     default:
       println "Unsupported Ubuntu version: ${uversion}"
       throw new InterruptedException()

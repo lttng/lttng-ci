@@ -788,6 +788,7 @@
           uversion:
             - focal
             - jammy
+            - noble
           buildtype: build
           parambuildtype: build
           kverfloor: ''
@@ -842,6 +843,7 @@
           uversion:
             - focal
             - jammy
+            - noble
           buildtype: crossbuild
           parambuildtype: crossbuild
           kverfloor: ''
