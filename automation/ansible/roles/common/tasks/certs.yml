@@ -1,7 +1,7 @@
 ---
 - name: Deploy internal certificate
   ansible.builtin.copy:
-    dest: /etc/ssl/certs/internal.efficios.com.pem
+    dest: "{{common_certificate_cert_path_prefix}}/internal.efficios.com.pem"
     mode: '0644'
     owner: 'root'
     group: 'root'
@@ -9,7 +9,7 @@
   register: cert
 - name: Deploy internal certificate key
   ansible.builtin.copy:
-    dest: /etc/ssl/private/internal.efficios.com.key
+    dest: "{{common_certificate_key_path_prefix}}/internal.efficios.com.key"
     mode: '0640'
     owner: 'root'
     group: 'root'
@@ -17,6 +17,6 @@
   register: key
 - name: Deploy combined cert+key
   # haproxy uses a combined certificate and key file
-  when: cert.changed or key.changed
+  when: (cert.changed or key.changed) and common_certificate_deploy_combined_pem
   ansible.builtin.shell:
-    cmd: 'cat /etc/ssl/certs/internal.efficios.com.pem /etc/ssl/private/internal.efficios.com.key > /etc/ssl/private/internal.efficios.com.pem'
+    cmd: "cat {{common_certificate_cert_path_prefix}}/internal.efficios.com.pem {{common_certificate_key_path_prefix}}/internal.efficios.com.key > {{common_certificate_key_path_prefix}}/internal.efficios.com.pem"
