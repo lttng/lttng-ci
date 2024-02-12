@@ -52,7 +52,7 @@ if [[ ! "${MISSING_VARS}" == "0" ]] ; then
 fi
 
 # Optional variables
-INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-60}"
+INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-120}"
 VM_ARG=()
 
 # Install lxd-client

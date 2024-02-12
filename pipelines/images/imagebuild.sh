@@ -49,7 +49,7 @@ if [[ ! "${MISSING_VARS}" == "0" ]] ; then
 fi
 
 # Default optional variables
-INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-60}"
+INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-120}"
 NETWORK_SLEEP="${NETWORK_SLEEP:-15}"
 
 # Dependencies
