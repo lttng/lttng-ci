@@ -10,7 +10,7 @@
 - name: Deploy internal certificate key
   ansible.builtin.copy:
     dest: "{{common_certificate_key_path_prefix}}/internal.efficios.com.key"
-    mode: '0640'
+    mode: '0600'
     owner: 'root'
     group: 'root'
     content: "{{lookup('community.general.bitwarden', 'TLS Certificate internal.efficios.com', collection_id='35c5d8b1-2520-4450-a479-aef50131b930')[0]['notes'] }}"
