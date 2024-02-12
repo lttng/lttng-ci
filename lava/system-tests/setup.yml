@@ -14,8 +14,6 @@ run:
     - ip a
     - groupadd tracing
     - depmod -a
-    - apt-get update
-    - apt-get upgrade
     # The locale generation is required for the python venv
     # to be correctgly created.
     - locale-gen en_US.UTF-8
