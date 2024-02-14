@@ -1,6 +1,8 @@
 ---
 - name: Add LTTng-CI PPA
-  when: ansible_distribution == 'Ubuntu'
+  # This provides gdb with no babeltrace; however, it's only made
+  # available for certain releases
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version in ['22']
   block:
     - name: LTTng-CI PPA | apt key
       ansible.builtin.copy:
