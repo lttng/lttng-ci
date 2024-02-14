@@ -2,8 +2,9 @@
 
 - name: Add SLES products
   when: ansible_distribution == 'SLES'
-  ansible.builtin.command:
-    argv: ['suseconnect', '-p', "{{product}}/{{ansible_distribution_version}}/{{ansible_architecture}}"]
+  include_role:
+    name: suse
+    tasks_from: product
   loop: "{{docker_sles_products|default([])}}"
   loop_control:
     loop_var: product
