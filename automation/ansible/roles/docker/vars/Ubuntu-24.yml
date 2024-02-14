@@ -1,0 +1,4 @@
+---
+
+# Docker upstream doesn't yet have a repository for Ubuntu noble
+docker_upstream: false

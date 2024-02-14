@@ -17,3 +17,7 @@ docker_sles_products:
 
 docker_SLES_packages:
   - 'docker'
+
+docker_Ubuntu_packages:
+  - 'docker.io'
+  - 'docker-compose-v2'
