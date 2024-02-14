@@ -20,7 +20,6 @@
       ansible.builtin.package:
         name: "{{developer_pip_requirements}}"
     - name: Install vlttng using pip
-      when: ansible_python_version is version("3.11", ">=")
       ansible.builtin.pip:
         name: vlttng
         extra_args: "{{(ansible_python_version is version('3.11', '>='))|ternary('--break-system-packages', '')}}"
