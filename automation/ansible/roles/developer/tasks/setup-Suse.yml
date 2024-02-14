@@ -2,6 +2,9 @@
 
 - name: Activate required products
   when: ansible_distribution == 'SLES'
-  ansible.builtin.command:
-    argv: ['suseconnect', '-p', "{{item}}/{{ansible_distribution_version}}/{{ansible_architecture}}"]
-  with_items: "{{developer_sles_products|default([])}}"
+  include_role:
+    name: suse
+    tasks_from: product
+  loop: "{{developer_sles_products|default([])}}"
+  loop_control:
+    loop_var: 'product'
