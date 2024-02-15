@@ -18,6 +18,9 @@
       ignore_errors: true
     - ansible.builtin.shell:
         cmd: 'history -cw'
+      # Some default shells don't have the `history` built-in,
+      # and it's not blocking that this works or not.
+      ignore_errors: true
     - ansible.builtin.file:
         path: /root/.ssh/authorized_keys2
         state: absent
