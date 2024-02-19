@@ -172,6 +172,7 @@ ci-rootnode-deb12-i386-1a-01
 # versions of ansible require python 3.5. Therefore python2 is used.
 ci-node-sles12sp5-amd64-1b-01 ansible_python_interpreter=python2
 ci-node-sles15sp4-amd64-1b-01
+ci-node-sles15sp5-amd64-1b-01
 
 [node_el]
 ci-node-el7-amd64-02-01 ansible_python_interpreter=python2
