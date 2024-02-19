@@ -564,7 +564,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: master
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -624,7 +624,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.13
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -673,7 +673,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.12
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.13]
@@ -729,7 +729,7 @@
       - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
           version: master
           buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           filter: ''
@@ -838,7 +838,7 @@
           platforms: !!python/tuple [deb12-amd64]
       - 'dev_review_lttng-ust-java-tests_{version}_{buildtype}':
           buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
 
 - project:
     name: lttng-ust-views

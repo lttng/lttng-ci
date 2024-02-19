@@ -1095,7 +1095,7 @@
           buildtype: slesbuild
           version: master
           ustversion: master
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
@@ -1214,7 +1214,7 @@
           buildtype: slesbuild
           version: stable-2.13
           ustversion: stable-2.13
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1323,7 +1323,7 @@
           buildtype: slesbuild
           version: stable-2.12
           ustversion: stable-2.12
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1521,7 +1521,7 @@
           version: master
           buildtype: slesbuild
           ustversion: master
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64]
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
