@@ -91,9 +91,9 @@ set +e
 TRIES_MAX=3
 TRIES=0
 while [[ "${TRIES}" -lt "${TRIES_MAX}" ]] ; do
-    if ! INSTANCE_NAME=$(lxc -q launch -e "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" "${SOURCE_IMAGE_NAME}/${IMAGE_TYPE}") ; then
+    if ! INSTANCE_NAME=$(lxc -q launch "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" "${SOURCE_IMAGE_NAME}/${IMAGE_TYPE}") ; then
         # Try from images
-        if ! INSTANCE_NAME=$(lxc -q launch -e "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" images:"${SOURCE_IMAGE_NAME}") ; then
+        if ! INSTANCE_NAME=$(lxc -q launch "${VM_ARG[@]}" -p default -p "${LXD_INSTANCE_PROFILE}" images:"${SOURCE_IMAGE_NAME}") ; then
             TRIES=$((TRIES + 1))
             echo "Failed to deployed ephemereal instance attempt ${TRIES}/${TRIES_MAX}"
             if [[ "${TRIES}" -lt  "${TRIES_MAX}" ]] ; then
@@ -111,7 +111,8 @@ INSTANCE_NAME="$(echo "${INSTANCE_NAME}" | cut -d ':' -f 2 | tr -d ' ')"
 set -e
 
 CLEANUP+=(
-    "lxc stop -f ${INSTANCE_NAME}"
+    "lxc delete -f ${INSTANCE_NAME}"
+    "lxc stop ${INSTANCE_NAME}"
 )
 
 # VMs may take more time to start, wait until instance is running
@@ -196,8 +197,11 @@ LANG=C ANSIBLE_STRATEGY=linear ansible-playbook \
        playbooks/post-imagebuild-clean.yml \
        -l "${INSTANCE_IP}" -i fake-inventory
 
+# Graceful shutdown
+lxc stop "${INSTANCE_NAME}"
+
 # Publish
-if FINGERPRINT=$(lxc publish "${INSTANCE_NAME}" -f 2>&1 | grep -E -o '[A-Fa-f0-9]{64}') ; then
+if FINGERPRINT=$(lxc publish "${INSTANCE_NAME}" 2>&1 | grep -E -o '[A-Fa-f0-9]{64}') ; then
     echo "Published instance with fingerprint '${FINGERPRINT}'"
 else
     fail 1 "No fingerprint for published instance"
