@@ -4,6 +4,8 @@ developer_gui_packages: []
 
 developer_install_tui: true
 developer_tui_packages:
+  # Used by tar when downloading .tar.bz2 releases with vlttng
+  - bzip2
   - emacs-nox
   - gdb
   - pkg-config
