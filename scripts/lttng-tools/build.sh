@@ -326,6 +326,13 @@ agents)
         export JAVA_HOME="/usr/lib/jvm/default-java"
     fi
     export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
+    if [[ -f /etc/products.d/SLES.prod ]] ; then
+        SLES_VERSION="$(grep -E '</version>' /etc/products.d/SLES.prod | grep -E -o '[0-9]+\.[0-9]+')"
+        if vergte "${SLES_VERSION}" "15.5" ; then
+            export CLASSPATH="${DEPS_JAVA}/lttng-ust-agent-all.jar:/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar"
+        fi
+    fi
+
 
     CONF_OPTS+=("--enable-python-bindings" "--enable-test-java-agent-all")
 
