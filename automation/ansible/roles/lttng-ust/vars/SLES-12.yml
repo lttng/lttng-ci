@@ -3,6 +3,7 @@ lttng_ust_packages:
   - libnuma-devel
   - libuuid-devel
   - log4j
-  - log4j12
+  # This package doesn't exist on sles12
+  # - log4j12
   - python3
   - texinfo
