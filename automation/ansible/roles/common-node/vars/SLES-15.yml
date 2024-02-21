@@ -17,6 +17,7 @@ common_node_packages:
   - libopenssl-devel
 #  - libtap-harness-archive-perl
   - libtool
+  - maven
   - openssh
   - psmisc
 #  - python-virtualenv
