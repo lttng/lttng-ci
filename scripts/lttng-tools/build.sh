@@ -327,6 +327,8 @@ agents)
     fi
     export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
     if [[ -f /etc/products.d/SLES.prod ]] ; then
+        export JAVA_HOME="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0"
+        export PATH="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0/bin:/usr/${LIBDIR_ARCH}/jvm/jre-1.8.0-openjdk/bin:${PATH}"
         SLES_VERSION="$(grep -E '</version>' /etc/products.d/SLES.prod | grep -E -o '[0-9]+\.[0-9]+')"
         if vergte "${SLES_VERSION}" "15.5" ; then
             export CLASSPATH="${DEPS_JAVA}/lttng-ust-agent-all.jar:/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar"
