@@ -11,6 +11,8 @@ common_node_packages:
   - flex
   - gettext-runtime
   - git-core
+  - java-1_8_0-openjdk-devel
+  - java-1_8_0-openjdk-headless
   - java-11-openjdk-devel
   - java-11-openjdk-headless
   - jq
@@ -25,3 +27,9 @@ common_node_packages:
   - sudo
 #  - tree
   - vim
+
+common_node_products:
+  # Required for sle-module-legacy
+  - sle-module-server-applications
+  # For java 1.8
+  - sle-module-legacy

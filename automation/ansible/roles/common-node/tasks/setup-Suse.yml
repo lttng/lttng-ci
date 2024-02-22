@@ -1,4 +1,14 @@
 ---
+
+- name: Activate SLES Products
+  when: ansible_distribution == 'SLES'
+  include_role:
+    name: suse
+    tasks_from: product
+  loop: "{{common_node_products|default([])}}"
+  loop_control:
+    loop_var: 'product'
+
 - name: Ensure common_node patterns are installed.
   zypper: "name={{ common_node_patterns }} type=pattern state=present update_cache=yes"
 
