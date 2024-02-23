@@ -5,6 +5,7 @@
     - cross-compilers
     - compilers
     - babeltrace
+    - librseq
     - liburcu
     - lttng-ust
     - lttng-tools

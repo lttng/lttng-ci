@@ -1,0 +1,6 @@
+---
+- name: Update apk cache.
+  apk: update_cache=yes
+
+- name: Ensure librseq build dependencies are installed.
+  apk: "name={{ librseq_packages }} state=present"

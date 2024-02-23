@@ -1,0 +1,3 @@
+---
+- name: Ensure librseq build dependencies are installed.
+  zypper: "name={{ librseq_packages }} state=installed update_cache=yes"

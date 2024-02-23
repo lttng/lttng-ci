@@ -3,6 +3,7 @@
     - common
     - common-node
     - babeltrace
+    - librseq
     - liburcu
     - lttng-ust
     - lttng-tools

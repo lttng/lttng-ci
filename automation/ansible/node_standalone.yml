@@ -4,6 +4,7 @@
     - common-node
     - cross-compilers
     - babeltrace
+    - librseq
     - liburcu
     - lttng-ust
     - lttng-tools

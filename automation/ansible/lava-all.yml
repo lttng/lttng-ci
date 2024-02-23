@@ -2,6 +2,7 @@
   roles:
     - common
     - babeltrace
+    - librseq
     - liburcu
     - lttng-ust
     - lttng-tools

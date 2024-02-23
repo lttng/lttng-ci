@@ -1,0 +1,3 @@
+---
+librseq_packages:
+  - libseccomp-devel
