@@ -90,15 +90,6 @@
   # @see https://support.efficios.com/issues/1532
   when: ansible_distribution_release == 'bookworm'
   block:
-    - name: Add bookworm-backports pref
-      ansible.builtin.copy:
-        dest: /etc/apt/preferences.d/bookworm-backports.pref
-        content: "Package: curl libcurl3* libcurl4*\nPin: release n=bookworm-backports\nPin-Priority: 600\n"
-    - name: Enable bookworm backports
-      ansible.builtin.apt_repository:
-        repo: 'deb http://deb.debian.org/debian bookworm-backports main'
-    - ansible.builtin.apt:
-        upgrade: 'yes'
     - name: Use HTTP/1.1 with git HTTP operations
       community.general.git_config:
         file: '/etc/gitconfig'
