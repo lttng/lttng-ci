@@ -1,4 +1,7 @@
 ---
 lttng_modules_packages:
-  - libelf-devel
   - bc
+  - kernel-devel
+  - kernel-default-devel
+  - kernel-syms
+  - libelf-devel
