@@ -1,0 +1,64 @@
+---
+- hosts: localhost
+  vars:
+    # Useful for taking the first snapshot of a new rootnode
+    - revert_before: true
+  vars_prompt:
+    - name: target_rootnode
+      private: false
+    - name: rootnode_host
+      private: false
+    - name: snapshot_name
+      default: 'base-configuration'
+      private: false
+  vars_files:
+    - ../vars/ci-instances.yml
+  tasks:
+    # - Set a maintenance on the jenkins node
+    # - Wait until the task is done
+    # - Maybe interrupt the jenkins tasks
+    - name: Revert target rootnode
+      when: revert_before
+      ansible.builtin.command:
+        argv: ['virsh', 'snapshot-revert', "{{target_rootnode}}", '--snapshotname', "{{snapshot_name}}", '--running']
+      delegate_to: "{{rootnode_host}}"
+    - name: Wait for target rootnode to come back online
+      local_action: wait_for host={{ target_rootnode }}
+                    port=22
+                    delay=1
+                    timeout=300
+                    state=started
+    - ansible.builtin.pause:
+        prompt: "Run any playbooks or make other changes against {{target_rootnode}} then hit enter when ready to continue (Ctrl-C to abort)"
+    - name: Remove the jenkins workspace
+      ansible.builtin.file:
+        path: "{{item}}"
+        state: absent
+      with_items:
+        - /root/workspace
+        - /home/jenkins/workspace
+      delegate_to: "{{target_rootnode}}"
+    - name: Stop the VM
+      ansible.builtin.command:
+        argv: ['virsh', 'destroy', "{{target_rootnode}}"]
+      delegate_to: "{{rootnode_host}}"
+    - name: Check for existing base snapshot
+      ansible.builtin.shell:
+        cmd: "virsh snapshot-list '{{target_rootnode}}' --name | grep -E '^{{snapshot_name}}$'"
+      ignore_errors: true
+      register: existing_snapshot
+      delegate_to: "{{rootnode_host}}"
+    - name: Remove existing base snapshot
+      when: existing_snapshot.rc == 0
+      ansible.builtin.command:
+        argv: ['virsh', 'snapshot-delete', '--snapshotname', "{{snapshot_name}}", "{{target_rootnode}}"]
+      delegate_to: "{{rootnode_host}}"
+    - name: Snapshot
+      ansible.builtin.command:
+        argv: ['virsh', 'snapshot-create-as', '--name', "{{snapshot_name}}", "{{target_rootnode}}"]
+      delegate_to: "{{rootnode_host}}"
+    - name: Start the vm
+      ansible.builtin.command:
+        argv: ['virsh', 'start', "{{target_rootnode}}"]
+      delegate_to: "{{rootnode_host}}"
+    # - Remove maintenance on the jenkins node
