@@ -1,4 +1,6 @@
 ---
 lttng_modules_packages:
-  - elfutils-devel
   - bc
+  - elfutils-devel
+  - kernel-devel
+  - kernel-headers
