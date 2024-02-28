@@ -1,0 +1,12 @@
+---
+developer_tui_packages:
+  # Used by tar when downloading .tar.bz2 releases with vlttng
+  - bzip2
+  - emacs-nox
+  - gdb
+  - pkg-config
+  - tmux
+  # - vim-nox
+  - vim
+  # wget may be used by some vlttng commands
+  - wget
