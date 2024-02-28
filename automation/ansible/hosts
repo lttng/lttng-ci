@@ -167,6 +167,7 @@ ci-rootnode-deb12-amd64-2c-01
 ci-rootnode-deb12-amd64-2d-01
 ci-rootnode-deb12-i386-1a-01
 ci-rootnode-sles15sp4-amd64-1d-01
+ci-rootnode-el8-amd64-1d-01
 
 [node_sles]
 # While ci-node-sles12sp5-amd64-1b-01 has python 3.4, more recent
@@ -183,6 +184,7 @@ ci-node-el9-amd64-02-01
 ci-node-el7-arm64-01
 ci-node-el8-arm64-01
 ci-node-el9-arm64-01
+ci-rootnode-el8-amd64-1d-01
 
 [node:children]
 node_i386

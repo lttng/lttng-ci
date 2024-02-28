@@ -1065,6 +1065,31 @@ containers:
       host: 'ci-host-amd64-1d.internal.efficios.com'
     meta:
       address: 172.18.17.13
+  - jenkins:
+      label: 'el8-amd64-rootnode'
+      name: 'ci-rootnode-el8-amd64-1d-01'
+      mode: EXCLUSIVE
+      config:
+        remoteFS: '/root'
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1d.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-el8-amd64-1d-01'
+        launcher/delegate: 'hudson.plugins.sshslaves.SSHLauncher=class'
+        launcher/delegate/port: '22'
+        launcher/delegate/host: 'ci-rootnode-el8-amd64-1d-01.internal.efficios.com'
+        launcher/delegate/credentialsId: 'bb5a81cf-346b-43fc-8586-3dc5e43801be'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1d.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-el8-amd64-1d-01'
+        snapshotName: ''
+        beforeJobSnapshotName: 'base-configuration'
+        startupWaitingPeriodSeconds: '30'
+        launcher/waitTimeMs: '30000'
+        shutdownMethod: 'destroy'
+    vm:
+      name: 'ci-rootnode-el8-amd64-1d-01'
+      disk: '/var/lib/libvirt/images/ci-rootnode-el8-amd64-1d-01.qcow'
+      host: 'ci-host-amd64-1d.internal.efficios.com'
+    meta:
+      address: 172.18.17.14
   # VMs for running tests using lava
   - jenkins: {}
     meta: {}
