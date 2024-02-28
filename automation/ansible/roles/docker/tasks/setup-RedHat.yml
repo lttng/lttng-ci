@@ -1,0 +1,11 @@
+---
+- ansible.builtin.set_fact:
+    docker_packages: "{{docker_upstream_packages}}"
+    docker_upstream: true
+- ansible.builtin.yum_repository:
+    name: docker
+    description: 'Docker CE Stable - $basearch'
+    baseurl: 'https://download.docker.com/linux/centos/$releasever/$basearch/stable'
+    enabled: true
+    gpgcheck: true
+    gpgkey: 'https://download.docker.com/linux/centos/gpg'

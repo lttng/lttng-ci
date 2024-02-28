@@ -21,3 +21,6 @@ docker_SLES_packages:
 docker_Ubuntu_packages:
   - 'docker.io'
   - 'docker-compose-v2'
+
+# Rocky Linux doesn't provide packages for docker
+docker_Rocky_packages: []
