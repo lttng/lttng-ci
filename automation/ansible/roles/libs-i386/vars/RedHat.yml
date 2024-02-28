@@ -1,0 +1,7 @@
+---
+__libs_i386_packages:
+  - xz-devel.i686
+  - numactl-devel.i686
+  - popt-devel.i686
+  - libxml2-devel.i686
+  - zlib-devel.i686
