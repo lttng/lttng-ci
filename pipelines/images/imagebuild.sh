@@ -173,6 +173,10 @@ CLEANUP+=(
     "rm -f ${HOME}/.ssh/id_rsa"
 )
 lxc file push ~/.ssh/id_rsa.pub "ci:${INSTANCE_NAME}/root/.ssh/authorized_keys2"
+# Some distros, eg. Rocky Linux, don't enable the use of authorized_keys2
+# by default
+lxc exec "ci:${INSTANCE_NAME}" -- bash -c 'if test -f /etc/redhat-release ; then sed -i "s#^AuthorizedKeysFile.*#AuthorizedKeysFile .ssh/authorized_keys .ssh/authorized_keys2#" /etc/ssh/sshd_config ; systemctl restart sshd ; fi'
+
 
 # Confirm working SSH connection
 if ! ssh "${INSTANCE_IP}" hostname ; then
