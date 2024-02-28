@@ -323,20 +323,20 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
-          touchstone: '(build == "std") && (conf == "std")'
+          touchstone: ''
       - 'librseq_{version}_{cctype}':
           cctype: clangbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
           ccs: !!python/tuple [clang-13, clang-14, clang-15]
-          touchstone: '(build == "std") && (conf == "std") && (cc == "clang-15")'
+          touchstone: ''
       - 'librseq_{version}_{buildtype}':
           buildtype: portbuild
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
-          touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
+          touchstone: ''
 
 - project:
     name: review-librseq
@@ -350,7 +350,13 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
-          touchstone: '(build == "std") && (conf == "std")'
+          touchstone: ''
+      - 'dev_review_librseq_{version}_{buildtype}':
+          buildtype: portbuild
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: ''
 
 - project:
     name: librseq-views
