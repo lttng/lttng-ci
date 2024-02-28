@@ -13,6 +13,16 @@
     gpgcheck: true
   when: ansible_distribution == 'Rocky'
 
+- name: Enable rocky powertools repository
+  # This provides developer orientated packages, eg. python3-sphinx
+  when: ansible_distribution == 'Rocky' and ansible_distribution_major_version == '8'
+  ansible.builtin.yum_repository:
+    name: Rocky-PowerTools
+    description: "Rocky Linux $releasever - PowerTools"
+    mirrorlist: "https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=PowerTools-$releasever"
+    enabled: true
+    gpgcheck: true
+
 - name: Ensure common packages are installed.
   dnf:
     name: "{{ common_packages }}"
