@@ -112,9 +112,10 @@
          type: slave
          name: node
          values:
-           - 'sles15sp4-amd64-rootnode'
            - 'amd64-rootnode'
+           - 'el8-amd64-rootnode'
            - 'i386-rootnode'
+           - 'sles15sp4-amd64-rootnode'
       - axis:
           <<: *lttng-tools_matrix_axis_platform
           type: user-defined
@@ -1231,6 +1232,17 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
           touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+          buildtype: elbuild
+          version: master
+          ustversion: master
+          platforms: !!python/tuple [el8-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          urcuversions: !!python/tuple [master]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
+          touchstone: ''
       - '{job_prefix}lttng-tools_{version}_rootbuild_i386':
           buildtype: portbuild
           version: master
@@ -1361,6 +1373,17 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
           touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+          buildtype: elbuild
+          version: stable-2.13
+          ustversion: stable-2.13
+          platforms: !!python/tuple [el8-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
+          touchstone: ''
       - 'lttng-tools_{version}_release':
           version: v2.13
           ustversion: stable-2.13
@@ -1480,6 +1503,17 @@
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+          buildtype: elbuild
+          version: stable-2.12
+          ustversion: stable-2.12
+          platforms: !!python/tuple [el8-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
           touchstone: ''
       - 'lttng-tools_{version}_release':
           version: v2.12
