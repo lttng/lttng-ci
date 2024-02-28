@@ -16,7 +16,7 @@
     - ansible.builtin.command:
         argv: ['cloud-init', 'clean']
       ignore_errors: true
-    - ansible.built.command:
+    - ansible.builtin.command:
         argv: ['sync']
     - ansible.builtin.shell:
         cmd: 'history -cw'
