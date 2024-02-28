@@ -253,6 +253,42 @@
           <<: *images_parameters_GIT_BRANCH
 
 - project:
+    name: images_imagebuilder_rockylinux
+    OS:
+      - rockylinux
+    ARCHES:
+      - amd64
+    RELEASES:
+      - '8'
+      - '9'
+    parameters:
+      - bool:
+          <<: *images_parameters_SKIP_BASE_IMAGES
+      - bool:
+          <<: *images_parameters_SKIP_PROFILE_IMAGES
+      - choice:
+          <<: *images_parameters_ARCH_FILTER
+          choices:
+            - all
+            - amd64
+      - choice:
+          <<: *images_parameters_IMAGE_TYPE_FILTER
+      - choice:
+          <<: *images_parameters_PROFILE_FILTER
+      - choice:
+          name: 'RELEASE_FILTER'
+          choices:
+            - 'all'
+            - '8'
+            - '9'
+      - string:
+          <<: *images_parameters_GIT_URL
+      - string:
+          <<: *images_parameters_GIT_BRANCH
+    jobs:
+      - 'images_imagebuilder_{OS}'
+
+- project:
     name: images_imagebuilder_SLES
     OS:
       - sles
