@@ -583,10 +583,16 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
             "-DargLine=-Djava.library.path=${WORKSPACE}/deps/build/${LIBDIR_ARCH}"
             '-Dgroups=!domain:log4j2'
         )
+
         env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn -version
+
+        if [[ -n "${LTTNG_TOOLS_UST_JAVA_TESTS_LOG4J_API_VERSION:-}" ]] ; then
+            env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn versions:use-dep-version -Dincludes=org.apache.logging.log4j:'*' -DdepVersion="${LTTNG_TOOLS_UST_JAVA_TESTS_LOG4J_API_VERSION}"
+        fi
+
         mkdir -p "${WORKSPACE}/log"
         env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" lttng-sessiond -b -vvv 1>"${WORKSPACE}/log/lttng-ust-java-tests-lttng-sessiond.log" 2>&1
-        env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn "${LTTNG_UST_JAVA_TESTS_MAVEN_OPTS[@]}" clean verify || exit_status=1
+        env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn "${LTTNG_UST_JAVA_TESTS_MAVEN_OPTS[@]}" clean compile dependency:build-classpath dependency:tree verify || exit_status=1
         killall lttng-sessiond
 
         cd "${OWD}"
