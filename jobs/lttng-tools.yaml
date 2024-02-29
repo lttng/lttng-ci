@@ -163,6 +163,7 @@
           fi
           if [ "{buildtype}" = "slesbuild" ] ; then
             echo "TAP_AUTOTIME=0" >> env.properties
+            echo "LTTNG_TESTS_TAP_AUTOTIME=0" >> env.properties
             # On SLES, force log4j to 2.17.1
             echo "LTTNG_TOOLS_UST_JAVA_TESTS_LOG4J_API_VERSION=2.17.1" >> env.properties
           fi
@@ -229,6 +230,7 @@
           fi
           if [ "{buildtype}" = "slesbuild" ] ; then
             echo "TAP_AUTOTIME=0" >> env.properties
+            echo "LTTNG_TESTS_TAP_AUTOTIME=0" >> env.properties
           fi
       - inject:
           properties-file: env.properties
