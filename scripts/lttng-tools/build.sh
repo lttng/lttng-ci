@@ -355,6 +355,11 @@ relayd-only)
     print_header "Conf: Relayd only"
 
     CONF_OPTS+=("--disable-bin-lttng" "--disable-bin-lttng-consumerd" "--disable-bin-lttng-crash" "--disable-bin-lttng-sessiond" "--disable-extras" "--disable-man-pages" "--without-lttng-ust")
+
+    # A config option for lib-lttng-ctl was added in 2.14
+    if vergte "$PACKAGE_VERSION" "2.14"; then
+        CONF_OPTS+=("--disable-lib-lttng-ctl")
+    fi
     ;;
 
 debug-rcu)
