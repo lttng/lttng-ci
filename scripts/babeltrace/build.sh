@@ -208,6 +208,13 @@ freebsd*)
     ;;
 esac
 
+# Some warning flags are very dumb in GCC 4.8 on SLES12 / EL7, disable them
+# even if they are available.
+if [[ $platform = sles12sp5* ]] || [[ $platform = el7* ]]; then
+    CFLAGS="$CFLAGS -Wno-missing-field-initializers -Wno-shadow"
+    CXXFLAGS="$CXXFLAGS -Wno-missing-field-initializers -Wno-shadow"
+fi
+
 # Print build env details
 print_header "Build environment details"
 print_hardware || true
