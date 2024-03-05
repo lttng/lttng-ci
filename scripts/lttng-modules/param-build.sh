@@ -375,6 +375,38 @@ build_linux_kernel() {
         scripts/config --disable CONFIG_KVM_BOOK3S_64_HV
     fi
 
+    if [ -f "init/Kconfig.suse" ] ; then
+        # Get values from git tag, eg. 'rpm-5.14.21-150400.24.108'
+        # Note: the "150400" type of SUSE major version is only present on tags
+        # from 2022 and newer (about half-way through SLE15SP3).
+        # This will not work as expected on earlier tags.
+        SLES_RELEASE="$(echo "${ktag}" | cut -d '-' -f 3 | cut -d'.' -f 1)"
+        scripts/config --set-val CONFIG_SUSE_VERSION $((10#"$(echo "${SLES_RELEASE}" | head -c 2)"))
+        scripts/config --set-val CONFIG_SUSE_PATCHLEVEL $((10#"$(echo "${SLES_RELEASE}" | head -c 4 | tail -c 2)"))
+
+        # Disable the renesas clk driver that has build issues,
+        # eg. drivers/clk/renesas/renesas-rzg2l-cpg.c:185:17: error: ‘clk’ undeclared (first use in this function)
+        scripts/config --disable CONFIG_CLK_RENESAS
+
+        # From drives/spi/spi-atmel.c
+        # ./include/linux/gpio/consumer.h:141:49: note: expected ‘struct gpio_desc *’ but argument is of type 'int'
+        scripts/config --disable CONFIG_SPI_ATMEL
+        scripts/config --disable CONFIG_SPI_AT91_USART
+        scripts/config --disable CONFIG_SPI_ATMEL_QUADSPI
+
+        # drivers/net/wireless/mediatek/mt76/mt7915/testmode.c: In function ‘mt7915_tm_set_wmm_qid’:
+        # drivers/net/wireless/mediatek/mt76/mt7915/testmode.c:176:30: error: ‘struct mt7915_vif’ has no member named ‘mt76’
+        scripts/config --disable CONFIG_WLAN_VENDOR_MEDIATEK
+
+        # drivers/net/wireless/microchip/wilc1000/cfg80211.c: In function ‘wilc_wfi_cfg_parse_ch_attr’:
+        # drivers/net/wireless/microchip/wilc1000/cfg80211.c:970:17: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
+        scripts/config --disable CONFIG_WLAN_VENDOR_MICROCHIP
+
+        # fs/f2fs/file.c: In function ‘punch_hole’:
+        # fs/f2fs/file.c:1093:49: error: ‘mapping’ undeclared (first use in this function)
+        scripts/config --disable CONFIG_F2FS_FS
+    fi
+
     # oldnoconfig was renamed in 4.19
     if vergte "$kversion" "4.19"; then
         update_conf_target="olddefconfig"
@@ -889,6 +921,14 @@ extract_distro_headers() {
         ABINUM="$(echo "$ktag" | grep -P -o 'Ubuntu-(lts-)?.*-\K\d+(?=\..*)')"
         echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> include/generated/utsrelease.h
         echo "#define UTS_UBUNTU_RELEASE_ABI $ABINUM" >> "${LINUX_HDROBJ_DIR}/include/generated/utsrelease.h"
+        ;;
+      rpm-*)
+        # Update the definition of UTS_RELEASE to match something akin to '5.14.21-150400.24.108-default'
+        if [ -f "init/Kconfig.suse" ] ; then
+          SLESVERSION="$(echo "${ktag}" | cut -d'-' -f 3)-default"
+          sed -E -i "s%^(#define UTS_RELEASE \"[\.a-z0-9]+)(\")%\1-${SLESVERSION}\2%g" include/generated/utsrelease.h
+          sed -E -i "s%^(#define UTS_RELEASE \"[\.a-z0-9]+)(\")%\1-${SLESVERSION}\2%g" "${LINUX_HDROBJ_DIR}/include/generated/utsrelease.h"
+        fi
         ;;
     esac
 }

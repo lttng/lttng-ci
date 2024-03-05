@@ -163,6 +163,120 @@ class VanillaKVersion implements Comparable<VanillaKVersion> {
   }
 }
 
+class SlesKVersion implements Comparable<SlesKVersion> {
+  Integer major = 0
+  Integer minor = 0
+  Integer patch = 0
+  Integer slesrelease = 0
+  Integer slesmajor = 0
+  Integer slesminor = 0
+
+  SlesKVersion() {}
+
+  SlesKVersion(version) {
+    this.parse(version)
+  }
+
+  static SlesKVersion minKVersion() {
+    return new SlesKVersion("rpm-0.0.0-0.0.0")
+  }
+
+  static SlesKVersion maxKVersion() {
+    return new SlesKVersion("rpm-" + Integer.MAX_VALUE + ".0.0-0.0.0")
+  }
+
+  static SlesKVersion factory(version) {
+    return new SlesKVersion(version)
+  }
+
+  def parse(version) {
+    this.major = 0
+    this.minor = 0
+    this.patch = 0
+    this.slesrelease = 0
+    this.slesmajor = 0
+    this.slesminor = 0
+
+    if (!version) {
+      throw new EmptyKVersionException("Empty kernel version")
+    }
+
+    // Eg. 5.14.21-150400.22
+    // Eg. 5.14.21-150400.24.100.2
+    // From tag: rpm-5.14.21-150400.24.100 -> 5.14.21-150400.24.100
+    def match = version =~ /^(rpm-)??(\d+)\.(\d+)\.(\d+)-(\d+)\.(\d+)(\.\d+)??$/
+    if (!match) {
+      throw new InvalidKVersionException("Invalid kernel version: ${version}")
+    }
+
+    this.major = Integer.parseInt(match.group(2))
+    this.minor = Integer.parseInt(match.group(3))
+    this.patch = Integer.parseInt(match.group(4))
+    this.slesrelease = Integer.parseInt(match.group(5))
+    this.slesmajor = Integer.parseInt(match.group(6))
+
+    if (match.group(7) != null) {
+      this.slesminor = Integer.parseInt(match.group(7).drop(1))
+    }
+  }
+
+  Boolean isRC() {
+    return false
+  }
+
+  Boolean isSameStable(SlesKVersion o) {
+    if (this.major != o.major) {
+      return false
+    }
+    if (this.minor != o.minor) {
+      return false
+    }
+    if (this.patch != o.patch) {
+      return false
+    }
+    if (this.slesrelease != o.slesrelease) {
+      return false
+    }
+    if (this.slesmajor != o.slesmajor) {
+      return false
+    }
+    if (this.slesminor != o.slesminor) {
+      return false
+    }
+    return true
+  }
+
+  @Override int compareTo(SlesKVersion o) {
+    if (this.major != o.major) {
+      return Integer.compare(this.major, o.major)
+    }
+    if (this.minor != o.minor) {
+      return Integer.compare(this.minor, o.minor)
+    }
+    if (this.patch != o.patch) {
+      return Integer.compare(this.patch, o.patch)
+    }
+    if (this.slesrelease != o.slesrelease) {
+      return Integer.compare(this.slesrelease, o.slesrelease)
+    }
+    if (this.slesmajor != o.slesmajor) {
+      return Integer.compare(this.slesmajor, o.slesmajor)
+    }
+    if (this.slesminor != o.slesminor) {
+      return Integer.compare(this.slesminor, o.slesminor)
+    }
+    return 0
+  }
+
+  String toString() {
+    String vString = "rpm-${this.major}.${this.minor}.${patch}-${this.slesrelease}.${this.slesmajor}"
+    if (this.slesminor != 0) {
+      vString = vString.concat(".${this.slesminor}")
+    }
+    return vString
+  }
+}
+
 class UbuntuKVersion implements Comparable<UbuntuKVersion> {
 
   Integer major = 0
@@ -316,6 +430,7 @@ def kverfloor_raw = build.buildVariableResolver.resolve('kverfloor')
 def kverceil_raw = build.buildVariableResolver.resolve('kverceil')
 def kverfilter = build.buildVariableResolver.resolve('kverfilter')
 def kverrc = build.buildVariableResolver.resolve('kverrc')
+def slesversion = build.buildVariableResolver.resolve('slesversion')
 def uversion = build.buildVariableResolver.resolve('uversion')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
 def currentJobName = build.project.getFullDisplayName()
@@ -342,7 +457,27 @@ def matchStrs = []
 def blacklist = []
 def kversionFactory = ""
 
-if (uversion != null) {
+if (slesversion != null) {
+  kversionFactory = new SlesKVersion()
+  switch (slesversion) {
+    case 'sles15sp4':
+      matchStrs = [
+        ~/^refs\/tags\/(rpm-5.14.21-150400\.22(\.\d+)?(\.\d+)?)$/,
+        ~/^refs\/tags\/(rpm-5.14.21-150400\.24(\.\d+)?(\.\d+)?)$/,
+      ]
+      blacklist = [
+        // "Retracted", @see https://www.suse.com/support/kb/doc/?id=000019587#SLE15SP4
+        'rpm-5.14.21-150400.24.49',
+        'rpm-5.14.21-150400.24.84',
+      ]
+      break
+
+    default:
+      println "Unsupported SLES version: ${slesversion}"
+      throw new InterruptedException()
+      break
+  }
+} else if (uversion != null) {
   kversionFactory = new UbuntuKVersion()
   switch (uversion) {
     case 'jammy':

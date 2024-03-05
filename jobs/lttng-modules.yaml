@@ -134,6 +134,42 @@
           default: 'lttng-modules_PARAM_build'
           description: 'The parametrized job to use for child builds.'
 
+- _lttng-modules_build_parameters_ubuntu: &lttng-modules_build_parameters_sles
+    name: 'lttng-modules_build_parameters_sles'
+    parameters:
+      - string:
+          name: 'maxConcurrentBuild'
+          default: '20'
+          description: 'The maximum number of concurrent child build to run.'
+      - string:
+          name: 'kverfloor'
+          default: '{kverfloor}'
+          description: 'The lowest kernel version to build.'
+      - string:
+          name: 'kverceil'
+          default: '{kverceil}'
+          description: 'The highest kernel version to build. (excluded)'
+      - string:
+          name: 'kverfilter'
+          default: '{kverfilter}'
+          description: 'Kernel versions list filtering strategy.'
+      - string:
+          name: 'kverrc'
+          default: 'false'
+          description: 'Add latest RC to kernel versions list.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/git/sles.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kbuildjob'
+          default: 'lttng-modules_PARAM_{parambuildtype}'
+          description: 'The parametrized job to use for child builds.'
+      - string:
+          name: 'slesversion'
+          default: '{slesversion}'
+          description: 'The SLES release (eg. sles15sp4)'
+
 - _lttng-modules_build_parameters_ubuntu: &lttng-modules_build_parameters_ubuntu
     name: 'lttng-modules_build_parameters_ubuntu'
     parameters:
@@ -364,6 +400,49 @@
       - workspace-cleanup
 
 - job-template:
+    name: 'dev_review_lttng-modules_{mversion}_build-{slesversion}'
+    defaults: lttng-modules
+    concurrent: true
+
+    node: 'master'
+
+    scm:
+      - git:
+          url: https://review.lttng.org/lttng-modules
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/lttng-modules
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-modules'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{mversion}'
+
+    properties:
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-build'
+
+    <<: *lttng-modules_build_parameters_sles
+    <<: *lttng-modules_build_builders_defaults
+
+    publishers:
+      - workspace-cleanup
+
+- job-template:
     name: lttng-modules_{mversion}_fullbuild-vanilla
     defaults: lttng-modules
     description: |
@@ -384,6 +463,26 @@
       # Check for new commits every friday at midnight
       - pollscm:
           cron: "0 0 * * 5"
+
+- job-template:
+    name: lttng-modules_{mversion}_{buildtype}-{slesversion}
+    defaults: lttng-modules
+    description: |
+      The LTTng modules provide Linux kernel tracing capability to the LTTng
+      2.0 tracer toolset.
+
+      This job will the {mversion} branch against SLES {slesversion} released
+      kernels.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    node: 'master'
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+      - timed: "H 0 * * 6"
+    <<: *lttng-modules_build_parameters_sles
+    <<: *lttng-modules_build_builders_defaults
 
 - job-template:
     name: lttng-modules_{mversion}_{buildtype}-{uversion}
@@ -780,6 +879,20 @@
           kverceil: ''
           kverfilter: stable-head
 
+# SLES normal builders
+      - 'lttng-modules_{mversion}_{buildtype}-{slesversion}':
+          mversion:
+            - master
+            - stable-2.13
+            - stable-2.12
+          slesversion:
+            - sles15sp4
+          buildtype: build
+          parambuildtype: build
+          kverfloor: ''
+          kverceil: ''
+          kverfilter: stable-head
+
 # Ubuntu normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           mversion:
@@ -892,6 +1005,18 @@
           kverfloor: v3.0
           kverceil: v5.18
           kverfilter: lts-head
+      - 'dev_review_lttng-modules_{mversion}_build-{slesversion}':
+          mversion:
+            - master
+            - stable-2.13
+            - stable-2.12
+          slesversion:
+            - sles15sp4
+          buildtype: build
+          parambuildtype: build
+          kverfloor: ''
+          kverceil: ''
+          kverfilter: stable-head
 
 - project:
     name: lttng-modules-dev-mjeanson
