@@ -40,6 +40,11 @@ git tag -d v2.6.11-tree || true
 popd
 
 ##
+# SLES kernels
+##
+update_git sles.git/ https://github.com/SUSE/kernel.git
+
+##
 # Ubuntu kernels
 ##
 
