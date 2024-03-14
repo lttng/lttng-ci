@@ -96,7 +96,32 @@ git_clone_modules_sources() {
 # Checkout a shallow kernel tree of the specified tag
 git_clone_linux_sources() {
     mkdir -p "$LINUX_GIT_DIR"
-    git clone --depth=1 -b "${ktag}" --reference-if-able "$LINUX_GIT_REF_REPO_DIR" "${kgitrepo}" "$LINUX_GIT_DIR"
+    case "${distroversion:-}" in
+        el*)
+            git clone -b "${ktag}" "${kgitrepo}" src/linux-rpm
+
+            # Get the source files
+            pushd src/linux-rpm
+            "${WORKSPACE}/src/getsrc/getsrc/getsrc.sh"
+            tar -x -C "${LINUX_GIT_DIR}" --strip-components=1 -f SOURCES/linux-*.tar.xz
+            popd
+
+            # Pretend we're a repo like the default expects
+            pushd "${LINUX_GIT_DIR}"
+            git init .
+            git config user.name 'Jenkins'
+            git config user.email 'jenkins@efficios.com'
+            git add .
+            git commit -a -m 'Initial commit'
+            git tag "${ktag}"
+            echo "${LINUX_GIT_REF_REPO_DIR}" > .git/objects/info/alternates
+            popd
+            ;;
+
+        *)
+            git clone --depth=1 -b "${ktag}" --reference-if-able "$LINUX_GIT_REF_REPO_DIR" "${kgitrepo}" "$LINUX_GIT_DIR"
+            ;;
+    esac
 }
 
 
@@ -311,6 +336,35 @@ build_linux_kernel() {
 
     # Generate kernel configuration
     case "$ktag" in
+      *el*)
+        # Copy the EL kernel configuration
+        el_arch="${cross_arch:-$arch}"
+        case "${el_arch}" in
+          amd64)
+            el_arch=x86_64
+            ;;
+          arm64)
+            el_arch=aarch64
+            ;;
+          ppc64el)
+            el_arch=ppc64le
+            ;;
+          *)
+            ;;
+        esac
+        ls "${WORKSPACE}/src/linux-rpm/SOURCES/"
+        if [ -f "${WORKSPACE}/src/linux-rpm/SOURCES/kernel-${el_arch}.config" ] ; then
+          cp "${WORKSPACE}/src/linux-rpm/SOURCES/kernel-${el_arch}.config" .config
+        elif [ -f "${WORKSPACE}/src/linux-rpm/SOURCES/kernel-${el_arch}-rhel.config" ] ; then
+          cp "${WORKSPACE}/src/linux-rpm/SOURCES/kernel-${el_arch}-rhel.config" .config
+        fi
+
+        # Eg.
+        # mm/mempolicy.c: In function ‘mpol_parse_str’:
+        # mm/mempolicy.c:2980:26: error: writing 1 byte into a region of size 0 [-Werror=stringop-overflow=]
+        export KCFLAGS="${KCFLAGS} -Wno-error -Wno-all -Wno-error=stringop-overflow -Wno-error=address-of-packed-member"
+        ;;
+
       Ubuntu*)
         if [ "${cross_arch}" = "powerpc" ] && vergte "${kversion}" "4.10"; then
           echo "Ubuntu removed big endian powerpc configuration from kernel >= 4.10. Don't try to build it."
@@ -677,7 +731,9 @@ build_linux_kernel() {
 
     if [ "$(scripts/config --state CONFIG_DEBUG_INFO_BTF)" == "y" ] &&
            { vergte "${pahole_version}" "1.24"; } &&
-           { vergte "${kversion}" "5.10"; } && { verlt "${kversion}" "6.0"; } ;then
+           (
+               ( { vergte "${kversion}" "5.10"; } && { verlt "${kversion}" "6.0"; } ) || [[ "${ktag}" =~ .el8 ]]
+           ) ; then
         # Some kernels Eg. Ubuntu-hwe-5.13-5.13.0-52.59_20.04.1
         # fail with the following error:
         #   BTFIDS  vmlinux
@@ -696,6 +752,8 @@ build_linux_kernel() {
         else
             # shellcheck disable=SC2016
             sed -i 's/ -J ${extra_paholeopt} / -J ${extra_paholeopt} --skip_encoding_btf_enum64 /' scripts/link-vmlinux.sh
+            # Some older versions of RHEL don't have '${extra_paholeopt}'
+            sed -i 's/${PAHOLE} -J ${1}/${PAHOLE} -J --skip_encoding_btf_enum64 ${1}/' scripts/link-vmlinux.sh
         fi
     fi
 

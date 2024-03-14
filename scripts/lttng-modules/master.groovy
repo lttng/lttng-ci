@@ -163,6 +163,127 @@ class VanillaKVersion implements Comparable<VanillaKVersion> {
   }
 }
 
+class ElKVersion implements Comparable<ElKVersion> {
+  Integer major = 0
+  Integer minor = 0
+  Integer patch = 0
+  Integer elmajor = 0
+  Integer elminor = 0
+  Integer elpatch = 0
+  Integer el_release_major = 0
+  Integer el_release_minor = 0
+  Boolean append_zero_el_release_minor = false
+  String version_prefix = ""
+
+  ElKVersion() {}
+
+  ElKVersion(version) {
+    this.parse(version)
+  }
+
+  static ElKVersion minKVersion() {
+    return new ElKVersion("kernel-0.0.0-0.0.0.el0_0")
+  }
+
+  static ElKVersion maxKVersion() {
+    return new ElKVersion("kernel-" + Integer.MAX_VALUE + ".0.0-0.0.0.el0_0")
+  }
+
+  static ElKVersion factory(version) {
+    return new ElKVersion(version)
+  }
+
+  def parse(version) {
+    this.major = 0
+    this.minor = 0
+    this.patch = 0
+    this.elmajor = 0
+    this.elminor = 0
+    this.elpatch = 0
+    this.el_release_major = 0
+    this.el_release_minor = 0
+    this.append_zero_el_release_minor = false
+    this.version_prefix = ""
+
+    if (!version) {
+      throw new EmptyKVersionException("Empty kernel version")
+    }
+
+    // Eg. imports/r8/kernel-4.18.0-513.18.1.el8_9
+    // Eg. imports/r9/kernel-5.14.0-362.13.1.el9_3
+    // Eg. imports/r8s/kernel-4.18.0-528.el8
+    // Eg. imports/r8/kernel-4.18.0-80.1.2.el8_0
+    // Eg. imports/r8/kernel-4.18.0-348.el8
+    def match = version =~ /^([\w\d\/]*kernel-)??(\d+)\.(\d+)\.(\d+)-(\d+)(\.(\d+))??(\.(\d+))??\.el(\d+)(_(\d+))??$/
+    if (!match) {
+      throw new InvalidKVersionException("Invalid kernel version: ${version}")
+    }
+
+    if (match.group(1)) {
+      this.version_prefix = match.group(1)
+    }
+    this.major = Integer.parseInt(match.group(2))
+    this.minor = Integer.parseInt(match.group(3))
+    this.patch = Integer.parseInt(match.group(4))
+    this.elmajor = Integer.parseInt(match.group(5))
+    if (match.group(7)) {
+      this.elminor = Integer.parseInt(match.group(7))
+    }
+    if (match.group(9)) {
+      this.elpatch = Integer.parseInt(match.group(9))
+    }
+    if (match.group(10)) {
+      this.el_release_major = Integer.parseInt(match.group(10))
+    }
+    if (match.group(12)) {
+      this.el_release_minor = Integer.parseInt(match.group(12))
+      this.append_zero_el_release_minor = true
+    }
+  }
+
+  Boolean isRC() {
+    return false
+  }
+
+  Boolean isSameStable(ElKVersion o) {
+    def properties = ['major', 'minor', 'patch', 'elmajor', 'elminor', 'elpatch', 'el_release_major', 'el_release_minor']
+    for (property in properties) {
+      if (this."$property" != o."$property") {
+        return false
+      }
+    }
+    return true
+  }
+
+  @Override int compareTo(ElKVersion o) {
+    def properties = ['major', 'minor', 'patch', 'elmajor', 'elminor', 'elpatch', 'el_release_major', 'el_release_minor']
+    for (property in properties) {
+      if (this."$property" != o."$property") {
+        return Integer.compare(this."$property", o."$property")
+      }
+    }
+    return 0
+  }
+
+  String toString() {
+    String vString = "${this.version_prefix}${this.major}.${this.minor}.${this.patch}-${this.elmajor}"
+    // Sometimes a tag can have no elminor, eg. imports/r8/kernel-4.18.0-80.el8
+    if (this.elminor != 0) {
+      vString = vString.concat(".${this.elminor}")
+    }
+    if (this.elpatch != 0) {
+      vString = vString.concat(".${this.elpatch}")
+    }
+    vString = vString.concat(".el${this.el_release_major}")
+    // Some tags have a trailing el_release_minor that is 0, eg.
+    // imports/r8/kernel-4.18.0-80.1.2.el8
+    if (this.el_release_minor != 0 || (this.el_release_minor == 0 && this.append_zero_el_release_minor)) {
+      vString = vString.concat("_${this.el_release_minor}")
+    }
+    return vString
+  }
+}
+
 class SlesKVersion implements Comparable<SlesKVersion> {
   Integer major = 0
   Integer minor = 0
@@ -430,6 +551,7 @@ def kverfloor_raw = build.buildVariableResolver.resolve('kverfloor')
 def kverceil_raw = build.buildVariableResolver.resolve('kverceil')
 def kverfilter = build.buildVariableResolver.resolve('kverfilter')
 def kverrc = build.buildVariableResolver.resolve('kverrc')
+def elversion = build.buildVariableResolver.resolve('elversion')
 def slesversion = build.buildVariableResolver.resolve('slesversion')
 def uversion = build.buildVariableResolver.resolve('uversion')
 def job = Hudson.instance.getJob(build.buildVariableResolver.resolve('kbuildjob'))
@@ -456,8 +578,30 @@ def kversionsRC = []
 def matchStrs = []
 def blacklist = []
 def kversionFactory = ""
+def distroversion = ""
 
-if (slesversion != null) {
+if (elversion != null) {
+  distroversion = elversion
+  kversionFactory = new ElKVersion()
+  switch (elversion) {
+    case 'el8':
+      matchStrs = [
+        // EL 8 (all)
+        // ~/^refs\/tags\/(imports\/r8\/kernel-[\d\.-]+.el8.*)$/,
+        // EL 8.4
+        ~/^refs\/tags\/(imports\/r8\/kernel-4\.18\.0-305\.[\d\.-]+.el8.*)$/,
+        // EL 8.6
+        ~/^refs\/tags\/(imports\/r8\/kernel-4\.18\.0-372\.[\d\.-]+.el8.*)$/,
+      ]
+      blacklist = []
+      break
+    default:
+      println ("Unsupport EL version: ${elversion}")
+      throw new InterruptedException()
+      break
+  }
+} else if (slesversion != null) {
+  distroversion = slesversion
   kversionFactory = new SlesKVersion()
   switch (slesversion) {
     case 'sles15sp4':
@@ -478,6 +622,7 @@ if (slesversion != null) {
       break
   }
 } else if (uversion != null) {
+  distroversion = uversion
   kversionFactory = new UbuntuKVersion()
   switch (uversion) {
     case 'jammy':
@@ -676,6 +821,9 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
       new StringParameterValue('mgitrepo', mgitrepo),
       new StringParameterValue('ktag', kversion.toString()),
       new StringParameterValue('kgitrepo', kgitrepo),
+      new StringParameterValue('distroversion', distroversion),
+      new StringParameterValue('getsrc_repo', build.buildVariableResolver.resolve('getsrc_repo')),
+      new StringParameterValue('getsrc_version', build.buildVariableResolver.resolve('getsrc_version'))
     ]
 
     // Launch the parametrized build

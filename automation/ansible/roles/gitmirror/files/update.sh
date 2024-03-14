@@ -40,6 +40,11 @@ git tag -d v2.6.11-tree || true
 popd
 
 ##
+# EL kernel RPMs
+##
+update_git rocky.git/ https://git.rockylinux.org/staging/rpms/kernel.git
+
+##
 # SLES kernels
 ##
 update_git sles.git/ https://github.com/SUSE/kernel.git
