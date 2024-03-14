@@ -1,0 +1,469 @@
+#!groovy
+
+// SPDX-FileCopyrightText: 2022 Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+// SPDX-FileCopyrightText: 2024 Michael Jeanson <mjeanson@efficios.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+pipeline {
+  agent none
+
+  /* Global options for the pipeline */
+  options {
+    preserveStashes()
+    buildDiscarder(logRotator(numToKeepStr: '5'))
+    timeout(time: 2, unit: 'HOURS')
+    disableConcurrentBuilds()
+    timestamps()
+    skipDefaultCheckout()
+  }
+
+  triggers {
+    pollSCM('@hourly')
+  }
+
+  parameters {
+      string(name: 'LIBURCU_GIT_URL', defaultValue: 'https://github.com/urcu/userspace-rcu', description: 'The http git repo to be cloned for the liburcu project')
+      string(name: 'LIBURCU_GIT_BRANCH', defaultValue: '{{ urcu_version }}', description: 'The {{ version }} equivalent branch to be checkout-ed')
+      string(name: 'LTTNG_MODULES_GIT_URL', defaultValue: 'https://github.com/lttng/lttng-modules', description: 'The http git repo to be cloned for the lttng-modules project')
+      string(name: 'LTTNG_MODULES_GIT_BRANCH', defaultValue: '{{ version }}', description: 'The {{ version }} equivalent branch to be checkout-ed')
+      string(name: 'LTTNG_UST_GIT_URL', defaultValue: 'https://github.com/lttng/lttng-ust', description: 'The http git repo to be cloned for the lttng-ust project')
+      string(name: 'LTTNG_UST_GIT_BRANCH', defaultValue: '{{ version }}', description: 'The {{ version }} equivalent branch to be checkout-ed')
+      string(name: 'LTTNG_TOOLS_GIT_URL', defaultValue: 'https://github.com/lttng/lttng-tools', description: 'The http git repo to be cloned for the lttng-tools project')
+      string(name: 'LTTNG_TOOLS_GIT_BRANCH', defaultValue: '{{ version }}', description: 'The {{ version }} equivalent branch to be checkout-ed')
+  }
+
+  /* Default environment for the pipeline */
+  environment {
+    PREFIX = '/build'
+    CXXFLAGS = '-g -O0'
+    CFLAGS = '-g -O0'
+    JAVA_HOME = '/usr/lib/jvm/default-java'
+    CLASSPATH = '/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar'
+  }
+
+  stages {
+    /*
+     * i386 artifacts cannot be reused because we need to ensure that the
+     * lttng-ust used is the same for the amd64 and i386 and that for now we do
+     * not have this guarantee since we used 2 different jobs.
+     */
+    stage('Checkout all sources') {
+      agent { label 'deb12-amd64' }
+
+      steps {
+        cleanWs()
+
+        dir("src/userspace-rcu") {
+          checkout([$class: 'GitSCM', branches: [[name: "${params.LIBURCU_GIT_BRANCH}"]], extensions: [], gitTool: 'Default', userRemoteConfigs: [[url: "${params.LIBURCU_GIT_URL}"]]])
+        }
+
+        dir("src/lttng-modules") {
+          checkout([$class: 'GitSCM', branches: [[name: "${params.LTTNG_MODULES_GIT_BRANCH}"]], extensions: [], gitTool: 'Default', userRemoteConfigs: [[url: "${params.LTTNG_MODULES_GIT_URL}"]]])
+        }
+
+        dir("src/lttng-ust") {
+          checkout([$class: 'GitSCM', branches: [[name: "${params.LTTNG_UST_GIT_BRANCH}"]], extensions: [], gitTool: 'Default', userRemoteConfigs: [[url: "${params.LTTNG_UST_GIT_URL}"]]])
+        }
+
+        dir("src/lttng-tools") {
+          checkout([$class: 'GitSCM', branches: [[name: "${params.LTTNG_TOOLS_GIT_BRANCH}"]], extensions: [], gitTool: 'Default', userRemoteConfigs: [[url: "${params.LTTNG_TOOLS_GIT_URL}"]]])
+        }
+
+        stash name: 'dep-sources', includes: 'src/userspace-rcu/**,src/lttng-ust/**'
+        stash name: 'modules-sources', includes: 'src/lttng-modules/**'
+        stash name: 'tools-sources', includes: 'src/lttng-tools/**,'
+      }
+    }
+
+    stage('Parallel build of i386 and amd64 artifacts') {
+      /* Build the i386 and amd64 artifacts in parallel */
+      parallel {
+        stage('Build amd64 artifacts') {
+          agent { label 'deb12-amd64' }
+
+          environment {
+            BASEDIR_64 = "$WORKSPACE/deps-64"
+            BASEDIR_BUILD_64 = "$BASEDIR_64/build"
+            INCLUDE_DIR_64 = "$BASEDIR_BUILD_64/include"
+
+            CPPFLAGS = "-I$INCLUDE_DIR_64"
+            LDFLAGS = "-L$BASEDIR_BUILD_64/lib"
+            PKG_CONFIG_PATH = "$BASEDIR_BUILD_64/lib/pkgconfig"
+            LD_LIBRARY_PATH = "$BASEDIR_BUILD_64/lib:$LD_LIBRARY_PATH"
+            PATH = "$PATH:$BASEDIR_64/bin"
+          }
+
+          stages {
+            stage('Unstash sources') {
+              steps {
+                cleanWs()
+
+                unstash name: 'dep-sources'
+              }
+            }
+
+            stage('Build amd64 liburcu') {
+              steps {
+                /* Prevent non existent include dir warnings */
+                sh 'mkdir -p $INCLUDE_DIR_64'
+
+                dir("src/userspace-rcu") {
+                  sh './bootstrap'
+                  sh './configure --prefix="$PREFIX"'
+                  sh 'make -j"$(nproc)" V=1'
+                  sh 'make install DESTDIR="$WORKSPACE"'
+                  sh 'find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \\;'
+                  sh 'find "$WORKSPACE/build/lib" -name "*.la" -exec rm -vf {} \\;'
+                }
+
+                /* Move the artifacts of the recently built project to the deps
+                 * directory and remove the "build" directory to prevent `make install`
+                 * shenanigans for lttng-ust 2.12 */
+                sh 'cp -rv build $BASEDIR_64/'
+                sh 'rm -rf build'
+              }
+            }
+
+            stage('Build amd64 lttng-ust') {
+              steps {
+                dir("src/lttng-ust") {
+                  sh './bootstrap'
+                  sh './configure --prefix="$PREFIX" --enable-java-agent-all --enable-jni-interface --enable-python-agent'
+                  sh 'make -j"$(nproc)" V=1'
+                  sh 'make install DESTDIR="$WORKSPACE"'
+
+                  sh 'find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \\;'
+                  sh 'find "$WORKSPACE/build/lib" -name "*.la" -exec rm -vf {} \\;'
+                }
+
+                /* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+                sh 'cp -rv build $BASEDIR_64/'
+                sh 'rm -rf build'
+              }
+            }
+
+            stage('Stash amd64 artifacts') {
+              steps {
+                stash name: "amd64-deps-lttng-tools", includes: 'deps-64/**'
+              }
+            }
+          } /* stages */
+
+          post {
+            cleanup {
+              cleanWs cleanWhenFailure: false
+            }
+          }
+        } /* stage('Build amd64 artifacts') */
+
+        stage('Build i386 artifacts') {
+          agent { label 'deb12-i386' }
+
+          environment {
+            BASEDIR_32 = "$WORKSPACE/deps-32"
+            BASEDIR_BUILD_32 = "$BASEDIR_32/build"
+            INCLUDE_DIR_32 = "$BASEDIR_BUILD_32/include"
+
+            CPPFLAGS = "-I$INCLUDE_DIR_32"
+            LDFLAGS = "-L$BASEDIR_BUILD_32/lib"
+            PKG_CONFIG_PATH = "$BASEDIR_BUILD_32/lib/pkgconfig"
+            LD_LIBRARY_PATH = "$BASEDIR_BUILD_32/lib"
+            PATH = "$PATH:$BASEDIR_32/bin"
+          }
+
+          stages {
+            stage('Unstash sources and artifacts') {
+              steps {
+                cleanWs()
+
+                /* Fetch the babeltrace artifacts */
+                copyArtifacts projectName: "babeltrace_{{ babelversion }}_portbuild/platform=deb12-i386,conf=std,build=std", selector: lastCompleted(), filter: 'build/**', target: 'deps-32', fingerprintArtifacts: false
+
+                unstash name: 'dep-sources'
+                unstash name: 'tools-sources'
+              }
+            }
+
+            stage('Build i386 liburcu') {
+              steps {
+
+                /* Prevent non existent include dir warnings */
+                sh 'mkdir -p $INCLUDE_DIR_32'
+
+                dir("src/userspace-rcu") {
+                  sh './bootstrap'
+                  sh './configure --prefix="$PREFIX"'
+                  sh 'make -j"$(nproc)" V=1'
+                  sh 'make install DESTDIR="$WORKSPACE"'
+
+                  sh 'find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \\;'
+                  sh 'find "$WORKSPACE/build/lib" -name "*.la" -exec rm -vf {} \\;'
+                }
+
+                /* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+                sh 'cp -rv build $BASEDIR_32/'
+                sh 'rm -rf build'
+              }
+            }
+
+            stage('Build i386 lttng-ust') {
+              steps {
+                dir("src/lttng-ust") {
+                  sh './bootstrap'
+                  sh './configure --prefix="$PREFIX"'
+                  sh 'make V=1'
+                  sh 'make install DESTDIR="$WORKSPACE"'
+                  sh 'find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \\;'
+                  sh 'find "$WORKSPACE/build/lib" -name "*.la" -exec rm -vf {} \\;'
+                }
+
+                /* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+                sh 'cp -rv build $BASEDIR_32/'
+                sh 'rm -rf build'
+              }
+            }
+
+            stage('Build i386 lttng-tools') {
+              steps {
+                dir("src/lttng-tools") {
+                  sh './bootstrap'
+                  sh './configure --prefix="$PREFIX"'
+                  sh 'make V=1'
+                  sh 'make install DESTDIR="$WORKSPACE"'
+                  sh 'find "$WORKSPACE/build/bin" -type f -perm -0500 -exec chrpath --delete {} \\;'
+                  sh 'find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \\;'
+                  sh 'find "$WORKSPACE/build/lib" -name "*.la" -exec rm -vf {} \\;'
+                }
+
+                /* Move the artifacts of the recently built project to the deps directory and remove the "build" directory to prevent `make install` shenanigans for lttng-ust 2.12 */
+                sh 'cp -rv build $BASEDIR_32/'
+                sh 'rm -rf build'
+              }
+            }
+
+            stage('Stash i386 artifacts') {
+              steps {
+                stash name: "i386-deps-lttng-tools", includes: 'deps-32/**'
+
+                {% if version != 'stable-2.12' %}
+                /* Save the i386 ld_preloaded libraries for sessiond pausing */
+                stash name: "i386-deps-sessiond-notification-pause-lib", includes: 'src/lttng-tools/tests/regression/tools/notification/.libs/libpause_sessiond.so'
+                {% endif %}
+              }
+            }
+          } /* stages */
+
+          post {
+            cleanup {
+              cleanWs cleanWhenFailure: false
+            }
+          }
+        } /* stage('Build i386 artifacts') */
+      }
+    } /* stage('Parallel build of all artifacts') */
+
+    stage('Testing on rootnodes') {
+      parallel {
+        {% for test_type in ["64bit-canary", "32bit-sessiond", "32bit-relayd", "32bit-cli" ] %}
+        stage('Testing {{ test_type }}') {
+          {% if version == 'stable-2.12' %}
+          agent { label 'deb12-amd64-rootnode-linux5' }
+          {% else %}
+          agent { label 'deb12-amd64-rootnode' }
+          {% endif %}
+
+          environment {
+            BASEDIR_32 = "$WORKSPACE/deps-32"
+            BASEDIR_BUILD_32 = "$BASEDIR_32/build"
+            INCLUDE_DIR_32 = "$BASEDIR_BUILD_32/include"
+
+            BASEDIR_64 = "$WORKSPACE/deps-64"
+            BASEDIR_BUILD_64 = "$BASEDIR_64/build"
+            INCLUDE_DIR_64 = "$BASEDIR_BUILD_64/include"
+
+            CPPFLAGS = "-I$BASEDIR_BUILD_64/include"
+            LDFLAGS = "-L$BASEDIR_BUILD_64/lib"
+            PKG_CONFIG_PATH = "$BASEDIR_BUILD_64/lib/pkgconfig"
+            LD_LIBRARY_PATH = "$BASEDIR_BUILD_64/lib:$BASEDIR_BUILD_32/lib"
+            PATH = "$PATH:$BASEDIR_BUILD_64/bin"
+
+            /*
+             * Disable the TAP autotime feature, it uses stdbuf which doesn't work in a
+             * mixed 32/64 environment.
+             */
+            LTTNG_TESTS_TAP_AUTOTIME = 0
+
+            BABELTRACE_PLUGIN_PATH = "$BASEDIR_BUILD_64/lib/babeltrace2/plugins/"
+            LIBBABELTRACE2_PLUGIN_PROVIDER_DIR = "$BASEDIR_BUILD_64/lib/babeltrace2/plugin-providers/"
+
+            DEPS_JAVA = "$WORKSPACE/deps-64/build/share/java"
+            CLASSPATH = "$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
+
+            P3_VERSION="""${sh(
+              returnStdout: true,
+              script: 'python3 -c \'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))\''
+            ).trim()}"""
+
+            /*
+             * Most build configs require access to the babeltrace 2 python bindings.
+             * This also makes the lttngust python agent available for `agents` builds.
+             */
+            PYTHONPATH = "$BASEDIR_BUILD_64/lib/python$P3_VERSION/site-packages"
+
+            LTTNG_CONSUMERD32_BIN = "$BASEDIR_BUILD_32/lib/lttng/libexec/lttng-consumerd"
+            LTTNG_CONSUMERD32_LIBDIR = "$BASEDIR_BUILD_32/lib"
+            LTTNG_CONSUMERD64_BIN = "$BASEDIR_BUILD_64/lib/lttng/libexec/lttng-consumerd"
+            LTTNG_CONSUMERD64_LIBDIR = "$BASEDIR_BUILD_64/lib/"
+          }
+
+          stages {
+            stage('Unstash sources and artifacts') {
+              steps {
+                cleanWs()
+
+                /* Fetch the babeltrace artifacts */
+                copyArtifacts projectName: "babeltrace_{{ babelversion }}_linuxbuild/platform=deb12-amd64,conf=std,build=std", selector: lastCompleted(), filter: 'build/**', target: 'deps-64', fingerprintArtifacts: false
+
+                unstash name: 'modules-sources'
+                unstash name: 'tools-sources'
+                unstash name: "i386-deps-lttng-tools"
+                unstash name: "amd64-deps-lttng-tools"
+
+                {% if version != 'stable-2.12' %}
+                dir('testing-overlay/sessiond') {
+                  /* Save the i386 LD_PRELOAD libraries for sessiond pausing */
+                  unstash name: "i386-deps-sessiond-notification-pause-lib"
+                }
+                {% endif %}
+
+                /* Stable 2.12 and 2.13 still look for "babeltrace" */
+                sh 'ln -s "$BASEDIR_BUILD_64/bin/babeltrace2" "$BASEDIR_BUILD_64/bin/babeltrace"'
+              }
+            }
+
+            stage('Build and install lttng-modules for the current kernel') {
+              steps {
+                dir("src/lttng-modules") {
+                  sh 'make -j"$(nproc)" V=1'
+                  sh 'make modules_install'
+                  sh 'depmod -a'
+                }
+              }
+            }
+
+            stage('Build amd64 lttng-tools') {
+              steps {
+                /* Bootstrap and configure lttng-tools */
+                dir("src/lttng-tools") {
+                  sh './bootstrap'
+                  sh './configure --prefix="$PREFIX" --enable-test-java-agent-all --enable-test-python3-agent'
+                }
+
+                // Deativate health test, simply because there is little value
+                // for this integration testing and because the ld_preloaded
+                // object is for both lttng-sessiond/consumer leading to
+                // difficult ld_preloading Deactivate clock plugin test since
+                // the app must load the correct bitness so and the sessiond its
+                // bitness so, this is simply not feasible from outside the
+                // script. There is little value for this test in this testing
+                // context.
+                dir("src/lttng-tools/tests/regression") {
+                  sh 'sed -i "#tools/health/test_thread_ok#d" Makefile.am'
+                  sh 'sed -i "#ust/clock-override/test_clock_override#d" Makefile.am'
+                }
+
+                /* Build lttng-tools */
+                dir("src/lttng-tools") {
+                  sh 'make -j"$(nproc)" V=1'
+                }
+              }
+            }
+
+            stage('Run lttng-tools testsuite') {
+              options {
+                timeout(time: 15, unit: 'MINUTES', activity: true)
+              }
+
+              steps {
+                {% if test_type == '64bit-canary' %}
+                /* Nothing to do for 64bit-canary */
+
+                {% elif test_type == '32bit-sessiond' %}
+
+                /* Replace the lttng-sessiond binary with the 32-bit version */
+                dir("src/lttng-tools/src/bin/lttng-sessiond") {
+                  sh 'rm -f lttng-sessiond'
+                  sh 'ln -s "$BASEDIR_32/bin/lttng-sessiond" lttng-sessiond'
+                }
+
+                {% if version != 'stable-2.12' %}
+                sh 'cp -rv "testing-overlay/sessiond/"* ./'
+                {% endif %}
+
+                {% elif test_type == '32bit-relayd' %}
+
+                /* Replace the lttng-relayd binary with the 32-bit version */
+                dir("src/lttng-tools/src/bin/lttng-relayd") {
+                  sh 'rm -f lttng-relayd'
+                  sh 'ln -s "$BASEDIR_32/bin/lttng-relayd" lttng-relayd'
+                }
+
+                {% elif test_type == '32bit-cli' %}
+
+                /* Replace the lttng cli binary with the 32-bit version */
+                dir("src/lttng-tools/src/bin/lttng") {
+                  sh 'rm lttng'
+                  sh 'ln -s "$BASEDIR_32/bin/lttng" lttng'
+                }
+
+                {% else %}
+                {% include 'error: invalid test_type' %}
+                {% endif %}
+
+                /* Run the test suite */
+                dir("src/lttng-tools/tests") {
+		  /*
+                   * This will mark the job as FAILED if the test suite is not
+                   * successful but will continue the execution of the stages.
+                   */
+                  catchError {
+                    sh 'make --keep-going check'
+                  }
+                }
+              }
+            } /* stage('Build amd64 artifacts') */
+          } /* stages */
+
+          post {
+            always {
+              dir("src/lttng-tools/tests") {
+                /* Gather the TAP logs */
+                sh '''
+                  mkdir -p "$WORKSPACE/tap/{{ test_type }}"
+                  rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' ./ "$WORKSPACE/tap/{{ test_type }}"
+                '''
+
+                /* Gather the test suites top-level log which includes all tests failures */
+                sh '''
+                  mkdir -p "$WORKSPACE/log/{{ test_type }}"
+                  rsync -a --include 'test-suite.log' --include '*/' --exclude='*' ./ "$WORKSPACE/log/{{ test_type }}"
+                '''
+              }
+
+              step([$class: 'TapPublisher', testResults: 'tap/**/*.log', verbose: true, failIfNoResults: true, failedTestsMarkBuildAsFailure: true, planRequired: true])
+              archiveArtifacts artifacts: 'tap/**,log/**', fingerprint: false
+
+              recordIssues skipBlames: true, tools: [gcc(id: "{{ test_type }}")]
+            }
+
+            cleanup {
+              cleanWs cleanWhenFailure: false
+            }
+          }
+        }
+        {% endfor %}
+      } /* parallel */
+    } /* stage('Testing on rootnodes') */
+  }
+}
