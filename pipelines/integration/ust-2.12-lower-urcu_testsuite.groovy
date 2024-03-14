@@ -1,5 +1,9 @@
 #!groovy
 
+// SPDX-FileCopyrightText: 2021 Michael Jeanson <mjeanson@efficios.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 pipeline {
   agent none
 
@@ -22,7 +26,7 @@ pipeline {
 
     /* First level stage */
     stage('Prepare targets') {
-      agent { label 'amd64' }
+      agent { label 'deb12-amd64' }
 
       stages {
         stage('Checkout sources') {
@@ -51,63 +55,85 @@ pipeline {
 
         stage('Generate UST 2.12 targets') {
            environment {
-             TARGETS = "$WORKSPACE/targets"
+             TARGETS = "${WORKSPACE}/targets"
              CUR_TARGET = "current"
-             CPPFLAGS = "-I$TARGETS/$CUR_TARGET/include"
-             LDFLAGS = "-L$TARGETS/$CUR_TARGET/lib"
+             CPPFLAGS = "-I${TARGETS}/${CUR_TARGET}/include"
+             LDFLAGS = "-L${TARGETS}/${CUR_TARGET}/lib"
              CLASSPATH = "/usr/share/java/log4j-1.2.jar"
            }
 
           steps {
-            // Create empty include dir to make gcc '-Wmissing-include-dirs' happy
-            sh 'mkdir -p "$TARGETS/$CUR_TARGET/include"'
+            /* Create empty include dir to make gcc '-Wmissing-include-dirs' happy */
+            sh "mkdir -p \"${TARGETS}/${CUR_TARGET}/include\""
 
             // Build babeltrace 2.0
             dir("src/babeltrace/stable-2.0") {
-              sh './bootstrap && ./configure --prefix="$TARGETS/$CUR_TARGET" --disable-static && make -j"$(nproc)" V=1 && make check && make install && find "$TARGETS/$CUR_TARGET" -name "*.la" -delete'
+              sh "./bootstrap"
+              sh "./configure --prefix=\"${TARGETS}/${CUR_TARGET}\" --disable-static"
+              sh "make -j\"\$(nproc)\" V=1"
+              sh "make check"
+              sh "make install"
+              sh "find \"${TARGETS}/${CUR_TARGET}\" -name \"*.la\" -delete"
             }
 
             // Add symlink from babeltrace2 to babeltrace
-            dir("$TARGETS/$CUR_TARGET/bin") {
-              sh 'ln -s babeltrace2 babeltrace'
+            dir("${TARGETS}/${CUR_TARGET}/bin") {
+              sh "ln -s babeltrace2 babeltrace"
             }
 
             // Build liburcu 0.9 for ust 2.12
             dir("src/urcu/stable-0.9") {
-              sh './bootstrap && ./configure --prefix="$TARGETS/$CUR_TARGET" --disable-static && make -j"$(nproc)" V=1 && make check && make install && find "$TARGETS/$CUR_TARGET" -name "*.la" -delete'
+              sh "./bootstrap"
+              sh "./configure --prefix=\"${TARGETS}/${CUR_TARGET}\" --disable-static"
+              sh "make -j\"\$(nproc)\" V=1"
+              sh "make check"
+              sh "make install"
+              sh "find \"${TARGETS}/${CUR_TARGET}\" -name \"*.la\" -delete"
             }
 
             // Build ust 2.12 against liburcu 0.9
             dir("src/ust/stable-2.12-lower-urcu-dep") {
-              sh './bootstrap && ./configure --prefix="$TARGETS/$CUR_TARGET" --enable-python-agent --enable-java-agent-all --enable-jni-interface && make -j"$(nproc)" V=1 && make check && make install && find "$TARGETS/$CUR_TARGET" -name "*.la" -delete'
+              sh "./bootstrap"
+              sh "./configure --prefix=\"${TARGETS}/${CUR_TARGET}\" --enable-python-agent --enable-java-agent-all --enable-jni-interface"
+              sh "make -j\"\$(nproc)\" V=1"
+              sh "make check"
+              sh "make install"
+              sh "find \"${TARGETS}/${CUR_TARGET}\" -name \"*.la\" -delete"
             }
 
             // Make a copy of the ust 2.12 target with only urcu 0.9
-            dir("$TARGETS") {
-              sh 'cp -dpr "$CUR_TARGET" "ust-2.12-urcu-0.9"'
+            dir("${TARGETS}") {
+              sh "cp -dpr \"${CUR_TARGET}\" \"ust-2.12-urcu-0.9\""
             }
 
             // Remove the 'dev' part of liburcu 0.9, keep only the versionned SO
-            dir("$TARGETS/$CUR_TARGET") {
-              sh 'rm -rf "$TARGETS/$CUR_TARGET/include/urcu" && rm -f "$TARGETS/$CUR_TARGET/include/"urcu*.h && rm -f "$TARGETS/$CUR_TARGET/lib/"liburcu*.so && rm -f "$TARGETS/$CUR_TARGET/lib/pkgconfig/"liburcu*'
+            dir("${TARGETS}/${CUR_TARGET}") {
+              sh "rm -rf \"${TARGETS}/${CUR_TARGET}/include/urcu\""
+              sh "rm -f \"${TARGETS}/${CUR_TARGET}/include/\"urcu*.h"
+              sh "rm -f \"${TARGETS}/${CUR_TARGET}/lib/\"liburcu*.so"
+              sh "rm -f \"${TARGETS}/${CUR_TARGET}/lib/pkgconfig/\"liburcu*"
             }
 
             // Build liburcu 0.12 for tools 2.12
             dir("src/urcu/stable-0.12") {
-              sh './bootstrap && ./configure --prefix="$TARGETS/$CUR_TARGET" --disable-static && make -j"$(nproc)" V=1 && make check && make install && find "$TARGETS/$CUR_TARGET" -name "*.la" -delete'
+              sh "./bootstrap"
+              sh "./configure --prefix=\"${TARGETS}/${CUR_TARGET}\" --disable-static"
+              sh "make -j\"\$(nproc)\" V=1"
+              sh "make check"
+              sh "make install"
+              sh "find \"${TARGETS}/${CUR_TARGET}\" -name \"*.la\" -delete"
             }
 
             // Copy the liburcu 0.12 runtime SO to the ust-2.12-urcu-0.9 target
-            sh 'cp -dpr "$TARGETS/$CUR_TARGET/lib/"liburcu*.so.6* "$TARGETS/ust-2.12-urcu-0.9/lib"'
+            sh "cp -dpr \"${TARGETS}/${CUR_TARGET}/lib/\"liburcu*.so.6* \"${TARGETS}/ust-2.12-urcu-0.9/lib\""
 
-            dir("$TARGETS") {
-
+            dir("${TARGETS}") {
               // Archive the first ust 2.12 target with urcu 0.9 dev+runtime and 0.12 runtime
               stash name: "ust-2.12-urcu-0.9", includes: 'ust-2.12-urcu-0.9/**'
               archiveArtifacts artifacts: 'ust-2.12-urcu-0.9/**', fingerprint: false
 
               // Archive the second ust 2.12 target with urcu 0.9 runtime and 0.12 dev+runtime
-              sh 'mv "$CUR_TARGET" "ust-2.12-urcu-0.12"'
+              sh 'mv "${CUR_TARGET}" "ust-2.12-urcu-0.12"'
               stash name: "ust-2.12-urcu-0.12", includes: 'ust-2.12-urcu-0.12/**'
               archiveArtifacts artifacts: 'ust-2.12-urcu-0.12/**', fingerprint: false
             }
@@ -116,41 +142,48 @@ pipeline {
 
         stage('Generate UST 2.13 target') {
            environment {
-             TARGETS = "$WORKSPACE/targets"
+             TARGETS = "${WORKSPACE}/targets"
              CUR_TARGET = "current"
-             CPPFLAGS = "-I$TARGETS/$CUR_TARGET/include"
-             LDFLAGS = "-L$TARGETS/$CUR_TARGET/lib"
-             PKG_CONFIG_PATH = "$TARGETS/$CUR_TARGET/lib/pkgconfig"
+             CPPFLAGS = "-I${TARGETS}/${CUR_TARGET}/include"
+             LDFLAGS = "-L${TARGETS}/${CUR_TARGET}/lib"
+             PKG_CONFIG_PATH = "${TARGETS}/${CUR_TARGET}/lib/pkgconfig"
              CLASSPATH = "/usr/share/java/log4j-1.2.jar"
            }
 
           steps {
             // Create empty include dir to make gcc '-Wmissing-include-dirs' happy
-            sh 'mkdir -p "$TARGETS/$CUR_TARGET/include"'
+            sh "mkdir -p \"${TARGETS}/${CUR_TARGET}/include\""
 
             // Install babeltrace 2.0 built in the previous stage in a fresh target
             dir("src/babeltrace/stable-2.0") {
-              sh 'make install && find "$TARGETS/$CUR_TARGET" -name "*.la" -delete'
+              sh "make install"
+              sh "find \"${TARGETS}/${CUR_TARGET}\" -name \"*.la\" -delete"
             }
 
             // Add symlink from babeltrace2 to babeltrace
-            dir("$TARGETS/$CUR_TARGET/bin") {
-              sh 'ln -s babeltrace2 babeltrace'
+            dir("${TARGETS}/${CUR_TARGET}/bin") {
+              sh "ln -s babeltrace2 babeltrace"
             }
 
             // Install liburcu 0.12 built in the previous stage in a fresh target
             dir("src/urcu/stable-0.12") {
-              sh 'make install && find "$TARGETS/$CUR_TARGET" -name "*.la" -delete'
+              sh "make install"
+              sh "find \"${TARGETS}/${CUR_TARGET}\" -name \"*.la\" -delete"
             }
 
             // Build ust 2.13 against liburcu 0.12
             dir("src/ust/stable-2.13") {
-              sh './bootstrap && ./configure --prefix="$TARGETS/$CUR_TARGET" --enable-python-agent --enable-java-agent-all --enable-jni-interface && make -j"$(nproc)" V=1 && make check && make install && find "$TARGETS/$CUR_TARGET" -name "*.la" -delete'
+              sh "./bootstrap"
+              sh "./configure --prefix=\"${TARGETS}/${CUR_TARGET}\" --enable-python-agent --enable-java-agent-all --enable-jni-interface"
+              sh "make -j\"\$(nproc)\" V=1"
+              sh "make check"
+              sh "make install"
+              sh "find \"${TARGETS}/${CUR_TARGET}\" -name \"*.la\" -delete"
             }
 
             // Archive the target
-            dir("$TARGETS") {
-              sh 'mv "$CUR_TARGET" "ust-2.13"'
+            dir("${TARGETS}") {
+              sh 'mv "${CUR_TARGET}" "ust-2.13"'
               stash name: "ust-2.13", includes: "ust-2.13/**"
               archiveArtifacts artifacts: 'ust-2.13/**', fingerprint: false
             }
@@ -164,18 +197,18 @@ pipeline {
       parallel {
         // Parallel stage for tools 2.12
         stage('Test tools 2.12') {
-          agent { label 'amd64' }
+          agent { label 'deb12-amd64' }
 
           environment {
-            TARGETS = "$WORKSPACE/targets"
+            TARGETS = "${WORKSPACE}/targets"
             CUR_TARGET = "current"
-            CPPFLAGS = "-I$TARGETS/$CUR_TARGET/include"
-            LDFLAGS = "-L$TARGETS/$CUR_TARGET/lib"
-            PKG_CONFIG_PATH = "$TARGETS/$CUR_TARGET/lib/pkgconfig"
-            CLASSPATH = "/usr/share/java/log4j-1.2.jar:$TARGETS/$CUR_TARGET/share/java/*"
-            PYTHONPATH="$TARGETS/$CUR_TARGET/lib/python2.7/site-packages"
-            LD_LIBRARY_PATH="$TARGETS/$CUR_TARGET/lib"
-            PATH="$PATH:$TARGETS/$CUR_TARGET/bin"
+            CPPFLAGS = "-I${TARGETS}/${CUR_TARGET}/include"
+            LDFLAGS = "-L${TARGETS}/${CUR_TARGET}/lib"
+            PKG_CONFIG_PATH = "${TARGETS}/${CUR_TARGET}/lib/pkgconfig"
+            CLASSPATH = "/usr/share/java/log4j-1.2.jar:${TARGETS}/${CUR_TARGET}/share/java/*"
+            PYTHONPATH = "${TARGETS}/${CUR_TARGET}/lib/python2.7/site-packages"
+            LD_LIBRARY_PATH = "${TARGETS}/${CUR_TARGET}/lib"
+            PATH = "$PATH:${TARGETS}/${CUR_TARGET}/bin"
           }
 
           stages {
@@ -191,7 +224,7 @@ pipeline {
 
             stage('Unstash targets') {
               steps {
-                dir("$TARGETS") {
+                dir("${TARGETS}") {
                   unstash name: "ust-2.12-urcu-0.9"
                   unstash name: "ust-2.12-urcu-0.12"
                 }
@@ -201,16 +234,19 @@ pipeline {
             stage('Build tools 2.12') {
               steps {
                 // Restore the ust-2.12 target with urcu 0.12
-                sh 'ln -sf "$TARGETS/ust-2.12-urcu-0.12" "$TARGETS/$CUR_TARGET"'
+                sh "ln -sf \"${TARGETS}/ust-2.12-urcu-0.12\" \"${TARGETS}/${CUR_TARGET}\""
 
                 // Build tools 2.12
                 // --disable-dependency-tracking is important to allow rebuilding only the testapps
                 dir("src/tools/stable-2.12") {
-                  sh './bootstrap && ./configure --prefix="$TARGETS/$CUR_TARGET" --enable-test-java-agent-all --enable-python-bindings --disable-dependency-tracking && make -j"$(nproc)" V=1'
+                  sh "./bootstrap"
+                  sh "./configure --prefix=\"${TARGETS}/${CUR_TARGET}\" --enable-test-java-agent-all --enable-python-bindings --disable-dependency-tracking"
+                  sh "make -j\"\$(nproc)\" V=1"
                 }
 
                 // Swap the target to ust 2.12 with urcu 0.9
-                sh 'rm -f "$TARGETS/$CUR_TARGET" && ln -sf "$TARGETS/ust-2.12-urcu-0.9" "$TARGETS/$CUR_TARGET"'
+                sh "rm -f \"${TARGETS}/${CUR_TARGET}\""
+                sh "ln -sf \"${TARGETS}/ust-2.12-urcu-0.9\" \"${TARGETS}/${CUR_TARGET}\""
 
                 // Rebuild the testapps with ust 2.12 urcu 0.9
                 dir("src/tools/stable-2.12/tests") {
@@ -224,22 +260,45 @@ pipeline {
                 }
 
                 // Swap back the target to ust 2.12 with urcu 0.12
-                sh 'rm -f "$TARGETS/$CUR_TARGET" && ln -sf "$TARGETS/ust-2.12-urcu-0.12" "$TARGETS/$CUR_TARGET"'
+                sh "rm -f \"${TARGETS}/${CUR_TARGET}\""
+                sh "ln -sf \"${TARGETS}/ust-2.12-urcu-0.12\" \"${TARGETS}/${CUR_TARGET}\""
 
               }
             }
 
             stage('Run tools 2.12 tests') {
+              options {
+                timeout(time: 15, unit: 'MINUTES', activity: true)
+              }
+
               steps {
                 // Run the tests
                 dir("src/tools/stable-2.12") {
-                  sh 'make --keep-going  check || true'
-                  sh 'mkdir -p "$WORKSPACE/tap/ust-2.12"'
-                  sh 'rsync -a --exclude "test-suite.log" --include \'*/\' --include \'*.log\' --exclude=\'*\' tests/ "$WORKSPACE/tap/ust-2.12"'
+		  /*
+                   * This will mark the stage as FAILED if the test suite is not
+                   * successful but will continue the execution of the steps.
+                   */
+                  catchError {
+                    sh "make --keep-going check"
+                  }
+                }
+              }
+
+              post {
+                always {
+                  dir("src/tools/stable-2.12") {
+                    sh 'mkdir -p "${WORKSPACE}/tap/ust-2.12"'
+                    sh 'rsync -a --exclude "test-suite.log" --include \'*/\' --include \'*.log\' --exclude=\'*\' tests/ "${WORKSPACE}/tap/ust-2.12"'
+
+                    sh 'mkdir -p "${WORKSPACE}/log/ust-2.12"'
+                    sh 'rsync -a --include "test-suite.log" --include \'*/\' --exclude=\'*\' tests/ "${WORKSPACE}/log/ust-2.12"'
+                  }
                 }
 
-                // Clean target
-                sh 'rm -f "$TARGETS/$CUR_TARGET"'
+                cleanup {
+                  // Clean target
+                  sh "rm -f \"${TARGETS}/${CUR_TARGET}\""
+                }
               }
             }
           }
@@ -248,7 +307,7 @@ pipeline {
             always {
               recordIssues skipBlames: true, tools: [gcc(id: "gcc-ust-212")]
               step([$class: 'TapPublisher', testResults: 'tap/**/*.log', verbose: true, failIfNoResults: true, failedTestsMarkBuildAsFailure: true, planRequired: true])
-              archiveArtifacts artifacts: 'tap/**', fingerprint: false
+              archiveArtifacts artifacts: 'tap/**,log/**', fingerprint: false
             }
             cleanup {
               cleanWs cleanWhenFailure: false
@@ -258,18 +317,18 @@ pipeline {
 
         // Parallel stage for tools 2.13
         stage('Test tools 2.13') {
-          agent { label 'amd64' }
+          agent { label 'deb12-amd64' }
 
           environment {
-            TARGETS = "$WORKSPACE/targets"
+            TARGETS = "${WORKSPACE}/targets"
             CUR_TARGET = "current"
-            CPPFLAGS = "-I$TARGETS/$CUR_TARGET/include"
-            LDFLAGS = "-L$TARGETS/$CUR_TARGET/lib"
-            PKG_CONFIG_PATH = "$TARGETS/$CUR_TARGET/lib/pkgconfig"
-            CLASSPATH = "/usr/share/java/log4j-1.2.jar:$TARGETS/$CUR_TARGET/share/java/*"
-            PYTHONPATH="$TARGETS/$CUR_TARGET/lib/python2.7/site-packages"
-            LD_LIBRARY_PATH="$TARGETS/$CUR_TARGET/lib"
-            PATH="$PATH:$TARGETS/$CUR_TARGET/bin"
+            CPPFLAGS = "-I${TARGETS}/${CUR_TARGET}/include"
+            LDFLAGS = "-L${TARGETS}/${CUR_TARGET}/lib"
+            PKG_CONFIG_PATH = "${TARGETS}/${CUR_TARGET}/lib/pkgconfig"
+            CLASSPATH = "/usr/share/java/log4j-1.2.jar:${TARGETS}/${CUR_TARGET}/share/java/*"
+            PYTHONPATH =" ${TARGETS}/${CUR_TARGET}/lib/python2.7/site-packages"
+            LD_LIBRARY_PATH = "${TARGETS}/${CUR_TARGET}/lib"
+            PATH = "$PATH:${TARGETS}/${CUR_TARGET}/bin"
           }
 
           stages {
@@ -285,7 +344,7 @@ pipeline {
 
             stage('Unstash targets') {
               steps {
-                dir("$TARGETS") {
+                dir("${TARGETS}") {
                   unstash name: "ust-2.12-urcu-0.9"
                   unstash name: "ust-2.13"
                 }
@@ -295,7 +354,7 @@ pipeline {
             stage('Build tools 2.13') {
               steps {
                 // Restore the ust-2.13 target
-                sh 'ln -sf "$TARGETS/ust-2.13" "$TARGETS/$CUR_TARGET"'
+                sh 'ln -sf "${TARGETS}/ust-2.13" "${TARGETS}/${CUR_TARGET}"'
 
                 // Disable regression tests that don't apply to ust 2.12
                 dir("src/tools/stable-2.13/tests/regression") {
@@ -325,11 +384,14 @@ pipeline {
                 // Build tools 2.13 with ust 2.13
                 // --disable-dependency-tracking is important to allow rebuilding only the testapps with ust 2.12
                 dir("src/tools/stable-2.13") {
-                  sh './bootstrap && ./configure --prefix="$TARGETS/$CUR_TARGET" --enable-test-java-agent-all --enable-python-bindings --disable-dependency-tracking && make -j"$(nproc)" V=1'
+                  sh "./bootstrap"
+                  sh "./configure --prefix=\"${TARGETS}/${CUR_TARGET}\" --enable-test-java-agent-all --enable-python-bindings --disable-dependency-tracking"
+                  sh "make -j\"\$(nproc)\" V=1"
                 }
 
                 // Swap the target to ust 2.12
-                sh 'rm -f "$TARGETS/$CUR_TARGET" && ln -sf "$TARGETS/ust-2.12-urcu-0.9" "$TARGETS/$CUR_TARGET"'
+                sh "rm -f \"${TARGETS}/${CUR_TARGET}\""
+                sh "ln -sf \"${TARGETS}/ust-2.12-urcu-0.9\" \"${TARGETS}/${CUR_TARGET}\""
 
                 // Rebuild the testapps with ust 2.12
                 dir("src/tools/stable-2.13/tests") {
@@ -344,26 +406,44 @@ pipeline {
                 }
 
                 // Add the ust 2.13 runtime to the target
-                sh 'cp -dp "$TARGETS/ust-2.13/lib/"liblttng-ust-*.so.1* "$TARGETS/$CUR_TARGET/lib/"'
-                sh 'cp -dp "$TARGETS/ust-2.13/lib/"liblttng-ust-ctl.so.5* "$TARGETS/$CUR_TARGET/lib/"'
+                sh "cp -dp \"${TARGETS}/ust-2.13/lib/\"liblttng-ust-*.so.1* \"${TARGETS}/${CUR_TARGET}/lib/\""
+                sh "cp -dp \"${TARGETS}/ust-2.13/lib/\"liblttng-ust-ctl.so.5* \"${TARGETS}/${CUR_TARGET}/lib/\""
               }
             }
 
             stage('Run tools 2.13 tests') {
+              options {
+                timeout(time: 15, unit: 'MINUTES', activity: true)
+              }
+
               steps {
                 // Run the regression tests
                 dir("src/tools/stable-2.13/tests/regression") {
-                  sh 'make --keep-going check || true'
+		  /*
+                   * This will mark the stage as FAILED if the test suite is not
+                   * successful but will continue the execution of the steps.
+                   */
+                  catchError {
+                    sh "make --keep-going check"
+                  }
+                }
+              }
+
+              post {
+                always {
+                  dir("src/tools/stable-2.13") {
+                    sh 'mkdir -p "${WORKSPACE}/tap/ust-2.13"'
+                    sh 'rsync -a --exclude "test-suite.log" --include \'*/\' --include \'*.log\' --exclude=\'*\' tests/ "${WORKSPACE}/tap/ust-2.13"'
+
+                    sh 'mkdir -p "${WORKSPACE}/log/ust-2.13"'
+                    sh 'rsync -a --include "test-suite.log" --include \'*/\' --exclude=\'*\' tests/ "${WORKSPACE}/log/ust-2.13"'
+                  }
                 }
 
-                // Archive the tap tests results
-                dir("src/tools/stable-2.13") {
-                  sh 'mkdir -p "$WORKSPACE/tap/ust-2.13"'
-                  sh 'rsync -a --exclude "test-suite.log" --include \'*/\' --include \'*.log\' --exclude=\'*\' tests/ "$WORKSPACE/tap/ust-2.13"'
+                cleanup {
+                  // Clean target
+                  sh "rm -f \"${TARGETS}/${CUR_TARGET}\""
                 }
-
-                // Clean target
-                sh 'rm -f "$TARGETS/$CUR_TARGET"'
               }
             }
           }
@@ -372,8 +452,9 @@ pipeline {
             always {
               recordIssues skipBlames: true, tools: [gcc(id: "gcc-ust-213")]
               step([$class: 'TapPublisher', testResults: 'tap/**/*.log', verbose: true, failIfNoResults: true, failedTestsMarkBuildAsFailure: true, planRequired: true])
-              archiveArtifacts artifacts: 'tap/**', fingerprint: false
+              archiveArtifacts artifacts: 'tap/**,log/**', fingerprint: false
             }
+
             cleanup {
               cleanWs cleanWhenFailure: false
             }
