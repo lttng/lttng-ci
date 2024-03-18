@@ -281,6 +281,10 @@ if [ -d "$WORKSPACE/src/lttng-modules" ]; then
     $MAKE -j"$($NPROC)" V=1
     $MAKE modules_install V=1
     depmod
+
+    if [[ -f /etc/products.d/SLES.prod ]] ; then
+        echo 'allow_unsupported_modules 1' > /etc/modprobe.d/10-unsupported-modules.conf
+    fi
 fi
 
 # Print build env details
