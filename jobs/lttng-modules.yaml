@@ -792,7 +792,7 @@
 
     builders:
       - shell: |
-         git clone --depth=1 -b v6.1 --reference $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
+         git clone --depth=1 -b v6.1 --reference-if-able $HOME/gitcache/linux-stable.git/ git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git src/linux
          cd src/linux
          make allyesconfig
          sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config

@@ -96,7 +96,7 @@ git_clone_modules_sources() {
 # Checkout a shallow kernel tree of the specified tag
 git_clone_linux_sources() {
     mkdir -p "$LINUX_GIT_DIR"
-    git clone --depth=1 -b "${ktag}" --reference "$LINUX_GIT_REF_REPO_DIR" "${kgitrepo}" "$LINUX_GIT_DIR"
+    git clone --depth=1 -b "${ktag}" --reference-if-able "$LINUX_GIT_REF_REPO_DIR" "${kgitrepo}" "$LINUX_GIT_DIR"
 }
 
 
