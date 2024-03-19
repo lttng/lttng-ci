@@ -34,7 +34,7 @@ def _get_argparser():
         description="Fetch and create a stub environment from common job artifacts",
     )
     # Commands: fetch (implies activate), activate, deactivate
-    subparsers = parser.add_subparsers(required=True, dest="command")
+    subparsers = parser.add_subparsers(dest="command")
     parser.add_argument(
         "-v", "--verbose", action="count", help="Increase the verbosity"
     )
@@ -111,7 +111,7 @@ def fetch(destination, server, job, build, job_configuration=None, download=True
             pathlib.Path("/etc/products.d/SLES.prod").exists()
             or pathlib.Path("/etc/redhat-release").exists()
             or pathlib.Path("/etc/yocto-release").exists()
-        ) and "64bit" in platform.architecture:
+        ) and "64bit" in platform.architecture():
             lib_dir_arch = "{}64"
 
         so_re = re.compile("^.*\.so\.\d+\.\d+\.\d+$")
@@ -140,7 +140,7 @@ def create_activate(destination):
         pathlib.Path("/etc/products.d/SLES.prod").exists()
         or pathlib.Path("/etc/redhat-release").exists()
         or pathlib.Path("/etc/yocto-release").exists()
-    ) and "64bit" in platform.architecture:
+    ) and "64bit" in platform.architecture():
         lib_dir_arch = "{}64"
 
     env = {}
