@@ -91,7 +91,7 @@
           description: 'Kernel versions list filtering strategy.'
       - string:
           name: 'kverrc'
-          default: 'true'
+          default: '{kverrc|true}'
           description: 'Add latest RC to kernel versions list.'
       - string:
           name: 'kgitrepo'
@@ -123,7 +123,7 @@
           description: 'Kernel versions list filtering strategy.'
       - string:
           name: 'kverrc'
-          default: 'true'
+          default: '{kverrc|true}'
           description: 'Add latest RC to kernel versions list.'
       - string:
           name: 'kgitrepo'
@@ -991,6 +991,7 @@
           kverfloor: v3.0
           kverceil: v5.18-rc1
           kverfilter: stable-head
+          kverrc: false
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
             - stable-2.12
@@ -999,6 +1000,7 @@
           kverfloor: v3.0
           kverceil: v5.18-rc1
           kverfilter: none
+          kverrc: false
 
 # EL normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{elversion}':
@@ -1089,6 +1091,7 @@
           kverfloor: v3.18
           kverceil: v5.18-rc1
           kverfilter: stable-head
+          kverrc: false
 
 # Ubuntu cross builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
@@ -1147,6 +1150,7 @@
           kverfloor: v3.0
           kverceil: v5.18
           kverfilter: lts-head
+          kverrc: false
       - 'dev_review_lttng-modules_{mversion}_build-{elversion}':
           mversion:
             - master
