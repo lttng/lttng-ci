@@ -810,7 +810,7 @@ build_linux_kernel() {
     scripts/config --disable CONFIG_MICREL_PHY
 
 
-    # IGBVF won't build with recent gcc on 2.6.38.x
+    # IGBVF won't build with recent gcc on 2.6.38.2
     if { vergte "$kversion" "2.6.37" && verlt "$kversion" "2.6.38"; }; then
       scripts/config --disable CONFIG_IGBVF
     fi
@@ -831,6 +831,12 @@ build_linux_kernel() {
     scripts/config --enable CONFIG_PERF_EVENTS
     scripts/config --enable CONFIG_EVENT_TRACING
     scripts/config --enable CONFIG_KRETPROBES
+
+    # Starting in linux 6.9-rc1, TRIM_UNUSED_SYMS seems to be true
+    # for out build configurations. In earlier versions the default
+    # was set depending on the value of `COMPILE_TEST`.
+    # See upstream commit d2d5cba5d92c4ed23caa86228a1bc31b07e90fe9.
+    scripts/config --disable CONFIG_TRIM_UNUSED_KSYMS
 
     if [ -n "${DEBUG}" ] ; then
         cat .config
