@@ -1093,6 +1093,9 @@
           project: 'liburcu_{urcuversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
+          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
+      - copyartifact:
+          <<: *lttng-tools_steps_copyartifact_defaults
           project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=std,build=std'
       - shell:
           !include-raw-escape: scripts/common/coverity.sh
@@ -1266,6 +1269,7 @@
           version: master
           urcuversion: master
           ustversion: master
+          babelversion: master
 
       # stable-2.13
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
