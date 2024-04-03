@@ -1056,6 +1056,9 @@
           project: 'liburcu_{urcuversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
+          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
+      - copyartifact:
+          <<: *lttng-tools_steps_copyartifact_defaults
           project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=std,build=std'
       - shell:
           !include-raw-escape: scripts/common/scan-build.sh
@@ -1265,6 +1268,7 @@
           version: master
           urcuversion: master
           ustversion: master
+          babelversion: master
       - 'lttng-tools_{version}_coverity':
           version: master
           urcuversion: master
@@ -1401,6 +1405,7 @@
           version: stable-2.13
           urcuversion: stable-0.13
           ustversion: stable-2.13
+          babelversion: stable-2.0
 
       # stable-2.12
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
@@ -1532,6 +1537,7 @@
           version: stable-2.12
           urcuversion: stable-0.13
           ustversion: stable-2.12
+          babelversion: stable-2.0
 
 - project:
     name: dev_jgalar_lttng-tools
