@@ -307,6 +307,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
       new StringParameterValue('mgitrepo', mgitrepo),
       new StringParameterValue('ktag', kversion.toString()),
       new StringParameterValue('kgitrepo', kgitrepo),
+      new StringParameterValue('distroversion', ''),
     ]
 
     // Launch the parametrized build
