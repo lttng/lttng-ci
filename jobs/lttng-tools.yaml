@@ -244,7 +244,7 @@
       - conditional-step:
           condition-kind: regex-match
           label: '$JOB_NAME'
-          regex: '.*_rootbuild.*'
+          regex: '.*_root(?:_[a-z]+)?build.*'
           steps:
             - shell: |
                 #!/bin/bash
