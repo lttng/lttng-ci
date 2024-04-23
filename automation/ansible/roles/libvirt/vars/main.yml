@@ -10,9 +10,9 @@ vm_defaults:
   # uuid: xxxx-yyyy
   # name: xyz
 isos:
-  - url: https://releases.ubuntu.com/jammy/ubuntu-22.04.2-live-server-amd64.iso
-    checksum: "sha256:5e38b55d57d94ff029719342357325ed3bda38fa80054f9330dc789cd2d43931"
-    dest: /var/lib/iso/ubuntu-22.04.2-live-server-amd64.iso
+  - url: https://releases.ubuntu.com/jammy/ubuntu-22.04.4-live-server-amd64.iso
+    checksum: "sha256:45f873de9f8cb637345d6e66a583762730bbea30277ef7b32c9c3bd6700a32b2"
+    dest: /var/lib/iso/ubuntu-22.04.4-live-server-amd64.iso
   - url: https://cdimage.debian.org/cdimage/archive/12.0.0/i386/iso-cd/debian-12.0.0-i386-netinst.iso
     checksum: "sha256:4f5cf17c611693d494c0a6a591b2d1e5fcd222d95e81bc555b581b2b01488f14"
     dest: /var/lib/iso/debian-12.0.0-i386-netinst.iso
@@ -21,6 +21,6 @@ isos:
     dest: /var/lib/iso/debian-12.0.0-amd64-netinst.iso
   # Patched iPXE.iso with serial console + reboot + infinite timeout for LAVA
   # @see https://wiki.internal.efficios.com/lava#special_ipxe_boot_image_for_vms
-  - url: obj.internal.efficios.com/lava/ipxe.iso
+  - url: http://obj.internal.efficios.com/lava/ipxe.iso
     checksum: "sha256:063bcfc9f9797636a97ccbf9dc5f52f54a85b87b0d143150102f80b8533b2f20"
     dest: /var/lib/iso/ipxe.iso
