@@ -13,12 +13,18 @@ isos:
   - url: https://releases.ubuntu.com/jammy/ubuntu-22.04.4-live-server-amd64.iso
     checksum: "sha256:45f873de9f8cb637345d6e66a583762730bbea30277ef7b32c9c3bd6700a32b2"
     dest: /var/lib/iso/ubuntu-22.04.4-live-server-amd64.iso
-  - url: https://cdimage.debian.org/cdimage/archive/12.0.0/i386/iso-cd/debian-12.0.0-i386-netinst.iso
-    checksum: "sha256:4f5cf17c611693d494c0a6a591b2d1e5fcd222d95e81bc555b581b2b01488f14"
-    dest: /var/lib/iso/debian-12.0.0-i386-netinst.iso
-  - url: https://cdimage.debian.org/cdimage/archive/12.0.0/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso
-    checksum: "sha256:3b0e9718e3653435f20d8c2124de6d363a51a1fd7f911b9ca0c6db6b3d30d53e"
-    dest: /var/lib/iso/debian-12.0.0-amd64-netinst.iso
+  - url: https://cdimage.debian.org/cdimage/archive/12.4.0/i386/iso-cd/debian-12.4.0-i386-netinst.iso
+    checksum: "sha256:3b39026f0dc0c1c37e3ebe9373aba1fc0d270a9c189416726d705d7f7b273a7a"
+    dest: /var/lib/iso/debian-12.4.0-i386-netinst.iso
+  - url: https://cdimage.debian.org/cdimage/archive/12.4.0/amd64/iso-cd/debian-12.4.0-amd64-netinst.iso
+    checksum: "sha256:64d727dd5785ae5fcfd3ae8ffbede5f40cca96f1580aaa2820e8b99dae989d94"
+    dest: /var/lib/iso/debian-12.4.0-amd64-netinst.iso
+  - url: https://cdimage.debian.org/cdimage/archive/12.4.0/armhf/iso-cd/debian-12.4.0-armhf-netinst.iso
+    checksum: "sha256:f78b2c0a694e6f877af330e0615a76806b1d4feed8afaca42fc56e4140cf0080"
+    dest: /var/lib/iso/debian-12.4.0-arm64-netinst.iso
+  - url: https://cdimage.debian.org/cdimage/archive/12.4.0/arm64/iso-cd/debian-12.4.0-arm64-netinst.iso
+    checksum: "sha256:d32d2c63350a932dc0d9d45665985b41413f9e01efc0eacbea981d435f553d3d"
+    dest: /var/lib/iso/debian-12.4.0-arm64-netinst.iso
   # Patched iPXE.iso with serial console + reboot + infinite timeout for LAVA
   # @see https://wiki.internal.efficios.com/lava#special_ipxe_boot_image_for_vms
   - url: http://obj.internal.efficios.com/lava/ipxe.iso
