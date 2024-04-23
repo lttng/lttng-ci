@@ -1,0 +1,43 @@
+---
+lxd_cluster_ip: 172.18.0.186
+lxd_cluster:
+  enabled: true
+  server_address: 172.18.0.186
+  #cluster_token: # Only used once on cluster join
+  member_config:
+    - entity: storage-pool
+      name: default
+      key: source
+      value: tank/lxd
+netplan_manage: true
+netplan_content: |
+  network:
+    version: 2
+    renderer: networkd
+    ethernets:
+      eth0:
+        match:
+          macaddress: 00:01:73:00:00:01
+        dhcp4: no
+        macaddress: 00:01:73:00:01:01
+      eth1:
+        match:
+          macaddress: 00:01:73:00:00:02
+        dhcp4: no
+        macaddress: 00:01:73:00:01:02
+    bridges:
+      br102:
+        interfaces:
+          - eth0
+        accept-ra: false
+        addresses:
+          - 172.18.0.186/16
+        macaddress: 3a:5f:d0:44:d4:12
+        routes:
+          - to: default
+            via: 172.18.0.1
+        nameservers:
+          search:
+            - internal.efficios.com
+          addresses:
+            - 172.18.0.13
