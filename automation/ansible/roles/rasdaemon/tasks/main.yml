@@ -7,4 +7,4 @@
     name: rasdaemon
     state: started
     enabled: true
-- ansible.builtin.include: prometheus.yml
+- ansible.builtin.include_tasks: prometheus.yml

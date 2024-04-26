@@ -1,7 +1,7 @@
 ---
 # Include variables and define needed variables.
 - name: Include OS-specific variables.
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
@@ -9,14 +9,14 @@
     - "{{ ansible_os_family }}.yml"
 
 # Setup/install tasks.
-- include: setup-RedHat.yml
+- ansible.builtin.include_tasks: setup-RedHat.yml
   when: ansible_os_family in ['RedHat', 'Rocky']
 
-- include: setup-Debian.yml
+- ansible.builtin.include_tasks: setup-Debian.yml
   when: ansible_os_family == 'Debian'
 
-- include: setup-Alpine.yml
+- ansible.builtin.include_tasks: setup-Alpine.yml
   when: ansible_os_family == 'Alpine'
 
-- include: setup-Suse.yml
+- ansible.builtin.include_tasks: setup-Suse.yml
   when: ansible_os_family == 'Suse'
