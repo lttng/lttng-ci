@@ -32,4 +32,44 @@ cross_compilers_packages_exclude_i386:
   - gcc-12-i686-linux-gnu
   - gcc-11-i686-linux-gnu
 
+# Packages not available on aarch64
+cross_compilers_packages_exclude_aarch64:
+  - gcc-aarch64-linux-gnu
+  - gcc-12-aarch64-linux-gnu
+  - gcc-11-aarch64-linux-gnu
+  - gcc-powerpc-linux-gnu
+  - gcc-12-powerpc-linux-gnu
+  - gcc-11-powerpc-linux-gnu
+
+# Packages not available on armhf
+# Yeah, that's all of them...
+cross_compilers_packages_exclude_armv7l:
+  - gcc-aarch64-linux-gnu
+  - gcc-arm-linux-gnueabihf
+  - gcc-i686-linux-gnu
+  - gcc-powerpc64le-linux-gnu
+  - gcc-powerpc-linux-gnu
+  - gcc-riscv64-linux-gnu
+  - gcc-s390x-linux-gnu
+  - gcc-12-aarch64-linux-gnu
+  - gcc-12-arm-linux-gnueabihf
+  - gcc-12-i686-linux-gnu
+  - gcc-12-powerpc64le-linux-gnu
+  - gcc-12-powerpc-linux-gnu
+  - gcc-12-riscv64-linux-gnu
+  - gcc-12-s390x-linux-gnu
+  - gcc-11-aarch64-linux-gnu
+  - gcc-11-arm-linux-gnueabihf
+  - gcc-11-i686-linux-gnu
+  - gcc-11-powerpc64le-linux-gnu
+  - gcc-11-s390x-linux-gnu
+  - gcc-11-powerpc-linux-gnu
+  - gcc-11-riscv64-linux-gnu
+  - gcc-aarch64-linux-gnu
+  - gcc-12-aarch64-linux-gnu
+  - gcc-11-aarch64-linux-gnu
+  - gcc-riscv64-linux-gnu
+  - gcc-12-riscv64-linux-gnu
+  - gcc-11-riscv64-linux-gnu
+
 cross_compilers_debian_bookworm_snapshot: true
