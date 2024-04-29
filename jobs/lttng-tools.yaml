@@ -865,6 +865,13 @@
           categories:
             - 'gerrit-{buildtype}'
 
+    wrappers:
+      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
+      - timeout:
+          <<: *lttng-tools_wrapper_timeout_defaults
+          timeout: 10
+      - timestamps
+
     <<: *lttng-tools_matrix_axes_rootbuild
     <<: *lttng-tools_builders_review
 
