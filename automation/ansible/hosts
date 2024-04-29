@@ -33,6 +33,9 @@ ci-host-win11-arm64-01.internal.efficios.com
 [infra_lava]
 lava-master-03.internal.efficios.com
 
+[node_wandboard]
+ci-node-deb12-armhf-[01:08]
+
 [node_armhf]
 ci-node-deb12-armhf-01
 ci-node-deb12-armhf-02
