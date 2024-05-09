@@ -10,16 +10,20 @@ compilers_packages:
   - clang-13
   - clang-14
   - clang-15
+  - clang-16
   - libclang-dev
   - libclang-13-dev
   - libclang-14-dev
   - libclang-15-dev
+  - libclang-16-dev
   - clang-format
   - clang-format-13
   - clang-format-14
   - clang-format-15
+  - clang-format-16
   - clang-tidy
   - clang-tidy-13
   - clang-tidy-14
   - clang-tidy-15
+  - clang-tidy-16
   - bear
