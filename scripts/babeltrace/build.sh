@@ -70,6 +70,25 @@ verne() {
     [ "$res" -ne "0" ]
 }
 
+mktemp_compat() {
+    case "$platform" in
+        macos*)
+            # On MacOSX, mktemp doesn't respect TMPDIR in the same way as many
+            # other systems. Use the final positional argument to force the
+            # tempfile or tempdir to be created inside $TMPDIR, which must
+            # already exist.
+            if [ -n "${TMPDIR}" ] ; then
+                mktemp "${@}" "${TMPDIR}/tmp.XXXXXXXXXX"
+            else
+                mktemp "${@}"
+            fi
+        ;;
+        *)
+            mktemp "${@}"
+        ;;
+    esac
+}
+
 print_header() {
     set +x
 
@@ -327,7 +346,7 @@ oot)
     print_header "Build: Out of tree"
 
     # Create and enter a temporary build directory
-    builddir=$(mktemp -d)
+    builddir=$(mktemp_compat -d)
     cd "$builddir"
 
     "$SRCDIR/configure" "${CONF_OPTS[@]}" || failed_configure
@@ -342,7 +361,7 @@ dist)
     $MAKE dist
 
     # Create and enter a temporary build directory
-    builddir=$(mktemp -d)
+    builddir=$(mktemp_compat -d)
     cd "$builddir"
 
     # Extract the distribution tar in the build directory,
@@ -357,14 +376,14 @@ oot-dist)
     print_header "Build: Distribution Out of tree"
 
     # Create and enter a temporary build directory
-    builddir=$(mktemp -d)
+    builddir=$(mktemp_compat -d)
     cd "$builddir"
 
     # Run configure out of tree and generate the tar file
     "$SRCDIR/configure" || failed_configure
     $MAKE dist
 
-    dist_srcdir="$(mktemp -d)"
+    dist_srcdir="$(mktemp_compat -d)"
     cd "$dist_srcdir"
 
     # Extract the distribution tar in the new source directory,
@@ -372,7 +391,7 @@ oot-dist)
     $TAR xvf "$builddir"/*.tar.* --strip 1
 
     # Create and enter a second temporary build directory
-    builddir="$(mktemp -d)"
+    builddir="$(mktemp_compat -d)"
     cd "$builddir"
 
     # Run configure from the extracted distribution tar,

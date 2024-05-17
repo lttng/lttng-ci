@@ -17,6 +17,25 @@
 
 set -exu
 
+mktemp_compat() {
+    case "$platform" in
+        macos*)
+            # On MacOSX, mktemp doesn't respect TMPDIR in the same way as many
+            # other systems. Use the final positional argument to force the
+            # tempfile or tempdir to be created inside $TMPDIR, which must
+            # already exist.
+            if [ -n "${TMPDIR}" ] ; then
+                mktemp "${@}" "${TMPDIR}/tmp.XXXXXXXXXX"
+            else
+                mktemp "${@}"
+            fi
+        ;;
+        *)
+            mktemp "${@}"
+        ;;
+    esac
+}
+
 print_header() {
     set +x
 
@@ -283,7 +302,7 @@ case "$build" in
     echo "Out of tree build"
 
     # Create and enter a temporary build directory
-    builddir=$(mktemp -d)
+    builddir=$(mktemp_compat -d)
     cd "$builddir"
 
     "$SRCDIR/configure" "${CONF_OPTS[@]}" || failed_configure
