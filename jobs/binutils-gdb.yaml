@@ -165,7 +165,7 @@
           platforms: !!python/tuple [deb12-amd64]
           target_boards: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver"]
       - 'binutils-gdb_{version}_macosbuild':
-          platforms: !!python/tuple [macos-amd64, macos-arm64]
+          platforms: !!python/tuple [macos-arm64]
           target_boards: !!python/tuple ["unix"]
 
 - project:
