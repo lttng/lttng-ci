@@ -11,6 +11,17 @@
     name: sshd
     start_mode: auto
     state: started
+- name: Allow Terminal Server connections
+  ansible.windows.win_regedit:
+    path: 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server'
+    name: 'fDenyTSConnections'
+    data: '0'
+    type: 'dword'
+- name: Run RDP automatically
+  ansible.windows.win_service:
+    name: 'TermService'
+    start_mode: 'auto'
+    state: 'started'
 - name: Turn off standy
   ansible.windows.win_command: 'C:\Windows\system32\powercfg.exe /change standby-timeout-ac 0'
 - name: Turn off hibernation
@@ -50,7 +61,32 @@
   ansible.windows.win_template:
     src: 'authorized_keys.j2'
     dest: 'c:\ProgramData\ssh\administrators_authorized_keys'
-
+# c.f. https://galaxy.ansible.com/ui/repo/published/community/windows/content/module/win_firewall_rule/
+- name: Firewall rule to alloc ICMP v4 on all type codes
+  community.windows.win_firewall_rule:
+    name: ICMP Allow incoming V4 echo request
+    enabled: true
+    state: present
+    profiles:
+      - domain
+      - private
+      - public
+    action: allow
+    direction: in
+    protocol: icmpv4
+    icmp_type_code: '*'
+- name: Firewall rule to allow RDP on TCP port 3389
+  community.windows.win_firewall_rule:
+    name: Remote Desktop
+    localport: 3389
+    action: allow
+    direction: in
+    protocol: tcp
+    profiles:
+      - domain
+      - private
+    state: present
+    enabled: true
 - name: Reboot if domain changed
   when: domain_state.reboot_required
   ansible.windows.win_reboot:
