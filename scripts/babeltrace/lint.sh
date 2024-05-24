@@ -69,4 +69,8 @@ if [[ -f tools/shellcheck.sh ]]; then
     tools/shellcheck.sh | tee ../../shellcheck.out || exit_code=1
 fi
 
+if [[ -f tools/check-include-guards.sh ]]; then
+    tools/check-include-guards.sh | tee ../../check-include-guards.out || exit_code=1
+fi
+
 exit $exit_code

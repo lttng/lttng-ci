@@ -370,7 +370,7 @@
 
     publishers:
       - archive:
-          artifacts: 'black.out,flake8.out,isort.out,clang-format.out,shellcheck.out'
+          artifacts: 'black.out,flake8.out,isort.out,clang-format.out,shellcheck.out,check-include-guards.out'
           allow-empty: false
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
 
@@ -543,7 +543,7 @@
     publishers:
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - archive:
-          artifacts: 'black.out,flake8.out,isort.out,clang-format.out,shellcheck.out'
+          artifacts: 'black.out,flake8.out,isort.out,clang-format.out,shellcheck.out,check-include-guards.out'
           allow-empty: false
       - ircbot: *babeltrace_publisher_ircbot_defaults
       - email-ext: *babeltrace_publisher_email-ext_defaults
