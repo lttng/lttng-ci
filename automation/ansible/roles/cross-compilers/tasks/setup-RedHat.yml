@@ -1,5 +1,6 @@
 ---
 - name: Ensure cross-compilers packages are installed.
+  when: cross_compilers_install|default(true)
   dnf:
     name: "{{ cross_compilers_packages }}"
     state: installed

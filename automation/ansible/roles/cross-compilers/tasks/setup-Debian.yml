@@ -16,6 +16,7 @@
         update_cache: true
 
 - name: Ensure cross-compilers packages are installed.
+  when: cross_compilers_install|default(true)
   ansible.builtin.apt:
     name: "{{ cross_compilers_packages | difference(lookup('vars', 'cross_compilers_packages_exclude_{{ansible_userspace_architecture|default(ansible_architecture)}}', default=[]))}}"
 
