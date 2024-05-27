@@ -1,4 +1,10 @@
 ---
+# This node uses an older linux kernel for u32/u64 integration tests
+# which creates conflicting package dependencies
+#
+cross_compilers_debian_bookworm_snapshot: false
+cross_compilers_install: false
+
 netplan_manage: true
 netplan_content: |
   network:
