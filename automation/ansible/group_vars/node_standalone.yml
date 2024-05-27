@@ -1,4 +1,8 @@
 ---
+
+# Jenkins connects to the standalone nodes as the root user
+jenkins_user: false
+
 # jenkins connects to standalone nodes as the root user
 extra_root_ssh_authorized_keys:
   # yamllint disable-line rule:line-length
