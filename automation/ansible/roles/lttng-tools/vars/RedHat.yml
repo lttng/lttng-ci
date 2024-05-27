@@ -4,4 +4,5 @@ lttng_tools_packages:
   - bash-completion
   - libxml2-devel
   - popt-devel
+  - systemtap-sdt-devel
   - xmlto

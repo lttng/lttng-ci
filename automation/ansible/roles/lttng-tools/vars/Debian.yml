@@ -5,6 +5,7 @@ lttng_tools_packages:
   - libpopt-dev
   - libxml2-dev
   - shellcheck
+  - systemtap-sdt-dev
 
 lttng_tools_packages_no_recommends:
   - asciidoc

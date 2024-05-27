@@ -3,6 +3,7 @@ lttng_tools_packages:
   - bash-completion
   - libxml2-devel
   - popt-devel
+  - systemtap-sdt-devel
 
 lttng_tools_packages_no_recommends:
   - asciidoc
