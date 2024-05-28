@@ -6,7 +6,7 @@ lxd_container_defaults:
   source:
     type: image
     mode: pull
-    server: https://images.linuxcontainers.org
-    protocol: simplestreams
-    alias: debian/bookworm/cloud/amd64
+    # Until the cluster is migrated to Incus, this source will not work
+    # server: https://images.linuxcontainers.org
+    alias: debian/bookworm/cloud/amd64/ci-node/lxd
   wait_for_container: true
