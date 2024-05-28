@@ -1,7 +1,7 @@
 ---
 - name: Install virtualization packages
   apt:
-    name: ['qemu-kvm', 'libvirt-daemon-system', 'python3-libvirt']
+    name: ['qemu-kvm', 'libvirt-daemon-system', 'python3-libvirt', 'python3-lxml']
 - name: Run libvirtd
   systemd:
     name: libvirtd
