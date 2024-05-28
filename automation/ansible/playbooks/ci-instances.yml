@@ -36,7 +36,7 @@
         object: "{{item.vm}}"
       with_items: "{{containers}}"
     - name: Update DNS entries
-      when: not skip_dns and inventory_hostname == 'localhost'
+      when: not skip_dns and inventory_hostname == 'localhost' and item.meta|default(false)
       with_items: "{{containers}}"
       ansible.builtin.command:
         argv: [
