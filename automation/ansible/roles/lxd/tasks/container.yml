@@ -2,5 +2,5 @@
 - name: Merge defaults
   set_fact:
     lxd_container_config: "{{lxd_container_defaults|combine(object)}}"
-- name: Manage container
+- name: "Manage container {{lxd_container_config.name|default('Unknown')}}"
   community.general.lxd_container: "{{lxd_container_config}}"
