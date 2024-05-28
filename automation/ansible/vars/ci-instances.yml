@@ -729,6 +729,72 @@ containers:
     jenkins:
       label: 'deb12-i386 deb12'
       mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.91
+    lxd:
+      name: ci-node-sles15sp4-amd64-2a-01
+      target: ci-host-amd64-2a
+      source:
+        alias: 'sles/15.4/cloud/amd64/ci-node/lxd'
+        type: image
+    jenkins:
+      label: 'sles15sp4-amd64'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.92
+    lxd:
+      name: ci-node-sles15sp4-amd64-2b-01
+      target: ci-host-amd64-2b
+      source:
+        alias: 'sles/15.4/cloud/amd64/ci-node/lxd'
+        type: image
+    jenkins:
+      label: 'sles15sp4-amd64'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.93
+    lxd:
+      name: ci-node-sles15sp4-amd64-2c-01
+      target: ci-host-amd64-2c
+      source:
+        alias: 'sles/15.4/cloud/amd64/ci-node/lxd'
+        type: image
+    jenkins:
+      label: 'sles15sp4-amd64'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.94
+    lxd:
+      name: ci-node-sles15sp5-amd64-2a-01
+      target: ci-host-amd64-2a
+      source:
+        alias: 'sles/15.5/cloud/amd64/ci-node/lxd'
+        type: image
+    jenkins:
+      label: 'sles15sp5-amd64'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.95
+    lxd:
+      name: ci-node-sles15sp5-amd64-2b-01
+      target: ci-host-amd64-2b
+      source:
+        alias: 'sles/15.5/cloud/amd64/ci-node/lxd'
+        type: image
+    jenkins:
+      label: 'sles15sp5-amd64'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.96
+    lxd:
+      name: ci-node-sles15sp5-amd64-2c-01
+      target: ci-host-amd64-2c
+      source:
+        alias: 'sles/15.5/cloud/amd64/ci-node/lxd'
+        type: image
+    jenkins:
+      label: 'sles15sp5-amd64'
+      mode: EXCLUSIVE
   # "Root " nodes in libvirt, since Jenkins can use the "libvirt agents" plugin
   # to revert to a specific snapshot before running a job
   #
