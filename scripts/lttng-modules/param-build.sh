@@ -27,6 +27,10 @@ mgitrepo=${mgitrepo:-}
 make_args=()
 
 DEBUG=${DEBUG:-}
+FAIL_ON_WARNINGS="${FAIL_ON_WARNINGS:-}"
+if [[ "${FAIL_ON_WARNINGS}" == "false" ]] ; then
+    FAIL_ON_WARNINGS=''
+fi
 
 # Derive arch from label if it isn't set
 if [ -z "${arch:-}" ] ; then
@@ -83,9 +87,10 @@ print_header() {
 git_clone_modules_sources() {
     mkdir -p "$MODULES_GIT_DIR"
 
-    # If the version starts with "refs/", checkout the specific git ref, otherwise treat it
-    # as a branch name.
-    if [ "${mversion:0:5}" = "refs/" ]; then
+    # If the version starts with "refs/" or looks like a commit hash,
+    # checkout the specific git ref, otherwise treat it as a branch name.
+    pattern="^[0-9a-f]{40}$"
+    if [ "${mversion:0:5}" = "refs/" ] || [[ "${mversion}" =~ $pattern ]]; then
         git clone --no-tags --depth=1 "${mgitrepo}" "$MODULES_GIT_DIR"
         (cd "$MODULES_GIT_DIR" && git fetch origin "${mversion}" && git checkout FETCH_HEAD)
     else
@@ -1006,12 +1011,17 @@ build_modules() {
 
     kversion=$(make -C "$LINUX_HDROBJ_DIR" -s kernelversion)
 
-    # Try to catch some compatibility problems by turning some
-    # warnings into errors.
-    #export KCFLAGS="$KCFLAGS -Wall -Werror"
-
     # Enter lttng-modules source dir
     cd "${MODULES_GIT_DIR}"
+
+    # Try to catch some compatibility problems by turning some
+    # warnings into errors, but only on -rc kernels.
+    pattern="rc[0-9]+$"
+    if [[ "${kversion}" =~ ${pattern} ]] || [[ -n "${FAIL_ON_WARNINGS:-}" ]] ; then
+        export KCFLAGS="${KCFLAGS} -Wall -Werror"
+        # Without the verbose build, the warnings aren't visible.
+        export V=1
+    fi
 
     # kernels 3.10 to 3.10.13 and 3.11 to 3.11.2 introduce a deadlock in the
     # timekeeping subsystem. We want those build to fail.

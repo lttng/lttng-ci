@@ -685,7 +685,7 @@
       - string:
           name: 'mversion'
           default: 'master'
-          description: 'The lttng-modules branch to build.'
+          description: 'The lttng-modules branch to build. Use `refs/XXX` for a specific ref, or a commit hash.'
       - string:
           name: 'mgitrepo'
           default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
@@ -710,6 +710,14 @@
           name: 'getsrc_version'
           default: 'main'
           description: 'The tag or commit to use when cloning the getsrc tool'
+      - bool:
+          name: 'DEBUG'
+          default: false
+          description: "Enable verbose builds"
+      - bool:
+          name: 'FAIL_ON_WARNINGS'
+          default: false
+          description: "Fail the lttng-modules build if there are any warnings"
 
     concurrent: true
 
