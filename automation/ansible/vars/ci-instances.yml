@@ -795,6 +795,33 @@ containers:
     jenkins:
       label: 'sles15sp5-amd64'
       mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.97
+    jenkins:
+      label: 'sles12sp5-amd64'
+      mode: EXCLUSIVE
+    vm:
+      name: 'ci-node-sles12sp5-amd64-2a-01'
+      disk: '/var/lib/libvirt/images/ci-node-sles12sp5-amd64-2a-01.qcow'
+      host: 'ci-host-amd64-2a.internal.efficios.com'
+  - meta:
+      address: 172.18.16.98
+    jenkins:
+      label: 'sles12sp5-amd64'
+      mode: EXCLUSIVE
+    vm:
+      name: 'ci-node-sles12sp5-amd64-2b-01'
+      disk: '/var/lib/libvirt/images/ci-node-sles12sp5-amd64-2b-01.qcow'
+      host: 'ci-host-amd64-2b.internal.efficios.com'
+  - meta:
+      address: 172.18.16.99
+    jenkins:
+      label: 'sles12sp5-amd64'
+      mode: EXCLUSIVE
+    vm:
+      name: 'ci-node-sles12sp5-amd64-2c-01'
+      disk: '/var/lib/libvirt/images/ci-node-sles12sp5-amd64-2c-01.qcow'
+      host: 'ci-host-amd64-2c.internal.efficios.com'
   # "Root " nodes in libvirt, since Jenkins can use the "libvirt agents" plugin
   # to revert to a specific snapshot before running a job
   #
