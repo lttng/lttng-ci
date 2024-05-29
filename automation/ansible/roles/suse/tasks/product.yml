@@ -1,12 +1,12 @@
 ---
 
-- name: Connect product using full version
+- name: "Connect product '{{product}}' using full version"
   ansible.builtin.command:
     argv: ['SUSEConnect', '-p', "{{product}}/{{ansible_distribution_version}}/{{ansible_architecture}}"]
   register: connect
   ignore_errors: true
 # Some products don't use the full version, but only the major version
-- name: Connect production using major version
+- name: "Connect product '{{product}}' using major version"
   when: connect.rc != 0
   ansible.builtin.command:
     argv: ['SUSEConnect', '-p', "{{product}}/{{ansible_distribution_major_version}}/{{ansible_architecture}}"]
