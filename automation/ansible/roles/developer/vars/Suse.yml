@@ -4,6 +4,7 @@ developer_tui_packages:
   - bzip2
   - emacs-nox
   - gdb
+  # - git-review
   - pkg-config
   - tmux
   # - vim-nox
