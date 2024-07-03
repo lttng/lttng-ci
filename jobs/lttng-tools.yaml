@@ -236,11 +236,17 @@
       - inject:
           properties-file: gerrit_custom_dependencies.properties
 
-      # rootbuild requires a checkout of modules
+      # rootbuild requires a checkout of modules, but only
+      # when we don't depend on a specific lttng-modules change
       - conditional-step:
-          condition-kind: regex-match
-          label: '$JOB_NAME'
-          regex: '.*_root(?:_[a-z]+)?build.*'
+          condition-kind: and
+          on-evaluation-failure: run
+          condition-operands:
+            - condition-kind: shell
+              condition-command: 'test "$GERRIT_DEP_LTTNG_MODULES" = ""'
+            - condition-kind: regex-match
+              label: '$JOB_NAME'
+              regex: '.*_root(?:_[a-z]+)?build.*'
           steps:
             - shell: |
                 #!/bin/bash

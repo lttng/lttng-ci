@@ -61,12 +61,9 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
     if [ "$project" = "lttng-modules" ]; then
         if [ -d "$WORKSPACE/src/lttng-modules" ]; then
             # Remove the regular modules sources to replace them with those
-	    # from the gerrit change
+            # from the gerrit change
             rm -rf "$WORKSPACE/src/lttng-modules"
-        else
-            # This job does not require modules sources
-            continue
-	fi
+        fi
     fi
 
     # Export the GERRIT_DEP_... into the property file for further jenkins usage
