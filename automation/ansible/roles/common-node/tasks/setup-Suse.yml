@@ -38,3 +38,9 @@
         dest: '/opt/apache/maven'
         state: 'link'
         src: '/opt/apache/apache-maven-3.9.6'
+
+- name: Set default java runtime
+  when: ansible_distribution_major_version == "12"
+  community.general.alternatives:
+    name: java
+    path: "/usr/lib64/jvm/jre-11-openjdk/bin/java"
