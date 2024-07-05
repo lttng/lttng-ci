@@ -1,3 +1,79 @@
 ---
 - name: Ensure lttng-ust build dependencies are installed.
   zypper: "name={{ lttng_ust_packages }} state=installed update_cache=yes"
+
+# log4j2 is required for testing all the java agents, but is not available
+# on SLES12SP5 via packages.
+- name: Manually install log4j2
+  when: lttng_ust_manual_log4j2_installation|default(false)
+  block:
+    - name: Check if download required
+      ansible.builtin.command:
+        argv: ['test', '-L', '/usr/share/java/log4j-core.jar', '-a',
+        '-e', '/usr/share/java/log4j-core.jar', '-a',
+        '-L', '/usr/share/java/log4j-api.jar', '-a',
+        '-e', '/usr/share/java/log4j-api.jar', '-a',
+        '-f', "/usr/share/java/apache-log4j-{{lttng_ust_log4j2_version}}-bin/log4j-api-{{lttng_ust_log4j2_version}}.jar", '-a',
+        '-f', "/usr/share/java/apache-log4j-{{lttng_ust_log4j2_version}}-bin/log4j-core-{{lttng_ust_log4j2_version}}.jar"
+        ]
+      ignore_errors: true
+      register: log4j2_download_required
+    - when: "log4j2_download_required.rc != 0"
+      block:
+        - ansible.builtin.tempfile:
+            state: file
+          register: log4j2_asc_tempfile
+        - ansible.builtin.get_url:
+            url: "https://archive.apache.org/dist/logging/log4j/{{lttng_ust_log4j2_version}}/apache-log4j-{{lttng_ust_log4j2_version}}-bin.tar.gz.asc"
+            dest: "{{log4j2_asc_tempfile.path}}"
+            force: true
+        - ansible.builtin.tempfile:
+            state: file
+          register: log4j2_tempfile
+        - name: Download log4j2 binary release
+          ansible.builtin.get_url:
+            checksum: "sha256:https://archive.apache.org/dist/logging/log4j/{{lttng_ust_log4j2_version}}/apache-log4j-{{lttng_ust_log4j2_version}}-bin.tar.gz.sha256"
+            url: "https://archive.apache.org/dist/logging/log4j/{{lttng_ust_log4j2_version}}/apache-log4j-{{lttng_ust_log4j2_version}}-bin.tar.gz"
+            dest: "{{log4j2_tempfile.path}}"
+            force: true
+        - ansible.builtin.tempfile:
+            state: file
+          register: log4j2_keys_tempfile
+        - ansible.builtin.get_url:
+            url: "https://downloads.apache.org/logging/KEYS"
+            dest: "{{log4j2_keys_tempfile.path}}"
+            force: true
+        - name: Import Apache developer keys
+          ansible.builtin.command:
+            argv: ['gpg', '--import', "{{log4j2_keys_tempfile.path}}"]
+          # gpg returns non-zero exit codes if only some of the keys
+          # fail to import.
+          ignore_errors: true
+        - name: Verify PGP signature
+          ansible.builtin.command:
+            argv: ['gpg', '--verify', "{{log4j2_asc_tempfile.path}}", "{{log4j2_tempfile.path}}"]
+        - name: Unpack
+          ansible.builtin.unarchive:
+            remote_src: true
+            src: "{{log4j2_tempfile.path}}"
+            dest: "/usr/share/java"
+            include:
+              - "apache-log4j-{{lttng_ust_log4j2_version}}-bin/log4j-api-{{lttng_ust_log4j2_version}}.jar"
+              - "apache-log4j-{{lttng_ust_log4j2_version}}-bin/log4j-core-{{lttng_ust_log4j2_version}}.jar"
+        - name: Setup symlinks
+          ansible.builtin.file:
+            state: link
+            src: "/usr/share/java/apache-log4j-{{lttng_ust_log4j2_version}}-bin/log4j-{{item}}-{{lttng_ust_log4j2_version}}.jar"
+            dest: '/usr/share/java/log4j-{{item}}.jar'
+          with_items:
+            - api
+            - core
+          # block:
+          #   - ansible.builtin.file:
+          #       state: link
+          #       src: "/usr/share/java/log4j-api-{{lttng_ust_log4j2_version}}.jar"
+          #       dest: '/usr/share/java/log4j-api.jar'
+          #   - ansible.builtin.file:
+          #       state: link
+          #       src: "/usr/share/java/log4j-core-{{lttng_ust_log4j2_version}}.jar"
+          #       dest: '/usr/share/java/log4j-core.jar'

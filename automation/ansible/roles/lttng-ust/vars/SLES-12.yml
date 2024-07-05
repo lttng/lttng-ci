@@ -1,4 +1,7 @@
 ---
+lttng_ust_log4j2_version: "2.17.1"
+lttng_ust_manual_log4j2_installation: true
+
 lttng_ust_packages:
   - libnuma-devel
   - libuuid-devel
