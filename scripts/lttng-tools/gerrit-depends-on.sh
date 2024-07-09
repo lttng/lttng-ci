@@ -59,6 +59,9 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
     fi
 
     if [ "$project" = "lttng-modules" ]; then
+        if [ "$(id -u)" != "0" ]; then
+            continue
+        fi
         if [ -d "$WORKSPACE/src/lttng-modules" ]; then
             # Remove the regular modules sources to replace them with those
             # from the gerrit change
