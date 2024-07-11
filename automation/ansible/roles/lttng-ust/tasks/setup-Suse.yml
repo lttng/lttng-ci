@@ -2,6 +2,13 @@
 - name: Ensure lttng-ust build dependencies are installed.
   zypper: "name={{ lttng_ust_packages }} state=installed update_cache=yes"
 
+- name: Ensure log4j-1.2.jar exists
+  when: ansible_distribution_major_version == "12"
+  ansible.builtin.file:
+    state: link
+    src: '/usr/share/java/log4j-1.2.jar'
+    dest: '/usr/share/java/log4j.jar'
+
 # log4j2 is required for testing all the java agents, but is not available
 # on SLES12SP5 via packages.
 - name: Manually install log4j2
