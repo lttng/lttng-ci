@@ -44,3 +44,12 @@
   community.general.alternatives:
     name: java
     path: "/usr/lib64/jvm/jre-11-openjdk/bin/java"
+
+- name: Deactivate firewalld
+  ansible.builtin.service:
+    name: firewalld
+    enabled: false
+    state: stopped
+  # The package may be not installed by default on some versions,
+  # or it was manually purged.
+  ignore_errors: true
