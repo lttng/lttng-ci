@@ -30,9 +30,10 @@
       - ansicolor: &liburcu_wrapper_ansicolor_defaults
           colormap: xterm
       - timeout: &liburcu_wrapper_timeout_defaults
-          timeout: 90
-          fail: true
-          type: absolute
+          timeout: 30
+          abort: true
+          type: no-activity
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
       - workspace-cleanup
 
