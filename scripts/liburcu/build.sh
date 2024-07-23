@@ -133,6 +133,8 @@ PREFIX="/build"
 LIBDIR="lib"
 LIBDIR_ARCH="$LIBDIR"
 
+CONF_OPTS=()
+
 # RHEL and SLES both use lib64 but don't bother shipping a default autoconf
 # site config that matches this.
 if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-release ) ]]; then
@@ -206,6 +208,16 @@ freebsd*)
     export PYTHON_CONFIG="python3-config"
     ;;
 
+cygwin*)
+    export MAKE=make
+    export TAR=tar
+    export NPROC=nproc
+
+    # Work around a bug in GCC's emutls on cygwin which results in a deadlock
+    # in test_perthreadlock
+    CONF_OPTS+=("--disable-compiler-tls")
+    ;;
+
 *)
     export MAKE=make
     export TAR=tar
@@ -234,7 +246,7 @@ PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 
 # Set configure options and environment variables for each build
 # configuration.
-CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--disable-maintainer-mode")
+CONF_OPTS+=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--disable-maintainer-mode")
 case "$conf" in
 static)
     print_header "Conf: Static lib only"
