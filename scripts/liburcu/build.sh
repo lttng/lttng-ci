@@ -378,7 +378,7 @@ if [ "$USERSPACE_RCU_CLANG_TIDY" = "yes" ]; then
 
     # Instead, run clan-tidy on all the files touched by the patch.
     while read -r filepath; do
-        if [[ "$filepath" =~ (\.cpp|\.hhp|\.c|\.h)$ ]]; then
+        if [[ "$filepath" =~ (\.cpp|\.hpp|\.c|\.h)$ ]]; then
             clang-tidy --fix-errors "$(realpath "$filepath")"
         fi
     done < <(git diff-tree --no-commit-id --diff-filter=d --name-only -r HEAD)
