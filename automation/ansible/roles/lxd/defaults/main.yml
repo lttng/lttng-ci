@@ -10,3 +10,5 @@ lxd_container_defaults:
     # server: https://images.linuxcontainers.org
     alias: debian/bookworm/cloud/amd64/ci-node/lxd
   wait_for_container: true
+
+lxd_core_pattern: '/tmp/core.%p'

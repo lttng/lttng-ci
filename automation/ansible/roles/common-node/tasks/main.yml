@@ -8,6 +8,24 @@
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
 
+- when: ansible_virtualization_role == "host" or (ansible_virtualization_role == "guest" and ansible_virtualization_type == "kvm")
+  block:
+    - name: 'Set core pattern for reboot'
+      ansible.builtin.copy:
+        dest: '/etc/sysctl.d/10-core_pattern.conf'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+        content: "kernel.core_pattern /tmp/core.%p\n"
+    - name: 'Check current core pattern'
+      ansible.builtin.command:
+        argv: ['cat', '/proc/sys/kernel/core_pattern']
+      register: current_core_pattern
+    - name: 'Update current core pattern'
+      when: current_core_pattern.stdout|trim != common_node_core_pattern
+      ansible.builtin.command:
+        argv: ['sysctl', '-w', "kernel.core_pattern='{{common_node_core_pattern}}'"]
+
 # Setup/install tasks.
 - ansible.builtin.include_tasks: setup-RedHat.yml
   when: ansible_os_family in ['RedHat', 'Rocky']
