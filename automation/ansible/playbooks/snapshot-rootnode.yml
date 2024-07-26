@@ -1,22 +1,52 @@
 ---
-- hosts: localhost
+# To run this play: ansible-playbook playbooks/snapshot-rootnode.yml -l node_standalone
+- name: Initialize cross play variables
+  hosts: node_standalone
   vars:
-    # Useful for taking the first snapshot of a new rootnode
+    - job_wait_to_end: true
+    - job_abort: false
+    # Set to false when taking the first snapshot of a new rootnode
     - revert_before: true
-  vars_prompt:
-    - name: target_rootnode
-      private: false
-    - name: rootnode_host
-      private: false
-    - name: snapshot_name
-      default: 'base-configuration'
-      private: false
-  vars_files:
-    - ../vars/ci-instances.yml
+    - snapshot_name: 'base-configuration'
+    - wait_for_changes: true
   tasks:
-    # - Set a maintenance on the jenkins node
-    # - Wait until the task is done
-    # - Maybe interrupt the jenkins tasks
+    - ansible.builtin.set_fact:
+        job_wait_to_end: "{{job_wait_to_end}}"
+        job_abort: "{{job_abort}}"
+        revert_before: "{{revert_before}}"
+        snapshot_name: "{{snapshot_name}}"
+        target_rootnode: "{{inventory_hostname}}"
+        wait_for_changes: "{{wait_for_changes}}"
+
+- name: Shutdown and revert
+  hosts: node_standalone
+  tasks:
+    - name: "Find {{target_rootnode}}'s host"
+      ansible.builtin.command:
+        argv: "{{command_args|list}}"
+      register: get_hypervisor
+      vars:
+        command_args:
+          - '../scripts/manage_jenkins_node.py'
+          - 'get_hypervisor'
+          - "{{target_rootnode}}"
+      delegate_to: localhost
+    - ansible.builtin.set_fact:
+        rootnode_host: "{{get_hypervisor.stdout|trim}}"
+    - name: Disable {{target_rootnode}} in Jenkins
+      ansible.builtin.command:
+        argv: "{{command_args | reject('equalto', '') | list}}"
+      vars:
+        command_args:
+          - '../scripts/manage_jenkins_node.py'
+          - 'disable'
+          - '--wait'
+          - "{{ 0 if job_wait_to_end else -1}}"
+          - "{{target_rootnode}}"
+          - "{{'--force-abort' if job_abort else ''}}"
+          - '--reason'
+          - 'Ansible play: snapshot rootnode'
+      delegate_to: localhost
     - name: Revert target rootnode
       when: revert_before
       ansible.builtin.command:
@@ -28,8 +58,25 @@
                     delay=1
                     timeout=300
                     state=started
+
+# If the playbook isn't run with `-l node_standalone` or `-l ci-rootnode...`, then
+# this play errors out trying to find variables for the ci-hosts even if the condition
+# `inventory_hostname in groups.node_standalone` is false.
+- name: Run site.yml
+  import_playbook: '../site.yml'
+  when: inventory_hostname in groups.node_standalone
+
+- name: Cleanup and snapshot
+  hosts: node_standalone
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Example playbook command: `ansible-playbook site.yml -l {{target_rootnode}}`"
+      when: wait_for_changes
+      delegate_to: localhost
     - ansible.builtin.pause:
         prompt: "Run any playbooks or make other changes against {{target_rootnode}} then hit enter when ready to continue (Ctrl-C to abort)"
+      when: wait_for_changes
+      delegate_to: localhost
     - name: Remove the jenkins workspace
       ansible.builtin.file:
         path: "{{item}}"
@@ -37,7 +84,6 @@
       with_items:
         - /root/workspace
         - /home/jenkins/workspace
-      delegate_to: "{{target_rootnode}}"
     - name: Stop the VM
       ansible.builtin.command:
         argv: ['virsh', 'destroy', "{{target_rootnode}}"]
@@ -61,4 +107,12 @@
       ansible.builtin.command:
         argv: ['virsh', 'start', "{{target_rootnode}}"]
       delegate_to: "{{rootnode_host}}"
-    # - Remove maintenance on the jenkins node
+    - name: Enable {{target_rootnode}} in Jenkins
+      ansible.builtin.command:
+        argv: "{{command_args | list}}"
+      vars:
+        command_args:
+          - '../scripts/manage_jenkins_node.py'
+          - 'enable'
+          - "{{target_rootnode}}"
+      delegate_to: localhost

@@ -41,12 +41,14 @@ ansible-playbook -i hosts [-l SUBSET] site.yaml
 
 ## CI 'rootnode'
 
-1. Add an entry to the `vms` variable in the host vars for a libvirt host
+1. Add the new ansible node to the `node_standalone` group in the inventory
+2. Add an entry to the `vms` variable in the host vars for the libvirt host
   * See the defaults and details in `roles/libvirt/vars/main.yml` and `roles/libvirt/tasks/main.yml`
   * Make sure to set the `cdrom` key to the path of ISO for the installer
-2. Run the playbook, eg. `ansible-playbook -i hosts -l cloud07.internal.efficios.com site.yml`
+3. Run the playbook, eg. `ansible-playbook -i hosts -l cloud07.internal.efficios.com site.yml`
   * The VM should be created and started
-3. Once the VM is installed take a snapshot so that Jenkins may revert to the original state
+4. Once the VM is installed take a snapshot so that Jenkins may revert to the original state
+  * `ansible-playbook playbooks/snapshot-rootnode.yml -e '{"revert_before": false}' -l new-rootnode`
 
 ### Ubuntu auto-installer
 
