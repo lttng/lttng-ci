@@ -16,6 +16,10 @@ ci-host-arm64-1a.internal.efficios.com
 ci-host-arm64-1b.internal.efficios.com
 ci-host-arm64-2a.internal.efficios.com
 ci-host-arm64-2b.internal.efficios.com
+# Test cluster
+cloud01.internal.efficios.com
+cloud02.internal.efficios.com
+cloud03.internal.efficios.com
 
 [lxd_cluster_ci]
 ci-host-amd64-1a.internal.efficios.com
@@ -26,6 +30,11 @@ ci-host-amd64-2a.internal.efficios.com
 ci-host-amd64-2b.internal.efficios.com
 ci-host-amd64-2c.internal.efficios.com
 ci-host-amd64-2d.internal.efficios.com
+
+[lxd_cluster_ci_dev]
+cloud01.internal.efficios.com
+cloud02.internal.efficios.com
+cloud03.internal.efficios.com
 
 [windows]
 ci-host-win11-arm64-01.internal.efficios.com
