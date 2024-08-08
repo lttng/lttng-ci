@@ -43,7 +43,8 @@ ansible-playbook -i hosts [-l SUBSET] site.yaml
   * Check that start-stop-daemon is available in `$PATH`. If not: `touch /sbin/start-stop-daemon; chmod +x /sbin/start-stop-daemon ; apt-get install --reinstall dpkg`
   * Verify that the ZFS pool `tank` exists on the target host. If not, create it e.g. `zpool create -f tank mirror dev1 dev2`
 4. Add the host to the ansible inventory in the hosts group and in the appropriate cluster group
-5. Follow the appropriate LXD or Incus cluster steps
+5. For LXD hosts, add the host to the `lxd` group
+6. Follow the appropriate LXD or Incus cluster steps
 
 ### Windows
 
@@ -127,8 +128,8 @@ lxc config trust add metrics.crt --type=metrics
 
 ## Adding a new host
 
-1. On the existing host or cluster, generate a token for the new member: `lxc cluster add member-host-name`
 2. In the member's host_vars file set the following keys:
+1. On the existing host or cluster, generate a token for the new member: `lxc cluster add member-host-name`
   * `lxd_cluster_ip`: The IP address on which the server will listen
   * `lxd_cluster`: In a fashion similar to the following entry
 ```
@@ -159,3 +160,12 @@ To automatically provision instances, perform certain operations, and update DNS
 1. Update `vars/ci-instances.yml`
 2. Open a kerberos ticket with `kinit`
 3. Run the playbook, eg. `ansible-playbook playbooks/ci-instances.yml`
+
+# Incus cluster
+
+## Migration from LXD
+
+1. Run the `site.yml` playbook on the hosts to install `incus` and `incus-tools`
+2. On one cluster member, start the `lxd-to-incus` script, and follow the prompts
+3. On each other cluster member, start `lxd-to-incus --cluster-member`
+4. When prompted on each cluster member, uninstall `lxd`.
