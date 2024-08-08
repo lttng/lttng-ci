@@ -33,7 +33,19 @@ ansible-playbook -i hosts [-l SUBSET] site.yaml
 
 # Bootstrapping hosts
 
-## Windows
+## CI host
+
+### Debian
+
+1. Boot host with PXE
+2. Select the option `Debian Bookworm amd64 (CI-host)` or equivalent
+3. Post-preseed verifications:
+  * Check that start-stop-daemon is available in `$PATH`. If not: `touch /sbin/start-stop-daemon; chmod +x /sbin/start-stop-daemon ; apt-get install --reinstall dpkg`
+  * Verify that the ZFS pool `tank` exists on the target host. If not, create it e.g. `zpool create -f tank mirror dev1 dev2`
+4. Add the host to the ansible inventory in the hosts group and in the appropriate cluster group
+5. Follow the appropriate LXD or Incus cluster steps
+
+### Windows
 
 1. Configure either SSH or WinRM connection: see https://docs.ansible.com/ansible/latest/os_guide/windows_setup.html
 2. For arm64 hosts:
@@ -115,13 +127,16 @@ lxc config trust add metrics.crt --type=metrics
 
 ## Adding a new host
 
-1. Generate a token for the new member: `lxc cluster add member-host-name`
-2. In the member's host_var's file set the following key:
+1. On the existing host or cluster, generate a token for the new member: `lxc cluster add member-host-name`
+2. In the member's host_vars file set the following keys:
   * `lxd_cluster_ip`: The IP address on which the server will listen
   * `lxd_cluster`: In a fashion similar to the following entry
 ```
 lxd_cluster:
   enabled: true
+  # Same as the name from the token created above
+  server_name: 'member-host-name'
+  # This shoud match `lxd_cluster_ip`
   server_address: 172.18.0.192
   cluster_token: 'xxx'
   member_config:
