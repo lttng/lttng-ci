@@ -45,3 +45,28 @@
     - ansible.builtin.shell:
         cmd: 'lxd init --preseed=true < /etc/lxd/lxd_init.yml'
       when: lxd_init_template.changed
+- name: Check for images volume configuration
+  ansible.builtin.command:
+    argv: ['lxc', 'config', "--target={{lxd_cluster['server_name']|default(ansible_hostname)}}", 'get', 'storage.images_volume']
+  register: images_volume_conf
+- name: Configure images volume
+  when: images_volume_conf.stdout|trim != "default/storage-images"
+  block:
+    - name: Create volume
+      ansible.builtin.command:
+        argv: ['lxc', 'storage', 'volume', 'create', '--target', "{{lxd_cluster['server_name']|default(ansible_hostname)}}", 'default', 'storage-images']
+    - ansible.builtin.command:
+        argv: ['lxc', 'config', 'set', '--target', "{{lxd_cluster['server_name']|default(ansible_hostname)}}", 'storage.images_volume', 'default/storage-images']
+
+- name: Check for backups volume configuration
+  ansible.builtin.command:
+    argv: ['lxc', 'config', "--target={{lxd_cluster['server_name']|default(ansible_hostname)}}", 'get', 'storage.backups_volume']
+  register: backups_volume_conf
+- name: Configure backups volume
+  when: backups_volume_conf.stdout|trim != "default/storage-backups"
+  block:
+    - name: Create volume
+      ansible.builtin.command:
+        argv: ['lxc', 'storage', 'volume', 'create', '--target', "{{lxd_cluster['server_name']|default(ansible_hostname)}}", 'default', 'storage-backups']
+    - ansible.builtin.command:
+        argv: ['lxc', 'config', 'set', '--target', "{{lxd_cluster['server_name']|default(ansible_hostname)}}", 'storage.backups_volume', 'default/storage-backups']
