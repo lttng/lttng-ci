@@ -15,10 +15,9 @@
         argv: ['cat', '/proc/sys/kernel/core_pattern']
       register: current_core_pattern
     - name: 'Update current core pattern'
-      when: current_core_pattern.stdout|trim != lxd_core_pattern
+      when: current_core_pattern.stdout|trim != "'{{lxd_core_pattern}}'"
       ansible.builtin.command:
         argv: ['sysctl', '-w', "kernel.core_pattern='{{lxd_core_pattern}}'"]
-
 
 - name: Install LXD
   ansible.builtin.apt:
