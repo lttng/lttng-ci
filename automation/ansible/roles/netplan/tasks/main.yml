@@ -10,7 +10,7 @@
         dest: /etc/netplan/default.yaml
         owner: root
         group: root
-        mode: '0640'
+        mode: '0600'
       register: netplan_default_yaml
     - name: Disable ifupdown on Debian
       when: ansible_distribution == "Debian"
