@@ -1,0 +1,78 @@
+---
+
+jenkins_lts: true
+jenkins_dependencies:
+  - fontconfig
+  - openjdk-17-jre
+jenkins_plugins:
+  - active-directory
+  - ansicolor
+  - authentication-tokens
+  - build-keeper-plugin
+  - build-timeout
+  - checks-api
+  - command-launcher
+  - conditional-buildstep
+  - config-file-provider
+  - copyartifact
+  - coverage
+  - credentials
+  - dark-theme
+  - dashboard-view
+  - email-ext
+  - envinject
+  - environment-script
+  - excludeMatrixParent
+  - extended-read-permission
+  - external-monitor-job
+  - gerrit-checks-api
+  - git
+  - git-server
+  - github
+  - github-api
+  - groovy
+  - htmlpublisher
+  - image-gallery
+  - instance-identity
+  - ircbot
+  - javax-mail-api
+  - jdk-tool
+  - jobConfigHistory
+  - job-dsl
+  - junit
+  - ldap
+  - libvirt-slave
+  - mapdb-api
+  - matrix-project
+  - metrics
+  - monitoring
+  - parameterized-trigger
+  - permissive-script-security
+  - pipeline-github-lib
+  - pipeline-graph-view
+  - 'pipeline-groovy-lib'   # Replaces workflow-cps
+  - pipeline-model-definition
+  - pipeline-rest-api
+  - pipeline-utility-steps
+  - plot
+  - postbuildscript
+  - PrioritySorter
+  - proc-cleaner-plugin
+  - promoted-builds
+  - publish-over-ssh
+  - purge-build-queue-plugin
+  - script-security
+  - simple-theme-plugin
+  - solarized-theme
+  - ssh-slaves
+  - tap
+  - throttle-concurrents
+  - timestamper
+  - versioncolumn
+  - warnings-ng
+  - workflow-aggregator
+  - workflow-api
+  - workflow-basic-steps
+  - workflow-job
+  - ws-cleanup
+jenkins_restart_on_change: false

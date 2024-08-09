@@ -1,0 +1,15 @@
+---
+- name: Systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Request Jenkins restart
+  when: jenkins_restart_on_change|default(false)
+  community.general.jenkins_script:
+    script: |
+      import jenkins.model.*
+      Jenkins.instance.safeRestart("Changes during Ansible run")
+    url: "{{jenkins_url|default('http://localhost:8080')}}"
+    user: "{{jenkins_url_username|default(lookup('community.general.bitwarden', '5b6f7c60-26ec-4066-8bd0-b05000de8c24', search='id', field='username')[0])}}"
+    password: "{{jenkins_url_password|default(lookup('community.general.bitwarden', '5b6f7c60-26ec-4066-8bd0-b05000de8c24', search='id', field='password')[0])}}"
+

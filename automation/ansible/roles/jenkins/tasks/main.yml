@@ -1,0 +1,51 @@
+---
+
+- name: Install Jenkins keyring
+  ansible.builtin.get_url:
+    url: 'https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key'
+    dest: '/usr/share/keyrings/jenkins-keyring.asc'
+- name: Add Jenkins stable apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian{{'-stable' if jenkins_lts else ''}} binary/"
+- name: Install Jenkins depencies
+  ansible.builtin.package:
+    name: "{{jenkins_dependencies}}"
+- name: Install Jenkins
+  ansible.builtin.package:
+    name:
+      - jenkins
+- name: Add service override folder
+  ansible.builtin.file:
+    state: 'directory'
+    dest: '/etc/systemd/system/jenkins.service.d'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+- name: Add service override
+  when: jenkins_systemd_service_override|default(false)
+  ansible.builtin.copy:
+    dest: '/etc/systemd/system/jenkins.service.d/override.conf'
+    content: "{{jenkins_systemd_service_override}}"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - Systemd daemon-reload
+    - Request Jenkins restart
+- name: Jenkins service
+  ansible.builtin.service:
+    name: jenkins
+    enabled: true
+    state: started
+- name: Jenkins plugin
+  community.general.jenkins_plugin:
+    name: "{{item}}"
+    state: "{{item.state|default('present')}}"
+    url: "{{jenkins_url|default('http://localhost:8080')}}"
+    url_username: "{{jenkins_url_username}}"
+    url_password: "{{jenkins_url_password}}"
+  loop: "{{jenkins_plugins}}"
+  notify:
+    - Request Jenkins restart
+  tags:
+    - slow
