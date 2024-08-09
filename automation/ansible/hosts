@@ -1,5 +1,8 @@
 localhost ansible_connection=local ansible_python_interpreter=python3
 
+[jenkins]
+ci-master-04
+
 [hosts]
 ci-host-amd64-1a.internal.efficios.com
 ci-host-amd64-1b.internal.efficios.com
