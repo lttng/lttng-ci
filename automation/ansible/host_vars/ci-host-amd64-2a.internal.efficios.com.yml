@@ -15,12 +15,15 @@ netplan_content: |
     version: 2
     renderer: networkd
     ethernets:
-      enp5s0f0np0:
+      eth0:
+        match:
+          macaddress: 7c:c2:55:9f:17:e8
+        set-name: eth0
         dhcp4: no
     bridges:
       br102:
         interfaces:
-          - enp5s0f0np0
+          - eth0
         accept-ra: false
         addresses:
           - 172.18.0.194/16
