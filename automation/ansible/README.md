@@ -31,6 +31,10 @@ bw sync -f
 ansible-playbook -i hosts [-l SUBSET] site.yaml
 ```
 
+## Skip slow tasks
+
+`ansible-playbook --skip-tags slow`
+
 # Bootstrapping hosts
 
 ## CI host
