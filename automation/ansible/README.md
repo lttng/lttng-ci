@@ -157,7 +157,7 @@ lxd_cluster:
 
 Local requirements:
 
- * python3, python3-dnspython, samba-tool, kinit
+ * python3, python3-dnspython, python3-jenkins, samba-tool, kinit
 
 To automatically provision instances, perform certain operations, and update DNS entries:
 
