@@ -1,5 +1,7 @@
 ---
 lxd_container_defaults:
+  # The socket URL is different for Incus
+  url: "unix:/var/lib/incus/unix.socket"
   ephemeral: false
   profiles:
     - ci-node

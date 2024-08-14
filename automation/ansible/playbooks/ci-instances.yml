@@ -1,5 +1,5 @@
 ---
-- hosts: lxd_cluster_ci:localhost
+- hosts: cluster_ci:localhost
   vars_files:
     - ../vars/ci-instances.yml
     - ../roles/lxd/defaults/main.yml
