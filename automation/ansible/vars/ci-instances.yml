@@ -82,6 +82,146 @@ libvirt_host: ci-host-amd64-1b.internal.efficios.com
 # @note: `meta.address` doesn't set any additional information for libvirt VMs.
 #
 containers:
+  # ci-host-arm64-1a
+  - meta:
+      address: 172.18.16.87
+    lxd:
+      name: ci-node-deb12-arm64-1a-01
+      target: ci-host-arm64-1a
+      profiles:
+        - ci-node
+        - ci-node-arm
+      source:
+        type: image
+        server: https://images.linuxcontainers.org
+        protocol: simplestreams
+        mode: pull
+        alias: debian/bookworm/cloud/arm64
+    jenkins:
+      label: 'deb12-arm64 deb12'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.88
+    lxd:
+      name: ci-node-deb12-armhf-1a-01
+      target: ci-host-arm64-1a
+      profiles:
+        - ci-node
+        - ci-node-arm
+      source:
+        type: image
+        server: https://images.linuxcontainers.org
+        protocol: simplestreams
+        mode: pull
+        alias: debian/bookworm/cloud/armhf
+    jenkins:
+      label: 'deb12-armhf deb12'
+      mode: EXCLUSIVE
+  # ci-host-arm64-1b
+  - meta:
+      address: 172.18.16.89
+    lxd:
+      name: ci-node-deb12-arm64-1b-01
+      target: ci-host-arm64-1b
+      profiles:
+        - ci-node
+        - ci-node-arm
+      source:
+        type: image
+        server: https://images.linuxcontainers.org
+        protocol: simplestreams
+        mode: pull
+        alias: debian/bookworm/cloud/arm64
+    jenkins:
+      label: 'deb12-arm64 deb12'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.90
+    lxd:
+      name: ci-node-deb12-armhf-1b-01
+      target: ci-host-arm64-1b
+      profiles:
+        - ci-node
+        - ci-node-arm
+      source:
+        type: image
+        server: https://images.linuxcontainers.org
+        protocol: simplestreams
+        mode: pull
+        alias: debian/bookworm/cloud/armhf
+    jenkins:
+      label: 'deb12-armhf deb12'
+      mode: EXCLUSIVE
+  # ci-host-arm64-2a
+  - meta:
+      address: 172.18.16.100
+    lxd:
+      name: ci-node-deb12-arm64-2a-01
+      target: ci-host-arm64-2a
+      profiles:
+        - ci-node
+        - ci-node-arm
+      source:
+        type: image
+        server: https://images.linuxcontainers.org
+        protocol: simplestreams
+        mode: pull
+        alias: debian/bookworm/cloud/arm64
+    jenkins:
+      label: 'deb12-arm64 deb12'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.101
+    lxd:
+      name: ci-node-deb12-armhf-2a-01
+      target: ci-host-arm64-2a
+      profiles:
+        - ci-node
+        - ci-node-arm
+      source:
+        type: image
+        server: https://images.linuxcontainers.org
+        protocol: simplestreams
+        mode: pull
+        alias: debian/bookworm/cloud/armhf
+    jenkins:
+      label: 'deb12-armhf deb12'
+      mode: EXCLUSIVE
+  # ci-host-arm64-2b
+  - meta:
+      address: 172.18.16.102
+    lxd:
+      name: ci-node-deb12-arm64-2b-01
+      target: ci-host-arm64-2b
+      profiles:
+        - ci-node
+        - ci-node-arm
+      source:
+        type: image
+        server: https://images.linuxcontainers.org
+        protocol: simplestreams
+        mode: pull
+        alias: debian/bookworm/cloud/arm64
+    jenkins:
+      label: 'deb12-arm64 deb12'
+      mode: EXCLUSIVE
+  - meta:
+      address: 172.18.16.103
+    lxd:
+      name: ci-node-deb12-armhf-2b-01
+      target: ci-host-arm64-2b
+      profiles:
+        - ci-node
+        - ci-node-arm
+      source:
+        type: image
+        server: https://images.linuxcontainers.org
+        protocol: simplestreams
+        mode: pull
+        alias: debian/bookworm/cloud/armhf
+    jenkins:
+      label: 'deb12-armhf deb12'
+      mode: EXCLUSIVE
   - meta:
       address: 172.18.18.1
     lxd:
@@ -1166,3 +1306,28 @@ containers:
       disk: '/var/lib/libvirt/images/lava-node-amd64-05.qcow'
       disk_capacity: '10G'
       host: 'ci-host-amd64-2d.internal.efficios.com'
+  - jenkins:
+      name: "ci-rootnode-deb12-arm64-1a-01"
+      label: 'deb12 deb12-arm64-rootnode arm64-rootnode'
+      mode: EXCLUSIVE
+      config:
+        remoteFS: '/root'
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-arm64-1a.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-deb12-arm64-1a-01'
+        launcher/delegate: 'hudson.plugins.sshslaves.SSHLauncher=class'
+        launcher/delegate/port: '22'
+        launcher/delegate/host: 'ci-rootnode-deb12-arm64-1a-01.internal.efficios.com'
+        launcher/delegate/credentialsId: 'bb5a81cf-346b-43fc-8586-3dc5e43801be'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-arm64-1a.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-deb12-arm64-1a-01'
+        snapshotName: ''
+        beforeJobSnapshotName: 'base-configuration'
+        startupWaitingPeriodSeconds: '20'
+        launcher/waitTimeMs: '20000'
+        shutdownMethod: 'destroy'
+    vm:
+      name: 'ci-rootnode-deb12-arm64-1a-01'
+      disk: '/var/lib/libvirt/images/ci-rootnode-deb12-arm64-1a-01.qcow'
+      host: 'ci-host-arm64-1a.internal.efficios.com'
+    meta:
+      address: 172.18.17.15
