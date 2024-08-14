@@ -16,6 +16,14 @@
       when: ansible_architecture == 'x86_64' and ansible_distribution == 'Debian'
       apt:
         name: ['linux-headers-amd64']
+    - name: Install armhf linux headers Debian
+      when: ansible_architecture == 'armv7l' and ansible_distribution == 'Debian'
+      apt:
+        name: ['linux-headers-armmp-lpae']
+    - name: Install arm64 linux headers Debian
+      when: ansible_architecture == 'aarch64' and ansible_distribution == 'Debian'
+      apt:
+        name: ['linux-headers-arm64']
     - name: Install linux headers Ubuntu
       when: ansible_distribution == 'Ubuntu'
       apt:
