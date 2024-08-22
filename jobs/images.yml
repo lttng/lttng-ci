@@ -166,6 +166,7 @@
     PROFILES:
       - ci-node
       - developer
+    sandbox: true
     dsl: !include-jinja2: pipelines/images/default.groovy
 
 - job-template:
