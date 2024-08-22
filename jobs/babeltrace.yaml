@@ -636,7 +636,7 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, prod]
-          ccs: !!python/tuple [clang-13, clang-14, clang-15]
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           filter: ''
           touchstone: ''
       - 'babeltrace_{version}_release':
