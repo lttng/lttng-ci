@@ -7,7 +7,7 @@ lttng_modules_packages:
   - kernel-wedge
   - kmod
   - libelf-dev
-  - liblz4-tool
+  - lz4
   - s3cmd
   - u-boot-tools
   - zstd
