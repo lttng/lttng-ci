@@ -31,13 +31,13 @@ REQUIRED_VARIABLES=(
     VARIANT
     GIT_BRANCH
     GIT_URL
-    LXD_CLIENT_CERT
-    LXD_CLIENT_KEY
+    INCUS_CLIENT_CERT
+    INCUS_CLIENT_KEY
     TEST
     DISTROBUILDER_GIT_URL
     DISTROBUILDER_GIT_BRANCH
-    LXC_CI_GIT_URL
-    LXC_CI_GIT_BRANCH
+    INCUS_CI_GIT_URL
+    INCUS_CI_GIT_BRANCH
     GO_VERSION
 )
 MISSING_VARS=0
@@ -55,26 +55,26 @@ fi
 INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-120}"
 VM_ARG=()
 
-# Install lxd-client
+# Install incus-client
 apt-get update
-apt-get install -y lxd-client
-mkdir -p ~/.config/lxc
-cp "${LXD_CLIENT_CERT}" ~/.config/lxc/client.crt
-cp "${LXD_CLIENT_KEY}" ~/.config/lxc/client.key
+apt-get install -y incus-client
+mkdir -p ~/.config/incus
+cp "${INCUS_CLIENT_CERT}" ~/.config/incus/client.crt
+cp "${INCUS_CLIENT_KEY}" ~/.config/incus/client.key
 CLEANUP+=(
-    "rm -f ${HOME}/.config/lxc/client.crt"
-    "rm -f ${HOME}/.config/lxc/client.key"
+    "rm -f ${HOME}/.config/incus/client.crt"
+    "rm -f ${HOME}/.config/incus/client.key"
 )
-lxc remote add ci --accept-certificate --auth-type tls "${LXD_HOST}"
-lxc remote switch ci
+incus remote add ci --accept-certificate --auth-type tls "${INCUS_HOST}"
+incus remote switch ci
 
-# Exit gracefully if the lxc images: provides the base image
+# Exit gracefully if the incus images: provides the base image
 IMAGE_NAME="${OS}/${RELEASE}/${VARIANT}/${ARCH}"
 TYPE_FILTER='type=container'
 if [[ "${IMAGE_TYPE}" == "vm" ]] ; then
     TYPE_FILTER='type=virtual-machine'
 fi
-if [[ "$(lxc image list -f csv images:"${IMAGE_NAME}" -- "${TYPE_FILTER}" | wc -l)" != "0" ]] ; then
+if [[ "$(incus image list -f csv images:"${IMAGE_NAME}" -- "${TYPE_FILTER}" | wc -l)" != "0" ]] ; then
     echo "Image '${IMAGE_NAME}' provided by 'images:' remote"
     exit 0
 fi
@@ -97,13 +97,13 @@ PATH="${PATH}:${HOME}/go/bin"
 cd "${WORKSPACE}"
 git clone --branch="${GIT_BRANCH}" "${GIT_URL}" ci
 
-# Get the LXC CI repo
+# Get the INCUS CI repo
 cd "${WORKSPACE}"
-git clone --branch="${LXC_CI_GIT_BRANCH}" "${LXC_CI_GIT_URL}" lxc-ci
+git clone --branch="${INCUS_CI_GIT_BRANCH}" "${INCUS_CI_GIT_URL}" incus-ci
 
 IMAGE_DIRS=(
     "${WORKSPACE}/ci/automation/images"
-    "${WORKSPACE}/lxc-ci/images"
+    "${WORKSPACE}/incus-ci/images"
 )
 EXTENSIONS=(
     'yml'
@@ -179,7 +179,7 @@ if [[ "${IMAGE_TYPE}" == "vm" ]] ; then
     ROOTFS="${BUILD_DIR}/disk.qcow2"
 fi
 
-# Work-around for lxd not using qemu-system-i386: set the architecture to x86_64
+# Work-around for incus not using qemu-system-i386: set the architecture to x86_64
 # which will use qemu-system-x86_64 and still run 32bit userspace/kernels fine.
 if [[ "${ARCH}" == "i386" ]] ; then
     TMP_DIR=$(mktemp -d)
@@ -191,12 +191,12 @@ if [[ "${ARCH}" == "i386" ]] ; then
     rm -rf "${TMP_DIR}"
 fi
 
-# When using `lxc image import` two images cannot have the same alias -
+# When using `incus image import` two images cannot have the same alias -
 # only the last image imported will keep the alias. Therefore, the
 # image type is appended as part of the alias.
 IMAGE_NAME="${IMAGE_NAME}/${IMAGE_TYPE}"
 
-if FINGERPRINT=$(lxc image import "${BUILD_DIR}/incus.tar.xz" "${ROOTFS}" 2>&1 | grep -E -o '[A-Fa-f0-9]{64}') ; then
+if FINGERPRINT=$(incus image import "${BUILD_DIR}/incus.tar.xz" "${ROOTFS}" 2>&1 | grep -E -o '[A-Fa-f0-9]{64}') ; then
     echo "Image imported with fingerprint '${FINGERPRINT}'"
 else
     fail 1 "No fingerprint for imported image"
@@ -205,10 +205,10 @@ fi
 if [[ "${TEST}" == "true" ]] ; then
     set +e
     INSTANCE_NAME=''
-    if INSTANCE_NAME="$(lxc -q launch -e ${VM_ARG[@]} -p default -p "${LXD_INSTANCE_PROFILE}" "${FINGERPRINT}")" ; then
+    if INSTANCE_NAME="$(incus -q launch -e ${VM_ARG[@]} -p default -p "${INCUS_INSTANCE_PROFILE}" "${FINGERPRINT}")" ; then
         INSTANCE_NAME="$(echo "${INSTANCE_NAME}" | cut -d':' -f2 | tr -d ' ')"
         CLEANUP+=(
-            "lxc stop -f ${INSTANCE_NAME}"
+            "incus stop -f ${INSTANCE_NAME}"
         )
     else
         fail 1 "Failed to launch instance using image '${FINGERPRINT}'"
@@ -216,18 +216,18 @@ if [[ "${TEST}" == "true" ]] ; then
     TIME_REMAINING="${INSTANCE_START_TIMEOUT}"
     INSTANCE_STATUS=''
     while true ; do
-        INSTANCE_STATUS="$(lxc exec "${INSTANCE_NAME}" hostname)"
+        INSTANCE_STATUS="$(incus exec "${INSTANCE_NAME}" hostname)"
         if [[ "${INSTANCE_STATUS}" == "${INSTANCE_NAME}" ]] ; then
             break
         fi
         sleep 1
         TIME_REMAINING=$((TIME_REMAINING - 1))
         if [ "${TIME_REMAINING}" -lt "0" ] ; then
-            fail 1 "Timed out waiting for instance to become available via 'lxc exec'"
+            fail 1 "Timed out waiting for instance to become available via 'incus exec'"
         fi
     done
     set -e
 fi
 
-lxc image alias delete "${IMAGE_NAME}" || true
-lxc image alias create "${IMAGE_NAME}" "${FINGERPRINT}"
+incus image alias delete "${IMAGE_NAME}" || true
+incus image alias create "${IMAGE_NAME}" "${FINGERPRINT}"
