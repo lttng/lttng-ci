@@ -87,7 +87,10 @@ ci-node-deb12-ppc64el-01
 ci-node-deb12-ppc64el-02
 
 [node_riscv64]
-172.16.0.138
+ci-node-deb13-riscv64-01
+ci-node-deb13-riscv64-02
+ci-node-deb13-riscv64-03
+ci-node-deb13-riscv64-04
 
 [node_i386]
 ci-node-deb12-i386-1a-01
