@@ -628,16 +628,15 @@ if (elversion != null) {
     case 'jammy':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-5\.15\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-6\.2-6\.2\.0-.*_22\.04\.\d+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-6\.5-6\.5\.0-.*_22\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-6\.8-6\.8\.0-.*_22\.04\.\d+)$/,
       ]
       break
 
     case 'focal':
       matchStrs = [
         ~/^refs\/tags\/(Ubuntu-5\.4\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-5\.13-5\.13\.0-.*_20\.04\.\d+)$/,
         ~/^refs\/tags\/(Ubuntu-hwe-5\.15-5\.15\.0-.*_20\.04\.\d+)$/,
+        ~/^refs\/tags\/(Ubuntu-hwe-6\.8-6\.8\.0-.*_20\.04\.\d+)$/,
       ]
       break
 
