@@ -555,7 +555,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: master
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -615,7 +615,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.13
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]
@@ -664,7 +664,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.12
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, master]

@@ -333,7 +333,7 @@
           touchstone: ''
       - 'librseq_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
           touchstone: ''
@@ -353,7 +353,7 @@
           touchstone: ''
       - 'dev_review_librseq_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: ''

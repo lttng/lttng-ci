@@ -344,7 +344,7 @@
       # Common
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
