@@ -34,6 +34,7 @@
             - origin/{version}
           basedir: src/babeltrace
           skip-tag: true
+          git-tool: '{git_tool}'
 
     triggers:
       - pollscm:
@@ -315,6 +316,7 @@
             - '$GERRIT_REFSPEC'
           basedir: src/babeltrace
           skip-tag: true
+          git-tool: '{git_tool}'
 
     triggers:
       - gerrit: &babeltrace_trigger_gerrit_defaults
@@ -570,6 +572,7 @@
     job_prefix: ''
     github_user: efficios
     github_name: babeltrace
+    git_tool: Default
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     version:
       - stable-2.0
@@ -617,6 +620,7 @@
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
+          git_tool: jgit
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: freebsdbuild
           platforms: !!python/tuple [freebsd-amd64]
@@ -653,6 +657,7 @@
     job_prefix: ''
     github_user: efficios
     github_name: babeltrace
+    git_tool: Default
     version:
       - stable-2.0
       - ctf2
@@ -686,6 +691,7 @@
           filter: ''
           touchstone: ''
           warnings_status: FAILED
+          git_tool: jgit
       - 'dev_review_babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
@@ -732,6 +738,7 @@
           filter: ''
           touchstone: ''
           warnings_status: FAILED
+          git_tool: jgit
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: ctf2
           buildtype: winbuild
@@ -770,6 +777,7 @@
           filter: ''
           touchstone: ''
           warnings_status: WARNING
+          git_tool: jgit
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
           buildtype: winbuild
@@ -796,6 +804,7 @@
     job_prefix: dev_upstream_
     github_user: efficios
     github_name: babeltrace
+    git_tool: Default
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     version:
       - stable-1.5
@@ -837,6 +846,7 @@
     job_prefix: 'dev_jgalar_'
     github_user: jgalar
     github_name: babeltrace
+    git_tool: Default
     email_to: "jgalar@efficios.com"
     version:
       - stable-1.5-staging
@@ -855,6 +865,7 @@
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
+          git_tool: jgit
 
 
 - project:
@@ -862,6 +873,7 @@
     job_prefix: 'dev_jgalar_'
     github_user: jgalar
     github_name: babeltrace
+    git_tool: Default
     email_to: "jgalar@efficios.com"
     version:
       - stable-2.0-staging
@@ -884,6 +896,7 @@
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
+          git_tool: jgit
 
 
 - project:
