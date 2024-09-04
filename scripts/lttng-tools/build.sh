@@ -609,8 +609,14 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
             "-Dlog4j-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-log4j.jar"
             "-Dlog4j2-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-log4j2.jar"
             "-DargLine=-Djava.library.path=${WORKSPACE}/deps/build/${LIBDIR_ARCH}"
-            '-Dgroups=!domain:log4j2'
         )
+
+        # Merged into master ~ 47abf22b48023960069e1d3e23f42298ce4b3c2a
+        if verlt "${PACKAGE_VERSION}" "2.14" ; then
+            LTTNG_UST_JAVA_TESTS_MAVEN_OPTS+=(
+                '-Dgroups=!domain:log4j2'
+            )
+        fi
 
         env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn -version
 
