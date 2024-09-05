@@ -203,6 +203,31 @@
     <<: *liburcu_publishers_defaults
 
 - job-template:
+    name: '{job_prefix}liburcu_{version}_{cctype}'
+    defaults: liburcu
+
+    <<: *liburcu_matrix_axes_defaults
+    axes:
+      - axis:
+         type: slave
+         name: platform
+         values: '{obj:platforms}'
+      - axis:
+         type: user-defined
+         name: conf
+         values: '{obj:confs}'
+      - axis:
+         type: user-defined
+         name: build
+         values: '{obj:builds}'
+      - axis:
+         type: user-defined
+         name: cc
+         values: '{obj:ccs}'
+    <<: *liburcu_builders_defaults
+    <<: *liburcu_publishers_defaults
+
+- job-template:
     name: dev_review_liburcu_{version}_{buildtype}
     defaults: liburcu
     concurrent: true
@@ -384,6 +409,14 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
+      - '{job_prefix}liburcu_{version}_{cctype}':
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, static, atomic-builtins, tls_fallback, debug-rcu]
+          touchstone: '(build == "std") && (conf == "std")'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
           version: master
