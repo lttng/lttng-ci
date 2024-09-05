@@ -121,7 +121,12 @@
 
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: '{job_prefix}liburcu_${{liburcu_version}}_{buildtype}/platform=${{platform}},conf=${{liburcu_conf}},build=std'
+          project:
+            !j2: |
+              {{job_prefix}}liburcu_{%- raw -%}${liburcu_version}{%- endraw -%}
+              _{{cctype|default(buildtype)}}/platform={%- raw %}${platform}{%- endraw -%}
+              ,build=std,conf={%- raw -%}${liburcu_conf}{%- endraw -%}
+              {%- if ccs|default(false) %},cc={%- raw -%}${cc}{%- endraw -%}{% endif -%}
 
       # Run the build
       - shell:
@@ -164,7 +169,12 @@
 
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: 'liburcu_${{liburcu_version}}_{buildtype}/platform=${{platform}},conf=${{liburcu_conf}},build=std'
+          project:
+            !j2: |
+              liburcu_{%- raw -%}${liburcu_version}{%- endraw -%}
+              _{{cctype|default(buildtype)}}/platform={%- raw %}${platform}{%- endraw -%}
+              ,build=std,conf={%- raw -%}${liburcu_conf}{%- endraw -%}
+              {%- if ccs|default(false) %},cc={%- raw -%}${cc}{%- endraw -%}{% endif -%}
 
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
@@ -330,13 +340,33 @@
     <<: *lttng-ust_builders_defaults
     <<: *lttng-ust_publishers_defaults
 
+- job-template:
+    name: '{job_prefix}lttng-ust_{version}_{cctype}'
+    defaults: lttng-ust
+    <<: *lttng-ust_matrix_axes_defaults
+    axes:
+      - axis:
+          <<: *lttng-ust_matrix_axis_platform
+      - axis:
+          <<: *lttng-ust_matrix_axis_conf
+      - axis:
+          <<: *lttng-ust_matrix_axis_build
+      - axis:
+          <<: *lttng-ust_matrix_axis_liburcu_version
+      - axis:
+         type: user-defined
+         name: cc
+         values: '{obj:ccs}'
+
+    <<: *lttng-ust_builders_defaults
+    <<: *lttng-ust_publishers_defaults
 
 - job-template:
     name: dev_review_lttng-ust_{version}_{buildtype}
     defaults: lttng-ust
     concurrent: true
 
-    scm:
+    scm: &lttng-ust_dev_review_scm
       - git:
           url: https://review.lttng.org/lttng-ust
           refspec: 'refs/changes/*:refs/changes/*'
@@ -345,7 +375,7 @@
           basedir: src/lttng-ust
           skip-tag: true
 
-    triggers:
+    triggers: &lttng-ust_dev_review_triggers
       - gerrit: &lttng-ust_trigger_gerrit_defaults
           trigger-on:
             - comment-added-event:
@@ -362,7 +392,7 @@
     <<: *lttng-ust_builders_defaults
     <<: *lttng-ust_publishers_review
 
-    properties:
+    properties: &lttng-ust_dev_review_properties
       - inject:
           properties-content: |
             PROJECT_NAME=lttng-ust
@@ -373,6 +403,29 @@
           categories:
             - 'gerrit-{buildtype}'
 
+- job-template:
+    name: 'dev_review_lttng-ust_{version}_{cctype}'
+    defaults: lttng-ust
+    concurrent: true
+    scm: *lttng-ust_dev_review_scm
+    triggers: *lttng-ust_dev_review_triggers
+    properties: *lttng-ust_dev_review_properties
+    <<: *lttng-ust_matrix_axes_defaults
+    axes:
+      - axis:
+          <<: *lttng-ust_matrix_axis_platform
+      - axis:
+          <<: *lttng-ust_matrix_axis_conf
+      - axis:
+          <<: *lttng-ust_matrix_axis_build
+      - axis:
+          <<: *lttng-ust_matrix_axis_liburcu_version
+      - axis:
+         type: user-defined
+         name: cc
+         values: '{obj:ccs}'
+    <<: *lttng-ust_builders_defaults
+    <<: *lttng-ust_publishers_review
 
 - job-template:
     name: dev_review_lttng-ust_lttng-tools_{version}_{buildtype}
@@ -597,6 +650,17 @@
           liburcu_versions: !!python/tuple [stable-0.13, master]
           filter: ''
           touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{cctype}':
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          version: master
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, agents]
+          liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, master]
+          filter: ''
+          touchstone: ''
       - 'lttng-ust_{version}_scan-build':
           version: master
       - 'lttng-ust_{version}_coverity':
@@ -646,6 +710,17 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, master]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{cctype}':
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          version: stable-2.13
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, master]
           filter: ''
           touchstone: ''
       - 'lttng-ust_{version}_scan-build':
@@ -754,6 +829,18 @@
           liburcu_versions: !!python/tuple [stable-0.14]
           filter: ''
           touchstone: ''
+      - 'dev_review_lttng-ust_{version}_{cctype}':
+          cctype: clangbuild
+          ccs: ['clang-13', 'clang-14', 'clang-15', 'clang-16']
+          version: master
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, agents]
+          filter: ''
+          touchstone: ''
+          liburcu_versions: !!python/tuple [stable-0.14]
+          babeltrace_version: stable-2.0
 
       ## Stable 2.13 ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
