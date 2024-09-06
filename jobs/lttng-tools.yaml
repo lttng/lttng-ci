@@ -108,11 +108,11 @@
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy: *lttng-tools_matrix_execution-strategy_defaults
     axes:
-      - axis:
+      - axis: &lttng-tools_matrix_axis_root_node
          type: slave
          name: node
          values: '{obj:nodes}'
-      - axis:
+      - axis: &lttng-tools_matrix_axis_root_platform
           <<: *lttng-tools_matrix_axis_platform
           type: user-defined
       - axis: *lttng-tools_matrix_axis_conf
@@ -174,7 +174,11 @@
       # Always copy liburcu artifacts
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/platform=${{platform}},conf=${{liburcu_conf}},build=std'
+          project:
+            !j2: |
+              {{urcu_job_prefix}}liburcu_{%- raw -%}${liburcu_version}{%- endraw -%}
+              _{{cctype|default(buildtype)}}/platform={%- raw %}${platform}{%- endraw -%}
+              ,conf={%- raw -%}${liburcu_conf}{%- endraw -%},build=std,{%- if ccs|default(false) -%}cc={%- raw -%}${cc}{%- endraw -%},{%- endif -%}
 
       # Always copy babeltrace artifacts
       - copyartifact:
@@ -191,7 +195,11 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{ust_job_prefix}lttng-ust_{ustversion}_{buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{ust_conf}},build=std'
+                project:
+                  !j2: |
+                    {{ust_job_prefix}}lttng-ust_{{ustversion}}_{{cctype|default(buildtype)}}/liburcu_version={%- raw -%}${liburcu_version}{%- endraw -%}
+                    ,platform={%- raw %}${platform}{%- endraw -%},conf={%- raw -%}${ust_conf}{%- endraw -%}
+                    ,build=std,{% if ccs|default(false) %}cc={%- raw -%}${cc}{%- endraw -%}{% endif %}
 
       # rootbuild requires a checkout of modules
       - conditional-step:
@@ -561,6 +569,36 @@
             result: 'success'
 
 - job-template:
+    name: '{job_prefix}lttng-tools_{version}_{cctype}'
+    defaults: lttng-tools
+
+    <<: *lttng-tools_matrix_axes_defaults
+    axes:
+      - axis:
+          <<: *lttng-tools_matrix_axis_platform
+      - axis:
+          <<: *lttng-tools_matrix_axis_conf
+      - axis:
+          <<: *lttng-tools_matrix_axis_build
+      - axis:
+          <<: *lttng-tools_matrix_axis_liburcu_version
+      - axis:
+          <<: *lttng-tools_matrix_axis_babeltrace_version
+      - axis:
+          type: user-defined
+          name: cc
+          values: '{obj:ccs}'
+
+    <<: *lttng-tools_builders_defaults
+    <<: *lttng-tools_publishers_defaults
+
+    triggers:
+      - pollscm: *lttng-tools_trigger_pollscm_default
+      - reverse:
+            jobs: '{ust_job_prefix}lttng-ust_{version}_{cctype}'
+            result: 'success'
+
+- job-template:
     name: 'dev_{user}_lttng-tools_{version}_{buildtype}'
     defaults: lttng-tools
 
@@ -638,6 +676,47 @@
             result: 'success'
 
 - job-template:
+    name: '{job_prefix}lttng-tools_{version}_root_{cctype}'
+    defaults: lttng-tools
+
+    scm:
+      - git: *lttng-tools_scm_git_default
+
+    wrappers:
+      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
+      - timeout:
+          <<: *lttng-tools_wrapper_timeout_defaults
+          timeout: 10
+      - timestamps
+
+    <<: *lttng-tools_matrix_axes_rootbuild
+    axes:
+      - axis:
+          <<: *lttng-tools_matrix_axis_root_node
+      - axis:
+          <<: *lttng-tools_matrix_axis_root_platform
+      - axis:
+          <<: *lttng-tools_matrix_axis_conf
+      - axis:
+          <<: *lttng-tools_matrix_axis_build
+      - axis:
+          <<: *lttng-tools_matrix_axis_liburcu_version
+      - axis:
+          <<: *lttng-tools_matrix_axis_babeltrace_version
+      - axis:
+          type: user-defined
+          name: cc
+          values: '{obj:ccs}'
+    <<: *lttng-tools_builders_defaults
+    <<: *lttng-tools_publishers_rootbuild
+
+    triggers:
+      - pollscm: *lttng-tools_trigger_pollscm_default
+      - reverse:
+            jobs: '{ust_job_prefix}lttng-ust_{version}_{cctype}'
+            result: 'success'
+
+- job-template:
     name: '{job_prefix}lttng-tools_{version}_macosbuild'
     defaults: lttng-tools
 
@@ -673,7 +752,7 @@
           basedir: src/lttng-tools
           skip-tag: true
 
-    triggers:
+    triggers: &lttng-tools_triggers_review_default
       - gerrit: &lttng-tools_trigger_gerrit_default
           trigger-on:
             - comment-added-event:
@@ -686,7 +765,7 @@
                 - branch-compare-type: 'PLAIN'
                   branch-pattern: '{version}'
 
-    properties:
+    properties: &lttng-tools_properties_review_defaults
       - inject: *lttng-tools_property_inject_defaults
       - build-discarder:
           days-to-keep: 1
@@ -698,7 +777,7 @@
     <<: *lttng-tools_matrix_axes_defaults
     <<: *lttng-tools_builders_review
 
-    publishers:
+    publishers: &lttng-tools_publishers_review_defaults
       # On build abort (timeout), wait 10 seconds before running the other post
       # build scripts, this will allow the processes to terminate and make the
       # build log more legible.
@@ -718,6 +797,35 @@
       - archive: *lttng-tools_publisher_archive_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
       - raw: *lttng-tools_publisher_proc-cleaner_defaults
+
+- job-template:
+    name: 'dev_review_lttng-tools_{version}_{cctype}'
+    defaults: lttng-tools
+    concurrent: true
+    <<: *lttng-tools_matrix_axes_defaults
+    axes:
+      - axis:
+          <<: *lttng-tools_matrix_axis_platform
+      - axis:
+          <<: *lttng-tools_matrix_axis_conf
+      - axis:
+          <<: *lttng-tools_matrix_axis_build
+      - axis:
+          <<: *lttng-tools_matrix_axis_liburcu_version
+      - axis:
+          <<: *lttng-tools_matrix_axis_babeltrace_version
+      - axis:
+          type: user-defined
+          name: cc
+          values: '{obj:ccs}'
+
+    <<: *lttng-tools_builders_review
+    <<: *lttng-tools_publishers_defaults
+    properties: *lttng-tools_properties_review_defaults
+    publishers: *lttng-tools_publishers_review_defaults
+    scm:
+      - git: *lttng-tools_scm_git_review
+    triggers: *lttng-tools_triggers_review_default
 
 - job-template:
     name: dev_review_lttng-tools_{version}_smokebuild
@@ -886,6 +994,37 @@
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - archive: *lttng-tools_publisher_archive_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+
+- job-template:
+    name: 'dev_review_lttng-tools_{version}_root_{cctype}'
+    defaults: lttng-tools
+    concurrent: true
+    <<: *lttng-tools_matrix_axes_rootbuild
+    axes:
+      - axis:
+          <<: *lttng-tools_matrix_axis_root_node
+      - axis:
+          <<: *lttng-tools_matrix_axis_root_platform
+      - axis:
+          <<: *lttng-tools_matrix_axis_conf
+      - axis:
+          <<: *lttng-tools_matrix_axis_build
+      - axis:
+          <<: *lttng-tools_matrix_axis_liburcu_version
+      - axis:
+          <<: *lttng-tools_matrix_axis_babeltrace_version
+      - axis:
+          type: user-defined
+          name: cc
+          values: '{obj:ccs}'
+
+    <<: *lttng-tools_builders_review
+    <<: *lttng-tools_publishers_defaults
+    properties: *lttng-tools_properties_review_defaults
+    publishers: *lttng-tools_publishers_review_defaults
+    scm:
+      - git: *lttng-tools_scm_git_review
+    triggers: *lttng-tools_triggers_review_default
 
 - job-template:
     name: 'dev_review_lttng-tools_{version}_check-format'
@@ -1141,6 +1280,19 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_{cctype}':
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          version: master
+          ustversion: master
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          urcuversions: !!python/tuple [master]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: ''
+          touchstone: ''
       - '{job_prefix}lttng-tools_{version}_long_regression':
           buildtype: linuxbuild
           version: master
@@ -1199,6 +1351,20 @@
           urcuversions: !!python/tuple [master]
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
+          touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_root_{cctype}':
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          version: master
+          ustversion: master
+          platforms: !!python/tuple [deb12-amd64]
+          nodes: !!python/tuple [deb12-amd64-rootnode]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           touchstone: ''
       - 'lttng-tools_{version}_scan-build':
           version: master
@@ -1288,6 +1454,19 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_{cctype}':
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          version: stable-2.13
+          ustversion: stable-2.13
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: ''
+          touchstone: ''
       - '{job_prefix}lttng-tools_{version}_long_regression':
           buildtype: linuxbuild
           version: stable-2.13
@@ -1346,6 +1525,20 @@
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
+          touchstone: ''
+      - '{job_prefix}lttng-tools_{version}_root_{cctype}':
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          version: stable-2.13
+          ustversion: stable-2.13
+          platforms: !!python/tuple [deb12-amd64]
+          nodes: !!python/tuple [deb12-amd64-rootnode]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           touchstone: ''
       - 'lttng-tools_{version}_release':
           version: v2.13
@@ -1605,6 +1798,18 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: ''
           touchstone: ''
+      - 'dev_review_lttng-tools_{version}_{cctype}':
+          version: master
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          urcuversions: !!python/tuple [stable-0.14]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: ''
+          touchstone: ''
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           version: master
           buildtype: slesbuild
@@ -1624,6 +1829,19 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          touchstone: ''
+      - 'dev_review_lttng-tools_{version}_root_{cctype}':
+          version: master
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          nodes: !!python/tuple [deb12-amd64-rootnode]
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [stable-0.14]
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           touchstone: ''
