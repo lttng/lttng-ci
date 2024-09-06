@@ -229,10 +229,8 @@ ci-node-sles15sp5-amd64-2b-01
 ci-node-sles15sp5-amd64-2c-01
 
 [node_el]
-ci-node-el7-amd64-02-01 ansible_python_interpreter=python2
 ci-node-el8-amd64-03-01
 ci-node-el9-amd64-02-01
-ci-node-el7-arm64-01
 ci-node-el8-arm64-01
 ci-node-el9-arm64-01
 ci-rootnode-el8-amd64-1d-01
