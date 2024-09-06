@@ -356,7 +356,7 @@
           touchstone: '(build == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: elbuild
-          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64, el7-arm64, el8-arm64, el9-arm64]
+          platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
@@ -421,7 +421,7 @@
           touchstone: '(build == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: elbuild
-          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64]
+          platforms: !!python/tuple [el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'

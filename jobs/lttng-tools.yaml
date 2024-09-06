@@ -1102,7 +1102,7 @@
           buildtype: elbuild
           version: master
           ustversion: master
-          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64, el7-arm64, el8-arm64, el9-arm64]
+          platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [master]
@@ -1249,7 +1249,7 @@
           buildtype: elbuild
           version: stable-2.13
           ustversion: stable-2.13
-          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64, el7-arm64, el8-arm64, el9-arm64]
+          platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1396,7 +1396,7 @@
           buildtype: elbuild
           version: stable-2.12
           ustversion: stable-2.12
-          platforms: !!python/tuple [el7-amd64, el8-amd64, el9-amd64, el7-arm64, el8-arm64, el9-arm64]
+          platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
