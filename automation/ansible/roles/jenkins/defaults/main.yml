@@ -58,6 +58,7 @@ jenkins_plugins:
   - postbuildscript
   - PrioritySorter
   - proc-cleaner-plugin
+  - prometheus
   - promoted-builds
   - publish-over-ssh
   - purge-build-queue-plugin
