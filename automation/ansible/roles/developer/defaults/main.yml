@@ -9,7 +9,9 @@ developer_tui_packages:
   - emacs-nox
   - gdb
   - git-review
+  - npm  # For working on web sites
   - pkg-config
+  - ruby-bundler  # For working on web sites
   - tmux
   - vim-nox
   # wget may be used by some vlttng commands
