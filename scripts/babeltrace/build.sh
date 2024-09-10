@@ -468,6 +468,21 @@ if [ "$BABELTRACE_RUN_TESTS" = "yes" ]; then
     rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
 fi
 
+# Check that the git repository has no untracked files, meaning that
+# .gitignore is not missing anything.
+pushd "$SRCDIR"
+
+git_status_output=$(git status --short)
+if [ -n "$git_status_output" ]; then
+    echo "Error: There are untracked or modified files in the repository:"
+    echo "git_status_output"
+    exit_status=1
+else
+    echo "No untracked or modified files."
+fi
+
+popd
+
 # Clean the build directory
 if [ "$BABELTRACE_MAKE_CLEAN" = "yes" ]; then
     print_header "Clean"
