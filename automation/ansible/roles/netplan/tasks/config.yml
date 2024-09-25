@@ -1,0 +1,22 @@
+---
+- when: item.dependencies|default([])
+  ansible.builtin.package:
+    name: "{{item.dependencies}}"
+    install_recommends: false
+
+- when: state == 'present'
+  ansible.builtin.template:
+    src: "netplan.yaml.j2"
+    dest: "{{filename}}"
+    mode: '0600'
+    owner: 'root'
+    group: 'root'
+  notify:
+    - 'Apply netplan'
+
+- when: state != 'present'
+  ansible.builtin.file:
+    path: "{{filename}}"
+    state: "{{state}}"
+  notify:
+    - 'Apply netplan'

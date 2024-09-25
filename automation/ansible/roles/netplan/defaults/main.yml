@@ -1,4 +1,20 @@
 ---
 netplan_manage: false
+
+# 0 or more non default config files
+# E.g.
+# netplan_configs:
+#   - name: example
+#     # filename: example  # don't add '.yaml', defautls to name
+#     # state: present
+#     # dependencies: []  # list of packages to install to support this configuration
+#     content:
+#       network:
+#         version: 2
+#         ethernets:
+#           eth1:
+#             addresses:
+#               ...
+netplan_configs: []
 netplan_content: ''
 netplan_apply: true

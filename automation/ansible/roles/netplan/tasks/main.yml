@@ -5,13 +5,15 @@
       ansible.builtin.apt:
         name: netplan.io
     - name: Update netplan default.yaml
+      when: netplan_content
       ansible.builtin.copy:
         content: "{{netplan_content}}"
         dest: /etc/netplan/default.yaml
         owner: root
         group: root
         mode: '0600'
-      register: netplan_default_yaml
+      notify:
+        - 'Apply netplan'
     - name: Disable ifupdown on Debian
       when: ansible_distribution == "Debian"
       block:
@@ -24,7 +26,11 @@
             name: systemd-networkd
             enabled: true
             state: started
-    - name: Apply netplan
-      when: netplan_default_yaml.changed and netplan_apply
-      ansible.builtin.command:
-        argv: ['netplan', 'apply']
+    - name: Manage non-default netplan configurations
+      ansible.builtin.include_tasks:
+        file: config.yml
+      vars:
+        "filename": "/etc/netplan/{{item.filename|default(item.name)}}.yaml"
+        "netplan_content": "{{item.content}}"
+        "state": "{{item.state|default('present')}}"
+      loop: "{{netplan_configs}}"
