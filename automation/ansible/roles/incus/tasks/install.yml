@@ -2,8 +2,17 @@
 
 - name: Configure bookworm-backports
   when: ansible_distribution == 'Debian' and ansible_distribution_major_version == '12'
-  ansible.builtin.apt_repository:
-    repo: 'deb https://deb.debian.org/debian bookworm-backports main contrib non-free-firmware'
+  block:
+    - ansible.builtin.apt_repository:
+        repo: 'deb https://deb.debian.org/debian bookworm-backports main contrib non-free-firmware'
+    - ansible.builtin.copy:
+        content: "Unattended-Upgrade::Origins-Pattern:: \"origin=Debian Backports,codename=${distro_codename}-backports,label=Debian Backports\";\n"
+        dest: '/etc/apt/apt.conf.d/90unattended_upgrades-backports.conf'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      notify:
+        - 'apt update'
 
 - name: Install packages
   ansible.builtin.package:
