@@ -1,0 +1,5 @@
+---
+
+- name: 'apt update'
+  ansible.builtin.command:
+    argv: ['apt', 'update']
