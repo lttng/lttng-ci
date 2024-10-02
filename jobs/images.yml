@@ -203,6 +203,8 @@
     ARCHES:
       - i386
       - amd64
+      - armhf
+      - arm64
     RELEASES:
       - bullseye
       - bookworm
