@@ -182,7 +182,7 @@ exit_status=0
 # Use bear to generate compile_commands.json when enabled
 BEAR=""
 if [ "$LTTNG_TOOLS_GEN_COMPILE_COMMANDS" = "yes" ]; then
-	BEAR="bear"
+    BEAR="bear"
 fi
 
 # Create tmp directory
@@ -232,7 +232,7 @@ clang-*)
     ;;
 *)
     if [ "x$cc" != "x" ]; then
-	    export CC="$cc"
+        export CC="$cc"
     fi
     ;;
 esac
@@ -267,9 +267,9 @@ cygwin|cygwin64|msys32|msys64)
     if command -v $PYTHON2 >/dev/null 2>&1; then
         P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
         DEPS_PYTHON2="$WORKSPACE/deps/build/$LIBDIR/python$P2_VERSION/site-packages"
-	if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
+        if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
             DEPS_PYTHON2="$DEPS_PYTHON2:$WORKSPACE/deps/build/$LIBDIR_ARCH/python$P2_VERSION/site-packages"
-	fi
+        fi
     fi
 
     P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')

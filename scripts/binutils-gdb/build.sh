@@ -212,8 +212,8 @@ export CC="cc"
 export CXX="c++"
 
 if use_ccache; then
-	CC="ccache $CC"
-	CXX="ccache $CXX"
+    CC="ccache $CC"
+    CXX="ccache $CXX"
 fi
 
 # To make GDB find libcc1.so
@@ -244,7 +244,7 @@ print_os || true
 print_tooling || true
 
 if use_ccache; then
-	ccache -c
+    ccache -c
 fi
 
 # This job has been seen generating cores in /tmp, filling and and causing

@@ -57,12 +57,12 @@ while read -r core_file; do
     # Make sure the coredump is finished using fuser
     while fuser "$core_file"; do
         sleep 1
-	sleep_count+=1
+        sleep_count+=1
 
-	# Skip the core file if it takes more than 30 seconds
-	if [ "$sleep_count" -ge 30 ]; then
-		continue
-	fi
+        # Skip the core file if it takes more than 30 seconds
+        if [ "$sleep_count" -ge 30 ]; then
+            continue
+        fi
     done
 
     # Print a full backtrace of all threads

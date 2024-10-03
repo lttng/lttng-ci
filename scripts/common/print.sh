@@ -9,7 +9,7 @@ COLOR_BLUE='\033[0;34m'
 COLOR_NONE='\033[0m' # No Color
 
 print_blue() {
-	echo -e "${COLOR_BLUE}$1${COLOR_NONE}"
+    echo -e "${COLOR_BLUE}$1${COLOR_NONE}"
 }
 
 print_hardware() {
@@ -41,7 +41,7 @@ print_os() {
         echo "Version: $(head -n1 /etc/release)"
     elif command -v sw_vers >/dev/null 2>&1; then
         # For MacOS
-	echo "Version: $(sw_vers -productName) $(sw_vers -productVersion)"
+        echo "Version: $(sw_vers -productName) $(sw_vers -productVersion)"
     fi
 
     echo -n "Kernel: "
@@ -96,7 +96,7 @@ print_tooling() {
 
     if command -v cmake >/dev/null 2>&1; then
         print_blue "cmake version"
-	cmake --version
+        cmake --version
     fi
 
     print_blue "automake version"
@@ -146,17 +146,17 @@ print_tooling() {
 
     if command -v asciidoc >/dev/null 2>&1; then
         print_blue "asciidoc version"
-	asciidoc --version
+        asciidoc --version
     fi
 
     if command -v xmlto >/dev/null 2>&1; then
         print_blue "xmlto version"
-	xmlto --version
+        xmlto --version
     fi
 
     if command -v openssl >/dev/null 2>&1; then
         print_blue "openssl version"
-	openssl version
+        openssl version
     fi
 
     if command -v pkg-config >/dev/null 2>&1; then
@@ -170,7 +170,7 @@ print_tooling() {
         print_pkgconfig_mod libdw
         print_pkgconfig_mod libelf
         print_pkgconfig_mod libxml-2.0
-	print_pkgconfig_mod msgpack
+        print_pkgconfig_mod msgpack
         print_pkgconfig_mod popt
         print_pkgconfig_mod uuid
         print_pkgconfig_mod zlib

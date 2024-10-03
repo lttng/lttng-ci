@@ -18,5 +18,5 @@
 set -exu
 
 git clone "$LTTNG_MODULES_REPO" src/lttng-modules && \
-	cd src/lttng-modules && \
-	git reset --hard "$LTTNG_MODULES_COMMIT_ID"
+    cd src/lttng-modules && \
+    git reset --hard "$LTTNG_MODULES_COMMIT_ID"

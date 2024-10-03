@@ -30,28 +30,28 @@ mkdir -p "$TMPDIR"
 export TMPDIR
 
 function checkout_scripts() {
-	git clone https://github.com/lttng/lttng-ci.git "$SCRIPT_DIR"
+    git clone https://github.com/lttng/lttng-ci.git "$SCRIPT_DIR"
 }
 
 function setup_env ()
 {
-	mkdir -p "$RESULTS_DIR"
-	virtualenv --python python3 "$VENV"
-	set +u
-	 # shellcheck disable=SC1090
-	. "${VENV}/bin/activate"
-	set -u
-	pip install -r "$REQUIREMENT_PATH"
+    mkdir -p "$RESULTS_DIR"
+    virtualenv --python python3 "$VENV"
+    set +u
+    # shellcheck disable=SC1090
+    . "${VENV}/bin/activate"
+    set -u
+    pip install -r "$REQUIREMENT_PATH"
 }
 
 function run_jobs ()
 {
-	python "$SCRIPT_PATH" --generate-jobs --repo-path "$SRC_DIR"
+    python "$SCRIPT_PATH" --generate-jobs --repo-path "$SRC_DIR"
 }
 
 function generate_report ()
 {
-	python "$SCRIPT_PATH" --generate-report --repo-path "$SRC_DIR" --report-name "${RESULTS_DIR}/babeltrace-benchmark.pdf"
+    python "$SCRIPT_PATH" --generate-report --repo-path "$SRC_DIR" --report-name "${RESULTS_DIR}/babeltrace-benchmark.pdf"
 }
 
 checkout_scripts

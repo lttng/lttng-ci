@@ -113,7 +113,7 @@ export TMPDIR="$tmpdir"
 # the trace reader in its test suite or that we move to only supporting
 # babeltrace2
 if [ -x "$DEPS_BIN/babeltrace2" ]; then
-	ln -s "$DEPS_BIN/babeltrace2" "$DEPS_BIN/babeltrace"
+    ln -s "$DEPS_BIN/babeltrace2" "$DEPS_BIN/babeltrace"
 fi
 
 # When using babeltrace2 make sure that it finds its plugins and

@@ -86,7 +86,7 @@ lttng-ust)
 esac
 
 if [ -d "$WORKSPACE/src/linux" ]; then
-	export KERNELDIR="$WORKSPACE/src/linux"
+    export KERNELDIR="$WORKSPACE/src/linux"
 fi
 
 # Enter the source directory

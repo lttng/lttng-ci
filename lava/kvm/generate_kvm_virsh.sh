@@ -23,18 +23,18 @@ virsh vol-create-as --pool default --name "${name}.raw" --capacity 2G --format r
 data_disk_path="$(virsh vol-path ${name}.raw --pool default)"
 sudo mkfs.ext4 "$data_disk_path"
 virt-install --print-xml \
-	--name "$name" \
-	--memory 2096\
-	--disk /var/lib/libvirt/images/ipxe.iso,device=cdrom \
-	--boot cdrom \
-	--disk "$data_disk_path,format=raw" \
-	--vcpus 2 \
-	--cpu host \
-	--serial pty \
-	--graphics none \
-	--autostart \
-	--network bridge=br0 \
-	--check path_in_use=off > "$tmp"
+    --name "$name" \
+    --memory 2096\
+    --disk /var/lib/libvirt/images/ipxe.iso,device=cdrom \
+    --boot cdrom \
+    --disk "$data_disk_path,format=raw" \
+    --vcpus 2 \
+    --cpu host \
+    --serial pty \
+    --graphics none \
+    --autostart \
+    --network bridge=br0 \
+    --check path_in_use=off > "$tmp"
 virsh define --validate "$tmp"
 virsh start "$name"
 rm -rf "$tmp"

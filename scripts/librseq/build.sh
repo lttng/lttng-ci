@@ -127,7 +127,7 @@ exit_status=0
 # Use bear to generate compile_commands.json when enabled
 BEAR=""
 if [ "$LIBRSEQ_GEN_COMPILE_COMMANDS" = "yes" ]; then
-	BEAR="bear"
+    BEAR="bear"
 fi
 
 # Create tmp directory
@@ -162,7 +162,7 @@ clang-*)
     ;;
 *)
     if [ "x$cc" != "x" ]; then
-	    export CC="$cc"
+        export CC="$cc"
     fi
     ;;
 esac

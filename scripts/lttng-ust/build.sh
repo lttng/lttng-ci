@@ -139,7 +139,7 @@ exit_status=0
 # Use bear to generate compile_commands.json when enabled
 BEAR=""
 if [ "$LTTNG_UST_GEN_COMPILE_COMMANDS" = "yes" ]; then
-	BEAR="bear"
+    BEAR="bear"
 fi
 
 # Create tmp directory
@@ -170,7 +170,7 @@ clang-*)
     ;;
 *)
     if [ "x$cc" != "x" ]; then
-	    export CC="$cc"
+        export CC="$cc"
     fi
     ;;
 esac
@@ -246,7 +246,7 @@ agents)
 
     # Explicitly add '--enable-java-agent-log4j2', it's not part of '-all' in stable 2.12/2.13
     if verlt "$PACKAGE_VERSION" "2.14"; then
-	    CONF_OPTS+=("--enable-java-agent-log4j2")
+        CONF_OPTS+=("--enable-java-agent-log4j2")
     fi
     ;;
 

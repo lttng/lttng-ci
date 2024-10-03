@@ -88,39 +88,39 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
             # the change id. We could also be clever and require that the
             # "branch name" be included in the `Depends-on` clause.
             local_query="${gerrit_url}/changes/?q=change:${gerrit_id}+branch:${GERRIT_BRANCH}${gerrit_query}"
-	    default_branch="${GERRIT_BRANCH}"
+            default_branch="${GERRIT_BRANCH}"
             ;;
         *)
             local_query="${gerrit_url}/changes/?q=change:${gerrit_id}${gerrit_query}"
-	    default_branch="master"
+            default_branch="master"
             ;;
     esac
 
     json_doc=$(curl "$local_query" | tail -n+2)
     count=$(jq -r '. | length' <<< "$json_doc")
     if [ "$count" != "1" ]; then
-	    echo "Expected an array of size 1 got $count"
-	    exit 1
+        echo "Expected an array of size 1 got $count"
+        exit 1
     fi
 
     ref=$(jq -r "$gerrit_json_query" <<< "$json_doc")
     change_status=$(jq -r "$gerrit_json_query_status" <<< "$json_doc")
     if [ "$change_status" == "MERGED" ]; then
-	    # When the change we depends on is merged use master as the ref.
-	    # This is not ideal CI time wise since we do not reuse artifacts.
-	    # This solve a tricky situation where we actually want to use master
-	    # instead of the change available on gerrit. Intermediary changes
-	    # present in master could have an impact on the change under test.
-	    echo "Depends-on change is MERGED. Defaulting to ${default_branch}"
-	    ref="refs/heads/$default_branch"
+        # When the change we depends on is merged use master as the ref.
+        # This is not ideal CI time wise since we do not reuse artifacts.
+        # This solve a tricky situation where we actually want to use master
+        # instead of the change available on gerrit. Intermediary changes
+        # present in master could have an impact on the change under test.
+        echo "Depends-on change is MERGED. Defaulting to ${default_branch}"
+        ref="refs/heads/$default_branch"
     elif [ "$change_status" == "ABANDONED" ]; then
-	    # We have a situation where the "HEAD" commit for feature branch are
-	    # not merged and abandoned. Default to the master branch and hope
-	    # for the best. This is far from ideal but we need might also need
-	    # to find a better way to handle feature branch here. In the
-	    # meantime use master for such cases.
-	    echo "Depends-on change is ABANDONED. Defaulting to ${default_branch}"
-	    ref="refs/heads/${default_branch}"
+        # We have a situation where the "HEAD" commit for feature branch are
+        # not merged and abandoned. Default to the master branch and hope
+        # for the best. This is far from ideal but we need might also need
+        # to find a better way to handle feature branch here. In the
+        # meantime use master for such cases.
+        echo "Depends-on change is ABANDONED. Defaulting to ${default_branch}"
+        ref="refs/heads/${default_branch}"
     fi
 
     # The build.sh script from userspace-rcu expects the source to be located in
@@ -128,7 +128,7 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
     if [ "$project" = "userspace-rcu" ]; then
         clone_directory="liburcu"
     else
-	clone_directory="$project"
+        clone_directory="$project"
     fi
 
     clone_directory="$WORKSPACE/src/$clone_directory"
