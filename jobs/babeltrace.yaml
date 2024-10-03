@@ -361,7 +361,9 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/babeltrace/lint.sh
+         !include-raw-escape:
+          - scripts/common/print.sh
+          - scripts/babeltrace/lint.sh
 
     properties:
       - inject:
@@ -540,7 +542,9 @@
 
     builders:
        - shell:
-          !include-raw-escape: scripts/babeltrace/lint.sh
+          !include-raw-escape:
+            - scripts/common/print.sh
+            - scripts/babeltrace/lint.sh
 
     publishers:
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults

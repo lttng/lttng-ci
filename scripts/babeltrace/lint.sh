@@ -44,6 +44,8 @@ else
     pip install black flake8 isort
 fi
 
+print_tooling || true
+
 exit_code=0
 
 cd "$SRCDIR"
