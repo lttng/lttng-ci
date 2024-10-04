@@ -176,5 +176,10 @@ print_tooling() {
         print_pkgconfig_mod zlib
     fi
 
+    if command -v shellcheck >/dev/null 2>&1; then
+        print_blue "shellcheck version"
+        shellcheck --version | grep '^version'
+    fi
+
     set -ex
 }
