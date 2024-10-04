@@ -1,0 +1,59 @@
+---
+
+- defaults:
+    name: linux-kernel
+    description: |
+      <p>Job is managed by Jenkins Job Builder</p>
+    # As the source code doesn't contain a Jenkinsfile, multibranch pipelines don't work
+    project-type: pipeline
+    sandbox: true
+    dsl:
+      !include-jinja2: pipelines/linux/pipeline.groovy.j2
+    # Vars used by pipeline and/or projects
+    cc: 'gcc'
+    cxx: 'g++'
+    github_user: ''
+    github_project: 'linux'
+    github_branch_pattern: 'ci/*'
+    stable_mirror: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
+    email_to: ''
+    default_label: 'deb12-amd64'
+
+## Anchors
+
+## Job templates
+
+- job-template:
+    name: '{job_prefix}linux_kernel_pipeline'
+    defaults: linux-kernel
+
+- job-template:
+    name: '{job_prefix}branch_watcher'
+    dsl:
+      !include-jinja2: pipelines/linux/watcher.groovy.j2
+## Views
+
+- view-template:
+    name: 'Linux Kernel'
+    view-type: list
+    regex: '.*[-_]?linux_kernel[-_].*'
+
+## Projects
+
+- project:
+    name: 'compudj'
+    job_prefix: 'dev_compudj_'
+    email_to: 'mathieu.desnoyers@efficios.com'
+    github_user: 'compudj'
+    jobs:
+      - '{job_prefix}linux_kernel_pipeline':
+          github_project: 'linux-dev'
+      - '{job_prefix}linux_kernel_pipeline':
+          job_prefix: 'dev_kstewart'
+          github_user: 'kienanstewart'
+          email_to: ''
+
+- project:
+    name: linux-views
+    views:
+      - 'Linux Kernel'

@@ -1,0 +1,68 @@
+pipeline {
+  agent none
+
+  options {
+    skipDefaultCheckout(true)
+    buildDiscarder(logRotator(daysToKeepStr: '7'))
+  }
+
+  triggers {
+    pollSCM('H * * * *')
+  }
+
+  stages {
+    stage('Checkout') {
+      agent {
+        label "{{default_label}}"
+      }
+
+      steps {
+        dir('src/linux') {
+          checkout([
+            $class: 'GitSCM',
+            branches: [[name: '{{github_branch_pattern}}']],
+            userRemoteConfigs: [[
+              url: 'https://github.com/{{github_user}}/{{github_project}}'
+            ]],
+            extensions: [
+              [$class: 'CloneOption', depth: 1,],
+              [$class: 'CleanCheckout'],
+            ],
+          ])
+
+          // Do any steps that are pretty generic, like linting or check
+          // project config.
+          // The '.git' won't be stashed, so any operations that depend
+          // on git information should be done now.
+          sh (
+            label: 'Check patch',
+            script: """\n
+git remote add stable {{stable_mirror}}
+git fetch stable
+git branch -u stable/master
+OUTPUT_DIR=\$(mktemp -d)
+FAILURE=0
+for patch_file in "\$(ls "\$OUTPUT_DIR/*.patch")" ; do
+    echo \$patch_file
+    cat \$patch_file | scripts/checkpatch.pl -q --terse --no-summary --mailback --showfile || FAILURE=1
+done
+rm -rf "\${OUTPUT_DIR}"
+if [[ "\${FAILURE}" == "1" ]] ; then
+   exit 1
+fi
+""",
+          )
+        }
+
+
+        stash(name: 'linux', includes: 'src/linux/**')
+      }
+    }
+
+    // parallel (arch) {
+
+    // }
+
+    // Future: parallel (arch, platform) runtime tests
+  }
+}
