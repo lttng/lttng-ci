@@ -1,6 +1,7 @@
 ---
 lttng_modules_packages:
   - bc
+  - gawk
   - kernel-devel
   - kernel-default-devel
   - kernel-syms

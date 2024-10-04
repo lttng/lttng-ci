@@ -2,3 +2,4 @@
 lttng_modules_packages:
   - libelf-dev
   - bc
+  - gawk

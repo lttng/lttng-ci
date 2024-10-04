@@ -2,5 +2,6 @@
 lttng_modules_packages:
   - bc
   - elfutils-devel
+  - gawk
   - kernel-devel
   - kernel-headers

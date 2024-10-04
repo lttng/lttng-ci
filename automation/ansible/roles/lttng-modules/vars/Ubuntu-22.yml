@@ -4,6 +4,7 @@ lttng_modules_packages:
   - cpio
   - dctrl-tools
   - dwarves
+  - gawk
   - kernel-wedge
   - kmod
   - libelf-dev
