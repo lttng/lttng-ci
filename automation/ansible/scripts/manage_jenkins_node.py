@@ -223,7 +223,7 @@ if __name__ == "__main__":
         level=args.loglevel, format="[%(asctime)s] - %(levelname)s - %(message)s"
     )
     if "callback" not in args or not args.callback:
-        log.error("Valid command required")
+        logging.error("Valid command required")
         parser.print_help()
         sys.exit(1)
 
