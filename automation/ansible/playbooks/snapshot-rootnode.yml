@@ -8,6 +8,7 @@
     # Set to false when taking the first snapshot of a new rootnode
     - revert_before: true
     - snapshot_name: 'base-configuration'
+    - upgrade: false
     - wait_for_changes: true
   tasks:
     - ansible.builtin.set_fact:
@@ -16,6 +17,7 @@
         revert_before: "{{revert_before}}"
         snapshot_name: "{{snapshot_name}}"
         target_rootnode: "{{inventory_hostname}}"
+        upgrade: "{{upgrade}}"
         wait_for_changes: "{{wait_for_changes}}"
 
 - name: Shutdown and revert
@@ -58,6 +60,36 @@
                     delay=1
                     timeout=300
                     state=started
+
+    - when: upgrade
+      block:
+        - name: Update apt cache
+          when: ansible_os_family == 'Debian'
+          ansible.builtin.apt:
+            state: latest
+            update_cache: true
+            upgrade: yes
+
+        - name: Update dnf
+          when: ansible_os_family in ['RedHat', 'Rocky']
+          ansible.builtin.dnf:
+            state: latest
+            update_cache: true
+            update_only: true
+
+        - name: Update zypper
+          when: ansible_os_family == 'Suse'
+          ansible.builtin.zypper:
+            name: '*'
+            state: latest
+            update_cache: true
+
+        - name: Update apk
+          when: ansible_os_family == 'Alpine'
+          ansible.builtin.apk:
+            state: latest
+            update_cache: true
+            upgrade: true
 
 # If the playbook isn't run with `-l node_standalone` or `-l ci-rootnode...`, then
 # this play errors out trying to find variables for the ci-hosts even if the condition
