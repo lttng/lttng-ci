@@ -3,12 +3,14 @@
   vars:
     - job_wait_to_end: true
     - job_abort: false
+    - upgrade: true
     - wait_for_changes: true
   tasks:
     - name: Initialize variables
       ansible.builtin.set_fact:
         job_wait_to_end: "{{job_wait_to_end}}"
         job_abort: "{{job_abort}}"
+        upgrade: "{{upgrade}}"
         wait_for_changes: "{{wait_for_changes}}"
 
     - name: Disable {{ansible_hostname}} in Jenkins
@@ -27,33 +29,35 @@
       delegate_to: localhost
       retries: 3
 
-    - name: Update apt cache
-      when: ansible_os_family == 'Debian'
-      ansible.builtin.apt:
-        state: latest
-        update_cache: true
-        upgrade: yes
+    - when: upgrade
+      block:
+        - name: Update apt cache
+          when: ansible_os_family == 'Debian'
+          ansible.builtin.apt:
+            state: latest
+            update_cache: true
+            upgrade: yes
 
-    - name: Update dnf
-      when: ansible_os_family in ['RedHat', 'Rocky']
-      ansible.builtin.dnf:
-        state: latest
-        update_cache: true
-        update_only: true
+        - name: Update dnf
+          when: ansible_os_family in ['RedHat', 'Rocky']
+          ansible.builtin.dnf:
+            state: latest
+            update_cache: true
+            update_only: true
 
-    - name: Update zypper
-      when: ansible_os_family == 'Suse'
-      ansible.builtin.zypper:
-        name: '*'
-        state: latest
-        update_cache: true
+        - name: Update zypper
+          when: ansible_os_family == 'Suse'
+          ansible.builtin.zypper:
+            name: '*'
+            state: latest
+            update_cache: true
 
-    - name: Update apk
-      when: ansible_os_family == 'Alpine'
-      ansible.builtin.apk:
-        state: latest
-        update_cache: true
-        upgrade: true
+        - name: Update apk
+          when: ansible_os_family == 'Alpine'
+          ansible.builtin.apk:
+            state: latest
+            update_cache: true
+            upgrade: true
 
 # If the playbook isn't run with `-l node:!node_standalone` or similar, then
 # this play errors out trying to find variables for the ci-hosts even if the condition
