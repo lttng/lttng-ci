@@ -2,6 +2,7 @@
   roles:
     - common
     - common-node
+    - compilers
     - cross-compilers
     - babeltrace
     - librseq
