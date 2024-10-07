@@ -2,8 +2,11 @@
 
 import argparse
 import configparser
+import enum
+import json
 import logging
 import pathlib
+import pprint
 import requests
 import re
 import sys
@@ -11,6 +14,15 @@ import time
 import xml.etree.ElementTree
 
 import jenkins
+
+
+class OutputFormat(enum.Enum):
+    pprint = "pprint"
+    json = "json"
+    pjson = "pjson"  # Pretty json
+
+    def __str__(self):
+        return self.value
 
 
 def get_hypervisor(server, nodes, args):
@@ -29,6 +41,21 @@ def get_hypervisor(server, nodes, args):
         sys.exit(1)
     elif found != len(nodes):
         sys.exit(2)
+
+
+def get_info(server, nodes, args):
+    data = []
+    for node in nodes:
+        data.append(server.get_node_info(node["name"]))
+
+    if args.format == OutputFormat.pprint:
+        pprint.PrettyPrinter().pprint(data)
+    elif args.format == OutputFormat.json:
+        print(json.dumps(data))
+    elif args.format == OutputFormat.pjson:
+        print(json.dumps(data, sort_keys=True, indent=4))
+    else:
+        raise Exception("Unknown output format")
 
 
 def toggle_nodes(server, nodes, args, want_offline=True):
@@ -211,6 +238,20 @@ def get_argument_parser():
     getcloud_parser.set_defaults(callback=get_hypervisor)
     getcloud_parser.add_argument(
         "node", default="", help="A python regex to filter nodes by", nargs="?"
+    )
+
+    info_parser = subparsers.add_parser("info", help="Get node info")
+    info_parser.set_defaults(callback=get_info)
+    info_parser.add_argument(
+        "node", default="", help="A python regex to filter nodes by", nargs="?"
+    )
+    info_parser.add_argument(
+        "-f",
+        "--format",
+        default="pprint",
+        help="The output format",
+        type=OutputFormat,
+        choices=list(OutputFormat),
     )
 
     return parser
