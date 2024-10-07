@@ -1,5 +1,6 @@
 ---
 - name: Install legacy compilers
+  when: compilers_legacy_install
   block:
    - name: Add sources for gcc 4.8
      when: ansible_distribution == 'Debian'
@@ -7,7 +8,6 @@
        repo: 'deb [trusted=yes] http://archive.debian.org/debian jessie main'
        state: "{{compilers_legacy_install|ternary('present', 'absent')}}"
    - name: Install legacy compiler packages
-     when: compilers_legacy_install
      ansible.builtin.apt:
        name: "{{compilers_legacy_packages}}"
 
