@@ -3,6 +3,7 @@ lttng_modules_packages:
   - bc
   - cpio
   - dctrl-tools
+  - device-tree-compiler
   - dwarves
   - gawk
   - kernel-wedge
