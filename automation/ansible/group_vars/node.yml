@@ -1,3 +1,6 @@
 ---
 jenkins_user: true
+# The full linux repo is mirrored only on node_amd64 which run the
+# modules parambuild jobs
+lttng_modules_checkout_repo: false
 unattended_upgrades: false
