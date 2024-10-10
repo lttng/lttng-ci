@@ -1,3 +1,89 @@
+// SPDX-FileCopyrightText: Kienan Stewart <kstewart@efficios.com>
+// SPDX-LicenseIdentifier: GPL-3.0-only
+
+@NonCPS
+def calculateEnv(arch, config, cross_host_arch, cc, cxx) {
+  e = [
+    "ARCH=${-> calculateKarch(arch)}" as String,
+    "V=1",
+    "KBUILD_VERBOSE=1",
+    "CONFIG=${config}" as String,
+  ]
+
+  if (cross_host_arch != null && cross_host_arch != "") {
+    e += [
+      "CC=${-> calculateCrossFromArch(arch, cc)}" as String,
+      "CXX=${-> calculateCrossFromArch(arch, cxx)}" as String,
+      "HOSTCC=${cc}" as String,
+      "CROSS_COMPILE=${-> calculateCrossFromArch(arch, '')}" as String,
+    ]
+  }
+
+  return e
+}
+
+@NonCPS
+def calculateCrossFromArch(dest_arch, cc) {
+  arch_map = [
+    armhf: 'arm-linux-gnueabihf-',
+    arm64: 'aarch64-linux-gnu-',
+    ppc64el: 'powerpc64le-linux-gnu-',
+    riscv64: 'riscv64-linux-gnu-',
+  ]
+
+  return "${-> arch_map.get(dest_arch,'')}${cc}" as String
+}
+
+@NonCPS
+def calculateLabel(arch, cross_host_arch) {
+  arch_map = [
+    amd64: 'amd64',
+    arm64: 'arm64',
+    armhf: 'armhf',
+    i386: 'i386',
+    ppc64el: 'ppc64el',
+    riscv64: 'riscv64',
+    x86: 'i386',
+    x86_64: 'amd64',
+  ]
+  default_distro = 'deb12'
+  distro_map = [
+    'riscv64': 'deb13',
+  ]
+
+  def _distro = distro_map.get(cross_host_arch ?: arch, default_distro)
+  def _arch = arch_map.get(cross_host_arch ?: arch)
+  return "${_distro}-${_arch}" as String
+}
+
+@NonCPS
+def calculateKarch(arch) {
+  arch_map = [
+    arm64: 'arm64',
+    armhf: 'arm',
+    ppc64el: 'powerpc',
+    riscv64: 'riscv',
+    x86: 'i386',
+    x86_64: 'x86_64',
+  ]
+  return arch_map.get(arch)
+}
+
+@NonCPS
+def calculateKconfig(arch, config) {
+  arch_map = [
+    arm64: [:],
+    armhf: [
+      'defconfig': 'imx_v6_v7_defconfig',
+    ],
+    ppc64el: [:],
+    riscv64: [:],
+    x86: [:],
+    x86_64: [:],
+  ]
+  return arch_map.get(arch, [:]).get(config, config)
+}
+
 pipeline {
   agent none
 
@@ -7,7 +93,17 @@ pipeline {
   }
 
   triggers {
-    pollSCM('H * * * *')
+    githubPush()
+  }
+
+  parameters {
+    string name: 'CROSS_HOST_ARCH', trim: true, defaultValue: '{{cross_host_arch}}'
+    string name: 'CC', defaultValue: '{{cc}}'
+    string name: 'CXX', defaultValue: '{{cxx}}'
+    string name: 'NOTIFICATION_EMAILS', defaultValue: '{{email_to}}'
+    string name: 'SKIP_ARCHES', defaultValue: '{{skip_arches}}'
+    string name: 'SKIP_CONFIGS', defaultValue: '{{skip_configs}}'
+    booleanParam name: 'SKIP_CHECKPATCH', defaultValue: {{skip_checkpatch|to_groovy}}
   }
 
   stages {
@@ -21,12 +117,16 @@ pipeline {
           checkout([
             $class: 'GitSCM',
             branches: [[name: '{{github_branch_pattern}}']],
-            userRemoteConfigs: [[
-              url: 'https://github.com/{{github_user}}/{{github_project}}'
-            ]],
+            userRemoteConfigs: [
+              [
+                url: 'https://github.com/{{github_user}}/{{github_project}}.git',
+                name: 'origin',
+              ],
+            ],
             extensions: [
-              [$class: 'CloneOption', depth: 1,],
-              [$class: 'CleanCheckout'],
+              [$class: 'CloneOption', depth: 1, noTags: false, shallow: true],
+              [$class: 'LocalBranch'],
+              [$class: 'WipeWorkspace'],
             ],
           ])
 
@@ -34,35 +134,125 @@ pipeline {
           // project config.
           // The '.git' won't be stashed, so any operations that depend
           // on git information should be done now.
-          sh (
-            label: 'Check patch',
-            script: """\n
+          script {
+            if (!params.SKIP_CHECKPATCH) {
+              sh (
+                label: 'checkpatch.pl',
+                script: """#!/usr/bin/bash\n
+set -x
+# Full fetch of origin for history
+git fetch --unshallow origin
+
+# Tags only from the stable master branches
 git remote add stable {{stable_mirror}}
-git fetch stable
+git fetch --depth 1 --tags stable master
 git branch -u stable/master
+
 OUTPUT_DIR=\$(mktemp -d)
+git format-patch \$(git describe --tags --abbrev=0) -o "\${OUTPUT_DIR}"
 FAILURE=0
-for patch_file in "\$(ls "\$OUTPUT_DIR/*.patch")" ; do
-    echo \$patch_file
-    cat \$patch_file | scripts/checkpatch.pl -q --terse --no-summary --mailback --showfile || FAILURE=1
-done
+while read -r patch_file; do
+    echo "\$patch_file:"
+    cat "\$patch_file"
+    echo "---"
+    # Unfortunately, checkpatch.pl doesn't use a different exit code to differentiate between warnings and errors.
+    OUTPUT=\$(scripts/checkpatch.pl -v --no-summary --showfile "\${patch_file}" 2>&1)
+    if echo "\${OUTPUT}" | grep -q ERROR >/dev/null 2>&1; then
+      FAILURE=1
+    fi
+    ./scripts/checkpatch.pl -q --terse --no-summary --showfile "\${patch_file}"
+    echo "---"
+    echo
+done < <(ls -1 "\${OUTPUT_DIR}/"*.patch)
 rm -rf "\${OUTPUT_DIR}"
-if [[ "\${FAILURE}" == "1" ]] ; then
+if [[ "\${FAILURE}" == "1" ]]; then
    exit 1
 fi
 """,
-          )
+              )
+            }
+          }
         }
 
-
-        stash(name: 'linux', includes: 'src/linux/**')
+        // Create a tar archive of the source without '.git', as symlinks need
+        // to be preserved for buildings DTBs.
+        sh (
+          label: "tar linux source",
+          script: """#!/usr/bin/bash
+set -x
+tar --exclude-vcs -czf linux.tar.gz -C src/linux .
+"""
+        )
+        stash(name: 'linux', includes: 'linux.tar.gz')
       }
     }
 
-    // parallel (arch) {
+    stage('Matrix') {
+      matrix {
+        axes {
+          axis {
+            // The stops 'ARCH' from being passed into the environment for shell
+            // steps.
+            name 'ARCH'
+            values 'arm64', 'armhf', 'ppc64el', 'riscv64', 'x86', 'x86_64'
+          }
 
-    // }
+          axis {
+            name 'CONFIG'
+            values 'defconfig', 'allnoconfig', 'allyesconfig', 'allmodconfig'
+          }
+        }
 
-    // Future: parallel (arch, platform) runtime tests
+        agent {
+          label "${-> calculateLabel(env.ARCH, params.CROSS_HOST_ARCH)}" as String
+        }
+
+        when {
+          expression { return !(params.SKIP_ARCHES.split(',').contains(env.ARCH) || params.SKIP_CONFIGS.split(',').contains(env.CONFIG)) }
+        }
+
+        stages {
+          stage('Build') {
+            steps {
+              unstash 'linux'
+              withEnv(calculateEnv(ARCH, CONFIG, params.CROSS_HOST_ARCH, params.CC, params.CXX) as List) {
+                sh "rm -rf src/linux"
+                dir('src/linux') {
+                  sh(
+                    label: "untar linux source",
+                    script: 'tar -xzf ../../linux.tar.gz'
+                  )
+                  sh 'env'
+                  sh "make " + calculateKconfig(ARCH, CONFIG)
+                  sh 'cat .config'
+                  // Build
+                  sh 'make -j$(nproc)'
+                }
+              }
+            }
+
+            post {
+              success {
+                cleanWs()
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      emailext(subject: "${currentBuild.displayName} #${currentBuild.number} ${currentBuild.result} in ${currentBuild.durationString}", to: params.email_to, body: """
+${-> currentBuild.description ?: ''}
+${currentBuild.result} in ${currentBuild.durationString}
+
+See job logs at ${currentBuild.absoluteUrl}/pipeline-console"
+
+-- scm --
+${env.CHANGE_URL} commit ${env.CHANGE_ID} branch ${env.CHANGE_BRANCH}
+""")
+    }
   }
 }

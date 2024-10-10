@@ -2,6 +2,7 @@
 
 - defaults:
     name: linux-kernel
+    concurrent: true
     description: |
       <p>Job is managed by Jenkins Job Builder</p>
     # As the source code doesn't contain a Jenkinsfile, multibranch pipelines don't work
@@ -9,28 +10,32 @@
     sandbox: true
     dsl:
       !include-jinja2: pipelines/linux/pipeline.groovy.j2
+    triggers:
+      - github
     # Vars used by pipeline and/or projects
     cc: 'gcc'
     cxx: 'g++'
+    cross_host_arch: ''
     github_user: ''
     github_project: 'linux'
-    github_branch_pattern: 'ci/*'
+    github_branch_pattern: 'origin/ci/*'
     stable_mirror: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
     email_to: ''
     default_label: 'deb12-amd64'
+    job_prefix: ''
+    job_suffix: ''
+    skip_arches: ''
+    skip_configs: ''
+    skip_checkpatch: false
 
 ## Anchors
 
 ## Job templates
 
 - job-template:
-    name: '{job_prefix}linux_kernel_pipeline'
+    name: '{job_prefix}linux_kernel{job_suffix}'
     defaults: linux-kernel
 
-- job-template:
-    name: '{job_prefix}branch_watcher'
-    dsl:
-      !include-jinja2: pipelines/linux/watcher.groovy.j2
 ## Views
 
 - view-template:
@@ -46,12 +51,17 @@
     email_to: 'mathieu.desnoyers@efficios.com'
     github_user: 'compudj'
     jobs:
-      - '{job_prefix}linux_kernel_pipeline':
+      - '{job_prefix}linux_kernel{job_suffix}':
           github_project: 'linux-dev'
-      - '{job_prefix}linux_kernel_pipeline':
-          job_prefix: 'dev_kstewart'
-          github_user: 'kienanstewart'
-          email_to: ''
+          job_suffix: '_crossbuild_fast'
+          skip_configs: 'allnoconfig,allyesconfig,allmodconfig'
+          skip_checkpatch: true
+          cross_host_arch: 'amd64'
+      - '{job_prefix}linux_kernel{job_suffix}':
+          github_project: 'linux-dev'
+          job_suffix: '_crossbuild'
+          cross_host_arch: 'amd64'
+          skip_configs: 'defconfig'
 
 - project:
     name: linux-views
