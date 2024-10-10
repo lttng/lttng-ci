@@ -102,15 +102,6 @@ ci-node-deb12-i386-2c-01
 ci-node-deb12-i386-2d-01
 
 [node_amd64]
-ci-node-deb12-amd64-01
-ci-node-deb12-amd64-02
-ci-node-deb12-amd64-03
-ci-node-deb12-amd64-04
-ci-node-deb12-amd64-05
-ci-node-deb12-amd64-06
-ci-node-deb12-amd64-07
-ci-node-deb12-amd64-08
-
 ci-node-deb12-amd64-1a-01
 ci-node-deb12-amd64-1a-02
 ci-node-deb12-amd64-1a-03
