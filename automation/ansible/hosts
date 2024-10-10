@@ -75,7 +75,6 @@ ci-node-deb12-arm64-1a-01
 ci-node-deb12-arm64-1b-01
 ci-node-deb12-arm64-2a-01
 ci-node-deb12-arm64-2b-01
-ci-node-el7-arm64-01 ansible_python_interpreter=python2
 ci-node-el8-arm64-01
 ci-node-el9-arm64-01
 
