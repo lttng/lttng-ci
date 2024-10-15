@@ -1,0 +1,19 @@
+clients:
+-   url: {{common_promtail_client}}
+positions:
+    filename: /tmp/positions.yaml
+scrape_configs:
+-   job_name: journal
+    journal:
+        json: true
+        labels:
+            host: "{{inventory_hostname}}"
+            job: systemd-journal
+            ci_role: "{{(inventory_hostname in group_names)|ternary('host', 'ci-node')}}"
+        max_age: 1h
+    relabel_configs:
+    -   source_labels:
+        - __journal__systemd_unit
+        target_label: unit
+server:
+    disable: true

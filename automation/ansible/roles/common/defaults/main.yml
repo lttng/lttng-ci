@@ -3,3 +3,6 @@ unattended_upgrades: true
 common_certificate_cert_path_prefix: '/etc/ssl/certs'
 common_certificate_key_path_prefix: '/etc/ssl/private'
 common_certificate_deploy_combined_pem: true
+
+common_install_promtail: false
+common_promtail_client: 'http://graph01:3500/loki/api/v1/push'

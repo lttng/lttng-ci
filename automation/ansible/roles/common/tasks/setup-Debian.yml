@@ -95,3 +95,44 @@
         file: '/etc/gitconfig'
         name: 'http.version'
         value: 'HTTP/1.1'
+
+- when: common_install_promtail
+  block:
+    - name: Add apt source
+      block:
+        - name: Install signing key
+          ansible.builtin.copy:
+            dest: /etc/apt/keyrings/grafana.gpg
+            src: grafana.gpg
+          register: signing_key
+        - name: Add apt source
+          ansible.builtin.apt_repository:
+            filename: grafana
+            repo: 'deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main'
+          register: apt_source
+        - name: Apt update
+          when: signing_key.changed or apt_source.changed
+          ansible.builtin.apt:
+            update_cache: true
+    - name: Install promtail
+      ansible.builtin.package:
+        name: ['promtail']
+    - name: Allow promtail user to read logs
+      ansible.builtin.user:
+        name: promtail
+        append: true
+        groups:
+          - systemd-journal
+    - name: Configure promtail
+      ansible.builtin.template:
+        src: promtail.config.yml.j2
+        dest: '/etc/promtail/config.yml'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      register: promtail_configuration
+    - name: Manage promtail service
+      ansible.builtin.service:
+        name: 'promtail'
+        enabled: true
+        state: "{{promtail_configuration.changed|ternary('restarted', 'started')}}"
