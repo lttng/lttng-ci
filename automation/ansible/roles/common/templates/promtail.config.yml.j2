@@ -9,7 +9,7 @@ scrape_configs:
         labels:
             host: "{{inventory_hostname}}"
             job: systemd-journal
-            ci_role: "{{(inventory_hostname in group_names)|ternary('host', 'ci-node')}}"
+            ci_role: "{{('hosts' in group_names)|ternary('host', 'ci-node')}}"
         max_age: 1h
     relabel_configs:
     -   source_labels:
