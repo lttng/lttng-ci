@@ -30,10 +30,18 @@ bw sync -f
 ```
 ansible-playbook -i hosts [-l SUBSET] site.yaml
 ```
+## Tags
 
-## Skip slow tasks
+* access: Any user / ssh access tasks
+* slow: Any tasks that may take a long time
+
+### Example: Skip slow tasks
 
 `ansible-playbook --skip-tags slow`
+
+### Example: Only manage users/SSH keys
+
+`ansible-playbook -t access`
 
 # Bootstrapping hosts
 

@@ -1,18 +1,21 @@
 ---
-- name: Create jenkins user
-  ansible.windows.win_user:
-    name: jenkins
-    state: "{{ (jenkins_user|bool) | ternary('present', 'absent') }}"
+- tags:
+    - access
+  block:
+    - name: Create jenkins user
+      ansible.windows.win_user:
+        name: jenkins
+        state: "{{ (jenkins_user|bool) | ternary('present', 'absent') }}"
 
-- name: Create jenkins user dotssh folder
-  when: jenkins_user|bool
-  ansible.windows.win_file:
-    state: directory
-    path: "c:/users/jenkins/.ssh"
+    - name: Create jenkins user dotssh folder
+      when: jenkins_user|bool
+      ansible.windows.win_file:
+        state: directory
+        path: "c:/users/jenkins/.ssh"
 
-- name: Deploy jenkins authorized_keys
-  when: jenkins_user|bool
-  ansible.windows.win_copy:
-    # yamllint disable-line rule:line-length
-    content: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDA3fwpioVLDoCQsQkYK5bOwPb8N0EXeYm2MleBQTfqxtKaqWWbmUtFXAiyclKHRspjcAiIKwwqLyhPopHBqJzmXnB0GsfGmxXJ6wSBgKJ4kdBVRM+nKlK0wCl1oQkFeV/Xl3jzt1Ey96XiNWlesfkvgcMCpsJzQ7/xRb9IcghskzlQbLOwDNir/156JgAYUYvOLqNCcE+xcgPxJGanfZDXTLkfBYxaeaB8isBPeEU6fhPvu/W055M1uB7E0qhcbFtuKCBu1Fg4jzsW4yDU8+ZB1b5mAXwEAuMbVGMrOf4rjtTpGpQd6XFsXpFT28NU1u5j2cUbtANJalkNDX/UY6XJ jenkins@ci-master-02'
-    dest: 'c:/users/jenkins/.ssh/authorized_keys'
+    - name: Deploy jenkins authorized_keys
+      when: jenkins_user|bool
+      ansible.windows.win_copy:
+        # yamllint disable-line rule:line-length
+        content: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDA3fwpioVLDoCQsQkYK5bOwPb8N0EXeYm2MleBQTfqxtKaqWWbmUtFXAiyclKHRspjcAiIKwwqLyhPopHBqJzmXnB0GsfGmxXJ6wSBgKJ4kdBVRM+nKlK0wCl1oQkFeV/Xl3jzt1Ey96XiNWlesfkvgcMCpsJzQ7/xRb9IcghskzlQbLOwDNir/156JgAYUYvOLqNCcE+xcgPxJGanfZDXTLkfBYxaeaB8isBPeEU6fhPvu/W055M1uB7E0qhcbFtuKCBu1Fg4jzsW4yDU8+ZB1b5mAXwEAuMbVGMrOf4rjtTpGpQd6XFsXpFT28NU1u5j2cUbtANJalkNDX/UY6XJ jenkins@ci-master-02'
+        dest: 'c:/users/jenkins/.ssh/authorized_keys'

@@ -1,6 +1,8 @@
 ---
 # Include variables and define needed variables.
 - name: Include OS-specific variables.
+  tags:
+    - always
   ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.yml"
