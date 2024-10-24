@@ -81,10 +81,22 @@
         mode: '0644'
 - name: Install prometheus node exporter for physical hosts
   when: "'hosts' in group_names"
-  ansible.builtin.apt:
-    name:
-      - prometheus-node-exporter
-      - prometheus-node-exporter-collectors
+  tags:
+    - monitoring
+  block:
+    - ansible.builtin.apt:
+        name:
+          - prometheus-node-exporter
+          - prometheus-node-exporter-collectors
+    - ansible.builtin.lineinfile:
+        line: "ARGS={{common_prometheus_node_exporter_args|quote}}"
+        path: /etc/default/prometheus-node-exporter
+      register: node_exporter_config
+    - when: node_exporter_config.changed
+      ansible.builtin.service:
+        name: prometheus-node-exporter
+        state: restarted
+        enabled: true
 
 - name: Work-around for git hanging during checkouts
   # @see https://support.efficios.com/issues/1532
@@ -97,6 +109,8 @@
         value: 'HTTP/1.1'
 
 - when: common_install_promtail
+  tags:
+    - monitoring
   block:
     - name: Add apt source
       block:

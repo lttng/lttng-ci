@@ -12,27 +12,41 @@
 
 # Setup/install tasks.
 - ansible.builtin.include_tasks: setup-RedHat.yml
+  tags:
+    - always
   when: ansible_os_family in ['RedHat', 'Rocky']
 
 - ansible.builtin.include_tasks: setup-Debian.yml
+  tags:
+    - always
   when: ansible_os_family == 'Debian'
 
 - ansible.builtin.include_tasks: setup-Alpine.yml
+  tags:
+    - always
   when: ansible_os_family == 'Alpine'
 
 - ansible.builtin.include_tasks: setup-Suse.yml
+  tags:
+    - always
   when: ansible_os_family == 'Suse'
 
 - ansible.builtin.include_tasks: setup-Windows.yml
+  tags:
+    - always
   when: ansible_os_family == 'Windows'
 
 # Setup user accounts
 - ansible.builtin.include_tasks: users.yml
   tags:
+    - always
+  tags:
     - access
   when: ansible_os_family != 'Windows'
 
 - ansible.builtin.include_tasks: users-Windows.yml
+  tags:
+    - always
   tags:
     - access
   when: ansible_os_family == 'Windows'

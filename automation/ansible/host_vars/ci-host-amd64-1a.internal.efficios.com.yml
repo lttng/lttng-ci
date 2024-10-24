@@ -1,4 +1,6 @@
 ---
+common_prometheus_node_exporter_args: "--log.level=error --no-collector.nfsd"
+
 lxd_cluster_ip: 172.18.0.190
 lxd_cluster:
   server_name: ci-host-amd64-1a
