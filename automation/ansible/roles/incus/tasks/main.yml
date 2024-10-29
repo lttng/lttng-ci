@@ -12,7 +12,7 @@
         owner: 'root'
         group: 'root'
         mode: '0644'
-        content: "kernel.core_pattern /tmp/core.%p\n"
+        content: "kernel.core_pattern = /tmp/core.%p\n"
     - name: 'Check current core pattern'
       ansible.builtin.command:
         argv: ['cat', '/proc/sys/kernel/core_pattern']
