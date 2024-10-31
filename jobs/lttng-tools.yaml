@@ -427,7 +427,7 @@
                       !include-raw-escape: scripts/lttng-tools/postbuild_clean_processes_coredumps.sh
 
       - tap: &lttng-tools_publisher_tap_defaults
-          results: 'tap/**/*.*'
+          results: 'tap/**/*.log'
           fail-if-no-results: true
           failed-tests-mark-build-as-failure: true
           include-comment-diagnostics: true
