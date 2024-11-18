@@ -259,7 +259,16 @@
             - shell: |
                 #!/bin/bash
                 set -exu
-                git clone -b "$GERRIT_BRANCH" https://github.com/{github_user}/lttng-modules.git src/lttng-modules
+                if [[ "$GERRIT_PROJECT" =~ "lttng-tools" ]]; then
+                  git clone -b "$GERRIT_BRANCH" https://github.com/{github_user}/lttng-modules.git src/lttng-modules
+                elif [[ "$GERRIT_PROJECT" =~ "lttng-modules" ]]; then
+                  # This gets used when building lttng-tools for review with lttng-modules changesets.
+                  git clone "https://${{GERRIT_HOST}}/${{GERRIT_PROJECT}}" src/lttng-modules
+                  pushd src/lttng-modules
+                  git fetch "https://${{GERRIT_HOST}}/${{GERRIT_PROJECT}}" "${{GERRIT_PATCHSET_REVISION}}"
+                  git checkout FETCH_HEAD
+                  popd
+                fi
 
       # Copy lttng-ust artifacts if the conf is 'std' or 'agents'
       # and we don't depend on a specific lttng-ust change
@@ -272,10 +281,33 @@
               - condition-kind: regex-match
                 label: '$conf'
                 regex: (std|agents)
+              - condition-kind: regex-match
+                label: '$GERRIT_PROJECT'
+                regex: '(lttng-tools)'
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
                 project: '{ust_job_prefix}lttng-ust_${{GERRIT_BRANCH}}_{buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
+
+      # Copy lttng-ust artifacts if the conf is 'std' or 'agents, there
+      # is not a dependency on a specific change, and the gerrit project isn't
+      # lttng-tools.
+      - conditional-step:
+          condition-kind: and
+          on-evaluation-failure: run
+          condition-operands:
+              - condition-kind: shell
+                condition-command: 'test "$GERRIT_DEP_LTTNG_UST" = ""'
+              - condition-kind: regex-match
+                label: '$conf'
+                regex: (std|agents)
+              - condition-kind: shell
+                label: '$GERRIT_PROJECT'
+                regex: 'if [[ $GERRIT_PROJECT =~ "lttng-tools" ]] ; then exit 1 ; fi'
+          steps:
+            - copyartifact:
+                <<: *lttng-tools_steps_copyartifact_defaults
+                project: '{ust_job_prefix}lttng-ust_{ustversion|master}_{buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
 
       # Copy liburcu artifacts if we don't depend on a specific liburcu change
       - conditional-step:
@@ -969,6 +1001,53 @@
 
     triggers:
       - gerrit: *lttng-tools_trigger_gerrit_default
+
+    properties:
+      - inject: *lttng-tools_property_inject_defaults
+      - build-discarder:
+          days-to-keep: 1
+      - throttle:
+          option: 'category'
+          categories:
+            - 'gerrit-{buildtype}'
+
+    wrappers:
+      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
+      - timeout:
+          <<: *lttng-tools_wrapper_timeout_defaults
+          timeout: 10
+      - timestamps
+
+    <<: *lttng-tools_matrix_axes_rootbuild
+    <<: *lttng-tools_builders_review
+
+    publishers:
+      - tap: *lttng-tools_publisher_tap_defaults
+      - raw: *lttng-tools_publisher_warnings-ng_defaults
+      - archive: *lttng-tools_publisher_archive_defaults
+      - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
+
+- job-template:
+    name: 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}'
+    defaults: lttng-tools
+    concurrent: true
+
+    scm:
+      - git: *lttng-tools_scm_git_default
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-modules'
+              branches:
+                - branch-compare-type: 'REG_EXP'
+                  branch-pattern: '{modules_branch_pattern}'
+
 
     properties:
       - inject: *lttng-tools_property_inject_defaults
@@ -1832,6 +1911,18 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           touchstone: ''
+      - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
+          version: master
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          nodes: !!python/tuple [deb12-amd64-rootnode]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [stable-0.14] # Baseline is stable-0.14 for C++ support
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          touchstone: ''
+          modules_branch_pattern: 'master|stable-2.13'
       - 'dev_review_lttng-tools_{version}_root_{cctype}':
           version: master
           buildtype: linuxbuild
@@ -1901,6 +1992,19 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           touchstone: ''
+      - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
+          version: stable-2.13
+          buildtype: linuxbuild
+          ustversion: stable-2.13
+          platforms: !!python/tuple [deb12-amd64]
+          nodes: !!python/tuple [deb12-amd64-rootnode]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          touchstone: ''
+          modules_branch_pattern: 'master|stable-2.13'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: stable-2.13
           buildtype: slesbuild
@@ -1936,6 +2040,18 @@
           babelversions: !!python/tuple [stable-2.0]
           filter: '(node=="deb12-amd64-rootnode-linux5" && platform=="deb12-amd64")'
           touchstone: ''
+      - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
+          version: stable-2.12
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          nodes: !!python/tuple [deb12-amd64-rootnode-linux5]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [stable-0.13]
+          babelversions: !!python/tuple [stable-2.0]
+          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          touchstone: ''
+          modules_branch_pattern: 'stable-2.12|stable-2.13'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: stable-2.12
           buildtype: slesbuild
