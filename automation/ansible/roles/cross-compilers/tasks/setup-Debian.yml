@@ -25,9 +25,12 @@
   block:
     # This step needs to happen after the cross compiler packages are installed
     # so the libgcc cross libraries can be copied
+    - ansible.builtin.shell:
+        cmd: "dpkg -l | grep -E '^ii[ ]+gcc-[0-9]+-cross-base[^-:]' | tr -s ' ' | cut -d ' ' -f 2 | cut -d '-' -f 2 | sort -n | tail -n 1"
+      register: gcc_cross_major_version
     - name: Copy gcc-cross libs
       ansible.builtin.command:
-        argv: ['cp', '-r', "/usr/lib/gcc-cross/{{item}}/12/", "/usr/lib/gcc-cross/{{item}}/4.8.5"]
+        argv: ['cp', '-r', "/usr/lib/gcc-cross/{{item}}/{{gcc_cross_major_version.stdout | trim}}/", "/usr/lib/gcc-cross/{{item}}/4.8.5"]
         creates: "/usr/lib/gcc-cross/{{item}}/4.8.5"
       with_items:
         - aarch64-linux-gnu
