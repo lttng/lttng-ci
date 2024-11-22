@@ -53,6 +53,7 @@ INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-120}"
 NETWORK_SLEEP="${NETWORK_SLEEP:-15}"
 
 # Dependencies
+apt-get update -y
 apt-get -y install incus-client ansible jq
 
 # Configuration
