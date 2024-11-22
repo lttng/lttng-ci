@@ -193,7 +193,7 @@ CLEANUP+=(
 )
 
 LANG=C ANSIBLE_STRATEGY=linear ansible-playbook site.yml \
-    -e '{"compilers_legacy_install": false, "jenkins_user": false, "lttng_modules_checkout_repo": false}' \
+    -e '{"jenkins_user": false, "lttng_modules_checkout_repo": false}' \
     -l "${INSTANCE_IP}" -i fake-inventory
 
 # Cleanup instance side
