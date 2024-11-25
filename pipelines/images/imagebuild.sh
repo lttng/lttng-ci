@@ -189,6 +189,7 @@ cat > fake-inventory <<EOF
 [${PROFILE/-/_}]
 ${INSTANCE_IP}
 EOF
+cat fake-inventory
 CLEANUP+=(
     "rm -f $(pwd)/fake-inventory"
 )
@@ -206,9 +207,11 @@ LANG=C ANSIBLE_STRATEGY=linear ansible-playbook \
 incus stop "${INSTANCE_NAME}"
 
 # Publish
-if FINGERPRINT=$(incus publish "${INSTANCE_NAME}" 2>&1 | grep -E -o '[A-Fa-f0-9]{64}') ; then
+PUBLISH_OUTPUT=$(incus publish "${INSTANCE_NAME}" 2>&1)
+if FINGERPRINT=$(echo "${PUBLISH_OUTPUT}" | grep -E -o '[A-Fa-f0-9]{64}') ; then
     echo "Published instance with fingerprint '${FINGERPRINT}'"
 else
+    echo "${PUBLISH_OUTPUT}"
     fail 1 "No fingerprint for published instance"
 fi
 
