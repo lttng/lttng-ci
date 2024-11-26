@@ -21,9 +21,6 @@
             - i386
             - arm64
             - armhf
-            - ppc64el
-            - s390x
-            - riscv64
       - string: &images_parameters_VARIANT
           name: 'VARIANT'
           default: 'cloud'
@@ -227,9 +224,6 @@
             - i386
             - arm64
             - armhf
-            - ppc64el
-            - riscv64
-            - s390x
       - choice: &images_parameters_IMAGE_TYPE_FILTER
           name: 'IMAGE_TYPE_FILTER'
           choices:
