@@ -1,10 +1,11 @@
 #! /usr/bin/python3
-from subprocess import call
-from collections import defaultdict
 import csv
+import sys
+from collections import defaultdict
+from subprocess import call
+
 import numpy as np
 import pandas as pd
-import sys
 
 
 def test_case(df):

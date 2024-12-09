@@ -7,13 +7,13 @@ import json
 import logging
 import pathlib
 import pprint
-import requests
 import re
 import sys
 import time
 import xml.etree.ElementTree
 
 import jenkins
+import requests
 
 
 class OutputFormat(enum.Enum):

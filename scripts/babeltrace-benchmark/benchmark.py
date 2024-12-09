@@ -14,26 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import json
 import os
-import tempfile
-from statistics import mean
-import argparse
 import sys
+import tempfile
 from operator import add
-
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
-from matplotlib.ticker import PercentFormatter
+from statistics import mean
 
 import git
-import numpy
 import lava_submit
-
+import matplotlib.pyplot as plt
+import numpy
+from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.ticker import PercentFormatter
 from minio import Minio
-from minio.error import NoSuchKey
-from minio.error import ResponseError
-
+from minio.error import NoSuchKey, ResponseError
 
 BENCHMARK_TYPES = ["dummy", "text"]
 DEFAULT_BUCKET = "lava"

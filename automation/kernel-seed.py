@@ -19,12 +19,12 @@
 
 """ This script is used to generate a yaml list of kernel version tag """
 
+import argparse
 import os
 import re
-import yaml
-import argparse
-
 from distutils.version import Version
+
+import yaml
 from git import Repo
 
 

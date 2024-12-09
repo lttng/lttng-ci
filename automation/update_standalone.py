@@ -44,12 +44,13 @@ SNAPSHOTXML = (
 )
 
 import argparse
-import sys
-import libvirt
-from jenkinsapi.jenkins import Jenkins
-from time import sleep
-import paramiko
 import select
+import sys
+from time import sleep
+
+import libvirt
+import paramiko
+from jenkinsapi.jenkins import Jenkins
 
 
 def main():

@@ -16,7 +16,6 @@ import sys
 import tempfile
 import urllib
 
-
 _ENV_VARS = [
     "BABELTRACE_PLUGIN_PATH",
     "CPPFLAGS",
