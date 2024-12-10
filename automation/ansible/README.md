@@ -1,16 +1,25 @@
-# Setup on Ubuntu
+# Setup
 
-```
-apt install ansible ansible-mitogen
-```
+1. Install system requirements
 
-# Required collections
+    apt install python3-pip
 
-```
-ansible-galaxy install -r roles/requirements.yml
-```
+2. Install project dependencies
 
-# Privileged data
+    pip3 install --user requirements.txt # --break-system-packages
+    # Note: --break-system-packages is required on recent Debian versions
+
+3. (Optional) Install mitogen on Debian/Ubuntu:
+
+    apt install ansible-mitogen
+
+4. Install required ansible collections
+
+    ansible-galaxy install -r roles/requirements.yml
+
+5. Install the Bitwarden command-line client
+
+## Privileged data
 
 Privileged data is stored in Bitwarden. To use roles that fetch privileged data,
 the following utilities must be available:
