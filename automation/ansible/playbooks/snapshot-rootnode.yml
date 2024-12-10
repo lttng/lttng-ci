@@ -3,13 +3,13 @@
 - name: Initialize cross play variables
   hosts: node_standalone
   vars:
-    - job_wait_to_end: true
-    - job_abort: false
+    job_wait_to_end: true
+    job_abort: false
     # Set to false when taking the first snapshot of a new rootnode
-    - revert_before: true
-    - snapshot_name: 'base-configuration'
-    - upgrade: false
-    - wait_for_changes: true
+    revert_before: true
+    snapshot_name: 'base-configuration'
+    upgrade: false
+    wait_for_changes: true
   tasks:
     - ansible.builtin.set_fact:
         job_wait_to_end: "{{job_wait_to_end}}"
