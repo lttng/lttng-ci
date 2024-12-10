@@ -7,6 +7,7 @@
     job_abort: false
     # Set to false when taking the first snapshot of a new rootnode
     revert_before: true
+    run_site_playbook: true
     snapshot_name: 'base-configuration'
     upgrade: false
     wait_for_changes: true
@@ -15,6 +16,7 @@
         job_wait_to_end: "{{job_wait_to_end}}"
         job_abort: "{{job_abort}}"
         revert_before: "{{revert_before}}"
+        run_site_playbook: "{{run_site_playbook}}"
         snapshot_name: "{{snapshot_name}}"
         target_rootnode: "{{inventory_hostname}}"
         upgrade: "{{upgrade}}"
@@ -96,7 +98,7 @@
 # `inventory_hostname in groups.node_standalone` is false.
 - name: Run site.yml
   import_playbook: '../site.yml'
-  when: inventory_hostname in groups.node_standalone
+  when: inventory_hostname in groups.node_standalone and run_site_playbook
 
 - name: Cleanup and snapshot
   hosts: node_standalone
