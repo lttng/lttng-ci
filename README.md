@@ -3,12 +3,23 @@
 This repository holds the configuration of the LTTng Jenkins jobs. It is
 meant to be used with Jenkins Job Builder from the OpenStack Foundation.
 
-It can be installed with:
+The dependencies can be installed in a dedicated Python virtual
+environment using [Poetry](https://python-poetry.org/):
 
-    $ virtualenv -p python3 .venv
-    $ . .venv/bin/activate
-    $ pip install jenkins-job-builder
+    $ poetry install
 
+You can then run commands from the virtual environments by prepending
+`poetry run` to them:
+
+    $ poetry run jenkins-jobs --version
+    Jenkins Job Builder version: 6.4.2
+
+or by spawning a shell:
+
+    $ poetry shell
+    Spawning shell within /home/user/.cache/pypoetry/virtualenvs/lttng-ci-qYTnEJGo-py3.12
+    (lttng-ci-py3.12) $ jenkins-jobs --version
+    Jenkins Job Builder version: 6.4.2
 
 ## Example Usage
 
