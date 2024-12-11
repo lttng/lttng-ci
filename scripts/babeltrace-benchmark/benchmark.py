@@ -39,20 +39,20 @@ BENCHMARK_TYPES = ["dummy", "text"]
 DEFAULT_BUCKET = "lava"
 
 invalid_commits = {
-    "ec9a9794af488a9accce7708a8b0d8188b498789", # Does not build
-    "8c99128c640cbce71fb8a6caa15e4c672252b662", # Block on configure
-    "f3847c753f1b4f12353c38d97b0577d9993d19fb", # Does not build
-    "e0111295f17ddfcc33ec771a8deac505473a06ad", # Does not build
-    "d0d4e0ed487ea23aaf0d023513c0a4d86901b79b", # Does not build
-    "c24f7ab4dd9edeb5e50b0070fd9d9e8691057dde", # Does not build
-    "ce67f5614a4db3b2de4d887eca52135b439b4937", # Does not build
-    "80aff5efc66679fd934cef433c0e698694748385", # Does not build
-    "f4f11e84942d36fcc8a597d226928bce2ccac4b3", # Does not build
-    "ae466a6e1b856d96cf5112a371b4df2b732503ec", # Does not build
-    "ade5c95e2a4f90f839f222fc1a66175b3b199922", # Configuration fails
-    "30341532906d62808e9d66fb115f5edb4e6f5706", # Configuration fails
-    "006c5ffb42f32e802136e3c27a63accb59b4d6c4", # Does not build
-    "88488ff5bdcd7679ff1f04fe6cff0d24b4f8fc0c", # Does not build
+    "ec9a9794af488a9accce7708a8b0d8188b498789",  # Does not build
+    "8c99128c640cbce71fb8a6caa15e4c672252b662",  # Block on configure
+    "f3847c753f1b4f12353c38d97b0577d9993d19fb",  # Does not build
+    "e0111295f17ddfcc33ec771a8deac505473a06ad",  # Does not build
+    "d0d4e0ed487ea23aaf0d023513c0a4d86901b79b",  # Does not build
+    "c24f7ab4dd9edeb5e50b0070fd9d9e8691057dde",  # Does not build
+    "ce67f5614a4db3b2de4d887eca52135b439b4937",  # Does not build
+    "80aff5efc66679fd934cef433c0e698694748385",  # Does not build
+    "f4f11e84942d36fcc8a597d226928bce2ccac4b3",  # Does not build
+    "ae466a6e1b856d96cf5112a371b4df2b732503ec",  # Does not build
+    "ade5c95e2a4f90f839f222fc1a66175b3b199922",  # Configuration fails
+    "30341532906d62808e9d66fb115f5edb4e6f5706",  # Configuration fails
+    "006c5ffb42f32e802136e3c27a63accb59b4d6c4",  # Does not build
+    "88488ff5bdcd7679ff1f04fe6cff0d24b4f8fc0c",  # Does not build
     # Other errors
     "7c7301d5827bd10ec7c34da7ffc5fe74e5047d38",
     "a0df3abf88616cb0799f87f4eb57c54268e63448",
@@ -91,6 +91,7 @@ invalid_commits = {
     "f4f8f79893b18199b38edc3330093a9403c4c737",
 }
 
+
 def json_type(string):
     """
     Argpase type for json args.
@@ -101,6 +102,7 @@ def json_type(string):
         msg = "%r is not a dict" % string
         raise argparse.ArgumentTypeError(msg)
     return passed_json
+
 
 def graph_get_color(branch):
     """
@@ -437,7 +439,9 @@ def launch_jobs(branches, git_path, wait_for_completion, debug, force):
     client = get_client()
     commits_to_test = set()
     for branch, cutoff in branches.items():
-        commits = [x for x in get_git_log(branch, cutoff, git_path) if x not in invalid_commits]
+        commits = [
+            x for x in get_git_log(branch, cutoff, git_path) if x not in invalid_commits
+        ]
         with tempfile.TemporaryDirectory() as workdir:
             for commit in commits:
                 b_results = get_benchmark_results(client, commit, workdir)[0]
@@ -445,10 +449,8 @@ def launch_jobs(branches, git_path, wait_for_completion, debug, force):
                     continue
                 commits_to_test.add(commit)
     for index, commit in enumerate(commits_to_test):
-        print("Job {}/{}".format(index+1, len(commits_to_test)))
-        lava_submit.submit(
-            commit, wait_for_completion=wait_for_completion, debug=debug
-        )
+        print("Job {}/{}".format(index + 1, len(commits_to_test)))
+        lava_submit.submit(commit, wait_for_completion=wait_for_completion, debug=debug)
 
 
 def main():
@@ -494,7 +496,8 @@ def main():
         help="A dictionary of the form {"
         "'branch_name': 'commit_hash_cutoff',...}. Allow custom graphing and"
         "jobs generation.",
-        required=False, type=json_type
+        required=False,
+        type=json_type,
     )
 
     args = parser.parse_args()

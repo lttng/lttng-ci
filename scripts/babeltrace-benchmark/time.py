@@ -21,6 +21,7 @@ import tempfile
 import json
 from collections import defaultdict
 
+
 def wall_clock_parser(value):
     """
     Parse /usr/bin/time wall clock value.
@@ -80,7 +81,6 @@ _METRIC = {
     "Signals delivered": int,
     "Page size (bytes)": int,
 }
-
 
 
 def parse(path, results):

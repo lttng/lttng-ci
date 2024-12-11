@@ -29,12 +29,10 @@ from git import Repo
 
 
 class KernelVersion(Version):
-    """ Kernel version class """
+    """Kernel version class"""
 
-    re26 = re.compile(r'^(2\.\d+) \. (\d+) (\. (\d+))? (\-rc(\d+))?$',
-                      re.VERBOSE)
-    re30 = re.compile(r'^(\d+) \. (\d+) (\. (\d+))? (\-rc(\d+))?$', re.VERBOSE)
-
+    re26 = re.compile(r"^(2\.\d+) \. (\d+) (\. (\d+))? (\-rc(\d+))?$", re.VERBOSE)
+    re30 = re.compile(r"^(\d+) \. (\d+) (\. (\d+))? (\-rc(\d+))?$", re.VERBOSE)
 
     def __init__(self, vstring=None):
         self._rc = None
@@ -42,9 +40,8 @@ class KernelVersion(Version):
         if vstring:
             self.parse(vstring)
 
-
     def parse(self, vstring):
-        """ Parse version string """
+        """Parse version string"""
 
         self._vstring = vstring
 
@@ -70,19 +67,15 @@ class KernelVersion(Version):
         else:
             self._rc = None
 
-
     def isrc(self):
-        """ Is this version an RC """
+        """Is this version an RC"""
         return self._rc is not None
-
 
     def __str__(self):
         return self._vstring
 
-
     def __repr__(self):
         return "KernelVersion ('%s')" % str(self)
-
 
     def _cmp(self, other):
         if isinstance(other, str):
@@ -102,13 +95,13 @@ class KernelVersion(Version):
         # case 3: self doesn't have rc, other does: self is greater
         # case 4: both have rc: must compare them!
 
-        if (not self._rc and not other._rc):
+        if not self._rc and not other._rc:
             return 0
-        elif (self._rc and not other._rc):
+        elif self._rc and not other._rc:
             return -1
-        elif (not self._rc and other._rc):
+        elif not self._rc and other._rc:
             return 1
-        elif (self._rc and other._rc):
+        elif self._rc and other._rc:
             if self._rc == other._rc:
                 return 0
             elif self._rc < other._rc:
@@ -118,8 +111,9 @@ class KernelVersion(Version):
         else:
             assert False, "never get here"
 
+
 def main():
-    """ Main """
+    """Main"""
 
     versions = []
     kernel_cutoff = KernelVersion("2.6.36")
@@ -127,9 +121,18 @@ def main():
     kernel_path = os.getcwd() + "/kernel"
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--kernel-path", help="The location of the kernel.  Default to the currentdir/linux")
-    parser.add_argument("--kernel-git-remote", help="The git url of the kernel. Default to git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git")
-    parser.add_argument("--kernel-cutoff", help="The lower bersion cutoff in X.X.X format. Default to 2.6.36")
+    parser.add_argument(
+        "--kernel-path",
+        help="The location of the kernel.  Default to the currentdir/linux",
+    )
+    parser.add_argument(
+        "--kernel-git-remote",
+        help="The git url of the kernel. Default to git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git",
+    )
+    parser.add_argument(
+        "--kernel-cutoff",
+        help="The lower bersion cutoff in X.X.X format. Default to 2.6.36",
+    )
     args = parser.parse_args()
 
     if args.kernel_path:
@@ -151,13 +154,13 @@ def main():
     # First get all valid versions
     for tag in linux_repo.tags:
         try:
-            version = KernelVersion(tag.name.lstrip('v'))
+            version = KernelVersion(tag.name.lstrip("v"))
 
             # Add only those who are superior to the cutoff version
             if version >= kernel_cutoff:
                 versions.append(version)
         except ValueError:
-            #print(tag.name)
+            # print(tag.name)
             continue
 
     # Sort the list by version order
@@ -170,7 +173,7 @@ def main():
             versions.remove(version)
         last = False
 
-    #for version in versions:
+    # for version in versions:
     #    print(version)
 
     # Build yaml object
@@ -180,8 +183,6 @@ def main():
         yversions.append(version.__str__())
 
     print(yaml.dump(yversions, default_flow_style=False))
-
-
 
 
 if __name__ == "__main__":

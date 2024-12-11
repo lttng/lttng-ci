@@ -25,82 +25,77 @@ from datetime import datetime
 
 
 def compress(filename):
-    command = [
-        'tar', '-c', '-z',
-        '-f', filename + ".tar.gz",
-        '-C', filename,
-        './'
-    ]
+    command = ["tar", "-c", "-z", "-f", filename + ".tar.gz", "-C", filename, "./"]
     subprocess.run(command, check=True)
     shutil.rmtree(filename)
 
 
 packages = [
-    'autoconf',
-    'automake',
-    'bash-completion',
-    'bison',
-    'build-essential',
-    'chrpath',
-    'clang',
-    'cloc',
-    'curl',
-    'elfutils',
-    'flex',
-    'gettext',
-    'git',
-    'htop',
-    'jq',
-    'libarchive-tools',
-    'libdw-dev',
-    'libelf-dev',
-    'libffi-dev',
-    'libglib2.0-dev',
-    'libmount-dev',
-    'libnuma-dev',
-    'libpfm4-dev',
-    'libpopt-dev',
-    'libtap-harness-archive-perl',
-    'libtool',
-    'libxml2',
-    'libxml2-dev',
-    'locales',
-    'netcat-traditional',
-    'openssh-server',
-    'psmisc',
-    'python3-virtualenv',
-    'python3',
-    'python3-dev',
-    'python3-numpy',
-    'python3-pandas',
-    'python3-pip',
-    'python3-setuptools',
-    'python3-sphinx',
-    'python3-venv',
-    'rsync',
-    'stress',
-    'swig',
-    'systemd-timesyncd',
-    'systemtap-sdt-dev',
-    'texinfo',
-    'tree',
-    'uuid-dev',
-    'vim',
-    'wget',
+    "autoconf",
+    "automake",
+    "bash-completion",
+    "bison",
+    "build-essential",
+    "chrpath",
+    "clang",
+    "cloc",
+    "curl",
+    "elfutils",
+    "flex",
+    "gettext",
+    "git",
+    "htop",
+    "jq",
+    "libarchive-tools",
+    "libdw-dev",
+    "libelf-dev",
+    "libffi-dev",
+    "libglib2.0-dev",
+    "libmount-dev",
+    "libnuma-dev",
+    "libpfm4-dev",
+    "libpopt-dev",
+    "libtap-harness-archive-perl",
+    "libtool",
+    "libxml2",
+    "libxml2-dev",
+    "locales",
+    "netcat-traditional",
+    "openssh-server",
+    "psmisc",
+    "python3-virtualenv",
+    "python3",
+    "python3-dev",
+    "python3-numpy",
+    "python3-pandas",
+    "python3-pip",
+    "python3-setuptools",
+    "python3-sphinx",
+    "python3-venv",
+    "rsync",
+    "stress",
+    "swig",
+    "systemd-timesyncd",
+    "systemtap-sdt-dev",
+    "texinfo",
+    "tree",
+    "uuid-dev",
+    "vim",
+    "wget",
 ]
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate lava lttng rootfs')
-    parser.add_argument("--arch", default='amd64')
-    parser.add_argument("--distribution", default='bookworm')
-    parser.add_argument("--mirror", default='https://deb.debian.org/debian')
-    parser.add_argument(
-        "--component", default='main')
+    parser = argparse.ArgumentParser(description="Generate lava lttng rootfs")
+    parser.add_argument("--arch", default="amd64")
+    parser.add_argument("--distribution", default="bookworm")
+    parser.add_argument("--mirror", default="https://deb.debian.org/debian")
+    parser.add_argument("--component", default="main")
     args = parser.parse_args()
 
-    name = "rootfs_{}_{}_{}".format(args.arch, args.distribution,
-                                        datetime.now().strftime("%Y-%m-%d"))
+    name = "rootfs_{}_{}_{}".format(
+        args.arch, args.distribution, datetime.now().strftime("%Y-%m-%d")
+    )
 
     hostname = "linaro-server"
     user = "linaro/linaro"
@@ -119,26 +114,37 @@ def main():
 
     # packages
     command = [
-        'chroot', name,
-        'apt-get', 'install', '-y', ] + packages
+        "chroot",
+        name,
+        "apt-get",
+        "install",
+        "-y",
+    ] + packages
     completed_command = subprocess.run(command, check=True)
 
     # hostname
-    with open(os.path.join(name, 'etc', 'hostname'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(name, "etc", "hostname"), "w", encoding="utf-8") as f:
         f.write(hostname + "\n")
 
     # user
     command = [
-        'chroot', name,
-        'adduser', '--gecos', '', '--disabled-password', 'linaro',
+        "chroot",
+        name,
+        "adduser",
+        "--gecos",
+        "",
+        "--disabled-password",
+        "linaro",
     ]
     completed_process = subprocess.run(command, check=True)
 
     command = [
-        'chroot', name, 'chpasswd',
-        ]
+        "chroot",
+        name,
+        "chpasswd",
+    ]
     process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
-    process.communicate(input='linaro:linaro')
+    process.communicate(input="linaro:linaro")
 
     # root password
     process = subprocess.Popen(command, stdin=subprocess.PIPE, text=True)
@@ -149,6 +155,9 @@ def main():
 
 if __name__ == "__main__":
     if os.getuid() != 0:
-        print("This script should be run as root: this is required by deboostrap", file=sys.stderr)
+        print(
+            "This script should be run as root: this is required by deboostrap",
+            file=sys.stderr,
+        )
         sys.exit(1)
     main()

@@ -18,27 +18,30 @@
 
 """ This script is used to upgrade the base snapshot of standalone ci slaves """
 
-USERNAME = ''
-APIKEY = ''
-JENKINS_URL = 'https://ci.lttng.org'
+USERNAME = ""
+APIKEY = ""
+JENKINS_URL = "https://ci.lttng.org"
 
-DISTRO_LIST = ['el', 'sles', 'ubuntu']
-DEFAULT_DISTRO = 'ubuntu'
+DISTRO_LIST = ["el", "sles", "ubuntu"]
+DEFAULT_DISTRO = "ubuntu"
 DISTRO_COMMAND = {
-    'el': 'yum update -y && package-cleanup -y --oldkernels --count=2 && yum clean all',
-    'sles': 'zypper --non-interactive refresh && zypper --non-interactive patch --auto-agree-with-licenses --with-interactive',
-    'ubuntu': 'apt-get update && apt-get dist-upgrade -V -y && apt-get clean && apt-get --purge autoremove -y',
+    "el": "yum update -y && package-cleanup -y --oldkernels --count=2 && yum clean all",
+    "sles": "zypper --non-interactive refresh && zypper --non-interactive patch --auto-agree-with-licenses --with-interactive",
+    "ubuntu": "apt-get update && apt-get dist-upgrade -V -y && apt-get clean && apt-get --purge autoremove -y",
 }
 
-BASESNAP = 'base-configuration'
+BASESNAP = "base-configuration"
 
-SNAPSHOTXML = """
+SNAPSHOTXML = (
+    """
 <domainsnapshot>
   <name>%s</name>
   <description>Snapshot of OS install and updates</description>
   <memory snapshot='no'/>
 </domainsnapshot>
-""" % BASESNAP
+"""
+    % BASESNAP
+)
 
 import argparse
 import sys
@@ -50,23 +53,31 @@ import select
 
 
 def main():
-    """ Main """
+    """Main"""
 
-    parser = argparse.ArgumentParser(description='Update base snapshot.')
-    parser.add_argument('instance_name', metavar='INSTANCE', type=str,
-                        help='the shortname of the instance to update')
-    parser.add_argument('vmhost_name', metavar='VMHOST', type=str,
-                        help='the hostname of the VM host')
-    parser.add_argument('--distro', choices=DISTRO_LIST,
-                        default=DEFAULT_DISTRO, type=str,
-                        help='the distro of the target instance')
+    parser = argparse.ArgumentParser(description="Update base snapshot.")
+    parser.add_argument(
+        "instance_name",
+        metavar="INSTANCE",
+        type=str,
+        help="the shortname of the instance to update",
+    )
+    parser.add_argument(
+        "vmhost_name", metavar="VMHOST", type=str, help="the hostname of the VM host"
+    )
+    parser.add_argument(
+        "--distro",
+        choices=DISTRO_LIST,
+        default=DEFAULT_DISTRO,
+        type=str,
+        help="the distro of the target instance",
+    )
 
     args = parser.parse_args()
 
     instance_name = args.instance_name
     vmhost_name = args.vmhost_name
     distro = args.distro
-
 
     # Get jenkibs connexion
     jenkins = Jenkins(JENKINS_URL, username=USERNAME, password=APIKEY)
@@ -84,10 +95,9 @@ def main():
         print("Node %s is not idle" % instance_name)
         sys.exit(1)
 
-
     # Set node temporarily offline
     if not node.is_temporarily_offline():
-        node.toggle_temporarily_offline('Down for upgrade to base snapshot')
+        node.toggle_temporarily_offline("Down for upgrade to base snapshot")
 
     # Get libvirt connexion
     print("Opening libvirt connexion to %s..." % vmhost_name)
@@ -115,7 +125,6 @@ def main():
             print("Failed to shutdown %s", instance_name)
             sys.exit(1)
 
-
     # Revert to base snapshot
     print("Getting base snapshot...")
     basesnap = vminstance.snapshotLookupByName(BASESNAP)
@@ -123,7 +132,7 @@ def main():
         print("Could not find base snapshot %s" % BASESNAP)
         sys.exit(1)
 
-    #if not basesnap.isCurrent():
+    # if not basesnap.isCurrent():
     #    print("Not current snapshot")
 
     print("Reverting to base snapshot...")
@@ -140,7 +149,6 @@ def main():
     except:
         print("Failed to start instance %s" % instance_name)
         sys.exit(1)
-
 
     # Wait for instance to boot
     print("Waiting for instance to boot...")
