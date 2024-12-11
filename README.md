@@ -21,6 +21,10 @@ or by spawning a shell:
     (lttng-ci-py3.12) $ jenkins-jobs --version
     Jenkins Job Builder version: 6.4.2
 
+Install [pre-commit](https://pre-commit.com) hooks with:
+
+    $ pre-commit install
+
 ## Example Usage
 
 Generate XML files for Jenkins jobs from YAML files:
