@@ -1706,11 +1706,13 @@
     ## Stable 2.13 ##
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           version: stable-2.13
+          ustversion: stable-2.13
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: stable-2.13
+          ustversion: stable-2.13
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13]
@@ -1725,6 +1727,7 @@
           modules_branch_pattern: 'master|stable-2.13'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: stable-2.13
+          ustversion: stable-2.13
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp4-amd64]
           nodes: !!python/tuple [sles15sp4-amd64-rootnode]
