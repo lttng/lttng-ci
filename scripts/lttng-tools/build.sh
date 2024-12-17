@@ -531,6 +531,35 @@ if [ "$LTTNG_TOOLS_CLANG_TIDY" = "yes" ]; then
     fi
 fi
 
+set +e
+ABIDW="$(command -v abidw)"
+set -e
+if [[ -n "${ABIDW}" ]] && [[ -f "src/lib/lttng-ctl/.libs/liblttng-ctl.so" ]] && [[ -f "src/lib/lttng-ctl/abi_ref/0.0.0/abi.xml" ]]; then
+    print_header "liblttng-ctl ABI diff"
+    ABI_XML=$(mktemp)
+    abidw --drop-undefined-syms --drop-private-types --headers-dir include/ src/lib/lttng-ctl/.libs/liblttng-ctl.so > "${ABI_XML}"
+
+    set +e
+    output="$(abidiff src/lib/lttng-ctl/abi_ref/0.0.0/abi.xml "${ABI_XML}")"
+    ret=$?
+    set -e
+    if [[ $((ret & 8)) == 8 ]]; then
+        echo "Breaking changes detected"
+        exit_status=1
+    elif [[ $((ret & 4)) == 4 ]]; then
+        echo "ABI changes detected"
+    elif [[ $ret == 0 ]]; then
+        echo "No ABI changes detected"
+    else
+        echo "Error running abidiff"
+        exit_status=1
+    fi
+
+    mkdir -p "${WORKSPACE}/log"
+    echo "${output}" | tee "${WORKSPACE}/log/abi.diff"
+    rm -rf "${ABI_XML}"
+fi
+
 # Run tests for all configs except 'no-ust' / 'relayd-only'
 if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) ]]; then
     print_header "Run test suite"
