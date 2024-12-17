@@ -1,5 +1,6 @@
 ---
 common_node_packages:
+  - abigail-tools
   - autoconf
   - automake
   - bison
