@@ -181,5 +181,10 @@ print_tooling() {
         shellcheck --version | grep '^version'
     fi
 
+    if command -v abidw >/dev/null 2>&1; then
+        print_blue "abidw version"
+        abidw --version
+    fi
+
     set -ex
 }
