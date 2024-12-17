@@ -72,12 +72,16 @@ while read -r core_file; do
 
     # Collect everything in the core file that looks like a reference to a
     # shared lib
-    strings "$core_file" | grep '^/.*\.so.*' | while read -r str; do
-        collect_recursive "$str"
+    strings "$core_file" | while read -r str; do
+        if [[ "${str}" =~ ^/.*\.so.* ]]; then
+            collect_recursive "${str}"
+        fi
+        if [[ -f "${str}" ]] && [[ -x "${str}" ]]; then
+            collect_recursive "${str}"
+        fi
     done
 
     echo "$core_file" >> "$file_list"
-
     # Exit with failure when core files are found
     ret=1
 done < <(find "/tmp" -maxdepth 1 -name "core\.[0-9]*" -type f 2>/dev/null)
