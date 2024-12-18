@@ -88,8 +88,8 @@ done < <(find "/tmp" -maxdepth 1 -name "core\.[0-9]*" -type f 2>/dev/null)
 
 # If we recorded some files to collect, pack them up.
 if [ -s "$file_list" ]; then
-    mkdir -p "${WORKSPACE}/build"
-    tar cJfh "${WORKSPACE}/build/core.tar.xz" -T <(sort "$file_list" | uniq)
+    mkdir -p "${WORKSPACE}/"
+    tar cJfh "${WORKSPACE}/core.tar.xz" -T <(sort "$file_list" | uniq)
 fi
 
 # Remove core files

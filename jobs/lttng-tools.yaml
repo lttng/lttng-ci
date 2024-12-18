@@ -513,7 +513,7 @@
           allow-empty-results: true
 
       - archive: &lttng-tools_publisher_archive_defaults
-          artifacts: 'build/**,deps/**,tap/**,log/**'
+          artifacts: 'build/**,deps/**,tap/**,log/**,core.tar.xz'
           follow-symlinks: true
           allow-empty: false
 
