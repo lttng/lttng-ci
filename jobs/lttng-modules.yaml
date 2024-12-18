@@ -422,6 +422,12 @@
             - comment-added-event:
                 approval-category: 'CI-Build'
                 approval-value: 1
+            - comment-added-event:
+                approval-category: 'Smoke-Build-Lvl1'
+                approval-value: 1
+            - comment-added-event:
+                approval-category: 'Smoke-Build-Lvl2'
+                approval-value: 1
           projects:
             - project-compare-type: 'PLAIN'
               project-pattern: 'lttng-modules'
@@ -465,6 +471,9 @@
             - comment-added-event:
                 approval-category: 'CI-Build'
                 approval-value: 1
+            - comment-added-event:
+                approval-category: 'Smoke-Build-Lvl2'
+                approval-value: 1
           projects:
             - project-compare-type: 'PLAIN'
               project-pattern: 'lttng-modules'
@@ -507,6 +516,9 @@
           trigger-on:
             - comment-added-event:
                 approval-category: 'CI-Build'
+                approval-value: 1
+            - comment-added-event:
+                approval-category: 'Smoke-Build-Lvl2'
                 approval-value: 1
           projects:
             - project-compare-type: 'PLAIN'
