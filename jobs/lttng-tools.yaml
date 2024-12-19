@@ -1657,6 +1657,8 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
+          babelversions: !!python/tuple [stable-2.0, master]
+          filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
       - 'dev_review_lttng-tools_{version}_{cctype}':
           version: master
           cctype: clangbuild
