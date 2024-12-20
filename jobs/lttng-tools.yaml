@@ -1308,7 +1308,6 @@
           version: master
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp4-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
-          babelversions: !!python/tuple [stable-2.0]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
           version: master
