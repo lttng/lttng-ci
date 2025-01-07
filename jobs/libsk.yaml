@@ -1,0 +1,53 @@
+---
+
+## Defaults
+- defaults:
+    name: libsk
+    concurrent: true
+    description: |
+      <p>Job is managed by Jenkins Job Builder</p>
+    project-type: pipeline
+    publishers:
+      - workspace-cleanup
+    dsl: !include-jinja2: pipelines/libsk/pipeline.groovy
+    sandbox: true
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - inject: {}
+    # Job template variables
+    job_prefix: ''
+    buildtypes:
+      - linuxbuild
+    cctype: gcc
+    ccs:
+      - gcc
+    versions:
+      - master
+    builds: !!python/tuple [std]
+    confs: !!python/tuple [std]
+    platforms: !!python/tuple [deb12-amd64, deb12-i386, deb12-arm64, deb12-armhf, deb12-ppc64el, deb13-riscv64, yocto40-ppc64, yocto40-powerpc]
+    libsk_git_url: ssh://git@git.internal.efficios.com/odion/libsk.git
+    filter: ''
+    email_to: ''
+
+- job-template:
+    name: "{job_prefix}libsk_{versions}_{buildtypes}_{cctype}"
+    defaults: libsk
+
+- view-template:
+    name: 'libsk'
+    view-type: list
+    regex: 'libsk[-_].*'
+
+- project:
+    name: libsk
+    email_to: 'odion@efficios.com'
+    jobs:
+      - '{job_prefix}libsk_{versions}_{buildtypes}_{cctype}': {}
+
+- project:
+    name: libsk-views
+    views:
+      - libsk
