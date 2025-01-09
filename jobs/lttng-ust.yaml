@@ -47,6 +47,9 @@
       - github:
           url: https://github.com/{github_user}/{github_name}
 
+    # Variables
+    java_agents: 'true'  # when building with the agents config, include java agents
+
 
 ## Anchors
 - _lttng-ust_matrix_axes_defaults: &lttng-ust_matrix_axes_defaults
@@ -114,6 +117,7 @@
             ;;
           esac
           echo "liburcu_conf=$liburcu_conf" > env.properties
+          echo "LTTNG_UST_JAVA_AGENTS={java_agents|true}" >> env.properties
 
       # Inject the additionnal env early to use them in the copyartifact step
       - inject:
@@ -138,7 +142,7 @@
     name: 'lttng-ust_builders_review_lttng-tools'
 
     builders:
-      # Generate a properties file to add additionnal env
+      # Generate a properties file to add additional env
       - shell: |
           #!/bin/bash
           set -exu
@@ -162,6 +166,7 @@
             ;;
           esac
           echo "liburcu_version=$liburcu_version" >> env.properties
+          echo "LTTNG_UST_JAVA_AGENTS={java_agents|true}" >> env.properties
 
       # Inject the additionnal env early to use them in the copyartifact step
       - inject:
@@ -628,7 +633,8 @@
           version: master
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
-          confs: !!python/tuple [std]
+          confs: !!python/tuple [std, agents]
+          java_agents: 'false'
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -696,7 +702,8 @@
           version: stable-2.13
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
-          confs: !!python/tuple [std]
+          confs: !!python/tuple [std, agents]
+          java_agents: 'false'
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -753,7 +760,8 @@
           version: stable-2.12
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
-          confs: !!python/tuple [std]
+          confs: !!python/tuple [std, agents]
+          java_agents: 'false'
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -763,6 +771,16 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: elbuild_extended
+          version: stable-2.12
+          java_agents: 'false'
+          platforms: !!python/tuple [el8-amd64, el9-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13]
           filter: ''
           touchstone: ''
       - 'lttng-ust_{version}_scan-build':

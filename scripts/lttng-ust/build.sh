@@ -242,12 +242,15 @@ static)
 agents)
     print_header "Conf: Java and Python agents"
 
-    CONF_OPTS+=("--enable-java-agent-all" "--enable-jni-interface" "--enable-python-agent")
-
-    # Explicitly add '--enable-java-agent-log4j2', it's not part of '-all' in stable 2.12/2.13
-    if verlt "$PACKAGE_VERSION" "2.14"; then
-        CONF_OPTS+=("--enable-java-agent-log4j2")
+    CONF_OPTS+=("--enable-python-agent")
+    if [[ "${LTTNG_UST_JAVA_AGENTS:-}" != "false" ]]; then
+        CONF_OPTS+=("--enable-java-agent-all" "--enable-jni-interface")
+        # Explicitly add '--enable-java-agent-log4j2', it's not part of '-all' in stable 2.12/2.13
+        if verlt "$PACKAGE_VERSION" "2.14"; then
+            CONF_OPTS+=("--enable-java-agent-log4j2")
+        fi
     fi
+
     ;;
 
 debug-rcu)

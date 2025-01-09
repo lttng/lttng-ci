@@ -394,6 +394,15 @@
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
+          # With urcu stable-0.12
+          buildtype: elbuild_extended
+          platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          touchstone: '(build == "std")'
+          version:
+            - stable-0.12
+      - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: yoctobuild
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
           builds: !!python/tuple [std]

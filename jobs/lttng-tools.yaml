@@ -57,6 +57,10 @@
       - github: &lttng-tools_property_github_defaults
           url: https://github.com/{github_user}/lttng-tools
 
+    # Variables
+    babeltrace_buildtype: ''  # will default to buildtype
+    java_agents: 'true'  # when building with the agents config, include java agents
+
 ## Anchors
 - _lttng-tools_steps_copyartifact_defaults:
     name: 'lttng-tools_steps_copyartifact_defaults'
@@ -151,21 +155,31 @@
               ust_conf=std
               ;;
           esac
+
           # Run java tests only on 'linuxbuild' and 'slesbuild' jobs
           if [ "{buildtype}" = "linuxbuild" ] || [ "{buildtype}" = "slesbuild" ]; then
             echo "LTTNG_TOOLS_RUN_UST_JAVA_TESTS=yes" >> env.properties
           else
             echo "LTTNG_TOOLS_RUN_UST_JAVA_TESTS=no" >> env.properties
           fi
+
           if [ "{buildtype}" = "slesbuild" ] ; then
             echo "TAP_AUTOTIME=0" >> env.properties
             echo "LTTNG_TESTS_TAP_AUTOTIME=0" >> env.properties
             # On SLES, force log4j to 2.17.1
             echo "LTTNG_TOOLS_UST_JAVA_TESTS_LOG4J_API_VERSION=2.17.1" >> env.properties
           fi
+
           echo "liburcu_conf=$liburcu_conf" >> env.properties
           echo "babeltrace_conf=$babeltrace_conf" >> env.properties
+          if [[ "{babeltrace_buildtype}" != "" ]]; then
+            echo "babeltrace_buildtype={babeltrace_buildtype}" >> env.properties
+          else
+            echo "babeltrace_buildtype={buildtype}" >> env.properties
+          fi
+
           echo "ust_conf=$ust_conf" >> env.properties
+          echo "LTTNG_TOOLS_JAVA_AGENTS={java_agents|true}" >> env.properties
 
       # Inject the additionnal env early to use them in the copyartifact step
       - inject:
@@ -183,7 +197,7 @@
       # Always copy babeltrace artifacts
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/platform=${{platform}},conf=${{babeltrace_conf}},build=std'
+          project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_${{babeltrace_buildtype}}/platform=${{platform}},conf=${{babeltrace_conf}},build=std'
 
       # Some conf do not require lttng-ust artifacts
       - conditional-step:
@@ -236,6 +250,7 @@
             echo "TAP_AUTOTIME=0" >> env.properties
             echo "LTTNG_TESTS_TAP_AUTOTIME=0" >> env.properties
           fi
+          echo "LTTNG_TOOLS_JAVA_AGENTS={java_agents|true}" >> env.properties
       - inject:
           properties-file: env.properties
       - shell:
@@ -1310,6 +1325,8 @@
           confs: !!python/tuple [agents]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
+          confs: !!python/tuple [std, agents]
+          java_agents: false
           version: master
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
@@ -1352,6 +1369,8 @@
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
+          confs: !!python/tuple [std, agents]
+          java_agents: false
           version: master
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
@@ -1399,6 +1418,8 @@
           urcuversions: !!python/tuple [stable-0.13]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
+          confs: !!python/tuple [std, agents]
+          java_agents: false
           version: stable-2.13
           ustversion: stable-2.13
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
@@ -1452,6 +1473,8 @@
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
+          confs: !!python/tuple [std, agents]
+          java_agents: false
           version: stable-2.13
           ustversion: stable-2.13
           platforms: !!python/tuple [el8-amd64]
@@ -1499,9 +1522,20 @@
           confs: !!python/tuple [agents]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
+          confs: !!python/tuple [std, agents]
+          java_agents: false
           version: stable-2.12
           ustversion: stable-2.12
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+          buildtype: elbuild_extended
+          babeltrace_buildtype: elbuild
+          confs: !!python/tuple [agents]
+          java_agents: 'false'
+          version: stable-2.12
+          ustversion: stable-2.12
+          urcuversions: !!python/tuple [stable-0.12]
+          platforms: !!python/tuple [el8-amd64, el9-amd64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild
           version: stable-2.12
@@ -1539,12 +1573,25 @@
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
+          confs: !!python/tuple [std, agents]
+          java_agents: false
           version: stable-2.12
           ustversion: stable-2.12
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           builds: !!python/tuple [std]
-          confs: !!python/tuple [std]
+          filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+          buildtype: elbuild_extended
+          babeltrace_buildtype: elbuild
+          confs: !!python/tuple [agents]
+          java_agents: 'false'
+          version: stable-2.12
+          ustversion: stable-2.12
+          urcuversions: !!python/tuple [stable-0.12]
+          platforms: !!python/tuple [el8-amd64]
+          nodes: !!python/tuple [el8-amd64-rootnode]
+          builds: !!python/tuple [std]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
       - 'lttng-tools_{version}_release':
           version: v2.12

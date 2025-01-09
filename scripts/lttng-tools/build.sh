@@ -358,12 +358,13 @@ agents)
         fi
     fi
 
-
-    CONF_OPTS+=("--enable-python-bindings" "--enable-test-java-agent-all")
-
-    # Explicitly add '--enable-test-java-agent-log4j2', it's not part of '-all' in stable 2.12/2.13
-    if verlt "$PACKAGE_VERSION" "2.14"; then
-        CONF_OPTS+=("--enable-test-java-agent-log4j2")
+    CONF_OPTS+=("--enable-python-bindings")
+    if [[ "${LTTNG_TOOLS_JAVA_AGENTS:-}" != "false" ]]; then
+        CONF_OPTS+=("--enable-test-java-agent-all")
+        # Explicitly add '--enable-test-java-agent-log4j2', it's not part of '-all' in stable 2.12/2.13
+        if verlt "$PACKAGE_VERSION" "2.14"; then
+            CONF_OPTS+=("--enable-test-java-agent-log4j2")
+        fi
     fi
 
     # Some distros don't ship python2 anymore
