@@ -20,6 +20,7 @@ jenkins_plugins:
   - dark-theme
   - dashboard-view
   - email-ext
+  - embeddable-build-status
   - envinject
   - environment-script
   - excludeMatrixParent
