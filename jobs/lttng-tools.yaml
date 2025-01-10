@@ -1312,7 +1312,7 @@
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           babelversions: !!python/tuple [stable-2.0, master]
-          filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
+          filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: master
@@ -1400,7 +1400,7 @@
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
-          filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
+          filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.13
@@ -1506,7 +1506,7 @@
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
-          filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
+          filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.12
