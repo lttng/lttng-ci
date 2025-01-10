@@ -168,6 +168,9 @@
       - 'barectf_{version}_{buildtype}':
           buildtype: linuxbuild
           platforms: !!python/tuple [deb12-amd64]
+      - 'barectf_{version}_{buildtype}':
+          buildtype: yoctobuild
+          platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
 
 - project:
     name: review-barectf

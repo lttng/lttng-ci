@@ -408,6 +408,13 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
+          version:
+            - stable-0.11
+            - stable-0.12
+            - stable-0.13
+            - stable-0.14
+            - stable-0.15
+            - master
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]

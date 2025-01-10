@@ -618,6 +618,11 @@
           confs: !!python/tuple [std]
           filter: ''
           touchstone: ''
+          version:
+            - stable-1.5
+            - stable-2.0
+            - stable-2.1
+            - master
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
