@@ -1050,7 +1050,7 @@
             - stable-2.13
             - stable-2.12
           slesversion:
-            - sles15sp4
+            - sles15sp5
           buildtype: build
           parambuildtype: build
           kverfloor: ''
@@ -1189,7 +1189,7 @@
             - stable-2.13
             - stable-2.12
           slesversion:
-            - sles15sp4
+            - sles15sp5
           buildtype: build
           parambuildtype: build
           kverfloor: ''
