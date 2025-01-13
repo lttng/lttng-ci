@@ -387,6 +387,12 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
+          version:
+            - stable-0.12
+            - stable-0.13
+            - stable-0.14
+            - stable-0.15
+            - master
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: elbuild
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]

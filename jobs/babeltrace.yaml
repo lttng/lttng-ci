@@ -606,6 +606,11 @@
           confs: !!python/tuple [std, prod]
           filter: ''
           touchstone: ''
+          version:
+            - stable-1.5
+            - stable-2.0
+            - stable-2.1
+            - master
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: elbuild
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
