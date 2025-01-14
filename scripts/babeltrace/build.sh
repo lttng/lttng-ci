@@ -131,6 +131,7 @@ cc=${cc:-}
 BABELTRACE_MAKE_INSTALL="${BABELTRACE_MAKE_INSTALL:-yes}"
 BABELTRACE_MAKE_CLEAN="${BABELTRACE_MAKE_CLEAN:-yes}"
 BABELTRACE_GEN_COMPILE_COMMANDS="${BABELTRACE_GEN_COMPILE_COMMANDS:-no}"
+BABELTRACE_GIT_UNTRACKED="${BABELTRACE_GIT_UNTRACKED:-no}"
 BABELTRACE_RUN_TESTS="${BABELTRACE_RUN_TESTS:-yes}"
 BABELTRACE_CLANG_TIDY="${BABELTRACE_CLANG_TIDY:-no}"
 
@@ -468,20 +469,22 @@ if [ "$BABELTRACE_RUN_TESTS" = "yes" ]; then
     rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
 fi
 
-# Check that the git repository has no untracked files, meaning that
-# .gitignore is not missing anything.
-pushd "$SRCDIR"
+if [ "$BABELTRACE_GIT_UNTRACKED" = "yes" ]; then
+    # Check that the git repository has no untracked files, meaning that
+    # .gitignore is not missing anything.
+    pushd "$SRCDIR"
 
-git_status_output=$(git status --short)
-if [ -n "$git_status_output" ]; then
-    echo "Error: There are untracked or modified files in the repository:"
-    echo "git_status_output"
-    exit_status=1
-else
-    echo "No untracked or modified files."
+    git_status_output=$(git status --short)
+    if [ -n "$git_status_output" ]; then
+        echo "Error: There are untracked or modified files in the repository:"
+        echo "git_status_output"
+        exit_status=1
+    else
+        echo "No untracked or modified files."
+    fi
+
+    popd
 fi
-
-popd
 
 # Clean the build directory
 if [ "$BABELTRACE_MAKE_CLEAN" = "yes" ]; then

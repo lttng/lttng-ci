@@ -335,6 +335,7 @@
       - inject:
           properties-content: |
             PROJECT_NAME=babeltrace
+            BABELTRACE_GIT_UNTRACKED=yes
       - build-discarder:
           days-to-keep: 1
       - throttle:
@@ -410,6 +411,7 @@
           properties-content: |
             PROJECT_NAME=babeltrace
             BABELTRACE_RUN_TESTS=no
+            BABELTRACE_GIT_UNTRACKED=yes
       - build-discarder:
           days-to-keep: 1
 
