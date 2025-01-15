@@ -46,6 +46,11 @@
     email_to: 'odion@efficios.com'
     jobs:
       - '{job_prefix}libsk_{versions}_{buildtypes}_{cctype}': {}
+      - '{job_prefix}libsk_{versions}_{buildtypes}_{cctype}':
+          cctype: clang
+          ccs:
+            - clang
+          platforms: !!python/tuple [deb12-amd64, deb12-i386, deb12-arm64, deb12-armhf, deb12-ppc64el, deb13-riscv64]
 
 - project:
     name: libsk-views
