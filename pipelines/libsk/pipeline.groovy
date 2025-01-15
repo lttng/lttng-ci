@@ -2,6 +2,26 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // SPDX-FileCopyrightText: 2025 Kienan Stewart <kstewart@efficios.com>
 
+@NonCPS
+def get_cxx(cc) {
+  result = ''
+  switch(cc) {
+    case 'gcc':
+      result = 'g++'
+      break
+    case 'clang':
+      result = 'clang++'
+      break
+    case ~/clang-\d+/:
+      result = 'clang++-' + cc.split('-')[1]
+      break
+    case ~/gcc-\d+/:
+      result = 'g++-' + cc.split('-')[1]
+      break
+  }
+  return "${result}"
+}
+
 pipeline {
   agent none
 
@@ -61,7 +81,7 @@ pipeline {
             values {{builds|to_groovy(skip_list_wrap=true)}}
           }
           axis {
-            name 'cc'
+            name 'CC'
             values {{ccs|to_groovy(skip_list_wrap=true)}}
           }
         }
@@ -79,6 +99,10 @@ pipeline {
           label platform
         }
 
+        environment {
+          CXX = "${ -> get_cxx(CC) }"
+        }
+
         stages {
           stage('Pre-build') {
             steps {
@@ -90,7 +114,7 @@ pipeline {
           stage('Configure') {
             steps {
               unstash('libsk-source')
-              sh("mkdir -p \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${cc}/{build,log}")
+              sh("mkdir -p \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/{build,log}")
               dir('src/libsk') {
                 sh('./bootstrap')
                 sh("./configure --prefix='/build'")
@@ -109,12 +133,12 @@ pipeline {
           stage('Install') {
             steps {
               dir('src/libsk') {
-                sh("DESTDIR=\"\$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${cc}/\" make install")
+                sh("DESTDIR=\"\$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/\" make install")
               }
 
               // Clean-up rpaths and .la files
-              sh("find \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${cc}/build/ -type f -name '*.so' -exec chrpath --delete {} \\;")
-              sh("find \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${cc}/build/ -name '*.la' -delete")
+              sh("find \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/build/ -type f -name '*.so' -exec chrpath --delete {} \\;")
+              sh("find \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/build/ -name '*.la' -delete")
             }
           }
 
@@ -136,8 +160,8 @@ pipeline {
 
             post {
               always {
-                sh("rsync -ra --prune-empty-dirs --include='*/' --include='*.trs' --include='*.log' --exclude='*' src/libsk/ \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${cc}/log/")
-                sh("rsync -ra --prune-empty-dirs --include='*/' --exclude=test-suite.log --include='*.log' --exclude='*' src/libsk/tests/ \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${cc}/tap/")
+                sh("rsync -ra --prune-empty-dirs --include='*/' --include='*.trs' --include='*.log' --exclude='*' src/libsk/ \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/log/")
+                sh("rsync -ra --prune-empty-dirs --include='*/' --exclude=test-suite.log --include='*.log' --exclude='*' src/libsk/tests/ \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/tap/")
 
                 dir('src/libsk') {
                   sh('make clean')
@@ -151,7 +175,7 @@ pipeline {
                 )
 
                 step($class: 'TapPublisher',
-                     testResults: "platform=${platform}/conf=${conf}/build=${build}/cc=${cc}/tap/**/*.log",
+                     testResults: "platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/tap/**/*.log",
                      failIfNoResults: true,
                      failedTestsMarkBuildAsFailure: true,
                      outputTapToConsole: true,
