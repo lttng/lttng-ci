@@ -152,8 +152,8 @@ pipeline {
             }
 
             environment {
-              SK_TESTS_SKIP_REGRESSION = "{ -> params.LIBSK_TESTS_SKIP_REGRESSION }"
-              SK_TESTS_SKIP_TORTURE = "{ -> params.LIBSK_TESTS_SKIP_TORTURE }"
+              SK_TESTS_SKIP_REGRESSION = "${ -> params.LIBSK_TESTS_SKIP_REGRESSION ? 'true' : ''}"
+              SK_TESTS_SKIP_TORTURE = "${ -> params.LIBSK_TESTS_SKIP_TORTURE ? 'true' : ''}"
             }
 
             steps {
