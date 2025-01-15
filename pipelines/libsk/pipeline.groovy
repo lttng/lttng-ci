@@ -99,6 +99,10 @@ pipeline {
           label platform
         }
 
+        options {
+          timeout(time: 10, unit: 'MINUTES')
+        }
+
         environment {
           CXX = "${ -> get_cxx(CC) }"
         }
