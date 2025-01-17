@@ -1,0 +1,10 @@
+- hosts: node_s390x
+  roles:
+    - common
+    - common-node
+    - babeltrace
+    - librseq
+    - liburcu
+    - lttng-ust
+    - lttng-tools
+    - lttng-modules
