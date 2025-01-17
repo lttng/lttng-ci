@@ -36,15 +36,45 @@
     name: "{job_prefix}libsk_{versions}_{buildtypes}_{cctype}"
     defaults: libsk
 
+- job-template:
+    name: 'libsk-{versions}-all'
+    defaults: libsk
+    concurrent: false
+    project-type: freestyle
+    builders:
+      - trigger-builds:
+          - current_parameters: true
+            project:
+              - libsk_{versions}_linuxbuild_clang
+              - libsk_{versions}_linuxbuild_gcc
+    parameters:
+      - string:
+          name: email_to
+          default: '{email_to}'
+      - string:
+          name: LIBSK_GIT_URL
+          default: '{libsk_git_url}'
+      - string:
+          name: LIBSK_GIT_BRANCH
+          default: '{versions}'
+      - bool:
+          name: LIBSK_TESTS_SKIP_TORTURE
+          default: true
+      - bool:
+          name: LIBSK_TESTS_SKIP_REGRESSION
+          default: false
+
 - view-template:
     name: 'libsk'
     view-type: list
     regex: 'libsk[-_].*'
 
+
 - project:
     name: libsk
     email_to: 'odion@efficios.com'
     jobs:
+      - 'libsk-{versions}-all': {}
       - '{job_prefix}libsk_{versions}_{buildtypes}_{cctype}': {}
       - '{job_prefix}libsk_{versions}_{buildtypes}_{cctype}':
           cctype: clang
