@@ -58,7 +58,7 @@ pipeline {
 
       steps {
         dir('src/libsk') {
-          checkout([$class: 'GitSCM', branches: [[name: "${params.LIBSK_GIT_BRANCH}"]], userRemoteConfigs: [[url: "${params.LIBSK_GIT_URL}", credentialsId: 'a6e08541-e7fd-4da2-b58a-b87ee37736ef']]])
+          checkout([$class: 'GitSCM', branches: [[name: "${params.LIBSK_GIT_BRANCH}"]], userRemoteConfigs: [[url: "${params.LIBSK_GIT_URL}", credentialsId: 'a6e08541-e7fd-4da2-b58a-b87ee37736ef']], pool: true, changelog: true])
 
         }
         stash name: 'libsk-source', includes: 'src/libsk/**'

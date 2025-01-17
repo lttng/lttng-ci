@@ -63,7 +63,7 @@ pipeline {
 
       steps {
         dir('src/libside') {
-          checkout([$class: 'GitSCM', branches: [[name: "${params.LIBSIDE_GIT_BRANCH}"]], userRemoteConfigs: [[url: "${params.LIBSIDE_GIT_URL}"]]])
+          checkout([$class: 'GitSCM', branches: [[name: "${params.LIBSIDE_GIT_BRANCH}"]], userRemoteConfigs: [[url: "${params.LIBSIDE_GIT_URL}"]], poll: true, changelog: true])
 
         }
         stash name: 'libside-source', includes: 'src/libside/**'
