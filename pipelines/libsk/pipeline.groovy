@@ -99,10 +99,6 @@ pipeline {
           label platform
         }
 
-        options {
-          timeout(time: 10, unit: 'MINUTES')
-        }
-
         environment {
           CXX = "${ -> get_cxx(CC) }"
         }
@@ -148,7 +144,7 @@ pipeline {
 
           stage('Test') {
             options {
-              timeout(time: 30, unit: 'MINUTES')
+              timeout(time: 10, unit: 'MINUTES')
             }
 
             environment {
