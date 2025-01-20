@@ -207,6 +207,11 @@ if [[ -f /etc/products.d/SLES.prod ]] ; then
     if vergte "${SLES_VERSION}" "15.4" ; then
         export CLASSPATH='/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar'
     fi
+
+    if verlte "${SLES_VERSION}" "12.5" ; then
+        # liburcu 0.14+ needs C++-11, which is "experimental" on this platform
+        CXXFLAGS="${CXXFLAGS} -std=gnu++-11"
+    fi
 fi
 
 # Print build env details
