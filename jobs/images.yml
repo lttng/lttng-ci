@@ -300,7 +300,6 @@
       #   virtual disks online. The version of incus currently deployed doesn't
       #   support the io.bus option to use virtio-blk instead.
       # - '12.5'
-      - '15.4'
       - '15.5'
     parameters:
       - bool:
