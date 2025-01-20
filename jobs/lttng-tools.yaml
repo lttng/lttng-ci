@@ -1325,7 +1325,7 @@
           confs: !!python/tuple [agents]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           version: master
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
@@ -1369,7 +1369,7 @@
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           version: master
           platforms: !!python/tuple [el8-amd64]
@@ -1418,7 +1418,7 @@
           urcuversions: !!python/tuple [stable-0.13]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           version: stable-2.13
           ustversion: stable-2.13
@@ -1473,7 +1473,7 @@
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           version: stable-2.13
           ustversion: stable-2.13
@@ -1522,7 +1522,7 @@
           confs: !!python/tuple [agents]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           version: stable-2.12
           ustversion: stable-2.12
@@ -1573,7 +1573,7 @@
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           version: stable-2.12
           ustversion: stable-2.12

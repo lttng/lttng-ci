@@ -633,7 +633,7 @@
           version: master
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           filter: ''
           touchstone: ''
@@ -702,7 +702,7 @@
           version: stable-2.13
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           filter: ''
           touchstone: ''
@@ -760,7 +760,7 @@
           version: stable-2.12
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
-          confs: !!python/tuple [std, agents]
+          confs: !!python/tuple [agents]
           java_agents: 'false'
           filter: ''
           touchstone: ''
