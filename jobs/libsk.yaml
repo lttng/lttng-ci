@@ -59,7 +59,7 @@
           default: '{versions}'
       - bool:
           name: LIBSK_TESTS_SKIP_TORTURE
-          default: true
+          default: false
       - bool:
           name: LIBSK_TESTS_SKIP_REGRESSION
           default: false

@@ -40,7 +40,7 @@ pipeline {
            description: "Git URL to clone from")
     string(name: 'LIBSK_GIT_BRANCH', defaultValue: "{{versions}}",
            description: "Git branch to checkout")
-    booleanParam(name: 'LIBSK_TESTS_SKIP_TORTURE', defaultValue: true,
+    booleanParam(name: 'LIBSK_TESTS_SKIP_TORTURE', defaultValue: false,
             description: 'Skip torture tests')
     booleanParam(name: 'LIBSK_TESTS_SKIP_REGRESSION', defaultValue: false,
             description: 'Skip regression tests')
