@@ -1316,7 +1316,7 @@
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
           version: master
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
@@ -1405,7 +1405,7 @@
           buildtype: portbuild
           version: stable-2.13
           ustversion: stable-2.13
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
@@ -1511,7 +1511,7 @@
           buildtype: portbuild
           version: stable-2.12
           ustversion: stable-2.12
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
@@ -1628,7 +1628,7 @@
       - 'dev_{user}_lttng-tools_{version}_{buildtype}': {}
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           babelversions: !!python/tuple [stable-1.5, master]
       - 'dev_{user}_lttng-tools_{version}_macosbuild':
@@ -1647,7 +1647,7 @@
           buildtype: portbuild
           version: stable-2.13-staging
           ustversion: stable-2.13
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
@@ -1661,7 +1661,7 @@
           buildtype: portbuild
           version: stable-2.12-staging
           ustversion: stable-2.12
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
