@@ -565,8 +565,8 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
 
     make --keep-going check || exit_status=1
 
-        # Copy tap logs for the jenkins tap parser before cleaning the build dir
-    rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --exclude='*' tests/ "$TAPDIR"
+    # Copy tap logs for the jenkins tap parser before cleaning the build dir
+    rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --include '*.logfile' --exclude='*' tests/ "$TAPDIR"
 
     # Copy the test suites top-level log which includes all tests failures
     rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
