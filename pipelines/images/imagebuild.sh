@@ -173,6 +173,7 @@ CLEANUP+=(
     "rm -f ${HOME}/.ssh/id_rsa.pub"
     "rm -f ${HOME}/.ssh/id_rsa"
 )
+incus exec "ci:${INSTANCE_NAME}" -- mkdir -p /root/.ssh
 incus file push ~/.ssh/id_rsa.pub "ci:${INSTANCE_NAME}/root/.ssh/authorized_keys2"
 # Some distros, eg. Rocky Linux, don't enable the use of authorized_keys2
 # by default
