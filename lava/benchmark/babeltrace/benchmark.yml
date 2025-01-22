@@ -4,8 +4,8 @@ metadata:
         description: "Run benchmark for babeltrace"
 params:
         TRACE_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace.tar.gz"
-        TRACE_tools-2.10_LOCATION: "https://obj.internal.efficios.com/lava/traces/babeltrace/benchmark/babeltrace_benchmark_trace-tools-2.10.tar.gz"
-        TRACE_tools-2.14_LOCATION: "https://obj.internal.efficios.com/lava/traces/babeltrace/benchmark/babeltrace_benchmark_trace-tools-2.14.tar.gz"
+        TRACE_tools-2.10_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace-tools-2.10.tar.gz"
+        TRACE_tools-2.14_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace-tools-2.14.tar.gz"
         COMMIT: "invalid"
         GIT_URL: "https://github.com/efficios/babeltrace.git"
 run:
