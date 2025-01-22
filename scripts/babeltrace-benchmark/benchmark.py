@@ -31,7 +31,16 @@ from matplotlib.ticker import PercentFormatter
 from minio import Minio
 from minio.error import NoSuchKey, ResponseError
 
-BENCHMARK_TYPES = ["dummy", "text"]
+BENCHMARK_TYPES = [
+    "dummy",
+    "text",
+    # traces created using lttng-tools 2.10
+    "dummy-tools-2.10",
+    "text-tools-2.10",
+    # traces created using lttng-tools master (soon to be 2.14)
+    "dummy-tools-2.14",
+    "text-tools-2.14",
+]
 DEFAULT_BUCKET = "lava"
 
 invalid_commits = {
