@@ -13,7 +13,7 @@ run:
                 - pushd babeltrace
                 - git checkout ${COMMIT}
                 - ./bootstrap
-                - ./configure --disable-man-pages
+                - ./configure CFLAGS='-O3 -g0 -flto -fuse-linker-plugin' CXXFLAGS='-O3 -g0 -flto -fuse-linker-plugin' LDFLAGS='-flto -fuse-linker-plugin' BABELTRACE_DEV_MODE=0 BABELTRACE_DEBUG_MODE=0 BABELTRACE_MINIMAL_LOG_LEVEL=INFO --disable-man-pages
                 - make -j
                 - make install
                 - ldconfig
@@ -29,7 +29,9 @@ run:
                 - mount -t tmpfs -o size=10024m new_ram_disk /tmp/ram_disk
                 - curl -o /tmp/trace.tar.gz "${TRACE_LOCATION}"
                 - mkdir /tmp/ram_disk/trace
+                - cpupower frequency-set -g performance
                 - tar xvf /tmp/trace.tar.gz --directory /tmp/ram_disk/trace/
+                - echo 3 | tee /proc/sys/vm/drop_caches
                 - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_dummy_sink --command "babeltrace /tmp/ram_disk/trace/ -o dummy" --iteration 5
                 - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_text_sink --command "babeltrace /tmp/ram_disk/trace/" --iteration 5
                 - ./ci/lava/upload_artifact.sh result_dummy_sink results/benchmarks/babeltrace/dummy/${COMMIT}
