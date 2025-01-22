@@ -165,7 +165,6 @@ def main():
         type=int,
         default=5,
         help="The number of iteration to run the command (default: 5)",
-        required=True,
     )
     parser.add_argument(
         "--stdout",
