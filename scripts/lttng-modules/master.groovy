@@ -616,6 +616,16 @@ if (elversion != null) {
       ]
       break
 
+    case 'sles15sp5':
+      matchStrs = [
+        ~/^refs\/tags\/(rpm-5.14.21-150500\.\d\d(\.\d+)?(\.\d+)?)$/,
+      ]
+      blacklist = [
+        // @see https://www.suse.com/support/kb/doc/?id=000019587#SLE15SP5
+        'rpm-5.14.21-150500.55.22.1',
+      ]
+      break
+
     default:
       println "Unsupported SLES version: ${slesversion}"
       throw new InterruptedException()
