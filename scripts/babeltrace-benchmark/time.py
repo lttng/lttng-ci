@@ -106,7 +106,7 @@ def save(path, results):
         json.dump(results, out, sort_keys=True, indent=4)
 
 
-def run(command, iteration, output, stdout, stderr):
+def run(command, iteration, output, stdout, stderr, taskset=""):
     """
     Run the command throught /usr/bin/time n iterations and parse each result.
     """
@@ -117,6 +117,8 @@ def run(command, iteration, output, stdout, stderr):
         time_stdout.close()
         with open(stdout, "a+") as out, open(stderr, "a+") as err:
             cmd = "/usr/bin/time -v --output='{}' {}".format(time_stdout.name, command)
+            if taskset:
+                cmd = "taskset -c {} {}".format(taskset, cmd)
             ret = subprocess.run(cmd, shell=True, stdout=out, stderr=err)
             if ret.returncode != 0:
                 print("Iteration: {}, Command failed: {}".format(str(i), cmd))
@@ -176,9 +178,21 @@ def main():
         default=os.path.join(os.getcwd(), "stderr.out"),
         help="Where to append the stderr of each command (default: $CWD/stderr.out)",
     )
+    parser.add_argument(
+        "--taskset",
+        default="",
+        help="Define a CPU taskset for the test command. See `man taskset`'s `-c` argument",
+    )
 
     args = parser.parse_args()
-    run(args.command, args.iteration, args.output, args.stdout, args.stderr)
+    run(
+        args.command,
+        args.iteration,
+        args.output,
+        args.stdout,
+        args.stderr,
+        args.taskset,
+    )
 
 
 if __name__ == "__main__":
