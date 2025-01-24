@@ -464,6 +464,33 @@ build_linux_kernel() {
         # fs/f2fs/file.c: In function ‘punch_hole’:
         # fs/f2fs/file.c:1093:49: error: ‘mapping’ undeclared (first use in this function)
         scripts/config --disable CONFIG_F2FS_FS
+
+        if [[ "${SLES_RELEASE}" == "150500" ]]; then
+            # kernel/dma/swiotlb.c:1013:64: error: ‘debugfs_dir’ undeclared (first use in this function)
+            scripts/config --set-val CONFIG_DMA_RESTRICTED_POOL n
+
+            # drivers/iommu/apple-dart.c:756:9: error: ‘const struct iommu_domain_ops’ has no member named ‘owner’
+            scripts/config --set-val CONFIG_APPLE_DART n
+
+            # drivers/gpu/drm/panel/panel-samsung-atna33xc20.c:134:9: error: implicit declaration of function ‘drm_dp_dpcd_set_powered’
+            scripts/config --disable CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20
+
+            # drivers/net/ethernet/8390/ax88796.c:754:42: error: assignment of read-only location ‘*(dev->dev_addr + (sizetype)i)’
+            scripts/config --disable CONFIG_AX88796B_PHY
+            scripts/config --disable CONFIG_AX88796
+            scripts/config --disable CONFIG_PCMCIA_AXNET
+
+            # rivers/gpu/drm/i915/gt/selftest_slpc.c:73:18: error: implicit declaration of function ‘measure_power’; did you mean ‘measure_power_at’?
+            scripts/config --disable CONFIG_DRM_I915
+
+            # There are more broken ethernet drivers
+            scripts/config --disable CONFIG_PCMCIA_PCNET
+            scripts/config --disable CONFIG_SH_ETH
+            scripts/config --disable CONFIG_RAVB
+
+            # s/ntfs/attrib.c:609:56: error: ‘mrec_end’ undeclared (first use in this function)
+            scripts/config --disable CONFIG_NTFS_FS
+        fi
     fi
 
     # oldnoconfig was renamed in 4.19

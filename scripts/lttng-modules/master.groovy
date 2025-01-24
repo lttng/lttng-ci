@@ -618,7 +618,8 @@ if (elversion != null) {
 
     case 'sles15sp5':
       matchStrs = [
-        ~/^refs\/tags\/(rpm-5.14.21-150500\.\d\d(\.\d+)?(\.\d+)?)$/,
+        ~/^refs\/tags\/(rpm-5.14.21-150500\.53(\.\d+)?(\.\d+)?)--SLE-15-SP5-Full-GM$/,
+        ~/^refs\/tags\/(rpm-5.14.21-150500\.55(\.\d+)?(\.\d+)?)--sle15-sp5-updates$/,
       ]
       blacklist = [
         // @see https://www.suse.com/support/kb/doc/?id=000019587#SLE15SP5
