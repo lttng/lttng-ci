@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import math
 import os
 import sys
 import time
@@ -51,12 +52,14 @@ def wait_on(server, jobid):
 
 
 def submit(
-    commit, debug=False, kernel_commit=DEFAULT_KERNEL_COMMIT, wait_for_completion=True
+    commits,
+    debug=False,
+    kernel_commit=DEFAULT_KERNEL_COMMIT,
+    wait_for_completion=True,
+    script_repo="https://github.com/lttng/lttng-ci",
+    script_branch="master",
+    nfsrootfs="https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz",
 ):
-    nfsrootfs = "https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz"
-    nfsrootfs_sha256 = (
-        "0df15933ed18eb73ed5f0e7b1eca8d032ee88d92e5dbfc0f56dcc68c821048a8"
-    )
     kernel_url = (
         "https://obj.internal.efficios.com/lava/kernel/{}.baremetal.bzImage".format(
             kernel_commit
@@ -84,8 +87,10 @@ def submit(
     context = dict()
     context["kernel_url"] = kernel_url
     context["nfsrootfs_url"] = nfsrootfs
-    context["nfsrootfs_sha256"] = nfsrootfs_sha256
-    context["commit_hash"] = commit
+    context["commit_hashes"] = " ".join(commits)
+    context["script_repo"] = script_repo
+    context["script_branch"] = script_branch
+    context["job_timeout_hours"] = max(3, math.ceil(len(commits) * 0.5))
 
     render = jinja_template.render(context)
 
@@ -131,10 +136,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Launch baremetal babeltrace test using Lava"
     )
-    parser.add_argument("-c", "--commit", required=True)
+    parser.add_argument("-c", "--commit", required=True, action="append")
     parser.add_argument(
         "-k", "--kernel-commit", required=False, default=DEFAULT_KERNEL_COMMIT
     )
     parser.add_argument("-d", "--debug", required=False, action="store_true")
     args = parser.parse_args()
-    sys.exit(submit(args.kernel_commit, args.commit, args.debug))
+    sys.exit(submit(args.commits, kernel_commit=args.kernel_commit, debug=args.debug))

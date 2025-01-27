@@ -122,6 +122,7 @@ def run(command, iteration, output, stdout, stderr, taskset=""):
             ret = subprocess.run(cmd, shell=True, stdout=out, stderr=err)
             if ret.returncode != 0:
                 print("Iteration: {}, Command failed: {}".format(str(i), cmd))
+                subprocess.run(["cat", stderr])
         results = parse(time_stdout.name, results)
         os.remove(time_stdout.name)
     save(output, results)

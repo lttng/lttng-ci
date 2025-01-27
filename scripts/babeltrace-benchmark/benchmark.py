@@ -32,14 +32,14 @@ from minio import Minio
 from minio.error import NoSuchKey, ResponseError
 
 BENCHMARK_TYPES = [
-    "dummy",
-    "text",
+    "dummy-default",
+    "text-default",
     # traces created using lttng-tools 2.10
-    "dummy-tools-2.10",
-    "text-tools-2.10",
+    "dummy-tools_2_10",
+    "text-tools_2_10",
     # traces created using lttng-tools master (soon to be 2.14)
-    "dummy-tools-2.14",
-    "text-tools-2.14",
+    "dummy-tools_2_14",
+    "text-tools_2_14",
 ]
 DEFAULT_BUCKET = "lava"
 
@@ -121,7 +121,14 @@ def graph_get_title(branch, benchmark_type):
     """
     Get title for graph based on benchmark type.
     """
-    string = {"dummy": "Dummy output", "text": "Text output"}
+    string = {
+        "dummy-default": "Dummy output",
+        "text-default": "Text output",
+        "dummy-tools_2_10": "Dummy output with tools 2.10 trace",
+        "text-tools_2_10": "Text output with tools 2.10 trace",
+        "dummy-tools_2_14": "Dummy output with tools 2.14 trace",
+        "text-tools_2_14": "Text output with tools 2.14 trace",
+    }
     return "{} - {}".format(branch, string[benchmark_type])
 
 
@@ -202,7 +209,7 @@ def get_benchmark_results(client, commit, workdir):
             """
             Benchmark is either corrupted or not complete.
             """
-            return None, benchmark_valid
+            return None, False
         results[b_type] = parse_result(result_file)
         if all(i == 0.0 for i in results[b_type]):
             benchmark_valid = False
@@ -437,7 +444,18 @@ def generate_graph(branches, report_name, git_path):
     pdf_pages.close()
 
 
-def launch_jobs(branches, git_path, wait_for_completion, debug, force):
+def launch_jobs(
+    branches,
+    git_path,
+    wait_for_completion,
+    debug,
+    force,
+    batch_size,
+    max_batches,
+    script_repo,
+    script_branch,
+    nfs_root_url,
+):
     """
     Lauch jobs for all missing results.
     """
@@ -449,13 +467,36 @@ def launch_jobs(branches, git_path, wait_for_completion, debug, force):
         ]
         with tempfile.TemporaryDirectory() as workdir:
             for commit in commits:
-                b_results = get_benchmark_results(client, commit, workdir)[0]
-                if b_results and not force:
+                if get_benchmark_results(client, commit, workdir)[1] and not force:
+                    print("All benchmarks are valid for {}, skipping".format(commit))
                     continue
                 commits_to_test.add(commit)
-    for index, commit in enumerate(commits_to_test):
-        print("Job {}/{}".format(index + 1, len(commits_to_test)))
-        lava_submit.submit(commit, wait_for_completion=wait_for_completion, debug=debug)
+
+    commits_to_test = list(commits_to_test)
+    print("{} commits to run benchmarks for".format(len(commits_to_test)))
+    if len(commits_to_test) == 0:
+        return
+
+    chunks = [commits_to_test]
+    batches_run = 0
+    if batch_size > 0:
+        chunks = [
+            commits_to_test[i : i + batch_size]
+            for i in range(0, len(commits_to_test), batch_size)
+        ]
+
+    for index, commits in enumerate(chunks):
+        print("Job {}/{}".format(index + 1, max(len(chunks), max_batches)))
+        lava_submit.submit(
+            commits,
+            wait_for_completion=wait_for_completion,
+            debug=debug,
+            script_repo=script_repo,
+            script_branch=script_branch,
+        )
+        batches_run += 1
+        if max_batches > 0 and batches_run >= max_batches:
+            break
 
 
 def main():
@@ -471,6 +512,19 @@ def main():
     parser = argparse.ArgumentParser(description="Babeltrace benchmark utility")
     parser.add_argument(
         "--generate-jobs", action="store_true", help="Generate and send jobs"
+    )
+    parser.add_argument(
+        "-b",
+        "--batch-size",
+        type=int,
+        help="When generating jobs, run up to N commits per job. When set to 0, run all commits in a single job",
+        default=100,
+    )
+    parser.add_argument(
+        "--max-batches",
+        type=int,
+        default=0,
+        help="Only run up to N batches. Generally used for testing.",
     )
     parser.add_argument(
         "--force-jobs", action="store_true", help="Force the queueing of jobs to lava"
@@ -504,8 +558,17 @@ def main():
         required=False,
         type=json_type,
     )
+    parser.add_argument(
+        "--script-repo",
+        default="https://github.com/lttng/lttng-ci.git",
+    )
+    parser.add_argument("--script-branch", default="master")
+    parser.add_argument("--nfs-root-url", default=os.getenv("NFS_ROOT_URL"))
 
     args = parser.parse_args()
+    if args.batch_size < 0:
+        print("Batch size must be greater than or equal to 0")
+        return 1
 
     if args.overwrite_branches_cutoff:
         bt_branches = args.overwrite_branches_cutoff
@@ -526,6 +589,11 @@ def main():
             not args.do_not_wait_on_completion,
             args.debug,
             args.force_jobs,
+            args.batch_size,
+            args.max_batches,
+            args.script_repo,
+            args.script_branch,
+            args.nfs_root_url,
         )
 
     if args.generate_report:

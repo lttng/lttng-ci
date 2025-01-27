@@ -30,7 +30,7 @@ mkdir -p "$TMPDIR"
 export TMPDIR
 
 function checkout_scripts() {
-    git clone https://github.com/lttng/lttng-ci.git "$SCRIPT_DIR"
+    git clone -b "${BENCHMARK_REPO_BRANCH}" "${BENCHMARK_REPO_URL}" "$SCRIPT_DIR"
 }
 
 function setup_env ()
@@ -46,7 +46,11 @@ function setup_env ()
 
 function run_jobs ()
 {
-    python "$SCRIPT_PATH" --generate-jobs --repo-path "$SRC_DIR"
+    FORCE_ARG=''
+    if [[ "${BENCHMARK_FORCE}" == "true" ]]; then
+        FORCE_ARG="--force-jobs"
+    fi
+    python "$SCRIPT_PATH" --generate-jobs --repo-path "$SRC_DIR" --batch-size "${BENCHMARK_BATCH_SIZE}" $FORCE_ARG --max-batches "${BENCHMARK_MAX_BATCHES}" --script-repo "${BENCHMARK_REPO_URL}" --script-branch "${BENCHMARK_REPO_BRANCH}"
 }
 
 function generate_report ()

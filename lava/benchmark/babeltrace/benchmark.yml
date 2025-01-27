@@ -3,50 +3,25 @@ metadata:
         name: babeltrace 2.0 benchmark
         description: "Run benchmark for babeltrace"
 params:
-        TRACE_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace.tar.gz"
-        TRACE_tools_2.10_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace-tools-2.10.tar.gz"
-        TRACE_tools_2.14_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace-tools-2.14.tar.gz"
-        COMMIT: "invalid"
+        TRACE_default_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace.tar.gz"
+        TRACE_tools_2_10_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace-tools-2.10.tar.gz"
+        TRACE_tools_2_14_LOCATION: "https://obj.internal.efficios.com/lava/traces/benchmark/babeltrace/babeltrace_benchmark_trace-tools-2.14.tar.gz"
+        COMMITS: "invalid"
         GIT_URL: "https://github.com/efficios/babeltrace.git"
+        SCRIPT_REPO: "https://github.com/lttng/lttng-ci.git"
+        SCRIPT_BRANCH: "master"
 run:
         steps:
-                - apt install -y time
-                - git clone ${GIT_URL} babeltrace
-                - pushd babeltrace
-                - git checkout ${COMMIT}
-                - ./bootstrap
-                - ./configure CFLAGS='-O3 -g0 -flto -fuse-linker-plugin' CXXFLAGS='-O3 -g0 -flto -fuse-linker-plugin' LDFLAGS='-flto -fuse-linker-plugin' BABELTRACE_DEV_MODE=0 BABELTRACE_DEBUG_MODE=0 BABELTRACE_MINIMAL_LOG_LEVEL=INFO --disable-man-pages
-                - make -j
-                - make install
-                - ldconfig
-                - if [ -a /usr/local/bin/babeltrace ] ; then echo "Running bt1"; else ln -s /usr/local/bin/babeltrace2 /usr/local/bin/babeltrace; fi
-                - popd
-                - apt install -y curl python3
-                - git clone https://github.com/lttng/lttng-ci ci
-                - export TMPDIR="/tmp"
-                - mkdir -p /tmp/coredump
-                - echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
-                - ulimit -c unlimited
-                - mkdir /tmp/ram_disk
-                - mount -t tmpfs -o size=10024m new_ram_disk /tmp/ram_disk
-                - curl -o /tmp/trace.tar.gz "${TRACE_LOCATION}"
-                - mkdir /tmp/ram_disk/trace
-                - cpupower frequency-set -g performance
-                - tar xvf /tmp/trace.tar.gz --directory /tmp/ram_disk/trace/
-                - echo 3 | tee /proc/sys/vm/drop_caches
-                - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_dummy_sink --command "babeltrace /tmp/ram_disk/trace/ -o dummy" --iteration 5 --taskset 0
-                - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_text_sink --command "babeltrace /tmp/ram_disk/trace/" --iteration 5 --taskset 0
-                - ./ci/lava/upload_artifact.sh result_dummy_sink results/benchmarks/babeltrace/dummy/${COMMIT}
-                - ./ci/lava/upload_artifact.sh result_text_sink results/benchmarks/babeltrace/text/${COMMIT}
-                - rm -rf /tmp/ram_disk/trace/*
-                - curl -o - "${TRACE_tools_2.10_LOCATION}" | tar -C /tmp/ram_disk/trace -xz
-                - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_dummy_sink --command "babeltrace /tmp/ram_disk/trace/ -o dummy" --iteration 5 --taskset 0
-                - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_text_sink --command "babeltrace /tmp/ram_disk/trace/" --iteration 5 --taskset 0
-                - ./ci/lava/upload_artifact.sh result_dummy_sink results/benchmarks/babeltrace/dummy-2.10/${COMMIT}
-                - ./ci/lava/upload_artifact.sh result_text_sink results/benchmarks/babeltrace/text-2.10/${COMMIT}
-                - rm -rf /tmp/ram_disk/trace/*
-                - curl -o - "${TRACE_tools_2.14_LOCATION}" | tar -C /tmp/ram_disk/trace -xz
-                - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_dummy_sink --command "babeltrace /tmp/ram_disk/trace/ -o dummy" --iteration 5 --taskset 0
-                - python3 ./ci/scripts/babeltrace-benchmark/time.py --output=result_text_sink --command "babeltrace /tmp/ram_disk/trace/" --iteration 5 --taskset 0
-                - ./ci/lava/upload_artifact.sh result_dummy_sink results/benchmarks/babeltrace/dummy-2.14/${COMMIT}
-                - ./ci/lava/upload_artifact.sh result_text_sink results/benchmarks/babeltrace/text-2.14/${COMMIT}
+          - cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+          - echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+          - apt-get install -q -y time curl python3 wget
+          - git clone -q ${SCRIPT_REPO} -b ${SCRIPT_BRANCH} ci
+          - export TMPDIR="/tmp"
+          - mkdir -p /tmp/coredump
+          - echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+          - ulimit -c unlimited
+          - mkdir /tmp/ram_disk
+          - mount -t tmpfs -o size=10024m new_ram_disk /tmp/ram_disk
+          - git clone -q ${GIT_URL} babeltrace
+          - export TRACE_default_LOCATION="${TRACE_default_LOCATION}" TRACE_tools_2_10_LOCATION="${TRACE_tools_2_10_LOCATION}" TRACE_tools_2_14_LOCATION="${TRACE_tools_2_14_LOCATION}" COMMITS="${COMMITS}"
+          - bash -x ./ci/lava/benchmark/babeltrace/batch.sh $(realpath babeltrace) /tmp/ram_disk

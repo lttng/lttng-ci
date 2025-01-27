@@ -32,7 +32,30 @@
 
     builders:
       - shell:
-          !include-raw: scripts/babeltrace-benchmark/benchmark.sh
+          !include-raw-verbatim: scripts/babeltrace-benchmark/benchmark.sh
+
+    parameters:
+      - string:
+          name: 'BENCHMARK_REPO_URL'
+          default: 'https://github.com/lttng/lttng-ci'
+      - string:
+          name: 'BENCHMARK_REPO_BRANCH'
+          default: 'master'
+      - bool:
+          name: 'BENCHMARK_FORCE'
+          default: false
+          description: 'Force benchmarks to be re-run'
+      - string:
+          name: 'BENCHMARK_BATCH_SIZE'
+          default: "100"
+          description: "How many commits to test per lava run. 0 to test in a single run"
+      - string:
+          name: 'BENCHMARK_MAX_BATCHES'
+          default: "0"
+          description: "Maximum number of batches to run before ending job. 0 is all jobs"
+      - string:
+          name: 'NFS_ROOT_URL'
+          default: 'https://obj.internal.efficios.com/lava/rootfs_amd64_bookworm_2024-01-15.tar.gz'
 
     publishers:
       - archive:

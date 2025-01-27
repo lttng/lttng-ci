@@ -2,9 +2,9 @@ device_type: x86
 job_name: babeltrace_benchmark
 timeouts:
   job:
-    hours: 3
+    hours: {{job_timeout_hours}}
   action:
-    hours: 3
+    hours: {{job_timeout_hours}}
   connection:
     minutes: 4
   connections:
@@ -32,7 +32,6 @@ actions:
           type: zimage
         nfsrootfs:
           url: {{ nfsrootfs_url }}
-          sha256sum: {{ nfsrootfs_sha256 }}
           compression: gz
 
     - boot:
@@ -76,9 +75,12 @@ actions:
               from: inline
               name: x86-env-setup-inline
               path: inline/x86-env-setup.yaml
-            - repository: https://github.com/lttng/lttng-ci.git
+            - repository: {{script_repo}}
+              revision: {{script_branch}}
               from: git
               path: lava/benchmark/babeltrace/benchmark.yml
               name: babeltrace-benchmark
               params:
-                  COMMIT: {{ commit_hash }}
+                  COMMITS: {{ commit_hashes }}
+                  SCRIPT_REPO: {{script_repo}}
+                  SCRIPT_BRANCH: {{script_branch}}
