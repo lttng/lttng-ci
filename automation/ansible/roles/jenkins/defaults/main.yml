@@ -63,6 +63,7 @@ jenkins_plugins:
   - promoted-builds
   - publish-over-ssh
   - purge-build-queue-plugin
+  - rebuild
   - script-security
   - simple-theme-plugin
   - solarized-theme
