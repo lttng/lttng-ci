@@ -477,7 +477,7 @@ if [ "$BABELTRACE_GIT_UNTRACKED" = "yes" ]; then
     git_status_output=$(git status --short)
     if [ -n "$git_status_output" ]; then
         echo "Error: There are untracked or modified files in the repository:"
-        echo "git_status_output"
+        echo "$git_status_output"
         exit_status=1
     else
         echo "No untracked or modified files."
