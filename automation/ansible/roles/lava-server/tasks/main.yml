@@ -83,8 +83,6 @@
     path: "/etc/lava-server/dispatcher-config/devices/{{item | basename }}"
     state: link
   loop: "{{found_lava_devices['files'] | map(attribute='path')}}"
-- name: Configure PDU Daemon
-  import_tasks: pdudaemon.yml
 - name: Generate root SSH keypair
   # The public key can be installed on qemu hosts
   # lava-worker runs as root, not as lavaserver.
