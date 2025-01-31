@@ -12,8 +12,6 @@ ci-host-amd64-2a.internal.efficios.com
 ci-host-amd64-2b.internal.efficios.com
 ci-host-amd64-2c.internal.efficios.com
 ci-host-amd64-2d.internal.efficios.com
-# This host is used for tests via lava and is running ephemereal installs only
-#cloud08.internal.efficios.com
 ci-host-win11-arm64-01.internal.efficios.com
 ci-host-arm64-1a.internal.efficios.com
 ci-host-arm64-1b.internal.efficios.com
@@ -22,6 +20,7 @@ ci-host-arm64-2b.internal.efficios.com
 # Test cluster
 cloud01.internal.efficios.com
 cloud02.internal.efficios.com
+# This host is used for lava
 cloud03.internal.efficios.com
 
 [cluster_ci]
@@ -41,7 +40,6 @@ ci-host-arm64-2b.internal.efficios.com
 [cluster_ci_dev]
 cloud01.internal.efficios.com
 cloud02.internal.efficios.com
-cloud03.internal.efficios.com
 
 [incus:children]
 cluster_ci_dev
