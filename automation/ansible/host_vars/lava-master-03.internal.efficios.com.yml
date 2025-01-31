@@ -1,0 +1,53 @@
+---
+
+lava_devices:
+  - name: 'x86_server-cloud03'
+    extend: 'x86.jinja2'
+    vars:
+      connection_command: 'telnet serial01.internal.efficios.com 7030'
+      hard_reset_command: "ipmiutil reset -w -u -U ADMIN -R {{lookup('community.general.bitwarden', 'c11c6ceb-fb32-4f36-bac7-aef601141f51', search='id', field='password')[0]}} -N cloud03-ipmi.internal.efficios.com"
+      power_off_command: "ipmiutil reset -d -U ADMIN -R {{lookup('community.general.bitwarden', 'c11c6ceb-fb32-4f36-bac7-aef601141f51', search='id', field='password')[0]}} -N cloud03-ipmi.internal.efficios.com"
+      power_on_command: "ipmiutil reset -u -U ADMIN -R {{lookup('community.general.bitwarden', 'c11c6ceb-fb32-4f36-bac7-aef601141f51', search='id', field='password')[0]}} -N cloud03-ipmi.internal.efficios.com"
+      soft_reset_command: "ipmiutil reset -w -p -U ADMIN -R {{lookup('community.general.bitwarden', 'c11c6ceb-fb32-4f36-bac7-aef601141f51', search='id', field='password')[0]}} -N cloud03-ipmi.internal.efficios.com"
+      boot_interface: 'net2'
+      boot_character_delay: '150'
+  - name: 'lava-node-amd64-02'
+    extend: 'x86.jinja2'
+    vars:
+      connection_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system console --force lava-node-amd64-02'
+      hard_reset_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-02'
+      power_off_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset `--force lava-node-amd64-02'
+      power_on_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-02'
+      boot_character_delay: '100'
+  - name: 'lava-node-amd64-03'
+    extend: 'x86.jinja2'
+    vars:
+      connection_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system console --force lava-node-amd64-03'
+      hard_reset_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-03'
+      power_off_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-03'
+      power_on_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-03'
+      boot_character_delay: '100'
+  - name: 'lava-node-amd64-04'
+    extend: 'x86.jinja2'
+    vars:
+      connection_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system console --force lava-node-amd64-04'
+      hard_reset_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-04'
+      power_off_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-04'
+      power_on_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-04'
+      boot_character_delay: '100'
+  - name: 'lava-node-amd64-05'
+    extend: 'x86.jinja2'
+    vars:
+      connection_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system console --force lava-node-amd64-05'
+      hard_reset_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-05'
+      power_off_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-05'
+      power_on_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-05'
+      boot_character_delay: '100'
+  - name: 'lava-node-amd64-01'
+    extend: 'x86.jinja2'
+    vars:
+      connection_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system console --force lava-node-amd64-01'
+      hard_reset_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-01'
+      power_off_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-01'
+      power_on_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-01'
+      boot_character_delay: '100'

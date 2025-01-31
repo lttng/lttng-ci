@@ -1,0 +1,6 @@
+{% raw %}{%{% endraw %} extends '{{item.extend}}' {% raw %}%}{% endraw %}
+
+{% for name, value in item.vars.items() %}
+{% raw %}{%{% endraw %} set {{name}} = '{{value}}' {% raw %}%}{% endraw %}
+
+{% endfor %}

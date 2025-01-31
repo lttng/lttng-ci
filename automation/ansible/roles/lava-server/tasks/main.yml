@@ -63,26 +63,14 @@
     - x86
     - imx6q-wandboard
     - cubietruck
-- name: Clone lttng-ci repo
-  become: yes
-  become_user: lavaserver
-  git:
-    dest: /var/lib/lava-server/home/lttng-ci
-    repo: https://github.com/lttng/lttng-ci
-  register: clone_result
-- name: List devices in lttng-ci repo
-  when: clone_result.before != clone_result.after
-  find:
-    paths:
-      - /var/lib/lava-server/home/lttng-ci/lava/devices/
-  register: found_lava_devices
-- name: Create device links
-  when: clone_result.before != clone_result.after
-  ansible.builtin.file:
-    src: "{{item}}"
-    path: "/etc/lava-server/dispatcher-config/devices/{{item | basename }}"
-    state: link
-  loop: "{{found_lava_devices['files'] | map(attribute='path')}}"
+- name: Deploy lava device configuration
+  ansible.builtin.template:
+    src: device.jinja2.j2
+    dest: "/etc/lava-server/dispatcher-config/devices/{{item.name}}.jinja2"
+    owner: root
+    group: lavaserver
+    mode: '0640'
+  with_items: "{{lava_devices|default([])}}"
 - name: Generate root SSH keypair
   # The public key can be installed on qemu hosts
   # lava-worker runs as root, not as lavaserver.
