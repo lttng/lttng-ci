@@ -1,6 +1,7 @@
 [job_builder]
 ignore_cache=False
 keep_descriptions=True
+filter_modules=jjb_filters
 
 [jenkins]
 user=jenkins
