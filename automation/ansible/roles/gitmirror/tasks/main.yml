@@ -2,9 +2,13 @@
 - name: Install cgit
   ansible.builtin.apt:
     name: ['cgit', 'apache2']
-- include_role:
+- import_role:
     name: common
     tasks_from: certs
+  tags:
+    - certs
+  notify:
+    - Reload apache
 - name: Configure cgit
   ansible.builtin.template:
     src: cgitrc.j2

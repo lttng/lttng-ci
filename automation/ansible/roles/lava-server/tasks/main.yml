@@ -32,6 +32,8 @@
     tasks_from: certs
   notify:
     - Reload apache
+  tags:
+    - certs
 - name: Create TLS vhost
   copy:
     src: vhost-tls.conf

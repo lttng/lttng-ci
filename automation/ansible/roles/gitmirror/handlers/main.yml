@@ -1,4 +1,7 @@
 ---
+- name: Reload apache
+  shell:
+    cmd: apache2ctl graceful
 - name: Restart apache
   ansible.builtin.systemd:
     name: apache2

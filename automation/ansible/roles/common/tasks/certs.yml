@@ -7,6 +7,8 @@
     group: 'root'
     src: 'internal.efficios.com.pem'
   register: cert
+  tags:
+    - certs
 - name: Deploy internal certificate key
   ansible.builtin.copy:
     dest: "{{common_certificate_key_path_prefix}}/internal.efficios.com.key"
@@ -15,8 +17,12 @@
     group: 'root'
     content: "{{lookup('community.general.bitwarden', 'TLS Certificate internal.efficios.com', collection_id='35c5d8b1-2520-4450-a479-aef50131b930')[0]['notes'] }}"
   register: key
+  tags:
+    - certs
 - name: Deploy combined cert+key
   # haproxy uses a combined certificate and key file
   when: (cert.changed or key.changed) and common_certificate_deploy_combined_pem
   ansible.builtin.shell:
     cmd: "cat {{common_certificate_cert_path_prefix}}/internal.efficios.com.pem {{common_certificate_key_path_prefix}}/internal.efficios.com.key > {{common_certificate_key_path_prefix}}/internal.efficios.com.pem"
+  tags:
+    - certs

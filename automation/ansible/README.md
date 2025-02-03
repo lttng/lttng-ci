@@ -42,6 +42,7 @@ ansible-playbook -i hosts [-l SUBSET] site.yaml
 ## Tags
 
 * access: Any user / ssh access tasks
+* certs: Any certificate deployment and renewal tasks
 * monitoring: Any tasks related to installing or configuring monitoring services
 * slow: Any tasks that may take a long time
 
