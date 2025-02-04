@@ -49,6 +49,7 @@ jenkins_plugins:
   - monitoring
   - parameterized-trigger
   - permissive-script-security
+  - pipeline-agent-build-history
   - pipeline-github-lib
   - pipeline-graph-view
   - 'pipeline-groovy-lib'   # Replaces workflow-cps
