@@ -50,7 +50,7 @@ function run_jobs ()
     if [[ "${BENCHMARK_FORCE}" == "true" ]]; then
         FORCE_ARG="--force-jobs"
     fi
-    python "$SCRIPT_PATH" --generate-jobs --repo-path "$SRC_DIR" --batch-size "${BENCHMARK_BATCH_SIZE}" $FORCE_ARG --max-batches "${BENCHMARK_MAX_BATCHES}" --script-repo "${BENCHMARK_REPO_URL}" --script-branch "${BENCHMARK_REPO_BRANCH}"
+    python "$SCRIPT_PATH" --generate-jobs --repo-path "$SRC_DIR" --batch-size "${BENCHMARK_BATCH_SIZE}" $FORCE_ARG --max-batches "${BENCHMARK_MAX_BATCHES}" --script-repo "${BENCHMARK_REPO_URL}" --script-branch "${BENCHMARK_REPO_BRANCH}" --nfs-root-url "${NFS_ROOT_URL}"
 }
 
 function generate_report ()
