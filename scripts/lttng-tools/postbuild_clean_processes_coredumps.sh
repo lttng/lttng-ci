@@ -14,6 +14,7 @@ function collect_recursive
     file_to_collect=$1
 
     if [ -f "$file_to_collect" ]; then
+        echo "Collecting '${file_to_collect}'"
         echo "$file_to_collect" >> "$file_list"
 
         if [ -L "$file_to_collect" ]; then
@@ -72,6 +73,7 @@ while read -r core_file; do
 
     # Collect everything in the core file that looks like a reference to a
     # shared lib
+    set +x
     strings "$core_file" | while read -r str; do
         if [[ "${str}" =~ ^/.*\.so.* ]]; then
             collect_recursive "${str}"
@@ -80,6 +82,7 @@ while read -r core_file; do
             collect_recursive "${str}"
         fi
     done
+    set -x
 
     echo "$core_file" >> "$file_list"
     # Exit with failure when core files are found
