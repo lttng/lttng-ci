@@ -493,6 +493,7 @@ def launch_jobs(
             debug=debug,
             script_repo=script_repo,
             script_branch=script_branch,
+            nfsrootfs=nfs_root_url,
         )
         batches_run += 1
         if max_batches > 0 and batches_run >= max_batches:
