@@ -15,6 +15,8 @@ TRACE_SINKS=(
     'text'
 )
 
+ld --version
+gcc --version
 while read -d ' ' -r commit ; do
     if [ -z "${commit}" ]; then
         echo "Empty commit" >&2
@@ -25,7 +27,7 @@ while read -d ' ' -r commit ; do
     git clean -dxf
     git checkout "${commit}"
     ./bootstrap || continue
-    ./configure CFLAGS='-O3 -g0 -flto -fuse-linker-plugin' CXXFLAGS='-O3 -g0 -flto -fuse-linker-plugin' LDFLAGS='-flto -fuse-linker-plugin' BABELTRACE_DEV_MODE=0 BABELTRACE_DEBUG_MODE=0 BABELTRACE_MINIMAL_LOG_LEVEL=INFO --disable-man-pages || continue
+    ./configure CFLAGS='-O3 -g0' CXXFLAGS='-O3 -g0' BABELTRACE_DEV_MODE=0 BABELTRACE_DEBUG_MODE=0 BABELTRACE_MINIMAL_LOG_LEVEL=INFO --disable-man-pages || continue
     make -j || continue
     make install || continue
     ldconfig
