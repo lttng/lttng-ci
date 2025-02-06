@@ -26,10 +26,10 @@ while read -d ' ' -r commit ; do
     pushd "${BT_REPO}" || continue
     git clean -dxf
     git checkout "${commit}"
-    ./bootstrap || continue
-    ./configure CFLAGS='-O3 -g0' CXXFLAGS='-O3 -g0' BABELTRACE_DEV_MODE=0 BABELTRACE_DEBUG_MODE=0 BABELTRACE_MINIMAL_LOG_LEVEL=INFO --disable-man-pages || continue
-    make -j || continue
-    make install || continue
+    ./bootstrap || (popd; continue)
+    ./configure CFLAGS='-O3 -g0 -flto -fuse-linker-plugin' CXXFLAGS='-O3 -g0 -flto -fuse-linker-plugin' LDFLAGS='-flto -fuse-linker-plugin' BABELTRACE_DEV_MODE=0 BABELTRACE_DEBUG_MODE=0 BABELTRACE_MINIMAL_LOG_LEVEL=INFO --disable-man-pages || continue
+    make -j || (popd; continue)
+    make install || (popd; continue)
     ldconfig
     BT_BIN=/usr/local/bin/babeltrace2
     if [ -a /usr/local/bin/babeltrace ] ; then
