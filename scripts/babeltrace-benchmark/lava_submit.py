@@ -90,7 +90,7 @@ def submit(
     context["commit_hashes"] = " ".join(commits)
     context["script_repo"] = script_repo
     context["script_branch"] = script_branch
-    context["job_timeout_hours"] = max(3, math.ceil(len(commits) * 0.5))
+    context["job_timeout_hours"] = max(3, math.ceil(len(commits) * 1.5))
 
     render = jinja_template.render(context)
 
