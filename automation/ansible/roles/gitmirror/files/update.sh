@@ -64,3 +64,9 @@ update_git ubuntu-noble.git/ git://git.launchpad.net/~ubuntu-kernel/ubuntu/+sour
 ##
 
 update_git binutils-gdb.git/ git://sourceware.org/git/binutils-gdb.git
+
+##
+# Glibc repos
+##
+
+update_git glibc.git/ git://sourceware.org/git/glibc.git
