@@ -1,0 +1,146 @@
+- defaults:
+    name: glibc
+    description: |
+      Build and test Glibc.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: freestyle
+
+    wrappers:
+      - ansicolor:
+          colormap: gnome-terminal
+      - timeout:
+          timeout: 180
+          fail: true
+          type: absolute
+          write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
+      - timestamps
+      - workspace-cleanup
+
+    scm:
+      - git:
+          url: git://git-mirror.internal.efficios.com/git/glibc.git
+          branches:
+            - origin/{version}
+          basedir: src/glibc
+          skip-tag: true
+
+    triggers:
+      - pollscm:
+          cron: "@hourly"
+
+    properties:
+      - inject:
+          properties-content: |
+            PROJECT_NAME=glibc
+      - build-discarder:
+          num-to-keep: 10
+
+
+## Anchors
+
+# Default matrix axes
+- _glibc_matrix_axes_defaults: &glibc_matrix_axes_defaults
+    name: 'glibc_matrix_axes_defaults'
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis: &glibc_matrix_axis_platform
+         type: slave
+         name: platform
+         values: '{obj:platforms}'
+
+# Default builders
+- _glibc_builders_defaults: &glibc_builders_defaults
+    name: 'glibc_builders_defaults'
+    builders:
+      - shell:
+         !include-raw-escape:
+           - scripts/common/print.sh
+           - scripts/glibc/build.sh
+
+
+## Templates ##
+- job-template:
+    name: glibc_{version}_linuxbuild
+    defaults: glibc
+
+    <<: *glibc_matrix_axes_defaults
+    <<: *glibc_builders_defaults
+
+    publishers:
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+
+- job-template:
+    name: dev_review_glibc_linuxbuild
+    defaults: glibc
+    concurrent: true
+
+    scm:
+      - git:
+          url: https://review.lttng.org/glibc
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/glibc
+          skip-tag: true
+
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'glibc'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+
+    <<: *glibc_matrix_axes_defaults
+    <<: *glibc_builders_defaults
+
+    publishers:
+      - workspace-cleanup:
+          clean-if:
+            - failure: false
+
+    properties:
+      - build-discarder:
+          days-to-keep: 7
+
+
+## Views ##
+- view-template:
+    name: 'Glibc'
+    view-type: list
+    regex: '.*glibc.*'
+
+
+## Projects ##
+- project:
+    name: glibc
+    version:
+      - master
+    jobs:
+      - 'glibc_{version}_linuxbuild':
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+
+- project:
+    name: review-glibc
+    jobs:
+      - 'dev_review_glibc_linuxbuild':
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+
+- project:
+    name: glibc-views
+    views:
+      - Glibc
