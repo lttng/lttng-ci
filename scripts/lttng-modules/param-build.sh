@@ -516,6 +516,11 @@ build_linux_kernel() {
       fi
     fi
 
+    if { vergte "${kversion}" "6.13"; } && [ "${cross_arch}" = "powerpc" ]; then
+        # @see https://lore.kernel.org/lkml/20250218-buildfix-extmod-powerpc-v2-1-1e78fcf12b56@efficios.com/
+        sed -i 's#KBUILD_LDFLAGS_MODULE += arch/powerpc/lib/crtsavres.o#KBUILD_LDFLAGS_MODULE += $(objtree)/arch/powerpc/lib/crtsavres.o#' arch/powerpc/Makefile
+    fi
+
     if { verlt "${kversion}" "5.11"; } && { vergte "${kversion}" "4.10"; } ; then
         # Binutils > 2.35 strips empty symbol tables, causing obltool to fail
         # in certain cases when files are empty.
