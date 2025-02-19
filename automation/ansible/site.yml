@@ -11,6 +11,11 @@
 - import_playbook: node_standalone.yml
 - import_playbook: node_sles.yml
 - import_playbook: node_el.yml
+- hosts: node_yocto
+  roles:
+    - common
+    - common-node
+    - netplan
 - hosts: gitmirror
   roles:
     - common
