@@ -57,6 +57,7 @@
         argv: ['virsh', 'snapshot-revert', "{{target_rootnode}}", '--snapshotname', "{{snapshot_name}}", '--running']
       delegate_to: "{{rootnode_host}}"
     - name: Wait for target rootnode to come back online
+      when: revert_before
       local_action: wait_for host={{ target_rootnode }}
                     port=22
                     delay=1
