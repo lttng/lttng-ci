@@ -1,5 +1,6 @@
 ---
 netplan_manage: false
+netplan_package: 'netplan.io'
 
 # 0 or more non default config files
 # E.g.

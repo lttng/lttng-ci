@@ -1,9 +1,21 @@
 ---
+- name: Include OS-specific variables.
+  tags:
+    - always
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.yml"
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+      skip: true
+
 - when: netplan_manage
   block:
     - name: Install netplan
-      ansible.builtin.apt:
-        name: netplan.io
+      ansible.builtin.package:
+        name: "{{netplan_package}}"
     - name: Update netplan default.yaml
       when: netplan_content
       ansible.builtin.copy:
