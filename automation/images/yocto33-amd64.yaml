@@ -1,0 +1,58 @@
+---
+
+image:
+  distribution: 'yocto'
+  release: '3.3'
+  architecture: 'x86_64'
+
+source:
+  downloader: rootfs-http
+  url: https://obj.internal.efficios.com/jenkins/rootfs_amd64_yocto33.tar.bz2
+
+targets:
+  lxc:
+    create_message: |
+      You just created an {{image.description }} container.
+
+files:
+  - name: hostname
+    path: /etc/hostname
+    generator: hostname
+
+  - name: hosts
+    path: /etc/hosts
+    generator: hosts
+
+  - path: /etc/machine-id
+    generator: dump
+
+  - path: /var/lib/dbus/machine-id
+    generator: remove
+
+  - path: /etc/systemd/network/eth0.network
+    generator: dump
+    content: |-
+      [Match]
+      Name=eth0
+
+      [Network]
+      DHCP=true
+
+      [DHCPv4]
+      UseDomains=true
+
+      [DHCP]
+      ClientIdentifier=mac
+    types:
+      - container
+    variants:
+      - default
+
+packages:
+  manager: opkg
+  update: false
+  cleanup: false
+  sets: []
+  repositories: []
+
+actions: []
