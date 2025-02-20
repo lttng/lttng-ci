@@ -11,9 +11,10 @@
     skip_jenkins: false
     jenkins_config: "~/.config/jenkins_jobs/jenkins_jobs.ini"
     jenkins_default_credentials: "c3e4f9f2-3e89-474d-bc75-6251a13e1053"
+    limit: []
   tasks:
     - name: Manage instances
-      when: item.lxd|default(false) and not skip_lxd and inventory_hostname == lxd_host
+      when: item.lxd|default(false) and not skip_lxd and inventory_hostname == lxd_host and (not limit or item.lxd.name in limit)
       include_tasks:
         file: '../roles/lxd/tasks/container.yml'
       vars:
@@ -29,14 +30,14 @@
           )}}
       with_items: "{{containers}}"
     - name: Manage Libvirt VMs
-      when: item.vm|default(false) and not skip_libvirt and inventory_hostname == item.vm.host|default(libvirt_host)
+      when: item.vm|default(false) and not skip_libvirt and inventory_hostname == item.vm.host|default(libvirt_host) and (not limit or item.vm.name in limit)
       include_tasks:
         file: '../roles/libvirt/tasks/vm.yml'
       vars:
         object: "{{item.vm}}"
       with_items: "{{containers}}"
     - name: Update DNS entries
-      when: not skip_dns and inventory_hostname == 'localhost' and item.meta|default(false)
+      when: not skip_dns and inventory_hostname == 'localhost' and item.meta|default(false) and (not limit or ('vm' in item and item.vm.name in limit) or ('lxd' in item and item.lxd.name in limit))
       with_items: "{{containers}}"
       ansible.builtin.command:
         argv: [
@@ -46,7 +47,7 @@
           '-s', "{{name_server}}",
         ]
     - name: Update Jenkins nodes
-      when: item.jenkins|default(false) and not skip_jenkins and inventory_hostname == 'localhost'
+      when: item.jenkins|default(false) and not skip_jenkins and inventory_hostname == 'localhost' and (not limit or ('vm' in item and item.vm.name in limit) or ('lxd' in item and item.lxd.name in limit))
       with_items: "{{containers}}"
       vars:
         node_name: "{{item.jenkins.node_name|default(item.lxd.name|default(item.vm.name))}}"
