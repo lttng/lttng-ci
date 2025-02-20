@@ -109,6 +109,21 @@ failed_configure() {
     exit 1
 }
 
+os_field() {
+    field=$1
+    if [ -f /etc/os-release ]; then
+        echo $(source /etc/os-release; echo ${!field})
+    fi
+}
+
+os_id() {
+    os_field 'ID'
+}
+
+os_version_id() {
+    os_field 'VERSION_ID'
+}
+
 print_header "Liburcu build script starting"
 
 # Required variables
@@ -137,7 +152,7 @@ CONF_OPTS=()
 
 # RHEL and SLES both use lib64 but don't bother shipping a default autoconf
 # site config that matches this.
-if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-release ) ]]; then
+if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-release ) ]] || [[ "$(os_id)" == "ci" ]]; then
     # Detect the userspace bitness in a distro agnostic way
     if file -L /bin/bash | grep '64-bit' >/dev/null 2>&1; then
         LIBDIR_ARCH="${LIBDIR}64"
