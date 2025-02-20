@@ -1,0 +1,20 @@
+---
+
+# This node runs netplan 0.101, which has a slightly different syntax
+# than more recent releases.
+netplan_manage: true
+netplan_content: |
+  network:
+    version: 2
+    renderer: networkd
+    ethernets:
+      enp1s0:
+        dhcp4: no
+        addresses:
+          - 172.18.16.105/16
+        gateway4: 172.18.0.1
+        nameservers:
+          search:
+            - internal.efficios.com.
+          addresses:
+            - 172.18.0.13

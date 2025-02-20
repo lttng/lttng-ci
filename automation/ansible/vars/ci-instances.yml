@@ -965,6 +965,28 @@ containers:
       disk: '/var/lib/libvirt/images/ci-node-sles12sp5-amd64-2c-01.qcow'
       host: 'ci-host-amd64-2c.internal.efficios.com'
       efi: true
+  - meta:
+      address: 172.18.16.104
+    jenkins:
+      label: 'yocto33-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-yocto33-amd64-2a-01
+      target: ci-host-amd64-2a
+      source:
+        alias: yocto/hardknott/amd64
+        type: image
+  - meta:
+      address: 172.18.16.105
+    jenkins:
+      label: 'yocto33-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-yocto33-amd64-2b-01
+      target: ci-host-amd64-2b
+      source:
+        alias: yocto/hardknott/amd64
+        type: image
   # "Root " nodes in libvirt, since Jenkins can use the "libvirt agents" plugin
   # to revert to a specific snapshot before running a job
   #
@@ -1331,3 +1353,55 @@ containers:
       host: 'ci-host-arm64-1a.internal.efficios.com'
     meta:
       address: 172.18.17.15
+  - jenkins:
+      label: 'yocto33-amd64-rootnode'
+      name: 'ci-rootnode-yocto33-amd64-2c-01'
+      mode: EXCLUSIVE
+      config:
+        remoteFS: '/root'
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2c.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-yocto33-amd64-2c-01'
+        launcher/delegate: 'hudson.plugins.sshslaves.SSHLauncher=class'
+        launcher/delegate/port: '22'
+        launcher/delegate/host: 'ci-rootnode-yocto33-amd64-2c-01.internal.efficios.com'
+        launcher/delegate/credentialsId: 'bb5a81cf-346b-43fc-8586-3dc5e43801be'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2c.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-yocto33-amd64-2c-01'
+        snapshotName: ''
+        beforeJobSnapshotName: 'base-configuration'
+        startupWaitingPeriodSeconds: '30'
+        launcher/waitTimeMs: '30000'
+        shutdownMethod: 'destroy'
+    vm:
+      name: 'ci-rootnode-yocto33-amd64-2c-01'
+      disk: '/var/lib/libvirt/images/ci-rootnode-yocto33-amd64-2c-01.qcow2'
+      host: 'ci-host-amd64-2c.internal.efficios.com'
+      efi: true
+    meta:
+      address: 172.18.17.20
+  - jenkins:
+      label: 'yocto33-amd64-rootnode'
+      name: 'ci-rootnode-yocto33-amd64-2d-01'
+      mode: EXCLUSIVE
+      config:
+        remoteFS: '/root'
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2d.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-yocto33-amd64-2d-01'
+        launcher/delegate: 'hudson.plugins.sshslaves.SSHLauncher=class'
+        launcher/delegate/port: '22'
+        launcher/delegate/host: 'ci-rootnode-yocto33-amd64-2d-01.internal.efficios.com'
+        launcher/delegate/credentialsId: 'bb5a81cf-346b-43fc-8586-3dc5e43801be'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2d.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-yocto33-amd64-2d-01'
+        snapshotName: ''
+        beforeJobSnapshotName: 'base-configuration'
+        startupWaitingPeriodSeconds: '30'
+        launcher/waitTimeMs: '30000'
+        shutdownMethod: 'destroy'
+    vm:
+      name: 'ci-rootnode-yocto33-amd64-2d-01'
+      disk: '/var/lib/libvirt/images/ci-rootnode-yocto33-amd64-2d-01.qcow2'
+      host: 'ci-host-amd64-2d.internal.efficios.com'
+      efi: true
+    meta:
+      address: 172.18.17.21
