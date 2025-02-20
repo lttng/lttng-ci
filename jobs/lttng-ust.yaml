@@ -651,6 +651,18 @@
           filter: ''
           touchstone: ''
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: yoctobuild_extended
+          version:
+            - master
+            - stable-2.13
+          platforms: !!python/tuple [yocto33-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, stable-0.14, stable-0.15, master]
+          filter: ''
+          touchstone: ''
+          java_preferred_jdk: '8'
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: freebsdbuild
           version: master
           platforms: !!python/tuple [freebsd-amd64]
@@ -779,6 +791,16 @@
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: ''
           touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: yoctobuild_extended
+          version: stable-2.12
+          platforms: !!python/tuple [yocto33-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.11, stable-0.12, stable-0.13, stable-0.14, stable-0.15, master]
+          filter: ''
+          touchstone: ''
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild_extended
           version: stable-2.12

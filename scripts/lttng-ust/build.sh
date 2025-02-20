@@ -133,7 +133,7 @@ LIBDIR_ARCH="$LIBDIR"
 
 # RHEL and SLES both use lib64 but don't bother shipping a default autoconf
 # site config that matches this.
-if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-release ) ]]; then
+if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-release ) ]] || [[ "$(os_id)" == "ci" ]]; then
     # Detect the userspace bitness in a distro agnostic way
     if file -L /bin/bash | grep '64-bit' >/dev/null 2>&1; then
         LIBDIR_ARCH="${LIBDIR}64"
@@ -236,6 +236,10 @@ case "${java_preferred_jdk}" in
                 if vergte "${SLES_VERSION}" "15.4" ; then
                     export CLASSPATH='/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar'
                 fi
+                ;;
+            'ci') # yocto
+                export JAVA_HOME="/usr/${LIBDIR_ARCH}/jvm/openjdk-8/"
+                export PATH="/usr/${LIBDIR_ARCH}/jvm/openjdk-8/bin/:${PATH}"
                 ;;
             *)
                 echo "OS id '$(os_id)' not supported for java_preferred_jdk '${java_preferred_jdk}'"
