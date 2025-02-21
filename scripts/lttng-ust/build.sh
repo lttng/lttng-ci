@@ -90,10 +90,27 @@ failed_configure() {
     exit 1
 }
 
+os_field() {
+    field=$1
+    if [ -f /etc/os-release ]; then
+        echo $(source /etc/os-release; echo ${!field})
+    fi
+}
+
+os_id() {
+    os_field 'ID'
+}
+
+os_version_id() {
+    os_field 'VERSION_ID'
+}
+
+
 print_header "LTTng-UST build script starting"
 
 # Required variables
 WORKSPACE=${WORKSPACE:-}
+java_preferred_jdk=${java_preferred_jdk:-}
 
 # Axis
 platform=${platform:-}
@@ -200,19 +217,36 @@ freebsd*)
 esac
 
 if [[ -f /etc/products.d/SLES.prod ]] ; then
-    export JAVA_HOME="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0"
-    export PATH="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0/bin:/usr/${LIBDIR_ARCH}/jvm/jre-1.8.0-openjdk/bin:${PATH}"
     # Used by automake
     SLES_VERSION="$(grep -E '</version>' /etc/products.d/SLES.prod | grep -E -o '[0-9]+\.[0-9]+')"
-    if vergte "${SLES_VERSION}" "15.4" ; then
-        export CLASSPATH='/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar'
-    fi
-
     if verlte "${SLES_VERSION}" "12.5" ; then
         # liburcu 0.14+ needs C++-11, which is "experimental" on this platform
         CXXFLAGS="${CXXFLAGS} -std=gnu++-11"
     fi
 fi
+
+case "${java_preferred_jdk}" in
+    'default')
+        ;;
+    '8')
+        case "$(os_id)" in
+            'sles')
+                export JAVA_HOME="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0"
+                export PATH="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0/bin:/usr/${LIBDIR_ARCH}/jvm/jre-1.8.0/:${PATH}"
+                if vergte "${SLES_VERSION}" "15.4" ; then
+                    export CLASSPATH='/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar'
+                fi
+                ;;
+            *)
+                echo "OS id '$(os_id)' not supported for java_preferred_jdk '${java_preferred_jdk}'"
+                exit 1
+        esac
+        ;;
+    *)
+      echo "Unsupported java_preferred_jdk: '${java_preferred_jdk}'"
+      exit 1
+      ;;
+esac
 
 # Print build env details
 print_header "Build environment details"

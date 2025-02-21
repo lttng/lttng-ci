@@ -49,6 +49,7 @@
 
     # Variables
     java_agents: 'true'  # when building with the agents config, include java agents
+    java_preferred_jdk: 'default'
 
 
 ## Anchors
@@ -118,6 +119,7 @@
           esac
           echo "liburcu_conf=$liburcu_conf" > env.properties
           echo "LTTNG_UST_JAVA_AGENTS={java_agents|true}" >> env.properties
+          echo "java_preferred_jdk={java_preferred_jdk}" >> env.properties
 
       # Inject the additionnal env early to use them in the copyartifact step
       - inject:
@@ -167,6 +169,7 @@
           esac
           echo "liburcu_version=$liburcu_version" >> env.properties
           echo "LTTNG_UST_JAVA_AGENTS={java_agents|true}" >> env.properties
+          echo "java_preferred_jdk={java_preferred_jdk}" >> env.properties
 
       # Inject the additionnal env early to use them in the copyartifact step
       - inject:
@@ -628,6 +631,7 @@
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: ''
           touchstone: ''
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: master
@@ -697,6 +701,7 @@
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: ''
           touchstone: ''
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.13
@@ -755,6 +760,7 @@
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: ''
           touchstone: ''
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: elbuild
           version: stable-2.12
@@ -822,6 +828,7 @@
           filter: ''
           touchstone: ''
           babeltrace_version: stable-2.0
+          java_preffered_jdk: '8'
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: master
           buildtype: portbuild
@@ -887,6 +894,7 @@
           filter: ''
           touchstone: ''
           babeltrace_version: stable-2.0
+          java_preferred_jdk: '8'
 
       ## Stable 2.12 ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
@@ -925,6 +933,7 @@
           filter: ''
           touchstone: ''
           babeltrace_version: stable-2.0
+          java_preferred_jdk: '8'
 
 - project:
     name: review-lttng-ust-java
@@ -950,6 +959,7 @@
       - 'dev_review_lttng-ust-java-tests_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          java_preferred_jdk: '8'
 
 - project:
     name: lttng-ust-views
