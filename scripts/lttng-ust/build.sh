@@ -268,6 +268,12 @@ PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
 # Set configure options and environment variables for each build
 # configuration.
 CONF_OPTS=("--prefix=$PREFIX" "--libdir=$PREFIX/$LIBDIR_ARCH" "--disable-maintainer-mode")
+
+# Something is broken in docbook-xml on yocto
+if [[ "$platform" = yocto* ]]; then
+    CONF_OPTS+=("--disable-man-pages")
+fi
+
 case "$conf" in
 static)
     print_header "Conf: Static lib only"
@@ -300,11 +306,6 @@ debug-rcu)
 
 *)
     print_header "Conf: Standard"
-
-    # Something is broken in docbook-xml on yocto
-    if [[ "$platform" = yocto* ]]; then
-        CONF_OPTS+=("--disable-man-pages")
-    fi
     ;;
 esac
 
