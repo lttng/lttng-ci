@@ -130,10 +130,26 @@ set_execute_traversal_bit()
     chmod a+x "$path"
 }
 
+os_field() {
+    field=$1
+    if [ -f /etc/os-release ]; then
+        echo $(source /etc/os-release; echo ${!field})
+    fi
+}
+
+os_id() {
+    os_field 'ID'
+}
+
+os_version_id() {
+    os_field 'VERSION_ID'
+}
+
 print_header "LTTng-tools build script starting"
 
 # Required variables
 WORKSPACE=${WORKSPACE:-}
+java_preferred_jdk=${java_preferred_jdk:-}
 
 # Axis
 platform=${platform:-}
@@ -345,19 +361,6 @@ no-ust)
 agents)
     print_header "Conf: Java and Python agents"
 
-    if [[ -z "${JAVA_HOME:-}" ]] ; then
-        export JAVA_HOME="/usr/lib/jvm/default-java"
-    fi
-    export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
-    if [[ -f /etc/products.d/SLES.prod ]] ; then
-        export JAVA_HOME="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0"
-        export PATH="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0/bin:/usr/${LIBDIR_ARCH}/jvm/jre-1.8.0-openjdk/bin:${PATH}"
-        SLES_VERSION="$(grep -E '</version>' /etc/products.d/SLES.prod | grep -E -o '[0-9]+\.[0-9]+')"
-        if vergte "${SLES_VERSION}" "15.4" ; then
-            export CLASSPATH="${DEPS_JAVA}/lttng-ust-agent-all.jar:/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar"
-        fi
-    fi
-
     CONF_OPTS+=("--enable-python-bindings")
     if [[ "${LTTNG_TOOLS_JAVA_AGENTS:-}" != "false" ]]; then
         CONF_OPTS+=("--enable-test-java-agent-all")
@@ -404,6 +407,35 @@ debug-rcu)
         CONF_OPTS+=("--disable-man-pages")
     fi
     ;;
+esac
+
+# Java configuration
+if [[ -z "${JAVA_HOME:-}" ]] ; then
+    export JAVA_HOME="/usr/lib/jvm/default-java"
+fi
+export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
+case "${java_preferred_jdk}" in
+    'default')
+        ;;
+    '8')
+        case "$(os_id)" in
+            'sles')
+                export JAVA_HOME="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0"
+                export PATH="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0/bin:/usr/${LIBDIR_ARCH}/jvm/jre-1.8.0-openjdk/bin:${PATH}"
+                SLES_VERSION="$(grep -E '</version>' /etc/products.d/SLES.prod | grep -E -o '[0-9]+\.[0-9]+')"
+                if vergte "${SLES_VERSION}" "15.4" ; then
+                    export CLASSPATH="${DEPS_JAVA}/lttng-ust-agent-all.jar:/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar"
+                fi
+                ;;
+            *)
+                echo "OS id '$(os_id)' not supported for java_preferred_jdk '${java_preferred_jdk}'"
+                exit 1
+        esac
+        ;;
+    *)
+      echo "Unsupported java_preferred_jdk: '${java_preferred_jdk}'"
+      exit 1
+      ;;
 esac
 
 # Build type

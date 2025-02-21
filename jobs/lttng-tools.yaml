@@ -60,6 +60,7 @@
     # Variables
     babeltrace_buildtype: ''  # will default to buildtype
     java_agents: 'true'  # when building with the agents config, include java agents
+    java_preferred_jdk: 'default'
 
 ## Anchors
 - _lttng-tools_steps_copyartifact_defaults:
@@ -180,6 +181,7 @@
 
           echo "ust_conf=$ust_conf" >> env.properties
           echo "LTTNG_TOOLS_JAVA_AGENTS={java_agents|true}" >> env.properties
+          echo "java_preferred_jdk={java_preferred_jdk}" >> env.properties
 
       # Inject the additionnal env early to use them in the copyartifact step
       - inject:
@@ -251,6 +253,7 @@
             echo "LTTNG_TESTS_TAP_AUTOTIME=0" >> env.properties
           fi
           echo "LTTNG_TOOLS_JAVA_AGENTS={java_agents|true}" >> env.properties
+          echo "java_preferred_jdk={java_preferred_jdk}" >> env.properties
       - inject:
           properties-file: env.properties
       - shell:
@@ -1323,6 +1326,7 @@
           version: master
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
           confs: !!python/tuple [agents]
@@ -1367,6 +1371,7 @@
           nodes: !!python/tuple [sles15sp4-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
           confs: !!python/tuple [agents]
@@ -1416,6 +1421,7 @@
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13]
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
           confs: !!python/tuple [agents]
@@ -1471,6 +1477,7 @@
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
           confs: !!python/tuple [agents]
@@ -1520,6 +1527,7 @@
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           confs: !!python/tuple [agents]
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
           confs: !!python/tuple [agents]
@@ -1571,6 +1579,7 @@
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
           confs: !!python/tuple [agents]
@@ -1701,6 +1710,7 @@
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
+          java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: master
           nodes: !!python/tuple [deb12-amd64-rootnode]
@@ -1729,6 +1739,7 @@
           confs: !!python/tuple [agents]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
           urcuversions: !!python/tuple [master]
+          java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_smokebuild':
           version: master
           builds: !!python/tuple [oot-dist]
@@ -1771,6 +1782,7 @@
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          java_preferred_jdk: '8'
 
     ## Stable 2.12 ##
       - 'dev_review_lttng-tools_{version}_{buildtype}':
@@ -1800,6 +1812,7 @@
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          java_preferred_jdk: '8'
 
 
 - project:
