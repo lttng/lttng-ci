@@ -620,7 +620,7 @@
           touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: yoctobuild
-          platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
+          platforms: !!python/tuple [yocto23-powerpc, yocto33-amd64, yocto40-powerpc, yocto40-ppc64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           filter: ''
