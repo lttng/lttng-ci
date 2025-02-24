@@ -1387,6 +1387,15 @@
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+          buildtype: yoctobuild_extended
+          babeltrace_buildtype: yoctobuild
+          confs: !!python/tuple [agents]
+          java_preferred_jdk: '8'
+          version: master
+          platforms: !!python/tuple [yocto33-amd64]
+          nodes: !!python/tuple [yocto33-amd64-rootnode]
+          filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
@@ -1502,6 +1511,16 @@
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+          buildtype: yoctobuild_extended
+          babeltrace_buildtype: yoctobuild
+          confs: !!python/tuple [agents]
+          java_preferred_jdk: '8'
+          version: stable-2.13
+          ustversion: stable-2.13
+          platforms: !!python/tuple [yocto33-amd64]
+          nodes: !!python/tuple [yocto33-amd64-rootnode]
+          filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
@@ -1625,6 +1644,17 @@
           nodes: !!python/tuple [el8-amd64-rootnode]
           builds: !!python/tuple [std]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+          buildtype: yoctobuild_extended
+          babeltrace_buildtype: yoctobuild
+          confs: !!python/tuple [agents]
+          java_preferred_jdk: '8'
+          version: stable-2.12
+          ustversion: stable-2.12
+          urcuversions: !!python/tuple [stable-0.12]
+          platforms: !!python/tuple [yocto33-amd64]
+          nodes: !!python/tuple [yocto33-amd64-rootnode]
+          filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - 'lttng-tools_{version}_release':
           version: v2.12
           ustversion: stable-2.12
