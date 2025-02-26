@@ -325,7 +325,7 @@ macos-*)
 esac
 
 case "$target_board" in
-unix | native-gdbserver | native-extended-gdbserver)
+unix | native-gdbserver | native-extended-gdbserver | cc-with-debug-names)
     RUNTESTFLAGS="--target_board=$target_board"
     ;;
 
@@ -979,6 +979,12 @@ EOF
 
 cat <<'EOF' > known-failures-re-native-extended-gdbserver
 FAIL: gdb.threads/attach-many-short-lived-threads.exp: .*
+EOF
+
+cat <<'EOF' > known-failures-cc-with-debug-names
+EOF
+
+cat <<'EOF' > known-failures-re-cc-with-debug-names
 EOF
 
 known_failures_file="known-failures-${target_board}"
