@@ -59,3 +59,9 @@
         cron_file: 'readonly_root_reboot'
         minute: '*/10'
         user: 'root'
+
+- community.general.pam_limits:
+    domain: 'jenkins'
+    limit_item: 'nofile'
+    limit_type: '-'
+    value: 'unlimited'
