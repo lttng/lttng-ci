@@ -739,7 +739,7 @@
           version: stable-2.13
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
-          confs: !!python/tuple [agents]
+          confs: !!python/tuple [std, agents]
           filter: ''
           touchstone: ''
       - 'lttng-ust_{version}_scan-build':
