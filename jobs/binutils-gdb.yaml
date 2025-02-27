@@ -148,15 +148,25 @@
       - master
     jobs:
       - 'binutils-gdb_{version}_linuxbuild':
-          platforms: !!python/tuple [deb12-amd64]
-          target_boards: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver", "cc-with-debug-names"]
+          platforms:
+            - deb12-amd64
+          target_boards:
+            - unix
+            - native-gdbserver
+            - native-extended-gdbserver
+            - cc-with-debug-names
 
 - project:
     name: review-gdb
     jobs:
       - 'dev_review_binutils-gdb_linuxbuild':
-          platforms: !!python/tuple [deb12-amd64]
-          target_boards: !!python/tuple ["unix", "native-gdbserver", "native-extended-gdbserver", "cc-with-debug-names"]
+          platforms:
+            - deb12-amd64
+          target_boards:
+            - unix
+            - native-gdbserver
+            - native-extended-gdbserver
+            - cc-with-debug-names
 
 - project:
     name: gdb-views
