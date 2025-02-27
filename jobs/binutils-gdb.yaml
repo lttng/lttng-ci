@@ -82,8 +82,9 @@
       - workspace-cleanup:
           clean-if:
             - failure: false
-      - email:
+      - email-ext:
           recipients: 'simon.marchi@efficios.com'
+          matrix-trigger: only-parent
 
 - job-template:
     name: dev_review_binutils-gdb_linuxbuild
