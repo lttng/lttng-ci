@@ -28,7 +28,7 @@
 
     triggers:
       - pollscm:
-          cron: "@hourly"
+          cron: "@daily"
 
     properties:
       - inject:
