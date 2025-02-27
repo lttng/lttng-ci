@@ -317,30 +317,12 @@ $MAKE -j "$($NPROC)" V=1 MAKEINFO=true
 # Install in the workspace
 $MAKE install DESTDIR="$WORKSPACE" MAKEINFO=true
 
-case "$platform" in
-macos-*)
-    # Stop there, don't run tests on macOS.
-    exit 0
-    ;;
-esac
-
-case "$target_board" in
-unix | native-gdbserver | native-extended-gdbserver | cc-with-debug-names)
-    RUNTESTFLAGS="--target_board=$target_board"
-    ;;
-
-*)
-    echo "Unknown \$target_board value: $target_board"
-    exit 1
-    ;;
-esac
-
 # Run tests, don't fail now, we know that "make check" is going to fail,
 # since some tests don't pass.
 $MAKE -C gdb/testsuite site.exp
 # shellcheck disable=SC2016
 echo 'set gdb_test_timeout [expr 5 * $timeout]' >> gdb/testsuite/site.exp
-$MAKE -C gdb --keep-going check RUNTESTFLAGS="$RUNTESTFLAGS" || true
+$MAKE -C gdb --keep-going check RUNTESTFLAGS="--target_board=$target_board" || true
 
 # Copy the dejagnu test results for archiving before cleaning the build dir
 mkdir "${WORKSPACE}/results"
@@ -985,6 +967,42 @@ cat <<'EOF' > known-failures-cc-with-debug-names
 EOF
 
 cat <<'EOF' > known-failures-re-cc-with-debug-names
+EOF
+
+cat <<'EOF' > known-failures-cc-with-gdb-index
+EOF
+
+cat <<'EOF' > known-failures-re-cc-with-gdb-index
+EOF
+
+cat <<'EOF' > known-failures-debug-types
+EOF
+
+cat <<'EOF' > known-failures-re-debug-types
+EOF
+
+cat <<'EOF' > known-failures-cc-with-dwz
+EOF
+
+cat <<'EOF' > known-failures-re-cc-with-dwz
+EOF
+
+cat <<'EOF' > known-failures-cc-with-dwz-m
+EOF
+
+cat <<'EOF' > known-failures-re-cc-with-dwz-m
+EOF
+
+cat <<'EOF' > known-failures-fission
+EOF
+
+cat <<'EOF' > known-failures-re-fission
+EOF
+
+cat <<'EOF' > known-failures-fission-dwp
+EOF
+
+cat <<'EOF' > known-failures-re-fission-dwp
 EOF
 
 known_failures_file="known-failures-${target_board}"

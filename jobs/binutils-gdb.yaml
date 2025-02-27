@@ -155,6 +155,12 @@
             - native-gdbserver
             - native-extended-gdbserver
             - cc-with-debug-names
+            - cc-with-gdb-index
+            - debug-types
+            - cc-with-dwz
+            - cc-with-dwz-m
+            - fission
+            - fission-dwp
 
 - project:
     name: review-gdb
@@ -167,6 +173,12 @@
             - native-gdbserver
             - native-extended-gdbserver
             - cc-with-debug-names
+            - cc-with-gdb-index
+            - debug-types
+            - cc-with-dwz
+            - cc-with-dwz-m
+            - fission
+            - fission-dwp
 
 - project:
     name: gdb-views
