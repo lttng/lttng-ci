@@ -254,6 +254,13 @@ rm /tmp/core.* || true
 # Enter the source directory
 cd "$SRCDIR"
 
+# Install pre-commit and run pre-commit check.
+venv=$(mktemp_compat -d "venv.XXXXXXXXXX")
+python3 -m virtualenv "$venv"
+"$venv/bin/pip" install pre-commit
+failed_pre_commit=0
+"$venv/bin/pre-commit" run --all-files || failed_pre_commit=1
+
 # Set configure options and environment variables for each build
 # configuration.
 CONF_OPTS=("--prefix=$PREFIX")
@@ -1020,7 +1027,7 @@ sum2junit "${WORKSPACE}/results/gdb.filtered.sum" "${WORKSPACE}/results/gdb.xml"
 # Clean the build directory
 $MAKE clean
 
-# Exit with failure if any of the tests failed
-exit $failed_tests
+# Exit with failure if pre-commit or any of the tests failed.
+exit $((failed_pre_commit || failed_tests))
 
 # EOF
