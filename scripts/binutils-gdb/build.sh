@@ -254,13 +254,6 @@ rm /tmp/core.* || true
 # Enter the source directory
 cd "$SRCDIR"
 
-# Run bootstrap in the source directory prior to configure
-#./bootstrap
-
-# Get source version from configure script
-#eval "$(grep '^PACKAGE_VERSION=' ./configure)"
-#PACKAGE_VERSION=${PACKAGE_VERSION//\-pre*/}
-
 # Set configure options and environment variables for each build
 # configuration.
 CONF_OPTS=("--prefix=$PREFIX")
