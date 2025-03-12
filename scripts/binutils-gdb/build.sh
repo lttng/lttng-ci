@@ -63,118 +63,6 @@ failed_configure() {
     exit 1
 }
 
-sum2junit() {
-    local infile="$1"
-    local outfile="$2"
-
-cat <<EOF > sum2junit.py
-import sys
-from datetime import datetime
-import re
-from xml.etree.ElementTree import ElementTree, Element, SubElement
-
-line_re = re.compile(
-    r"^(PASS|XPASS|FAIL|XFAIL|KFAIL|DUPLICATE|UNTESTED|UNSUPPORTED|UNRESOLVED): (.*?\.exp): (.*)"
-)
-running_re = re.compile(r"^Running .*/(gdb\.[^/]+/.*\.exp)")
-error_re = re.compile(r"^ERROR: (.*)")
-
-pass_count = 0
-fail_count = 0
-skip_count = 0
-error_count = 0
-now = datetime.now().isoformat(timespec="seconds")
-
-testsuites = Element(
-    "testsuites",
-    {
-        "xmlns": "https://raw.githubusercontent.com/windyroad/JUnit-Schema/master/JUnit.xsd"
-    },
-)
-testsuite = SubElement(
-    testsuites,
-    "testsuite",
-    {
-        "name": "GDB",
-        "package": "package",
-        "id": "0",
-        "time": "1",
-        "timestamp": now,
-        "hostname": "hostname",
-    },
-)
-SubElement(testsuite, "properties")
-
-cur_test = None
-
-for line in sys.stdin:
-    m = running_re.match(line)
-    if m:
-        cur_test = m.group(1)
-        continue
-
-    m = error_re.match(line)
-    if m:
-        test = cur_test if cur_test else "<unknown test>"
-        msg = m.group(1)
-        print("ERROR: {} - {}".format(test, msg), file=sys.stderr)
-        error_count += 1
-
-        testcase_name = test
-        testcase = SubElement(
-            testsuite,
-            "testcase",
-            {"name": testcase_name, "classname": "classname", "time": "0"},
-        )
-        SubElement(testcase, "error", {"type": "ERROR"})
-
-    m = line_re.match(line)
-    if not m:
-        continue
-
-    state, exp_filename, test_name = m.groups()
-
-    testcase_name = "{} - {}".format(exp_filename, test_name)
-
-    testcase = SubElement(
-        testsuite,
-        "testcase",
-        {"name": testcase_name, "classname": "classname", "time": "0"},
-    )
-
-    if state in ("PASS", "XFAIL", "KFAIL"):
-        pass_count += 1
-    elif state in ("FAIL", "XPASS"):
-        print("{}: {}".format(state, testcase_name), file=sys.stderr)
-        fail_count += 1
-        SubElement(testcase, "failure", {"type": state})
-    elif state in ("UNRESOLVED", "DUPLICATE"):
-        print("{}: {}".format(state, testcase_name), file=sys.stderr)
-        error_count += 1
-        SubElement(testcase, "error", {"type": state})
-    elif state in ("UNTESTED", "UNSUPPORTED"):
-        skip_count += 1
-        SubElement(testcase, "skipped")
-    else:
-        assert False
-
-testsuite.attrib["tests"] = str(pass_count + fail_count + skip_count + error_count)
-testsuite.attrib["failures"] = str(fail_count)
-testsuite.attrib["skipped"] = str(skip_count)
-testsuite.attrib["errors"] = str(error_count)
-
-SubElement(testsuite, "system-out")
-SubElement(testsuite, "system-err")
-
-et = ElementTree(testsuites)
-et.write(sys.stdout, encoding="unicode")
-
-sys.exit(1 if fail_count > 0 or error_count > 0 else 0)
-EOF
-
-    python3 sum2junit.py < "$infile" > "$outfile"
-}
-
 # Required variables
 WORKSPACE=${WORKSPACE:-}
 
@@ -1020,9 +908,10 @@ while read -r line; do
     fi
 done < "$known_failures_file" > "${WORKSPACE}/results/known-failures-not-found.sum"
 
-# Convert results to JUnit format.
 failed_tests=0
-sum2junit "${WORKSPACE}/results/gdb.filtered.sum" "${WORKSPACE}/results/gdb.xml" || failed_tests=1
+if [[ -s "${WORKSPACE}/results/gdb.fail.sum" ]]; then
+    failed_tests=1
+fi
 
 # Clean the build directory
 $MAKE clean

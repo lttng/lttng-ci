@@ -77,8 +77,6 @@
       - archive:
           artifacts: 'results/**'
           allow-empty: false
-      - junit:
-          results: 'results/*.xml'
       - workspace-cleanup:
           clean-if:
             - failure: false
@@ -120,8 +118,6 @@
       - archive:
           artifacts: 'results/**'
           allow-empty: false
-      - junit:
-          results: 'results/*.xml'
       - workspace-cleanup:
           clean-if:
             - failure: false
