@@ -50,6 +50,7 @@
     # Variables
     java_agents: 'true'  # when building with the agents config, include java agents
     java_preferred_jdk: 'default'
+    python: ''
 
 
 ## Anchors
@@ -120,6 +121,9 @@
           echo "liburcu_conf=$liburcu_conf" > env.properties
           echo "LTTNG_UST_JAVA_AGENTS={java_agents|true}" >> env.properties
           echo "java_preferred_jdk={java_preferred_jdk}" >> env.properties
+          if [ "{python}" != "" ]; then
+            echo "PYTHON={python}" >> env.properties
+          fi
 
       # Inject the additionnal env early to use them in the copyartifact step
       - inject:
@@ -170,6 +174,9 @@
           echo "liburcu_version=$liburcu_version" >> env.properties
           echo "LTTNG_UST_JAVA_AGENTS={java_agents|true}" >> env.properties
           echo "java_preferred_jdk={java_preferred_jdk}" >> env.properties
+          if [ "{python}" != "" ]; then
+            echo "PYTHON={python}" >> env.properties
+          fi
 
       # Inject the additionnal env early to use them in the copyartifact step
       - inject:
