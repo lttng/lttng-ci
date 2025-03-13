@@ -36,7 +36,9 @@
             PROJECT_NAME=gdb
       - build-discarder:
           num-to-keep: 10
-
+    # Job variables
+    project_name: gdb
+    email_to: 'simon.marchi@efficios.com'
 
 ## Anchors
 
@@ -66,6 +68,50 @@
 
 
 ## Templates ##
+- job-template:
+    name: binutils-gdb_{version}_{buildtype}_{cctype}
+    defaults: binutils-gdb
+    concurrent: true
+    project-type: pipeline
+    publishers:
+      - workspace-cleanup
+    dsl: !include-jinja2: pipelines/binutils-gdb/pipeline.groovy.j2
+    sandbox: true
+    # Job variables
+    cctype: gcc
+    buildtype: linuxbuild
+    platform: deb12-amd64
+    git_url: 'git://git-mirror.internal.efficios.com/git/binutils-gdb.git'
+    filter: ''
+
+- job-template:
+    name: dev_review_binutils-gdb_{version}_{buildtype}_{cctype}
+    defaults: binutils-gdb
+    concurrent: true
+    project-type: pipeline
+    publishers:
+      - workspace-cleanup
+    dsl: !include-jinja2: pipelines/binutils-gdb/pipeline.groovy.j2
+    sandbox: true
+    # Job variables
+    cctype: gcc
+    buildtype: linuxbuild
+    platform: deb12-amd64
+    git_url: 'git://git-mirror.internal.efficios.com/git/binutils-gdb.git'
+    filter: ''
+    triggers:
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'binutils-gdb'
+              branches:
+                - branch-compare-type: 'ANT'
+                  branch-pattern: '**'
+
 - job-template:
     name: binutils-gdb_{version}_linuxbuild
     defaults: binutils-gdb
@@ -144,6 +190,18 @@
     version:
       - master
     jobs:
+      - 'binutils-gdb_{version}_{buildtype}_{cctype}':
+          target_boards:
+            - unix
+            - native-gdbserver
+            - native-extended-gdbserver
+            - cc-with-debug-names
+            - cc-with-gdb-index
+            - debug-types
+            - cc-with-dwz
+            - cc-with-dwz-m
+            - fission
+            - fission-dwp
       - 'binutils-gdb_{version}_linuxbuild':
           platforms:
             - deb12-amd64
@@ -161,7 +219,21 @@
 
 - project:
     name: review-gdb
+    version:
+      - master
     jobs:
+      - 'dev_review_binutils-gdb_{version}_{buildtype}_{cctype}':
+          target_boards:
+            - unix
+            - native-gdbserver
+            - native-extended-gdbserver
+            - cc-with-debug-names
+            - cc-with-gdb-index
+            - debug-types
+            - cc-with-dwz
+            - cc-with-dwz-m
+            - fission
+            - fission-dwp
       - 'dev_review_binutils-gdb_linuxbuild':
           platforms:
             - deb12-amd64
