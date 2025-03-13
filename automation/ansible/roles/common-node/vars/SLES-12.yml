@@ -23,6 +23,7 @@ common_node_packages:
   - openssh
   - psmisc
 #  - python-virtualenv
+  - python36
   - sudo
   - tree
   - vim
