@@ -39,7 +39,7 @@
 
     builders:
       - shell:
-          !include-raw: scripts/lttng-www/deploy.sh
+          !include-raw-expand: scripts/lttng-www/deploy.sh
 
 - job:
     name: dev_review_lttng-www

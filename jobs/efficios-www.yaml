@@ -5,7 +5,7 @@
 
     builders:
       - shell:
-          !include-raw: scripts/efficios-www/deploy.sh
+          !include-raw-expand: scripts/efficios-www/deploy.sh
 
     description: |
       This job is responsible for updating the efficios website.
