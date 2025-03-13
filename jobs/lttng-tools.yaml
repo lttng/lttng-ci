@@ -410,6 +410,10 @@
           <<: *lttng-tools_steps_copyartifact_defaults
           project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_winbuild/platform=${{platform}},conf=std,build=std'
 
+      - inject:
+          properties-content: |
+            java_preferred_jdk={java_preferred_jdk}
+
       - conditional-step:
           condition-kind: strings-match
           on-evaluation-failure: run
