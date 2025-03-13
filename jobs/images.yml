@@ -173,7 +173,7 @@
     <<: *images_parameters_distrobuilder_defaults
     <<: *images_properties_defaults
     builders:
-      - shell: !include-raw-escape: pipelines/images/distrobuild.sh
+      - shell: !include-raw-verbatim: pipelines/images/distrobuild.sh
 
 - job-template:
     name: images_imagebuilder
@@ -182,7 +182,7 @@
     <<: *images_parameters_imagebuilder_defaults
     <<: *images_properties_defaults
     builders:
-       - shell: !include-raw-escape: pipelines/images/imagebuild.sh
+       - shell: !include-raw-verbatim: pipelines/images/imagebuild.sh
 
 
 ## Views

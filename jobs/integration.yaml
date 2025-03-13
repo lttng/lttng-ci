@@ -6,7 +6,7 @@
     project-type: pipeline
     sandbox:  true
     dsl:
-      !include-raw-escape: pipelines/integration/ust-2.12-lower-urcu_testsuite.groovy
+      !include-raw-verbatim: pipelines/integration/ust-2.12-lower-urcu_testsuite.groovy
 
 - job-template:
     name: 'integration_lttng-tools-{version}-32-64_testsuite'

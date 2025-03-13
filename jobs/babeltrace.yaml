@@ -105,7 +105,7 @@
           condition-string2: 'cygwin64'
           steps:
             - shell:
-               !include-raw-escape:
+               !include-raw-verbatim:
                  - scripts/common/cygwin64-shebang
                  - scripts/common/cygpath-prefix
                  - scripts/common/print.sh
@@ -119,14 +119,14 @@
             - inject:
                properties-content: 'MSYSTEM=UCRT64'
             - shell:
-               !include-raw-escape:
+               !include-raw-verbatim:
                  - scripts/common/msys2-shebang
                  - scripts/common/cygpath-prefix
                  - scripts/common/print.sh
                  - scripts/babeltrace/build.sh
       {% else %}
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/babeltrace/build.sh
       {% endif %}
@@ -153,7 +153,7 @@
           make -j `nproc` >/dev/null 2>&1 # Hide warnings
           make install
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/babeltrace/build.sh
 
@@ -368,7 +368,7 @@
 
     builders:
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
           - scripts/common/print.sh
           - scripts/babeltrace/lint.sh
 
@@ -444,7 +444,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/common/check-format.sh
+         !include-raw-verbatim: scripts/common/check-format.sh
 
     properties:
       - inject:
@@ -478,7 +478,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/babeltrace/release.sh
+          !include-raw-verbatim: scripts/babeltrace/release.sh
 
     publishers:
       - tap: *babeltrace_publisher_tap_defaults
@@ -501,7 +501,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/common/scan-build.sh
+          !include-raw-verbatim: scripts/common/scan-build.sh
 
     publishers:
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
@@ -533,7 +533,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/common/coverity.sh
+          !include-raw-verbatim: scripts/common/coverity.sh
 
     publishers:
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
@@ -553,7 +553,7 @@
 
     builders:
        - shell:
-          !include-raw-escape:
+          !include-raw-verbatim:
             - scripts/common/print.sh
             - scripts/babeltrace/lint.sh
 

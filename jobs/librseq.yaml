@@ -254,7 +254,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/common/scan-build.sh
+          !include-raw-verbatim: scripts/common/scan-build.sh
 
     publishers:
       - html-publisher:
@@ -285,7 +285,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/common/coverity.sh
+          !include-raw-verbatim: scripts/common/coverity.sh
 
     publishers:
       - workspace-cleanup

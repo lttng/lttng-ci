@@ -129,14 +129,14 @@
             - "${{LTTNG_CI_BRANCH}}"
 
     builders:
-      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
+      - shell: !include-raw-verbatim: scripts/system-tests/generate-properties-master.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
           property-file: 'properties.txt'
           block: true
       - inject:
           properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/system-tests/run-kvm-tests.sh
+      - shell: !include-raw-verbatim: scripts/system-tests/run-kvm-tests.sh
 
     publishers:
       - workspace-cleanup
@@ -208,14 +208,14 @@
             - "${{LTTNG_CI_BRANCH}}"
 
     builders:
-      - shell: !include-raw-escape: scripts/system-tests/generate-properties-master.sh
+      - shell: !include-raw-verbatim: scripts/system-tests/generate-properties-master.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
           property-file: 'properties.txt'
           block: true
       - inject:
           properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/system-tests/run-baremetal-tests.sh
+      - shell: !include-raw-verbatim: scripts/system-tests/run-baremetal-tests.sh
 
     publishers:
       - workspace-cleanup
@@ -298,11 +298,11 @@
             - "${{LTTNG_CI_BRANCH}}"
 
     builders:
-      - shell: !include-raw-escape: scripts/system-tests/checkout-modules.sh
-      - shell: !include-raw-escape: scripts/system-tests/generate-properties-slave.sh
+      - shell: !include-raw-verbatim: scripts/system-tests/checkout-modules.sh
+      - shell: !include-raw-verbatim: scripts/system-tests/generate-properties-slave.sh
       - inject:
           properties-file: properties.txt
-      - shell: !include-raw-escape: scripts/system-tests/check-build-needs.sh
+      - shell: !include-raw-verbatim: scripts/system-tests/check-build-needs.sh
       - conditional-step:
           condition-kind: not
           condition-operand:
@@ -310,7 +310,7 @@
               condition-filename: kernel-built.txt
               condition-basedir: workspace
           steps:
-              - shell: !include-raw-escape: scripts/system-tests/build-kernel.sh
+              - shell: !include-raw-verbatim: scripts/system-tests/build-kernel.sh
       - conditional-step:
           condition-kind: not
           condition-operand:
@@ -318,7 +318,7 @@
               condition-filename: modules-built.txt
               condition-basedir: workspace
           steps:
-              - shell: !include-raw-escape: scripts/system-tests/build-modules.sh
+              - shell: !include-raw-verbatim: scripts/system-tests/build-modules.sh
 
     publishers:
       - workspace-cleanup
@@ -355,7 +355,7 @@
     builders:
       - system-groovy:
          command:
-           !include-raw-escape: scripts/system-tests/system-trigger.groovy
+           !include-raw-verbatim: scripts/system-tests/system-trigger.groovy
 
     publishers:
       - system_tests_email_ext_default

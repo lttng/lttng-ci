@@ -68,7 +68,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/normand/build.sh
+         !include-raw-verbatim: scripts/normand/build.sh
 
     publishers:
       - workspace-cleanup: *normand_publisher_workspace_cleanup_defaults
@@ -141,7 +141,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/normand/build.sh
+         !include-raw-verbatim: scripts/normand/build.sh
 
     publishers:
       - workspace-cleanup: *normand_publisher_workspace_cleanup_defaults

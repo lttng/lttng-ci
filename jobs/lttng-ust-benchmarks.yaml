@@ -78,7 +78,7 @@
           target: 'deps/lttng-ust'
           do-not-fingerprint: true
       - shell:
-         !include-raw-escape: scripts/lttng-ust-benchmarks/build.sh
+         !include-raw-verbatim: scripts/lttng-ust-benchmarks/build.sh
 
     # TODO: Scan for open tasks
     publishers:

@@ -53,7 +53,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/lttng-ivc/build.sh
+         !include-raw-verbatim: scripts/lttng-ivc/build.sh
 
     publishers:
       - archive:
@@ -108,7 +108,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/lttng-ivc/build.sh
+         !include-raw-verbatim: scripts/lttng-ivc/build.sh
 
     publishers:
       - archive:

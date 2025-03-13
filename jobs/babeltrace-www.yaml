@@ -31,7 +31,7 @@
 
     builders:
       - shell:
-          !include-raw: scripts/babeltrace-www/deploy.sh
+          !include-raw-verbatim: scripts/babeltrace-www/deploy.sh
 
     scm:
       - git:

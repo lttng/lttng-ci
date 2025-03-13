@@ -287,14 +287,14 @@
     builders:
       - system-groovy:
          command:
-           !include-raw-escape: scripts/lttng-modules/master.groovy
+           !include-raw-verbatim: scripts/lttng-modules/master.groovy
 
 - _lttng-modules_build_rt_builders_defaults: &lttng-modules_build_rt_builders_defaults
     name: 'lttng-modules_build_rt_builders_defaults'
     builders:
       - system-groovy:
          command:
-           !include-raw-escape: scripts/lttng-modules/master-rt.groovy
+           !include-raw-verbatim: scripts/lttng-modules/master-rt.groovy
 
 
 ## Templates
@@ -325,7 +325,7 @@
     builders:
       - system-groovy:
          command:
-           !include-raw-escape: scripts/lttng-modules/trigger-vanilla.groovy
+           !include-raw-verbatim: scripts/lttng-modules/trigger-vanilla.groovy
 
     publishers: []
 
@@ -748,7 +748,7 @@
                 set -exu
                 git clone -b "$getsrc_version" "$getsrc_repo" src/getsrc
       - shell:
-          !include-raw-escape: scripts/lttng-modules/param-build.sh
+          !include-raw-verbatim: scripts/lttng-modules/param-build.sh
 
     publishers:
       - workspace-cleanup
@@ -800,7 +800,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/lttng-modules/param-build.sh
+          !include-raw-verbatim: scripts/lttng-modules/param-build.sh
 
     publishers:
       - workspace-cleanup
@@ -857,7 +857,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/lttng-modules/param-build.sh
+          !include-raw-verbatim: scripts/lttng-modules/param-build.sh
 
     publishers:
       - workspace-cleanup
@@ -913,7 +913,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/lttng-modules/param-build.sh
+          !include-raw-verbatim: scripts/lttng-modules/param-build.sh
 
     publishers:
       - workspace-cleanup
@@ -946,7 +946,7 @@
          sed -i "s/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/g" .config
          make modules_prepare
       - shell:
-         !include-raw-escape: scripts/common/coverity.sh
+         !include-raw-verbatim: scripts/common/coverity.sh
 
     publishers:
       - archive:

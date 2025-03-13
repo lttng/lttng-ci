@@ -101,14 +101,14 @@
           condition-string2: 'cygwin64'
           steps:
             - shell:
-               !include-raw-escape:
+               !include-raw-verbatim:
                  - scripts/common/cygwin64-shebang
                  - scripts/common/cygpath-prefix
                  - scripts/common/print.sh
                  - scripts/liburcu/build.sh
       {% else %}
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/liburcu/build.sh
       {% endif %}
@@ -289,7 +289,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/common/scan-build.sh
+          !include-raw-verbatim: scripts/common/scan-build.sh
 
     publishers:
       - html-publisher:
@@ -321,7 +321,7 @@
 
     builders:
       - shell:
-          !include-raw-escape: scripts/common/coverity.sh
+          !include-raw-verbatim: scripts/common/coverity.sh
 
     publishers:
       - archive:

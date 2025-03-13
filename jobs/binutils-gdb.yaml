@@ -60,7 +60,7 @@
     name: 'binutils-gdb_builders_defaults'
     builders:
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/binutils-gdb/build.sh
 

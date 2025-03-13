@@ -56,7 +56,7 @@
     name: 'glibc_builders_defaults'
     builders:
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/glibc/build.sh
 

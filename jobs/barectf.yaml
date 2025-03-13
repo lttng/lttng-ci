@@ -68,7 +68,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/barectf/build.sh
+         !include-raw-verbatim: scripts/barectf/build.sh
 
     publishers:
       - workspace-cleanup: *barectf_publisher_workspace_cleanup_defaults
@@ -141,7 +141,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/barectf/build.sh
+         !include-raw-verbatim: scripts/barectf/build.sh
 
     publishers:
       - workspace-cleanup: *barectf_publisher_workspace_cleanup_defaults

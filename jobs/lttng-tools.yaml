@@ -229,10 +229,10 @@
                 git clone -b "{version}" https://github.com/{github_user}/lttng-modules.git src/lttng-modules
 
       - shell:
-         !include-raw-escape: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
+         !include-raw-verbatim: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
 
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
 
@@ -257,7 +257,7 @@
       - inject:
           properties-file: env.properties
       - shell:
-         !include-raw-escape: scripts/lttng-tools/gerrit-depends-on.sh
+         !include-raw-verbatim: scripts/lttng-tools/gerrit-depends-on.sh
 
       - inject:
           properties-file: gerrit_custom_dependencies.properties
@@ -348,7 +348,7 @@
                 project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/platform=${{platform}},conf=std,build=std'
 
       - shell:
-         !include-raw-escape: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
+         !include-raw-verbatim: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
 
       # Build liburcu if we depend on a specific liburcu change
       - conditional-step:
@@ -356,12 +356,12 @@
           condition-command: 'test "$GERRIT_DEP_USERSPACE_RCU" != ""'
           steps:
             - shell:
-               !include-raw-escape:
+               !include-raw-verbatim:
                    - scripts/common/override-build-std.sh
                    - scripts/common/print.sh
                    - scripts/liburcu/build.sh
             - shell:
-               !include-raw-escape: scripts/lttng-tools/gerrit-install-deps.sh
+               !include-raw-verbatim: scripts/lttng-tools/gerrit-install-deps.sh
 
       # Build babeltrace if we depend on a specific babeltrace change
       - conditional-step:
@@ -369,12 +369,12 @@
           condition-command: 'test "$GERRIT_DEP_BABELTRACE" != ""'
           steps:
             - shell:
-               !include-raw-escape:
+               !include-raw-verbatim:
                    - scripts/common/override-build-std.sh
                    - scripts/common/print.sh
                    - scripts/babeltrace/build.sh
             - shell:
-               !include-raw-escape: scripts/lttng-tools/gerrit-install-deps.sh
+               !include-raw-verbatim: scripts/lttng-tools/gerrit-install-deps.sh
 
       # Build lttng-ust if we depend on a specific lttng-ust change
       - conditional-step:
@@ -382,16 +382,16 @@
           condition-command: 'test "$GERRIT_DEP_LTTNG_UST" != ""'
           steps:
             - shell:
-               !include-raw-escape:
+               !include-raw-verbatim:
                    - scripts/common/override-build-std.sh
                    - scripts/common/print.sh
                    - scripts/lttng-ust/build.sh
             - shell:
-               !include-raw-escape: scripts/lttng-tools/gerrit-install-deps.sh
+               !include-raw-verbatim: scripts/lttng-tools/gerrit-install-deps.sh
 
       # Finaly build lttng-tools
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
 
@@ -410,7 +410,7 @@
           condition-string2: 'cygwin64'
           steps:
             - shell:
-               !include-raw-escape:
+               !include-raw-verbatim:
                  - scripts/common/cygwin64-shebang
                  - scripts/common/cygpath-prefix
                  - scripts/common/print.sh
@@ -425,7 +425,7 @@
             - inject:
                properties-content: 'MSYSTEM=UCRT64'
             - shell:
-               !include-raw-escape:
+               !include-raw-verbatim:
                  - scripts/common/msys2-shebang
                  - scripts/common/cygpath-prefix
                  - scripts/common/print.sh
@@ -445,7 +445,7 @@
                   - ABORTED
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/postbuild_wait_10_seconds.sh
+                      !include-raw-verbatim: scripts/lttng-tools/postbuild_wait_10_seconds.sh
 
       # On build failure, try to get partial tap results if any exists
       - postbuildscript: &lttng-tools_publisher_postbuildscript_collect_tap_on_failure
@@ -457,7 +457,7 @@
                   - FAILURE
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/postbuild_collect_tap_results.sh
+                      !include-raw-verbatim: scripts/lttng-tools/postbuild_collect_tap_results.sh
 
       # If there are leftover lttng processes or core files present, kill the
       # processes, collect the core files, delete them and mark the build
@@ -474,7 +474,7 @@
                   - FAILURE
               build-steps:
                   - shell:
-                      !include-raw-escape: scripts/lttng-tools/postbuild_clean_processes_coredumps.sh
+                      !include-raw-verbatim: scripts/lttng-tools/postbuild_clean_processes_coredumps.sh
 
       - tap: &lttng-tools_publisher_tap_defaults
           results: 'tap/**/*.log'
@@ -1138,7 +1138,7 @@
 
     builders:
       - shell:
-         !include-raw-escape: scripts/common/check-format.sh
+         !include-raw-verbatim: scripts/common/check-format.sh
 
     properties:
       - inject: *lttng-tools_property_inject_defaults
@@ -1181,9 +1181,9 @@
           <<: *lttng-tools_steps_copyartifact_defaults
           project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=agents,build=std'
       - shell:
-          !include-raw-escape: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
+          !include-raw-verbatim: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
       - shell:
-          !include-raw-escape: scripts/lttng-tools/release.sh
+          !include-raw-verbatim: scripts/lttng-tools/release.sh
 
     publishers:
       # On build abort (timeout), wait 10 seconds before running the other post
@@ -1229,7 +1229,7 @@
           <<: *lttng-tools_steps_copyartifact_defaults
           project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=std,build=std'
       - shell:
-          !include-raw-escape: scripts/common/scan-build.sh
+          !include-raw-verbatim: scripts/common/scan-build.sh
 
     publishers:
       - html-publisher:
@@ -1269,7 +1269,7 @@
           <<: *lttng-tools_steps_copyartifact_defaults
           project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=std,build=std'
       - shell:
-          !include-raw-escape: scripts/common/coverity.sh
+          !include-raw-verbatim: scripts/common/coverity.sh
 
     publishers:
       - archive:

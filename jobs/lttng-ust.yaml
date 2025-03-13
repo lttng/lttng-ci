@@ -140,7 +140,7 @@
 
       # Run the build
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/lttng-ust/build.sh
 
@@ -201,16 +201,16 @@
            git clone -b "$GERRIT_BRANCH" https://review.lttng.org/lttng-tools src/lttng-tools
 
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/lttng-ust/build.sh
 
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/lttng-tools/gerrit-install-deps.sh
 
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
 
@@ -489,7 +489,7 @@
           <<: *lttng-ust_steps_copyartifact_defaults
           project: liburcu_master_linuxbuild/platform=deb12-amd64,conf=std,build=std
       - shell:
-          !include-raw-escape: scripts/common/scan-build.sh
+          !include-raw-verbatim: scripts/common/scan-build.sh
 
     publishers:
       - html-publisher:
@@ -525,7 +525,7 @@
           <<: *lttng-ust_steps_copyartifact_defaults
           project: liburcu_master_linuxbuild/platform=deb12-amd64,conf=std,build=std
       - shell:
-          !include-raw-escape: scripts/common/coverity.sh
+          !include-raw-verbatim: scripts/common/coverity.sh
 
     publishers:
       - archive:
@@ -576,7 +576,7 @@
           <<: *lttng-ust_steps_copyartifact_defaults
           project: 'babeltrace_{babeltrace_versions[0]}_{buildtype}/platform=${{platform}},conf=std,build=std'
       - shell:
-          !include-raw-escape scripts/lttng-ust/lttng-ust-java-tests.sh
+          !include-raw-verbatim: scripts/lttng-ust/lttng-ust-java-tests.sh
     properties:
       - inject:
           properties-content: |
