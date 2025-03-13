@@ -262,8 +262,8 @@ macos*)
     export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
     export CPPFLAGS="-I/opt/local/include $CPPFLAGS"
     export LDFLAGS="-L/opt/local/lib $LDFLAGS"
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
+    export PYTHON="${PYTHON:-python3}"
+    export PYTHON_CONFIG="${PYTHON:-python3}-config"
     ;;
 
 cygwin|cygwin64|msys32|msys64)
@@ -278,7 +278,9 @@ cygwin|cygwin64|msys32|msys64)
     export NPROC=nproc
 
     PYTHON2=python2
-    PYTHON3=python3
+    PYTHON3="${PYTHON:-python3}"
+    export PYTHON="${PYTHON:-python3}"
+    export PYTHON_CONFIG="${PYTHON:-python3}-config"
 
     if command -v $PYTHON2 >/dev/null 2>&1; then
         P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
