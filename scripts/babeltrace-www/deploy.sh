@@ -47,6 +47,7 @@ apt-get update
 
 print_header "Install web tooling dependencies"
 apt-get install -y jekyll npm grunt python3 python3-pip python3-venv linkchecker
+export PYTHON_CONFIG=$(realpath python3-config)
 
 print_header "Install babeltrace build dependencies"
 apt-get install -y asciidoc xmlto libdw-dev libelf-dev elfutils autoconf automake libglib2.0-dev make doxygen flex bison
@@ -78,7 +79,15 @@ OUTPUT_FILE="${OUTPUT_DIR}/linkchecker-out.csv"
 chown nobody "${OUTPUT_DIR}"
 
 # @Note: Only internal links are checked by default
-if ! linkchecker -q -F "csv/utf-8/${OUTPUT_FILE}" http://localhost:10000/ ; then
+LINKCHECKER_ARGS=(
+    '-q' '-F' "csv/utf-8/${OUTPUT_FILE}"
+    # This file contains references to resources like "../tab-a.png" for external
+    # search pages that create false positives.
+    # @see https://github.com/doxygen/doxygen/blame/b4437b34779f8e8eafa2a12972aeba956809b6c3/templates/html/search_common.css#L258
+    '--ignore-url=doxygen.css'
+    http://localhost:10000/
+)
+if ! linkchecker "${LINKCHECKER_ARGS[@]}" ; then
     echo "Linkchecker failed or found broken links"
     cat "${OUTPUT_FILE}"
     kill "${SERVER_PID}"
