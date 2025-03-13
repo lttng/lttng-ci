@@ -44,11 +44,15 @@
       - inject:
           properties-content: |
             PROJECT_NAME=babeltrace
+            PYTHON={python}
       - build-discarder:
           num-to-keep: 10
           artifact-num-to-keep: 2
       - github:
           url: https://github.com/{github_user}/{github_name}
+
+    # Job variables
+    python: ''
 
 
 ## Anchors
@@ -138,6 +142,7 @@
             platform=deb12-amd64
             conf=std
             build=std
+            PYTHON={python}
       - shell: |
           curl -OL 'https://ftp.gnome.org/pub/gnome/sources/glib/2.28/glib-2.28.6.tar.gz'
           tar xf glib-2.28.6.tar.gz
@@ -336,6 +341,7 @@
           properties-content: |
             PROJECT_NAME=babeltrace
             BABELTRACE_GIT_UNTRACKED=yes
+            PYTHON={python}
       - build-discarder:
           days-to-keep: 1
       - throttle:
@@ -370,6 +376,7 @@
       - inject:
           properties-content: |
             PROJECT_NAME=babeltrace
+            PYTHON={python}
       - build-discarder:
           days-to-keep: 1
 
@@ -412,6 +419,7 @@
             PROJECT_NAME=babeltrace
             BABELTRACE_RUN_TESTS=no
             BABELTRACE_GIT_UNTRACKED=yes
+            PYTHON={python}
       - build-discarder:
           days-to-keep: 1
 
@@ -442,6 +450,7 @@
       - inject:
           properties-content: |
             PROJECT_NAME=babeltrace
+            PYTHON={python}
       - build-discarder:
           days-to-keep: 1
 

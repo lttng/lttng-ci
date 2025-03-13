@@ -217,8 +217,8 @@ macos*)
     export CFLAGS="$CFLAGS -Wno-\#pragma-messages" # Fix warnings with clang14
     export CPPFLAGS="-I/opt/local/include"
     export LDFLAGS="-L/opt/local/lib"
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
+    export PYTHON="${PYTHON:-python3}"
+    export PYTHON_CONFIG="${PYTHON:-python3}-config"
     ;;
 
 freebsd*)
@@ -227,8 +227,8 @@ freebsd*)
     export NPROC="getconf _NPROCESSORS_ONLN"
     export CPPFLAGS="-I/usr/local/include"
     export LDFLAGS="-L/usr/local/lib"
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
+    export PYTHON="${PYTHON:-python3}"
+    export PYTHON_CONFIG="${PYTHON:-python3}-config"
 
     # For bt 1.5
     export YACC="bison -y"
@@ -238,8 +238,8 @@ freebsd*)
     export MAKE=make
     export TAR=tar
     export NPROC=nproc
-    export PYTHON="python3"
-    export PYTHON_CONFIG="python3-config"
+    export PYTHON="${PYTHON:-python3}"
+    export PYTHON_CONFIG="${PYTHON:-python3}-config"
     ;;
 esac
 
