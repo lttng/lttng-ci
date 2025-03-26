@@ -858,7 +858,7 @@
           filter: ''
           touchstone: ''
           babeltrace_version: stable-2.0
-          java_preffered_jdk: '8'
+          java_preferred_jdk: '8'
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: master
           buildtype: portbuild
