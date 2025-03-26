@@ -143,6 +143,7 @@
          !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/lttng-ust/build.sh
+           - scripts/common/clean-build-dir.sh
 
 - _lttng-ust_builders_review_lttng-tools: &lttng-ust_builders_review_lttng-tools
     name: 'lttng-ust_builders_review_lttng-tools'

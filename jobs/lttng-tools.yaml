@@ -367,6 +367,7 @@
                    - scripts/common/override-build-std.sh
                    - scripts/common/print.sh
                    - scripts/liburcu/build.sh
+                   - scripts/common/clean-build-dir.sh
             - shell:
                !include-raw-verbatim: scripts/lttng-tools/gerrit-install-deps.sh
 
@@ -380,6 +381,7 @@
                    - scripts/common/override-build-std.sh
                    - scripts/common/print.sh
                    - scripts/babeltrace/build.sh
+                   - scripts/common/clean-build-dir.sh
             - shell:
                !include-raw-verbatim: scripts/lttng-tools/gerrit-install-deps.sh
 
@@ -393,6 +395,7 @@
                    - scripts/common/override-build-std.sh
                    - scripts/common/print.sh
                    - scripts/lttng-ust/build.sh
+                   - scripts/common/clean-build-dir.sh
             - shell:
                !include-raw-verbatim: scripts/lttng-tools/gerrit-install-deps.sh
 
