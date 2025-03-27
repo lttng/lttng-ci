@@ -1388,10 +1388,10 @@
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
           version: master
-          platforms: !!python/tuple [sles15sp4-amd64]
-          nodes: !!python/tuple [sles15sp4-amd64-rootnode]
+          platforms: !!python/tuple [sles15sp5-amd64]
+          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
@@ -1510,11 +1510,11 @@
           buildtype: slesbuild
           version: stable-2.13
           ustversion: stable-2.13
-          platforms: !!python/tuple [sles15sp4-amd64]
-          nodes: !!python/tuple [sles15sp4-amd64-rootnode]
+          platforms: !!python/tuple [sles15sp5-amd64]
+          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
-          filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
@@ -1630,11 +1630,11 @@
           buildtype: slesbuild
           version: stable-2.12
           ustversion: stable-2.12
-          platforms: !!python/tuple [sles15sp4-amd64]
-          nodes: !!python/tuple [sles15sp4-amd64-rootnode]
+          platforms: !!python/tuple [sles15sp5-amd64]
+          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
-          filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: elbuild
@@ -1801,10 +1801,10 @@
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: master
           buildtype: slesbuild
-          platforms: !!python/tuple [sles15sp4-amd64]
-          nodes: !!python/tuple [sles15sp4-amd64-rootnode]
+          platforms: !!python/tuple [sles15sp5-amd64]
+          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           urcuversions: !!python/tuple [master]
           java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_smokebuild':
@@ -1844,11 +1844,11 @@
           version: stable-2.13
           ustversion: stable-2.13
           buildtype: slesbuild
-          platforms: !!python/tuple [sles15sp4-amd64]
-          nodes: !!python/tuple [sles15sp4-amd64-rootnode]
+          platforms: !!python/tuple [sles15sp5-amd64]
+          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
-          filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
 
     ## Stable 2.12 ##
@@ -1874,11 +1874,11 @@
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: stable-2.12
           buildtype: slesbuild
-          platforms: !!python/tuple [sles15sp4-amd64]
-          nodes: !!python/tuple [sles15sp4-amd64-rootnode]
+          platforms: !!python/tuple [sles15sp5-amd64]
+          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
-          filter: '(node=="sles15sp4-amd64-rootnode" && platform=="sles15sp4-amd64")'
+          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
 
 
