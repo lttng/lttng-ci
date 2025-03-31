@@ -240,6 +240,22 @@
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
 
+- _lttng-tools_parameters_review: &lttng-tools_parameters_review
+    name: 'lttng-tools_parameters_review'
+    parameters:
+      - string:
+          name: 'GERRIT_BRANCH'
+          default: 'master'
+      - string:
+          name: 'GERRIT_REFSPEC'
+          default: ''
+      - string:
+          name: 'GERRIT_NAME'
+          default: 'review.lttng.org'
+      - string:
+          name: 'GERRIT_PROJECT'
+          default: 'lttng-tools'
+
 - _lttng-tools_builders_review: &lttng-tools_builders_review
     name: 'lttng-tools_builders_review'
     builders:
@@ -840,6 +856,7 @@
 
     <<: *lttng-tools_matrix_axes_defaults
     <<: *lttng-tools_builders_review
+    <<: *lttng-tools_parameters_review
 
     publishers: &lttng-tools_publishers_review_defaults
       # On build abort (timeout), wait 10 seconds before running the other post
@@ -1052,6 +1069,7 @@
 
     <<: *lttng-tools_matrix_axes_rootbuild
     <<: *lttng-tools_builders_review
+    <<: *lttng-tools_parameters_review
 
     publishers:
       - tap: *lttng-tools_publisher_tap_defaults
