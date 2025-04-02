@@ -314,9 +314,23 @@ fi
 # If we have modules, build them
 if [ -d "$WORKSPACE/src/lttng-modules" ]; then
     print_header "Build and install LTTng-modules"
+    modules_make_args=(
+        V=1
+    )
+    case "${modules_aligned_access:-}" in
+        'force')
+            modules_make_args+=(CONFIG_LTTNG_FORCE_ALIGNED_ACCESS=1)
+            ;;
+        'default')
+            ;;
+        *)
+            echo "Warning unknown value for 'modules_aligned_access': '${modules_aligned_access:-}'"
+            ;;
+    esac
+
     cd "$WORKSPACE/src/lttng-modules"
-    $MAKE -j"$($NPROC)" V=1
-    $MAKE modules_install V=1
+    $MAKE -j"$($NPROC)" "${modules_make_args[@]}"
+    $MAKE modules_install "${modules_make_args[@]}"
     depmod
 
     if [[ -f /etc/products.d/SLES.prod ]] ; then

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright (C) 2015 - Jonathan Rajotte-Julien <jonathan.rajotte-julien@efficios.com>
 #                      Michael Jeanson <mjeanson@efficios.com>
@@ -81,11 +81,26 @@ if { vergte "$KVERSION" "3.10" && verlte "$KVERSION" "3.10.13"; } || \
 
 else # Regular build
 
+    make_args=(
+        V=1
+        CONFIG_LTTNG=m
+    )
+    case "${modules_aligned_access:-}" in
+        'force')
+            make_args+=(CONFIG_LTTNG_FORCE_ALIGNED_ACCESS=1)
+            ;;
+        'default')
+            ;;
+        *)
+            echo "Warning unknown value for 'modules_aligned_access': '${modules_aligned_access:-}'"
+            ;;
+    esac
+
     # Build modules
-    KERNELDIR="${LNXBINDIR}" make -j${NPROC} V=1 CONFIG_LTTNG=m
+    KERNELDIR="${LNXBINDIR}" make -j${NPROC} "${make_args[@]}"
 
     # Install modules to build dir
-    KERNELDIR="${LNXBINDIR}" make INSTALL_MOD_PATH="${BUILDDIR}" modules_install
+    KERNELDIR="${LNXBINDIR}" make INSTALL_MOD_PATH="${BUILDDIR}" modules_install "${make_args[@]}"
 fi
 
 # EOF

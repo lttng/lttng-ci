@@ -59,6 +59,7 @@
 
     # Variables
     babeltrace_buildtype: ''  # will default to buildtype
+    modules_aligned_access: !!python/tuple ['default']
     java_agents: 'true'  # when building with the agents config, include java agents
     java_preferred_jdk: 'default'
     python: ''
@@ -121,6 +122,10 @@
       - axis: &lttng-tools_matrix_axis_root_platform
           <<: *lttng-tools_matrix_axis_platform
           type: user-defined
+      - axis: &lttng-tools_matrix_axis_modules_aligned_access
+          type: user-defined
+          name: 'modules_aligned_access'
+          values: '{obj:modules_aligned_access}'
       - axis: *lttng-tools_matrix_axis_conf
       - axis: *lttng-tools_matrix_axis_build
       - axis: *lttng-tools_matrix_axis_liburcu_version
@@ -1395,7 +1400,8 @@
           version: master
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
+          modules_aligned_access: !!python/tuple ['default', 'force']
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: portbuild
           version: master
@@ -1800,14 +1806,16 @@
           version: master
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
+          modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
           version: master
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
           modules_branch_pattern: 'master|stable-2.13'
           urcuversions: !!python/tuple [master]
+          modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-tools_{version}_root_{cctype}':
           version: master
           cctype: clangbuild
