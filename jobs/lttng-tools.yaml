@@ -1335,7 +1335,7 @@
     buildtype: linuxbuild
     ustversion: master
     urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
-    babelversions: !!python/tuple [stable-2.0]
+    babelversions: !!python/tuple [stable-2.1]
     platforms: !!python/tuple [deb12-amd64]
     builds: !!python/tuple [std]
     confs: !!python/tuple [std]
@@ -1351,7 +1351,7 @@
           version: master
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
-          babelversions: !!python/tuple [stable-2.0, master]
+          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
@@ -1571,12 +1571,12 @@
           version: v2.13
           ustversion: stable-2.13
           urcuversion: stable-0.13
-          babelversion: stable-2.0
+          babelversion: stable-2.1
       - 'lttng-tools_{version}_scan-build':
           version: stable-2.13
           urcuversion: stable-0.13
           ustversion: stable-2.13
-          babelversion: stable-2.0
+          babelversion: stable-2.1
 
       # stable-2.12
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
@@ -1697,12 +1697,12 @@
           version: v2.12
           ustversion: stable-2.12
           urcuversion: stable-0.13
-          babelversion: stable-2.0
+          babelversion: stable-2.1
       - 'lttng-tools_{version}_scan-build':
           version: stable-2.12
           urcuversion: stable-0.13
           ustversion: stable-2.12
-          babelversion: stable-2.0
+          babelversion: stable-2.1
 
 - project:
     name: dev_jgalar_lttng-tools
@@ -1720,7 +1720,7 @@
     builds: !!python/tuple [std, oot, dist]
     confs: !!python/tuple [std, no-ust, agents]
     urcuversions: !!python/tuple [master]
-    babelversions: !!python/tuple [stable-2.0, master]
+    babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
     filter: ''
     touchstone: ''
     jobs:
@@ -1779,7 +1779,7 @@
     builds: !!python/tuple [std]
     confs: !!python/tuple [std]
     urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]  # For C++ support
-    babelversions: !!python/tuple [stable-2.0]
+    babelversions: !!python/tuple [stable-2.1]
     filter: ''
     touchstone: ''
     jobs:
@@ -1788,7 +1788,7 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
-          babelversions: !!python/tuple [stable-2.0, master]
+          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
       - 'dev_review_lttng-tools_{version}_{cctype}':
           version: master
