@@ -1011,6 +1011,10 @@ containers:
       name: 'ci-rootnode-deb12-i386-1a-01'
       disk: '/var/lib/libvirt/images/ci-rootnode-deb12-i386-1a-01.qcow'
       host: 'ci-host-amd64-1a.internal.efficios.com'
+      # Work-around for the following guest error in bookworm-backports:
+      #   virtio: device uses modern interface but does not have VIRTIO_F_VERSION_1
+      cpu_features:
+        lm: disable
     meta:
       address: 172.18.17.2
   - jenkins:
