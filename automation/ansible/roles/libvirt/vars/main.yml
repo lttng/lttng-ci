@@ -10,6 +10,7 @@ vm_defaults:
   # efi: true/false
   # name: xyz
   # uuid: xxxx-yyyy
+  cpu_features: {}
 
 isos:
   - url: https://releases.ubuntu.com/jammy/ubuntu-22.04.4-live-server-amd64.iso

@@ -18,7 +18,11 @@
     <apic/>
     <vmport state='off'/>
   </features>
-  <cpu mode='host-model' check='partial'/>
+  <cpu mode='host-model' check='partial'>
+    {% for feature, policy in vm.cpu_features.items() %}
+    <feature policy='{{policy}}' name='{{feature}}'/>
+    {% endfor %}
+  </cpu>
   <clock offset='utc'>
     <timer name='rtc' tickpolicy='catchup'/>
     <timer name='pit' tickpolicy='delay'/>
