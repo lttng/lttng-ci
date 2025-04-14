@@ -747,10 +747,6 @@ pipeline {
            description: "The CC to use (e.g. gcc, clang, gcc-15)")
   }
 
-  triggers {
-    pollSCM('@daily')
-  }
-
   stages {
     stage('Checkout') {
       agent {
