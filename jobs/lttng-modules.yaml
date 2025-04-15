@@ -965,6 +965,7 @@
     mversion:
       - stable-2.12
       - stable-2.13
+      - stable-2.14
       - master
     jobs:
 
@@ -972,6 +973,7 @@
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
             - master
+            - stable-2.14
           buildtype: build
           parambuildtype: build
           kverfloor: v4.4
@@ -980,6 +982,7 @@
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
             - master
+            - stable-2.14
           buildtype: build
           parambuildtype: build
           kverfloor: v4.4
@@ -1026,6 +1029,7 @@
       - 'lttng-modules_{mversion}_{buildtype}-{elversion}':
           mversion:
             - master
+            - stable-2.14
             - stable-2.13
             - stable-2.12
           elversion:
@@ -1047,6 +1051,7 @@
       - 'lttng-modules_{mversion}_{buildtype}-{slesversion}':
           mversion:
             - master
+            - stable-2.14
             - stable-2.13
             - stable-2.12
           slesversion:
@@ -1061,6 +1066,7 @@
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           mversion:
             - master
+            - stable-2.14
             - stable-2.13
           uversion:
             - focal
@@ -1088,6 +1094,7 @@
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
             - master
+            - stable-2.14
           buildtype: crossbuild
           parambuildtype: crossbuild
           kverfloor: v4.4
@@ -1156,7 +1163,9 @@
     name: lttng-modules-review
     jobs:
       - 'dev_review_lttng-modules_{mversion}_build':
-          mversion: master
+          mversion:
+            - master
+            - stable-2.14
           kverfloor: v4.4
           kverceil: ''
           kverfilter: lts-head
@@ -1174,6 +1183,7 @@
       - 'dev_review_lttng-modules_{mversion}_build-{elversion}':
           mversion:
             - master
+            - stable-2.14
             - stable-2.13
             - stable-2.12
           elversion:
@@ -1186,6 +1196,7 @@
       - 'dev_review_lttng-modules_{mversion}_build-{slesversion}':
           mversion:
             - master
+            - stable-2.14
             - stable-2.13
             - stable-2.12
           slesversion:
