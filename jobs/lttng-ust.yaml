@@ -663,6 +663,7 @@
           version:
             - master
             - stable-2.13
+            - stable-2.14
           platforms: !!python/tuple [yocto33-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
@@ -693,6 +694,76 @@
           version: master
       - 'lttng-ust_{version}_coverity':
           version: master
+
+      ## Stable 2.14 @@
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: linuxbuild
+          version: stable-2.14
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, dist, oot, oot-dist]
+          confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
+          filter: '(build=="std") || ((liburcu_version=="master" && (conf=="std" || conf=="agents")))'
+          liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: portbuild
+          version: stable-2.14
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, agents]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: slesbuild
+          version: stable-2.14
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
+          filter: ''
+          touchstone: ''
+          java_preferred_jdk: '8'
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: elbuild
+          version: stable-2.14
+          platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          java_agents: 'false'
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: yoctobuild
+          version: stable-2.14
+          platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std]
+          liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{buildtype}':
+          buildtype: freebsdbuild
+          version: stable-2.14
+          platforms: !!python/tuple [freebsd-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.15, master]
+          filter: ''
+          touchstone: ''
+      - '{job_prefix}lttng-ust_{version}_{cctype}':
+          buildtype: linuxbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          version: stable-2.14
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [std, agents]
+          filter: ''
+          touchstone: ''
+      - 'lttng-ust_{version}_scan-build':
+          version: stable-2.14
+      - 'lttng-ust_{version}_coverity':
+          version: stable-2.14
 
       ## Stable 2.13 ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -886,6 +957,64 @@
           filter: ''
           touchstone: ''
           babeltrace_version: stable-2.0
+
+      ## stable 2.14 ##
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: stable-2.14
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, agents]
+          liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
+          filter: ''
+          touchstone: '(build == "std") && (conf == "std")'
+      - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
+          version: stable-2.14
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, agents]
+          filter: ''
+          touchstone: ''
+          babeltrace_version: stable-2.1
+      - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
+          version: stable-2.14
+          buildtype: slesbuild
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
+          filter: ''
+          touchstone: ''
+          babeltrace_version: stable-2.1
+          java_preferred_jdk: '8'
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: stable-2.14
+          buildtype: portbuild
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          filter: ''
+          touchstone: '(platform == "deb12-i386")'
+      - 'dev_review_lttng-ust_{version}_{buildtype}':
+          version: stable-2.14
+          buildtype: freebsdbuild
+          platforms: !!python/tuple [freebsd-amd64]
+          builds: !!python/tuple [std]
+          confs: !!python/tuple [agents]
+          filter: ''
+          touchstone: ''
+      - 'dev_review_lttng-ust_{version}_{cctype}':
+          cctype: clangbuild
+          ccs: ['clang-13', 'clang-14', 'clang-15', 'clang-16']
+          version: stable-2.14
+          buildtype: linuxbuild
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, agents]
+          filter: ''
+          touchstone: ''
+          babeltrace_version: stable-2.1
 
       ## Stable 2.13 ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
