@@ -967,18 +967,18 @@
       - stable-2.13
       - stable-2.14
       - master
+    kverrc: false
     jobs:
-
-# Vanilla normal builds
+      # Vanilla normal builds
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
             - master
-            - stable-2.14
           buildtype: build
           parambuildtype: build
           kverfloor: v4.4
           kverceil: ''
           kverfilter: stable-head
+          kverrc: true
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
             - master
@@ -988,6 +988,15 @@
           kverfloor: v4.4
           kverceil: ''
           kverfilter: none
+
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - stable-2.14
+          buildtype: build
+          parambuildtype: build
+          kverfloor: v4.4
+          kverceil: ''
+          kverfilter: stable-head
 
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
@@ -1014,7 +1023,6 @@
           kverfloor: v3.0
           kverceil: v5.18-rc1
           kverfilter: stable-head
-          kverrc: false
       - 'lttng-modules_{mversion}_fullbuild-vanilla':
           mversion:
             - stable-2.12
@@ -1023,9 +1031,8 @@
           kverfloor: v3.0
           kverceil: v5.18-rc1
           kverfilter: none
-          kverrc: false
 
-# EL normal builds
+      # EL normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{elversion}':
           mversion:
             - master
@@ -1040,14 +1047,14 @@
           kverceil: ''
           kverfilter: stable-head
 
-# RT normal builds
+      # RT normal builds
       - 'lttng-modules_{mversion}_build-rt':
           mversion: master
           kverfloor: v4.4.0-rt1-rebase
           kverceil: ''
           kverfilter: stable-head
 
-# SLES normal builders
+      # SLES normal builders
       - 'lttng-modules_{mversion}_{buildtype}-{slesversion}':
           mversion:
             - master
@@ -1062,7 +1069,7 @@
           kverceil: ''
           kverfilter: stable-head
 
-# Ubuntu normal builds
+      # Ubuntu normal builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
           mversion:
             - master
@@ -1090,7 +1097,7 @@
           kverceil: Ubuntu-hwe-5.18.0-0.0
           kverfilter: stable-head
 
-# Vanilla crossbuilds
+      # Vanilla crossbuilds
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
             - master
@@ -1118,7 +1125,6 @@
           kverfloor: v3.18
           kverceil: v5.18-rc1
           kverfilter: stable-head
-          kverrc: false
 
 # Ubuntu cross builds
       - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
@@ -1147,20 +1153,21 @@
           kverceil: Ubuntu-hwe-5.18.0-0.0
           kverfilter: stable-head
 
-# Parametrized kernel and modules build jobs
+      # Parametrized kernel and modules build jobs
       - 'lttng-modules_PARAM_build':
           platforms: !!python/tuple [deb12-amd64]
       - 'lttng-modules_PARAM_crossbuild':
           platforms: !!python/tuple [deb12-amd64]
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, riscv64]
 
-# Misc jobs
+      # Misc jobs
       - 'lttng-modules_ALL_trigger-vanilla'
       - 'lttng-modules_{mversion}_coverity':
           mversion: master
 
 - project:
     name: lttng-modules-review
+    kverrc: true
     jobs:
       - 'dev_review_lttng-modules_{mversion}_build':
           mversion:
