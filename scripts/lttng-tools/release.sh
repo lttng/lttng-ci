@@ -89,7 +89,7 @@ export CPPFLAGS="-I$DEPS_INC"
 export LDFLAGS="-L$DEPS_LIB"
 
 export JAVA_HOME="/usr/lib/jvm/default-java"
-export CLASSPATH="$DEPS_JAVA/*:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
+export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
 OUTDIR="$WORKSPACE/out"
