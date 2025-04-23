@@ -200,6 +200,7 @@
             - debug-types
             - cc-with-dwz
             - cc-with-dwz-m
+            - cc-with-dwz-5
             - fission
             - fission-dwp
       - 'binutils-gdb_{version}_linuxbuild':
@@ -214,6 +215,7 @@
             - debug-types
             - cc-with-dwz
             - cc-with-dwz-m
+            - cc-with-dwz-5
             - fission
             - fission-dwp
 
@@ -232,6 +234,7 @@
             - debug-types
             - cc-with-dwz
             - cc-with-dwz-m
+            - cc-with-dwz-5
             - fission
             - fission-dwp
       - 'dev_review_binutils-gdb_linuxbuild':
@@ -246,6 +249,7 @@
             - debug-types
             - cc-with-dwz
             - cc-with-dwz-m
+            - cc-with-dwz-5
             - fission
             - fission-dwp
 
