@@ -121,7 +121,7 @@
       - string:
           <<: *lttng-modules_build_parameter_kbuildjob
 
-- _lttng-modules_build_parameters_ubuntu: &lttng-modules_build_parameters_el
+- _lttng-modules_build_parameters_el: &lttng-modules_build_parameters_el
     name: 'lttng-modules_build_parameters_el'
     parameters:
       - string:
@@ -153,7 +153,7 @@
           default: 'main'
           description: 'The tag or commit to use when cloning the getsrc tool'
 
-- _lttng-modules_build_parameters_ubuntu: &lttng-modules_build_parameters_sles
+- _lttng-modules_build_parameters_sles: &lttng-modules_build_parameters_sles
     name: 'lttng-modules_build_parameters_sles'
     parameters:
       - string:
