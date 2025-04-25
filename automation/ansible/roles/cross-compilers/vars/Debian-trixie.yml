@@ -32,17 +32,8 @@ cross_compilers_packages:
   - gcc-12-riscv64-linux-gnu
   - gcc-12-s390x-linux-gnu
 
-  - gcc-11-aarch64-linux-gnu
-  - gcc-11-arm-linux-gnueabihf
-  - gcc-11-i686-linux-gnu
-  - gcc-11-powerpc64le-linux-gnu
-  - gcc-11-powerpc-linux-gnu
-  - gcc-11-riscv64-linux-gnu
-  - gcc-11-s390x-linux-gnu
-
 cross_compilers_packages_exclude_i386:
   - gcc-i686-linux-gnu
   - gcc-14-i686-linux-gnu
   - gcc-13-i686-linux-gnu
   - gcc-12-i686-linux-gnu
-  - gcc-11-i686-linux-gnu
