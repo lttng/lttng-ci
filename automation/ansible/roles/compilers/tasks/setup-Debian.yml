@@ -2,6 +2,10 @@
 - name: Install legacy compilers
   when: compilers_legacy_install
   block:
+   # `apt-key` or `gnupg` are optional dependencies, but are required for this
+   # instance of `apt_repository`.
+   - ansible.builtin.package:
+       name: 'gnupg'
    - name: Add sources for gcc 4.8
      when: ansible_distribution == 'Debian'
      ansible.builtin.apt_repository:
