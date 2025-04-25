@@ -101,6 +101,10 @@
           name: 'kbuildjob'
           default: 'lttng-modules_PARAM_{parambuildtype|build}'
           description: 'The parametrized job to use for child builds.'
+      - string: &lttng-modules_build_parameter_kconfig_profile
+          name: 'kconfig_profile'
+          default: '{kconfig_profile|default}'
+          description: 'The kernel configuration profile to use'
 
 - _lttng-modules_build_parameters_review: &lttng-modules_build_parameters_review
     name: 'lttng-modules_build_parameters_review'
@@ -120,6 +124,8 @@
           <<: *lttng-modules_build_parameter_kgitrepo
       - string:
           <<: *lttng-modules_build_parameter_kbuildjob
+      - string:
+          <<: *lttng-modules_build_parameter_kconfig_profile
 
 - _lttng-modules_build_parameters_el: &lttng-modules_build_parameters_el
     name: 'lttng-modules_build_parameters_el'
@@ -220,6 +226,8 @@
           default: 'git://git-mirror.internal.efficios.com/kernel/rt/linux-stable-rt.git'
       - string:
           <<: *lttng-modules_build_parameter_kbuildjob
+      - string:
+          <<: *lttng-modules_build_parameter_kconfig_profile
 
 - _lttng-modules_build_builders_defaults: &lttng-modules_build_builders_defaults
     name: 'lttng-modules_build_builders_defaults'

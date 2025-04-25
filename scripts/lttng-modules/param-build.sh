@@ -20,6 +20,7 @@ set -exu
 # Parameters
 platform=${platforms:-}
 cross_arch=${cross_arch:-}
+kconfig_profile="${kconfig_profile:-default}"
 ktag=${ktag:-}
 kgitrepo=${kgitrepo:-}
 mversion=${mversion:-}
@@ -433,6 +434,43 @@ build_linux_kernel() {
         # scripts/config --disable CONFIG_KVM_BOOK3S_64
         scripts/config --disable CONFIG_KVM_BOOK3S_64_HV
     fi
+
+    case "${kconfig_profile}" in
+        default)
+            ;;
+        nocompat)
+            case "${arch}" in
+                armhf)
+                    scripts/config --disable CONFIG_COMPAT_32BIT_TIME
+                    ;;
+                arm64)
+                    scripts/config --disable CONFIG_COMPAT
+                    scripts/config --disable CONFIG_COMPAT_32
+                    scripts/config --disable CONFIG_COMPAT_32BIT_TIME
+                    ;;
+                x86_64|amd64)
+                    scripts/config --disable CONFIG_X86_X32_ABI
+                    scripts/config --disable CONFIG_IA32_EMULATION
+                    scripts/config --disable CONFIG_COMPAT_32BIT_TIME
+                    scripts/config --disable CONFIG_COMPAT
+                    scripts/config --disable CONFIG_COMPAT_32
+                    scripts/config --disable CONFIG_COMPAT_OLD_SIGACTION
+                    ;;
+                i386|x86)
+                    scripts/config --disable CONFIG_COMPAT_32BIT_TIME
+                    scripts/config --disable CONFIG_COMPAT_OLD_SIGACTION
+                    ;;
+                *)
+                    echo "kconfig_profile '${kconfig_profile}' doesn't support arch '${arch}'"
+                    exit 1
+                    ;;
+            esac
+            ;;
+        *)
+            echo "Unknown kconfig_profile: '${kconfig_profile}'"
+            exit 1
+            ;;
+    esac
 
     if [ -f "init/Kconfig.suse" ] ; then
         # Get values from git tag, eg. 'rpm-5.14.21-150400.24.108'
@@ -1248,6 +1286,9 @@ set -x
 
 url_hash="$(echo -n "$kgitrepo" | md5sum | awk '{ print $1 }')"
 obj_name="linux.tar.bz2"
+if [[ "${kconfig_profile}" != "default" ]]; then
+    obj_name="${kconfig_profile}-${obj_name}"
+fi
 
 if [ -z "${cross_arch}" ]; then
     obj_url_prefix="$OBJ_STORE_URL/linux-build/$url_hash/$ktag/platform-${platform}/$arch/native"

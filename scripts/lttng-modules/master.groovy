@@ -546,6 +546,7 @@ class UbuntuKVersion implements Comparable<UbuntuKVersion> {
 // Retrieve parameters of the current build
 def mbranch = build.getEnvironment(listener).get('GIT_BRANCH').minus('origin/')
 def maxConcurrentBuild = build.buildVariableResolver.resolve('maxConcurrentBuild')
+def kconfig_profile = build.buildVariableResolver.resolve('kconfig_profile')
 def kgitrepo = build.buildVariableResolver.resolve('kgitrepo')
 def kverfloor_raw = build.buildVariableResolver.resolve('kverfloor')
 def kverceil_raw = build.buildVariableResolver.resolve('kverceil')
@@ -831,6 +832,7 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
       new StringParameterValue('mgitrepo', mgitrepo),
       new StringParameterValue('ktag', kversion.toString()),
       new StringParameterValue('kgitrepo', kgitrepo),
+      new StringParameterValue('kconfig_profile', kconfig_profile),
       new StringParameterValue('distroversion', distroversion),
       new StringParameterValue('getsrc_repo', build.buildVariableResolver.resolve('getsrc_repo')),
       new StringParameterValue('getsrc_version', build.buildVariableResolver.resolve('getsrc_version'))
