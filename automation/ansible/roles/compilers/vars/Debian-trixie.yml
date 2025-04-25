@@ -9,19 +9,19 @@ compilers_packages:
   - g++-13
   - g++-14
   - clang
-  - clang-15
-  - clang-16
   - clang-17
+  - clang-18
+  - clang-19
   - libclang-dev
-  - libclang-15-dev
-  - libclang-16-dev
   - libclang-17-dev
+  - libclang-18-dev
+  - libclang-19-dev
   - clang-format
-  - clang-format-15
-  - clang-format-16
   - clang-format-17
+  - clang-format-18
+  - clang-format-19
   - clang-tidy
-  - clang-tidy-15
-  - clang-tidy-16
   - clang-tidy-17
+  - clang-tidy-18
+  - clang-tidy-19
   - bear
