@@ -645,6 +645,10 @@
           default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
           description: 'The linux kernel git repository url.'
       - string:
+          name: 'kconfig_profile'
+          default: 'default'
+          description: 'The configuration profile to use for the kernel'
+      - string:
           name: 'distroversion'
           default: ''
           description: 'Supplementary distribution version, eg. sles15sp4 or el8'
@@ -902,12 +906,23 @@
       - stable-2.14
       - master
     kverrc: false
+    kconfig_profile: default
     jobs:
       # Vanilla normal builds
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
             - master
           buildtype: build
+          parambuildtype: build
+          kverfloor: v4.4
+          kverceil: ''
+          kverfilter: stable-head
+          kverrc: true
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - master
+          buildtype: nocompat
+          kconfig_profile: nocompat
           parambuildtype: build
           kverfloor: v4.4
           kverceil: ''
@@ -922,11 +937,19 @@
           kverfloor: v4.4
           kverceil: ''
           kverfilter: none
-
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
             - stable-2.14
           buildtype: build
+          parambuildtype: build
+          kverfloor: v4.4
+          kverceil: ''
+          kverfilter: stable-head
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - stable-2.14
+          buildtype: nocompat
+          kconfig_profile: nocompat
           parambuildtype: build
           kverfloor: v4.4
           kverceil: ''
@@ -936,6 +959,15 @@
           mversion:
             - stable-2.13
           buildtype: build
+          parambuildtype: build
+          kverfloor: v3.0
+          kverceil: ''
+          kverfilter: stable-head
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - stable-2.13
+          buildtype: nocompat
+          kconfig_profile: nocompat
           parambuildtype: build
           kverfloor: v3.0
           kverceil: ''
