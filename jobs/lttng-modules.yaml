@@ -335,7 +335,7 @@
     <<: *lttng-modules_build_builders_defaults
 
 - job-template:
-    name: dev_review_lttng-modules_{mversion}_build
+    name: dev_review_lttng-modules_{mversion}_{buildtype}
     defaults: lttng-modules
     concurrent: true
 
@@ -1134,20 +1134,39 @@
 - project:
     name: lttng-modules-review
     kverrc: true
+    buildtype: build
     jobs:
-      - 'dev_review_lttng-modules_{mversion}_build':
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}':
           mversion:
             - master
             - stable-2.14
           kverfloor: v4.4
           kverceil: ''
           kverfilter: lts-head
-      - 'dev_review_lttng-modules_{mversion}_build':
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}':
+          buildtype: nocompat
+          parambuildtype: build
+          kconfig_profile: nocompat
+          mversion:
+            - master
+            - stable-2.14
+          kverfloor: v4.4
+          kverceil: ''
+          kverfilter: lts-head
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}':
           mversion: stable-2.13
           kverfloor: v3.0
           kverceil: ''
           kverfilter: lts-head
-      - 'dev_review_lttng-modules_{mversion}_build':
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}':
+          buildtype: nocompat
+          parambuildtype: build
+          kconfig_profile: nocompat
+          mversion: stable-2.13
+          kverfloor: v3.0
+          kverceil: ''
+          kverfilter: lts-head
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}':
           mversion: stable-2.12
           kverfloor: v3.0
           kverceil: v5.18
