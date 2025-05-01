@@ -10,6 +10,7 @@ jenkins_plugins:
   - authentication-tokens
   - build-keeper-plugin
   - build-timeout
+  - categorized-view
   - checks-api
   - command-launcher
   - conditional-buildstep
