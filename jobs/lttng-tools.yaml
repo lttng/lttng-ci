@@ -1319,9 +1319,17 @@
 ## Views
 - view-template:
     name: 'LTTng-tools'
-    view-type: list
+    view-type: categorized
     regex: 'lttng-(docs|tools)[-_].*'
-
+    categorization_criteria:
+      - group_regex: 'lttng-tools_master_.*'
+        naming_rule: 'Master'
+      - group_regex: '.*_stable-2.14_.*'
+        naming_rule: 'Stable 2.14'
+      - group_regex: '.*_stable-2.13_.*'
+        naming_rule: 'Stable 2.13'
+      - group_regex: '.*_stable-2.12_.*'
+        naming_rule: 'Stable 2.12'
 
 ## Projects
 - project:
