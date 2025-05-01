@@ -334,8 +334,25 @@
 ## Views
 - view-template:
     name: 'Liburcu'
-    view-type: list
+    view-type: categorized
     regex: 'liburcu[-_].*'
+    categorization_criteria:
+      - group_regex: '.*_master_*'
+        naming_rule: 'Master'
+      - group_regex: '.*_stable-0.15_.*'
+        naming_rule: 'Stable 0.15'
+      - group_regex: '.*_stable-0.14_.*'
+        naming_rule: 'Stable 0.14'
+      - group_regex: '.*_stable-0.13_.*'
+        naming_rule: 'Stable 0.13'
+      - group_regex: '.*_stable-0.12_.*'
+        naming_rule: 'Stable 0.12'
+      - group_regex: '.*_stable-0.11_.*'
+        naming_rule: 'Stable 0.11'
+      - group_regex: '.*_stable-0.10_.*'
+        naming_rule: 'Stable 0.10'
+      - group_regex: '.*_stable-0.9_.*'
+        naming_rule: 'Stable 0.9'
 
 
 ## Projects
