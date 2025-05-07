@@ -1,0 +1,125 @@
+#!groovy
+// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-FileCopyrightText: 2025 Kienan Stewart <kstewart@efficios.com>
+
+pipeline {
+  agent {
+    label "amd64-rootnode"
+  }
+
+  environment {
+    PROJECT_NAME = "diamon-www"
+    PATH = "${env.PATH}:${env.WORKSPACE}/src/diamon-www/node_modules/.bin"
+  }
+
+  options {
+    ansiColor('xterm')
+    skipDefaultCheckout()
+    preserveStashes()
+    timestamps()
+    timeout(time: 15, unit: 'MINUTES')
+  }
+
+  parameters {
+    string(name: 'GIT_URL', defaultValue: "{{git_url}}",
+           description: "Git URL to clone from")
+    string(name: 'GIT_BRANCH', defaultValue: "{{version}}",
+           description: "Git branch to checkout")
+    string(name: 'TARGET_ENV', defaultValue: "{{target_env}}",
+           description: "Target environment")
+  }
+
+  stages {
+    stage('Checkout') {
+
+      environment {
+        KNOWN_HOSTS = credentials("3d4f07ac-260a-4b70-bae1-9974f30636ed")
+      }
+
+      steps {
+        sh(
+          label: "Add review host keys",
+          script: 'mkdir -p ~/.ssh; cat "$KNOWN_HOSTS" >> ~/.ssh/known_hosts'
+        )
+        dir('src/diamon-www') {
+          checkout([$class: 'GitSCM', branches: [[name: "${params.GIT_BRANCH}"]], userRemoteConfigs: [[url: "${params.GIT_URL}"]]])
+
+          script {
+            if (env.GERRIT_PROJECT == env.PROJECT_NAME) {
+              sh('git fetch origin "${GERRIT_PATCHSET_REVISION}" ; git checkout FETCH_HEAD')
+            }
+          }
+        }
+      }
+    }
+
+    stage('Dependencies') {
+      environment {
+        DEBIAN_FRONTEND = "noninteractive"
+      }
+
+      steps {
+        sh(
+          script: """
+apt-get update -y
+apt-get install -y ruby-bundler ruby-dev linkchecker npm
+"""
+        )
+      }
+    }
+
+    stage('Bootstrap') {
+      steps {
+        dir("src/diamon-www") {
+          sh("./bootstrap.sh")
+        }
+      }
+    }
+
+    stage('Build') {
+      steps {
+        dir("src/diamon-www") {
+          sh("bundle exec grunt build:${params.TARGET_ENV}")
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        dir("src/diamon-www") {
+          sh(label: "lin report",
+             script: """
+touch link_report.csv
+chown nobody link_report.csv
+if ! bundle exec grunt check_links:${params.TARGET_ENV} ; then
+  cat link_report.csv
+  exit 1
+fi
+"""
+          )
+        }
+      }
+    }
+
+    stage('Deploy') {
+      environment {
+        PUBLIC_KEYS = credentials("d023f830-9ab0-409f-b977-8cd0e1944dd5")
+        SSH_CREDS = credentials("f3c907b6-7485-49e1-afe1-4df24fac4ca1")
+      }
+
+      steps {
+        sh(
+          label: "Prep SSH",
+          script: """
+mkdir -p ~/.ssh
+cat "\${PUBLIC_KEYS}" >> ~/.ssh/known_hosts
+cp "\${SSH_CREDS}" ~/.ssh/id_rsa
+""",
+        )
+        dir("src/diamon-www") {
+          sh("bundle exec grunt deploy:${params.TARGET_ENV} --verbose")
+        }
+      }
+    }
+  }
+}
