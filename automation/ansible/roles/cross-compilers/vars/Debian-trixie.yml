@@ -37,3 +37,10 @@ cross_compilers_packages_exclude_i386:
   - gcc-14-i686-linux-gnu
   - gcc-13-i686-linux-gnu
   - gcc-12-i686-linux-gnu
+
+cross_compilers_packages_exclude_arm64:
+  - gcc-aarch64-linux-gnu
+  - gcc-14-aarch64-linux-gnu
+  - gcc-13-aarch64-linux-gnu
+  - gcc-12-aarch64-linux-gnu
+  - gcc-12-powerpc-linux-gnu
