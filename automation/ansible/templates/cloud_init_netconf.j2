@@ -1,12 +1,14 @@
-network:
-  version: 2
-  ethernets:
-    eth0:
+version: 2
+ethernets:
+  eth0:
+    dhcp4: false
+    addresses:
+      - {{address}}/16
+    routes:
+      - to: 0.0.0.0/0
+        via: 172.18.0.1
+    nameservers:
+      search:
+        - 'internal.efficios.com'
       addresses:
-        - {{address}}/16
-      gateway4: 172.18.0.1
-      nameservers:
-        search:
-          - 'internal.efficios.com'
-        addresses:
-          - '172.18.0.13'
+        - '172.18.0.13'
