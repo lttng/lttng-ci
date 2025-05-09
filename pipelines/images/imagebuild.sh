@@ -54,7 +54,7 @@ NETWORK_SLEEP="${NETWORK_SLEEP:-15}"
 
 # Dependencies
 apt-get update -y
-apt-get -y install incus-client ansible jq
+apt-get -y install incus-client ansible jq python3-pip
 
 # Configuration
 mkdir -p ~/.config/incus
@@ -194,6 +194,31 @@ cat fake-inventory
 CLEANUP+=(
     "rm -f $(pwd)/fake-inventory"
 )
+
+# There's a wide-array of potential targets and hosts, so try to find a version
+# of ansible that can be used. E.g., ansible as shipped with Debian bookworm won't
+# work when the target is Debian trixie.
+#
+# Ref: https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html#ansible-core-support-matrix
+#
+TARGET_PYTHON_VERSION="$(incus exec "${INSTANCE_NAME}" -- python3 --version | cut -d' ' -f2 | cut -d'.' -f1,2)"
+ANSIBLE_VERSION="$(ansible --version | head -n1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | cut -d'.' -f1,2)"
+case "${TARGET_PYTHON_VERSION}" in
+    "3.13")
+        if [[ "${ANSIBLE_VERSION}" != "2.18" ]]; then
+            pip3 install --user --break-system-packages ansible-core==2.18
+            export PATH=$PATH:~/.local/bin
+        fi
+        ;;
+    "3.12")
+        if [[ "$(echo "${ANSIBLE_VERSION} >= 2.16" | bc)" != "1" ]]; then
+            pip3 install --user --break-system-packages ansible-core==2.16
+            export PATH=$PATH:~/.local/bin
+        fi
+        ;;
+esac
+ansible-playbook --version
+ansible-galaxy install -r roles/requirements.yml
 
 LANG=C ANSIBLE_STRATEGY=linear ansible-playbook site.yml \
     -e '{"jenkins_user": false, "lttng_modules_checkout_repo": false}' \
