@@ -182,6 +182,7 @@ To automatically provision instances, perform certain operations, and update DNS
 
 1. Update `vars/ci-instances.yml`
 2. Open a kerberos ticket with `kinit`
+  * If samba-tool doesn't pick up on the ticket, you may need to 'client use kerberos = required' in `/etc/samba/smb.conf`
 3. Run the playbook, eg. `ansible-playbook playbooks/ci-instances.yml`
 
 # Incus cluster
