@@ -221,7 +221,7 @@ ansible-playbook --version
 ansible-galaxy install -r roles/requirements.yml
 
 LANG=C ANSIBLE_STRATEGY=linear ansible-playbook site.yml \
-    -e '{"jenkins_user": false, "lttng_modules_checkout_repo": false}' \
+    -e '{"lttng_modules_checkout_repo": false}' \
     -l "${INSTANCE_IP}" -i fake-inventory
 
 # Cleanup instance side
