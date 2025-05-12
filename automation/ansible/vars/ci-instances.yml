@@ -954,6 +954,94 @@ containers:
       source:
         alias: yocto/hardknott/amd64
         type: image
+  - meta:
+      address: 172.18.16.106
+    jenkins:
+      label: 'deb13-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-deb13-amd64-1a-01
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.107
+    jenkins:
+      label: 'deb13-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-deb13-amd64-1b-01
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.108
+    jenkins:
+      label: 'deb13-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-deb13-amd64-1c-01
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.109
+    jenkins:
+      label: 'deb13-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-deb13-amd64-1d-01
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.110
+    jenkins:
+      label: 'deb13-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-deb13-amd64-2a-01
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.111
+    jenkins:
+      label: 'deb13-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-deb13-amd64-2b-01
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.112
+    jenkins:
+      label: 'deb13-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-deb13-amd64-2c-01
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.113
+    jenkins:
+      label: 'deb13-amd64'
+      mode: EXCLUSIVE
+    lxd:
+      name: ci-node-deb13-amd64-2d-01
+      target: ci-host-amd64-2d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
   # "Root " nodes in libvirt, since Jenkins can use the "libvirt agents" plugin
   # to revert to a specific snapshot before running a job
   #
