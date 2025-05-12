@@ -5,3 +5,4 @@
 *.retry
 automation/ansible/roles/libvirt/files/meta-data
 automation/ansible/roles/libvirt/files/vendor-data
+__pycache__
