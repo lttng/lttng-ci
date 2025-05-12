@@ -620,12 +620,12 @@
     github_name: lttng-ust
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
+    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
     jobs:
       ## Master ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: master
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           filter: '(build=="std") || ((liburcu_version=="master" && (conf=="std" || conf=="agents")))'
@@ -708,7 +708,6 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: stable-2.14
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           filter: '(build=="std") || ((liburcu_version=="master" && (conf=="std" || conf=="agents")))'
@@ -778,7 +777,6 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: stable-2.13
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
@@ -837,7 +835,6 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: linuxbuild
           version: stable-2.12
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, dist, oot, oot-dist]
           confs: !!python/tuple [std, agents, debug-rcu, tls_fallback]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
@@ -908,12 +905,12 @@
     github_user: lttng
     github_name: lttng-ust
     liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
+    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
     jobs:
       ## master ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: master
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
@@ -922,7 +919,6 @@
       - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
           version: master
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           filter: ''
@@ -971,7 +967,6 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.14
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
@@ -980,7 +975,6 @@
       - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
           version: stable-2.14
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           filter: ''
@@ -1029,7 +1023,6 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.13
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
@@ -1038,7 +1031,6 @@
       - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
           version: stable-2.13
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           filter: ''
@@ -1068,7 +1060,6 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.12
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
@@ -1077,7 +1068,6 @@
       - 'dev_review_lttng-ust_lttng-tools_{version}_{buildtype}':
           version: stable-2.12
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, agents]
           filter: ''
@@ -1123,7 +1113,7 @@
     jobs:
       - 'dev_review_lttng-ust-java-tests_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
       - 'dev_review_lttng-ust-java-tests_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
