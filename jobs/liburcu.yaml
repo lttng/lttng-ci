@@ -367,32 +367,29 @@
       - stable-0.14
       - stable-0.15
       - master
+    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
           version: master
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, atomic-builtins, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           version: stable-0.15
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, atomic-builtins, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           version: stable-0.14
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           version: stable-0.13
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
@@ -531,6 +528,7 @@
     name: review-liburcu
     github_user: urcu
     github_name: userspace-rcu
+    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
     version:
       - stable-0.13
       - stable-0.14
@@ -539,7 +537,6 @@
     jobs:
       - 'dev_review_liburcu_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std")'
