@@ -63,6 +63,7 @@
           url: https://github.com/{github_user}/{github_name}
 
     # Job variables
+    filter: ''
     python: ''
 
 
@@ -72,6 +73,7 @@
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
     execution-strategy:
+      combination-filter: '{filter}'
       touchstone:
         expr: '{touchstone}'
         result: unstable
@@ -476,11 +478,11 @@
       - '{job_prefix}liburcu_{version}_{cctype}':
           buildtype: linuxbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          platforms: !!python/tuple [deb12-amd64]
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, atomic-builtins, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
+          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
           version: master
