@@ -50,6 +50,9 @@
       - github:
           url: https://github.com/{github_user}/{github_name}
 
+    # job variables
+    touchstone: ''
+
 
 ## Anchors
 - _librseq_matrix_axes_defaults: &librseq_matrix_axes_defaults
@@ -315,20 +318,17 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
-          touchstone: ''
       - 'librseq_{version}_{cctype}':
           cctype: clangbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          touchstone: ''
       - 'librseq_{version}_{buildtype}':
           buildtype: portbuild
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
-          touchstone: ''
 
 - project:
     name: review-librseq
@@ -342,13 +342,11 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
-          touchstone: ''
       - 'dev_review_librseq_{version}_{buildtype}':
           buildtype: portbuild
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          touchstone: ''
 
 - project:
     name: librseq-views
