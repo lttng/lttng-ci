@@ -18,6 +18,9 @@
       - timestamps
       - ansicolor
       - inject: {}
+    triggers:
+      - pollscm:
+          cron: "@hourly"
     # Job template variables
     job_prefix: ''
     buildtypes:
