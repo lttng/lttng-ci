@@ -101,7 +101,7 @@
     name: 'librseq_builders_defaults'
     builders:
       - shell:
-         !include-raw-escape:
+         !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/librseq/build.sh
 
