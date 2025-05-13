@@ -607,7 +607,7 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min, doc, asan]
           filter: '(build=="std") || (conf=="std") || (conf=="doc")'
@@ -662,10 +662,11 @@
           confs: !!python/tuple [std]
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, prod]
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - 'babeltrace_{version}_release':
           version: v2.1
       - 'babeltrace_{version}_release':
@@ -692,7 +693,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           warnings_status: FAILED
@@ -730,7 +731,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.1
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           warnings_status: WARNING
@@ -768,7 +769,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           warnings_status: WARNING
