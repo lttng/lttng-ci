@@ -52,7 +52,9 @@
           url: https://github.com/{github_user}/{github_name}
 
     # Job variables
+    filter: ''
     python: ''
+    touchstone: ''
 
 
 ## Anchors
@@ -615,7 +617,6 @@
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
-          filter: ''
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
@@ -633,15 +634,11 @@
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
-          filter: ''
-          touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: yoctobuild
           platforms: !!python/tuple [yocto23-powerpc, yocto33-amd64, yocto40-powerpc, yocto40-ppc64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           version:
             - stable-1.5
             - stable-2.0
@@ -652,31 +649,23 @@
           platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
-          filter: ''
-          touchstone: ''
           git_tool: jgit
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: freebsdbuild
           platforms: !!python/tuple [freebsd-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
-          filter: ''
-          touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: winbuild
           platforms: !!python/tuple [cygwin64, msys2-ucrt64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, prod]
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          filter: ''
-          touchstone: ''
       - 'babeltrace_{version}_release':
           version: v2.1
       - 'babeltrace_{version}_release':
@@ -706,8 +695,6 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
-          filter: ''
-          touchstone: ''
           warnings_status: FAILED
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
@@ -715,8 +702,6 @@
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: FAILED
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
@@ -724,8 +709,6 @@
           platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
-          filter: ''
-          touchstone: ''
           warnings_status: FAILED
           git_tool: jgit
       - 'dev_review_babeltrace_{version}_{buildtype}':
@@ -734,8 +717,6 @@
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: FAILED
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
@@ -743,8 +724,6 @@
           platforms: !!python/tuple [cygwin64, msys2-ucrt64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: FAILED
 
       ## Stable 2.1 ##
@@ -754,8 +733,6 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.1
@@ -763,8 +740,6 @@
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.1
@@ -772,8 +747,6 @@
           platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
           git_tool: jgit
       - 'dev_review_babeltrace_{version}_{buildtype}':
@@ -782,8 +755,6 @@
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.1
@@ -791,8 +762,6 @@
           platforms: !!python/tuple [cygwin64, msys2-ucrt64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
 
       ## Stable 2.0 ##
@@ -802,8 +771,6 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
@@ -811,8 +778,6 @@
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
@@ -820,8 +785,6 @@
           platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
           git_tool: jgit
       - 'dev_review_babeltrace_{version}_{buildtype}':
@@ -830,8 +793,6 @@
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
@@ -839,8 +800,6 @@
           platforms: !!python/tuple [cygwin64, msys2-ucrt64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           warnings_status: WARNING
 
       ## ALL ##
@@ -848,8 +807,6 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
       - 'dev_review_babeltrace_{version}_check-format'
       - 'dev_review_babeltrace_{version}_lint'
 
@@ -869,29 +826,23 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, python-bindings]
-          filter: ''
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, python-bindings]
-          filter: ''
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: elbuild
           platforms: !!python/tuple [el8-amd64, el9-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
       - 'babeltrace_{version}_release':
           version: v1.5
 
@@ -911,15 +862,11 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, python-bindings]
-          filter: ''
-          touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
-          filter: ''
-          touchstone: ''
           git_tool: jgit
 
 
@@ -943,15 +890,11 @@
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
-          filter: ''
-          touchstone: ''
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
-          filter: ''
-          touchstone: ''
           git_tool: jgit
 
 
