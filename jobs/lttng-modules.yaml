@@ -842,6 +842,8 @@
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
           description: 'The linux kernel git repository url.'
+      - string:
+          <<: *lttng-modules_build_parameter_kconfig_profile
 
     concurrent: true
 
