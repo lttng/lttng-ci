@@ -452,25 +452,22 @@ build_linux_kernel() {
         default)
             ;;
         nocompat)
+            scripts/config --disable CONFIG_COMPAT_32BIT_TIME
             case "${karch}" in
                 arm)
-                    scripts/config --disable CONFIG_COMPAT_32BIT_TIME
                     ;;
                 arm64)
                     scripts/config --disable CONFIG_COMPAT
                     scripts/config --disable CONFIG_COMPAT_32
-                    scripts/config --disable CONFIG_COMPAT_32BIT_TIME
                     ;;
                 x86_64|amd64)
                     scripts/config --disable CONFIG_X86_X32_ABI
                     scripts/config --disable CONFIG_IA32_EMULATION
-                    scripts/config --disable CONFIG_COMPAT_32BIT_TIME
                     scripts/config --disable CONFIG_COMPAT
                     scripts/config --disable CONFIG_COMPAT_32
                     scripts/config --disable CONFIG_COMPAT_OLD_SIGACTION
                     ;;
                 i386|x86)
-                    scripts/config --disable CONFIG_COMPAT_32BIT_TIME
                     scripts/config --disable CONFIG_COMPAT_OLD_SIGACTION
                     ;;
                 powerpc)
