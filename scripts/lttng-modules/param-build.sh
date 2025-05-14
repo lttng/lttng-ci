@@ -382,6 +382,19 @@ build_linux_kernel() {
           exit 0
         fi
 
+        if [[ "${cross_arch}" == "riscv64" ]]; then
+            BROKEN=(
+                "Ubuntu-6.8.0-60.63"  # btrfs_bio_end_io
+                "Ubuntu-hwe-6.8-6.8.0-60.63_22.04.1"  # btrfs_bio_end_io
+            )
+            for broken in "${BROKEN[@]}"; do
+                if [[ "${broken}" == "${ktag}" ]]; then
+                    echo "Known broken kernel build, skipping"
+                    exit 0
+                fi
+            done
+        fi
+
         FAKEROOT_ARGS=(
             'KW_DEFCONFIG_DIR=.'
         )
