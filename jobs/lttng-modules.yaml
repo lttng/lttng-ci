@@ -1078,8 +1078,29 @@
 
       - 'lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:
+            - master
+            - stable-2.14
+          buildtype: crossbuild_nocompat
+          kconfig_profile: nocompat
+          parambuildtype: crossbuild
+          kverfloor: v4.4
+          kverceil: ''
+          kverfilter: stable-head
+
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
             - stable-2.13
           buildtype: crossbuild
+          parambuildtype: crossbuild
+          kverfloor: v3.18
+          kverceil: ''
+          kverfilter: stable-head
+
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+          mversion:
+            - stable-2.13
+          buildtype: crossbuild_nocompat
+          kconfig_profile: nocompat
           parambuildtype: crossbuild
           kverfloor: v3.18
           kverceil: ''
