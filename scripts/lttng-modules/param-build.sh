@@ -473,6 +473,10 @@ build_linux_kernel() {
                     scripts/config --disable CONFIG_COMPAT_32BIT_TIME
                     scripts/config --disable CONFIG_COMPAT_OLD_SIGACTION
                     ;;
+                powerpc)
+                    ;;
+                riscv)
+                    ;;
                 *)
                     echo "kconfig_profile '${kconfig_profile}' doesn't support arch '${karch}'"
                     exit 1
