@@ -453,6 +453,7 @@ build_linux_kernel() {
             ;;
         nocompat)
             scripts/config --disable CONFIG_COMPAT_32BIT_TIME
+            scripts/config --disable CONFIG_COMPAT_BRK
             case "${karch}" in
                 arm)
                     ;;
