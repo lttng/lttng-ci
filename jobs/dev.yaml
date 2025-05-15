@@ -1,0 +1,47 @@
+- view-template:
+    name: 'Developers'
+    view-type: categorized
+    regex: '^dev_.*'
+    regex_to_ignore_on_color_computing: '.*'
+    categorization_criteria:
+      - group_regex: 'dev_test_.*'
+        naming_rule: 'Test'
+      - group_regex: '^dev_upstream_.*'
+        naming_rule: 'Upstream'
+      # By project
+      - group_regex: 'dev_review_babeltrace_.*'
+        naming_rule: 'Babeltrace'
+      - group_regex: 'dev_review_barectf_.*'
+        naming_rule: 'BareCTF'
+      - group_regex: 'dev_review_binutils-gdb_.*'
+        naming_rule: 'Binutils'
+      - group_regex: 'dev_review_glibc.*'
+        naming_rule: 'glibc'
+      - group_regex: 'dev_review_librseq_.*'
+        naming_rule: 'librseq'
+      - group_regex: 'dev_review_liburcu_.*'
+        naming_rule: 'liburcu'
+      - group_regex: 'dev_review_lttng-modules_.*'
+        naming_rule: 'LTTng-Modules'
+      - group_regex: 'dev_review_lttng-(docs|tools)_.*'
+        naming_rule: 'LTTng-Tools'
+      - group_regex: 'dev_review_lttng-ust[-_].*'
+        naming_rule: 'LTTng-UST'
+      - group_regex: 'dev_review_normand_.*'
+        naming_rule: 'Normand'
+      # User-specific
+      - group_regex: 'dev_compudj_.*'
+        naming_rule: 'U:compudj'
+      - group_regex: 'dev_jgalar_.*'
+        naming_rule: 'U:jgalar'
+      - group_regex: 'dev_mjeanson_.*'
+        naming_rule: 'U:mjeanson'
+      - group_regex: 'dev_odion_.*'
+        naming_rule: 'U:odion'
+      - group_regex: '.*-www$'
+        naming_rule: 'websites'
+
+- project:
+    name: developer-views
+    views:
+      - Developers
