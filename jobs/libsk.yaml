@@ -11,6 +11,16 @@
       - workspace-cleanup
     dsl: !include-jinja2: pipelines/libsk/pipeline.groovy
     sandbox: true
+    scm:
+      - git:
+          url: "{libsk_git_url}"
+          basedir: 'src/libsk'
+          skip-tag: true
+          branches: "{versions}"
+          credentials-id: "a6e08541-e7fd-4da2-b58a-b87ee37736ef"
+    triggers:
+      - pollscm:
+          cron: "@hourly"
     wrappers:
       - workspace-cleanup
       - timestamps
@@ -47,6 +57,8 @@
             project:
               - libsk_{versions}_linuxbuild_clang
               - libsk_{versions}_linuxbuild_gcc
+    scm: {}
+    triggers: {}
     parameters:
       - string:
           name: email_to
