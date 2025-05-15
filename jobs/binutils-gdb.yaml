@@ -4,9 +4,9 @@
       Build and test GDB.
 
       <p>Job is managed by Jenkins Job Builder.</p>
-
-    project-type: freestyle
-
+    concurrent: true
+    project-type: pipeline
+    sandbox: true
     wrappers:
       - ansicolor:
           colormap: gnome-terminal
@@ -17,7 +17,6 @@
           write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
       - timestamps
       - workspace-cleanup
-
     scm:
       - git:
           url: git://git-mirror.internal.efficios.com/git/binutils-gdb.git
@@ -25,80 +24,38 @@
             - origin/{version}
           basedir: src/binutils-gdb
           skip-tag: true
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
     properties:
       - inject:
           properties-content: |
             PROJECT_NAME=gdb
       - build-discarder:
           num-to-keep: 10
+    publishers:
+      - workspace-cleanup
     # Job variables
-    project_name: gdb
     email_to: 'simon.marchi@efficios.com'
-
-## Anchors
-
-# Default matrix axes
-- _binutils-gdb_matrix_axes_defaults: &binutils-gdb_matrix_axes_defaults
-    name: 'binutils-gdb_matrix_axes_defaults'
-    project-type: matrix
-    node: 'master' # Applies only to matrix flyweight task
-    axes:
-      - axis: &binutils-gdb_matrix_axis_platform
-         type: slave
-         name: platform
-         values: '{obj:platforms}'
-      - axis: &binutils-gdb_matrix_axis_target_board
-         type: user-defined
-         name: target_board
-         values: '{obj:target_boards}'
-
-# Default builders
-- _binutils-gdb_builders_defaults: &binutils-gdb_builders_defaults
-    name: 'binutils-gdb_builders_defaults'
-    builders:
-      - shell:
-         !include-raw-verbatim:
-           - scripts/common/print.sh
-           - scripts/binutils-gdb/build.sh
-
+    project_name: gdb
 
 ## Templates ##
 - job-template:
     name: binutils-gdb_{version}_{buildtype}_{cctype}
     defaults: binutils-gdb
-    concurrent: true
-    project-type: pipeline
-    publishers:
-      - workspace-cleanup
     dsl: !include-jinja2: pipelines/binutils-gdb/pipeline.groovy.j2
-    sandbox: true
     # Job variables
     cctype: gcc
     buildtype: linuxbuild
     platform: deb12-amd64
     git_url: 'git://git-mirror.internal.efficios.com/git/binutils-gdb.git'
-    filter: ''
 
 - job-template:
     name: dev_review_binutils-gdb_{version}_{buildtype}_{cctype}
     defaults: binutils-gdb
-    concurrent: true
-    project-type: pipeline
-    publishers:
-      - workspace-cleanup
     dsl: !include-jinja2: pipelines/binutils-gdb/pipeline.groovy.j2
-    sandbox: true
     # Job variables
     cctype: gcc
     buildtype: linuxbuild
     platform: deb12-amd64
     git_url: 'git://git-mirror.internal.efficios.com/git/binutils-gdb.git'
-    filter: ''
     triggers:
       - gerrit:
           trigger-on:
@@ -111,71 +68,6 @@
               branches:
                 - branch-compare-type: 'ANT'
                   branch-pattern: '**'
-
-- job-template:
-    name: binutils-gdb_{version}_linuxbuild
-    defaults: binutils-gdb
-
-    <<: *binutils-gdb_matrix_axes_defaults
-    <<: *binutils-gdb_builders_defaults
-
-    publishers:
-      - archive:
-          artifacts: 'results/**'
-          allow-empty: false
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
-      - email-ext:
-          recipients: 'simon.marchi@efficios.com'
-          matrix-trigger: only-parent
-
-- job-template:
-    name: dev_review_binutils-gdb_linuxbuild
-    defaults: binutils-gdb
-    concurrent: true
-
-    scm:
-      - git:
-          url: https://review.lttng.org/binutils-gdb
-          refspec: 'refs/changes/*:refs/changes/*'
-          branches:
-            - '$GERRIT_REFSPEC'
-          basedir: src/binutils-gdb
-          skip-tag: true
-
-    triggers:
-      - gerrit:
-          trigger-on:
-            - comment-added-event:
-                approval-category: 'CI-Build'
-                approval-value: 1
-          projects:
-            - project-compare-type: 'PLAIN'
-              project-pattern: 'binutils-gdb'
-              branches:
-                - branch-compare-type: 'ANT'
-                  branch-pattern: '**'
-
-    <<: *binutils-gdb_matrix_axes_defaults
-    <<: *binutils-gdb_builders_defaults
-
-    publishers:
-      - archive:
-          artifacts: 'results/**'
-          allow-empty: false
-      - workspace-cleanup:
-          clean-if:
-            - failure: false
-
-    properties:
-      - build-discarder:
-          days-to-keep: 7
-      - throttle:
-          option: 'category'
-          categories:
-            - 'review-binutils-gdb'
-
 
 ## Views ##
 - view-template:
@@ -203,21 +95,6 @@
             - cc-with-dwz-5
             - fission
             - fission-dwp
-      - 'binutils-gdb_{version}_linuxbuild':
-          platforms:
-            - deb12-amd64
-          target_boards:
-            - unix
-            - native-gdbserver
-            - native-extended-gdbserver
-            - cc-with-debug-names
-            - cc-with-gdb-index
-            - debug-types
-            - cc-with-dwz
-            - cc-with-dwz-m
-            - cc-with-dwz-5
-            - fission
-            - fission-dwp
 
 - project:
     name: review-gdb
@@ -225,21 +102,6 @@
       - master
     jobs:
       - 'dev_review_binutils-gdb_{version}_{buildtype}_{cctype}':
-          target_boards:
-            - unix
-            - native-gdbserver
-            - native-extended-gdbserver
-            - cc-with-debug-names
-            - cc-with-gdb-index
-            - debug-types
-            - cc-with-dwz
-            - cc-with-dwz-m
-            - cc-with-dwz-5
-            - fission
-            - fission-dwp
-      - 'dev_review_binutils-gdb_linuxbuild':
-          platforms:
-            - deb12-amd64
           target_boards:
             - unix
             - native-gdbserver
