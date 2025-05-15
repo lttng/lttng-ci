@@ -163,12 +163,19 @@ pipeline {
                 sh("rsync -ra --prune-empty-dirs --include='*/' --include='*.trs' --include='*.log' --exclude='*' src/libsk/ \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/log/")
                 sh("rsync -ra --prune-empty-dirs --include='*/' --exclude=test-suite.log --include='*.log' --exclude='*' src/libsk/tests/ \$WORKSPACE/platform=${platform}/conf=${conf}/build=${build}/cc=${CC}/tap/")
 
-                recordIssues(
-                  id: "platform-${platform}_conf-${conf}_build-${build}_cc-${CC}",
-                  tool: gcc(id: "platform-${platform}_conf-${conf}_build-${build}_cc-${CC}"),
-                  qualityGates: [[threshold: 1, type: 'TOTAL', criticality: 'UNSTABLE']],
-                  skipPublishingChecks: true, aggregatingResults: true,
-                )
+                script {
+                  def issue_tool = gcc(id: "platform-${platform}_conf-${conf}_build-${build}_cc-${CC}")
+                  if (CC ==~ /clang.*/) {
+                    issue_tool = clang(id: "platform-${platform}_conf-${conf}_build-${build}_cc-${CC}")
+                  }
+
+                  recordIssues(
+                    id: "platform-${platform}_conf-${conf}_build-${build}_cc-${CC}",
+                    tool: issue_tool,
+                    qualityGates: [[threshold: 1, type: 'TOTAL', criticality: 'UNSTABLE']],
+                    skipPublishingChecks: true, aggregatingResults: true,
+                  )
+                }
 
                 dir('src/libsk') {
                   sh('make clean')
