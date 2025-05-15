@@ -63,6 +63,7 @@
       - bool:
           name: LIBSK_TESTS_SKIP_REGRESSION
           default: false
+    node: 'master'
 
 - view-template:
     name: 'libsk'
