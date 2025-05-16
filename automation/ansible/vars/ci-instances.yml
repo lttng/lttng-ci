@@ -1042,6 +1042,30 @@ containers:
       source:
         alias: debian/trixie/cloud/amd64/ci-node/incus
         type: image
+  - meta:
+      address: 'ci-node-deb12-arm64-osuosl-01'
+    jenkins:
+      label: 'deb12-arm64'
+      mode: EXCLUSIVE
+      node_name: 'ci-node-deb12-arm64-osuosl-01'
+  - meta:
+      address: 'ci-node-deb12-arm64-osuosl-02'
+    jenkins:
+      label: 'deb12-arm64'
+      mode: EXCLUSIVE
+      node_name: 'ci-node-deb12-arm64-osuosl-02'
+  - meta:
+      address: 'ci-node-deb12-arm64-osuosl-03'
+    jenkins:
+      label: 'deb12-arm64'
+      mode: EXCLUSIVE
+      node_name: 'ci-node-deb12-arm64-osuosl-03'
+  - meta:
+      address: 'ci-node-deb12-arm64-osuosl-04'
+    jenkins:
+      label: 'deb12-arm64'
+      mode: EXCLUSIVE
+      node_name: 'ci-node-deb12-arm64-osuosl-04'
   # "Root " nodes in libvirt, since Jenkins can use the "libvirt agents" plugin
   # to revert to a specific snapshot before running a job
   #
