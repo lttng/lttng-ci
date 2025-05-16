@@ -47,7 +47,7 @@
           '-s', "{{name_server}}",
         ]
     - name: Update Jenkins nodes
-      when: item.jenkins|default(false) and not skip_jenkins and inventory_hostname == 'localhost' and (not limit or ('vm' in item and item.vm.name in limit) or ('lxd' in item and item.lxd.name in limit))
+      when: item.jenkins|default(false) and not skip_jenkins and inventory_hostname == 'localhost' and (not limit or ('vm' in item and item.vm.name in limit) or ('lxd' in item and item.lxd.name in limit) or ('jenkins' in item and item.jenkins.node_name|default('') in limit))
       with_items: "{{containers}}"
       vars:
         node_name: "{{item.jenkins.node_name|default(item.lxd.name|default(item.vm.name))}}"
