@@ -1907,6 +1907,7 @@
     jobs:
     ## Master ##
       - 'dev_review_lttng-tools_{version}_{buildtype}':
+          version: master
           platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
@@ -1967,19 +1968,30 @@
           version: master
 
     ## Stable-2.14 ##
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          version: stable-2.14
+          ustversion: stable-2.14
+          platforms: !!python/tuple [deb12-amd64]
+          builds: !!python/tuple [std, oot, dist, oot-dist]
+          confs: !!python/tuple [std, no-ust, agents]
+          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
+          filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
       - 'dev_review_lttng-tools_{version}_{cctype}':
           version: stable-2.14
+          ustversion: stable-2.14
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           urcuversions: !!python/tuple [master]
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: stable-2.14
+          ustversion: stable-2.14
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
           version: stable-2.14
+          ustversion: stable-2.14
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
@@ -1988,6 +2000,7 @@
           modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-tools_{version}_root_{cctype}':
           version: stable-2.14
+          ustversion: stable-2.14
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
           nodes: !!python/tuple [deb12-amd64-rootnode]
@@ -1996,6 +2009,7 @@
           urcuversions: !!python/tuple [master]
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           version: stable-2.14
+          ustversion: stable-2.14
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
@@ -2005,14 +2019,17 @@
           java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_smokebuild':
           version: stable-2.14
+          ustversion: stable-2.14
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
       - 'dev_review_lttng-tools_{version}_clang-tidy':
           version: stable-2.14
+          ustversion: stable-2.14
           confs: !!python/tuple [agents]
       - 'dev_review_lttng-tools_{version}_check-format':
           version: stable-2.14
+          ustversion: stable-2.14
 
       ## Stable 2.13 ##
       - 'dev_review_lttng-tools_{version}_{buildtype}':
