@@ -59,10 +59,17 @@
 
     # Variables
     babeltrace_buildtype: ''  # will default to buildtype
-    modules_aligned_access: !!python/tuple ['default']
+    bt_job_prefix: ''
+    filter: ''
+    github_user: lttng
     java_agents: 'true'  # when building with the agents config, include java agents
     java_preferred_jdk: 'default'
+    job_prefix: ''
+    modules_aligned_access: !!python/tuple ['default']
     python: ''
+    touchstone: ''
+    urcu_job_prefix: ''
+    ust_job_prefix: ''
 
 ## Anchors
 - _lttng-tools_steps_copyartifact_defaults:
@@ -1887,52 +1894,37 @@
           babelversions: !!python/tuple [stable-2.0]
 
 - project:
-    name: review-lttng-tools
-    job_prefix: ''
-    ust_job_prefix: ''
-    urcu_job_prefix: ''
-    bt_job_prefix: ''
-    github_user: lttng
+    name: review-lttng-tools-master
     buildtype: linuxbuild
     version:
       - master
-      - stable-2.14
     platforms: !!python/tuple [deb12-amd64]
     builds: !!python/tuple [std]
     confs: !!python/tuple [std]
     urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]  # For C++ support
     babelversions: !!python/tuple [stable-2.1]
-    filter: ''
-    touchstone: ''
     jobs:
-    ## Master ##
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          version: master
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
           babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
       - 'dev_review_lttng-tools_{version}_{cctype}':
-          version: master
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           urcuversions: !!python/tuple [master]
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
-          ustversion: master
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
           java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          version: master
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
-          version: master
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
@@ -1940,7 +1932,6 @@
           urcuversions: !!python/tuple [master]
           modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-tools_{version}_root_{cctype}':
-          version: master
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
           nodes: !!python/tuple [deb12-amd64-rootnode]
@@ -1948,7 +1939,6 @@
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           urcuversions: !!python/tuple [master]
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          version: master
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
@@ -1957,41 +1947,46 @@
           urcuversions: !!python/tuple [master]
           java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_smokebuild':
-          version: master
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
       - 'dev_review_lttng-tools_{version}_clang-tidy':
-          version: master
           confs: !!python/tuple [agents]
-      - 'dev_review_lttng-tools_{version}_check-format':
-          version: master
+      - 'dev_review_lttng-tools_{version}_check-format': {}
 
-    ## Stable-2.14 ##
+- project:
+    name: review-lttng-tools-stable-2.14
+    buildtype: linuxbuild
+    version:
+      - stable-2.14
+    ustversion: stable-2.14
+    platforms: !!python/tuple [deb12-amd64]
+    builds: !!python/tuple [std]
+    confs: !!python/tuple [std]
+    urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]  # For C++ support
+    babelversions: !!python/tuple [stable-2.1]
+    jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          version: stable-2.14
-          ustversion: stable-2.14
-          platforms: !!python/tuple [deb12-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
           babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
       - 'dev_review_lttng-tools_{version}_{cctype}':
-          version: stable-2.14
-          ustversion: stable-2.14
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           urcuversions: !!python/tuple [master]
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          buildtype: slesbuild
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
+          java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.14
-          ustversion: stable-2.14
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.14
-          ustversion: stable-2.14
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
@@ -1999,8 +1994,6 @@
           urcuversions: !!python/tuple [master]
           modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-tools_{version}_root_{cctype}':
-          version: stable-2.14
-          ustversion: stable-2.14
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
           nodes: !!python/tuple [deb12-amd64-rootnode]
@@ -2008,8 +2001,6 @@
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           urcuversions: !!python/tuple [master]
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.14
-          ustversion: stable-2.14
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
@@ -2018,79 +2009,75 @@
           urcuversions: !!python/tuple [master]
           java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_smokebuild':
-          version: stable-2.14
-          ustversion: stable-2.14
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
       - 'dev_review_lttng-tools_{version}_clang-tidy':
-          version: stable-2.14
-          ustversion: stable-2.14
           confs: !!python/tuple [agents]
-      - 'dev_review_lttng-tools_{version}_check-format':
-          version: stable-2.14
-          ustversion: stable-2.14
+      - 'dev_review_lttng-tools_{version}_check-format': {}
 
-      ## Stable 2.13 ##
+- project:
+    name: review-lttng-tools-stable-2.13
+    buildtype: linuxbuild
+    version:
+      - stable-2.13
+    ustversion: stable-2.13
+    platforms: !!python/tuple [deb12-amd64]
+    builds: !!python/tuple [std]
+    confs: !!python/tuple [std]
+    urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
+    babelversions: !!python/tuple [stable-2.1]
+    jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          version: stable-2.13
-          ustversion: stable-2.13
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.13
-          ustversion: stable-2.13
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.13
-          ustversion: stable-2.13
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           modules_branch_pattern: 'master|stable-2.13'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.13
-          ustversion: stable-2.13
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
 
-    ## Stable 2.12 ##
+- project:
+    name: review-lttng-tools-stable-2.12
+    buildtype: linuxbuild
+    version:
+      - stable-2.12
+    ustversion: stable-2.12
+    platforms: !!python/tuple [deb12-amd64]
+    builds: !!python/tuple [std]
+    confs: !!python/tuple [std]
+    urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
+    babelversions: !!python/tuple [stable-2.1]
+    jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          version: stable-2.12
           nodes: !!python/tuple [deb12-amd64-rootnode]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.12
           nodes: !!python/tuple [deb12-amd64-rootnode-linux5]
           confs: !!python/tuple [agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="deb12-amd64-rootnode-linux5" && platform=="deb12-amd64")'
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.12
           nodes: !!python/tuple [deb12-amd64-rootnode-linux5]
           confs: !!python/tuple [agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           modules_branch_pattern: 'stable-2.12|stable-2.13'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.12
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
 
