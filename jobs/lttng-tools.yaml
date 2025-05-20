@@ -16,7 +16,7 @@
       - ansicolor: &lttng-tools_wrapper_ansicolor_defaults
           colormap: xterm
       - timeout: &lttng-tools_wrapper_timeout_defaults
-          timeout: 30
+          timeout: '{timeout}'
           abort: true
           type: no-activity
           write-description: "<h1 style=\"color:red\">This build failed due to timeout.</h1>"
@@ -67,6 +67,7 @@
     job_prefix: ''
     modules_aligned_access: !!python/tuple ['default']
     python: ''
+    timeout: '30'
     touchstone: ''
     urcu_job_prefix: ''
     ust_job_prefix: ''
@@ -715,7 +716,6 @@
 - job-template:
     name: '{job_prefix}lttng-tools_{version}_long_regression'
     defaults: lttng-tools
-
     properties:
       - inject:
           properties-content: |
@@ -726,9 +726,7 @@
 
     wrappers:
       - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout:
-          <<: *lttng-tools_wrapper_timeout_defaults
-          timeout: 45
+      - timeout: *lttng-tools_wrapper_timeout_defaults
       - timestamps
       - workspace-cleanup
       - raw: *lttng-tools_wrapper_proc-cleaner_defaults
@@ -742,6 +740,7 @@
       - reverse:
             jobs: '{ust_job_prefix}lttng-ust_{version}_{buildtype}'
             result: 'success'
+    timeout: '45'
 
 - job-template:
     name: '{job_prefix}lttng-tools_{version}_root_{buildtype}'
@@ -752,9 +751,7 @@
 
     wrappers:
       - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout:
-          <<: *lttng-tools_wrapper_timeout_defaults
-          timeout: 10
+      - timeout: *lttng-tools_wrapper_timeout_defaults
       - timestamps
 
     <<: *lttng-tools_matrix_axes_rootbuild
@@ -776,9 +773,7 @@
 
     wrappers:
       - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout:
-          <<: *lttng-tools_wrapper_timeout_defaults
-          timeout: 10
+      - timeout: *lttng-tools_wrapper_timeout_defaults
       - timestamps
 
     <<: *lttng-tools_matrix_axes_rootbuild
@@ -1074,9 +1069,7 @@
 
     wrappers:
       - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout:
-          <<: *lttng-tools_wrapper_timeout_defaults
-          timeout: 10
+      - timeout: *lttng-tools_wrapper_timeout_defaults
       - timestamps
 
     <<: *lttng-tools_matrix_axes_rootbuild
@@ -1122,9 +1115,7 @@
 
     wrappers:
       - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout:
-          <<: *lttng-tools_wrapper_timeout_defaults
-          timeout: 10
+      - timeout: *lttng-tools_wrapper_timeout_defaults
       - timestamps
 
     <<: *lttng-tools_matrix_axes_rootbuild
