@@ -1420,7 +1420,7 @@
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
-          timeout: '45'
+          timeout: '90'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
           version: master
@@ -1528,7 +1528,7 @@
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
-          timeout: '45'
+          timeout: '90'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
           version: stable-2.14
@@ -1656,7 +1656,7 @@
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
-          timeout: '45'
+          timeout: '90'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
           version: stable-2.13
