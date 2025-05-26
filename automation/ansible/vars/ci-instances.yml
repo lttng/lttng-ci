@@ -1448,3 +1448,24 @@ containers:
         lm: disable
     meta:
       address: 172.18.17.23
+  - jenkins:
+      name: 'ci-rootnode-deb12-arm64-2a-01'
+      node_name: 'ci-rootnode-deb12-arm64-2a-01'
+      label: 'deb12 deb12-arm64-rootnode'
+      config:
+        remoteFS: '/root'
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-arm64-2a.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-deb12-arm64-2a-01'
+        launcher/delegate: 'hudson.plugins.sshslaves.SSHLauncher=class'
+        launcher/delegate/port: '22'
+        launcher/delegate/host: 'ci-rootnode-deb12-arm64-2a-01.internal.efficios.com'
+        launcher/delegate/credentialsId: 'bb5a81cf-346b-43fc-8586-3dc5e43801be'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-arm64-2a.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-deb12-arm64-2a-01'
+        snapshotName: ''
+        beforeJobSnapshotName: 'base-configuration'
+        startupWaitingPeriodSeconds: '20'
+        launcher/waitTimeMs: '20000'
+        shutdownMethod: 'destroy'
+    meta:
+      address: 172.18.17.24
