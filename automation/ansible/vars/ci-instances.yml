@@ -1513,3 +1513,61 @@ containers:
       efi: true
     meta:
       address: 172.18.17.21
+  - jenkins:
+      name: 'ci-rootnode-deb12-i386-1b-01'
+      label: 'deb12 deb12-i386-rootnode'
+      mode: EXCLUSIVE
+      config:
+        remoteFS: '/root'
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1b.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-deb12-i386-1b-01'
+        launcher/delegate: 'hudson.plugins.sshslaves.SSHLauncher=class'
+        launcher/delegate/port: '22'
+        launcher/delegate/host: 'ci-rootnode-deb12-i386-1b-01.internal.efficios.com'
+        launcher/delegate/credentialsId: 'bb5a81cf-346b-43fc-8586-3dc5e43801be'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1b.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-deb12-i386-1b-01'
+        snapshotName: ''
+        beforeJobSnapshotName: 'base-configuration'
+        startupWaitingPeriodSeconds: '20'
+        launcher/waitTimeMs: '20000'
+        shutdownMethod: 'destroy'
+    vm:
+      name: 'ci-rootnode-deb12-i386-1b-01'
+      disk: '/var/lib/libvirt/images/ci-rootnode-deb12-i386-1b-01.qcow'
+      host: 'ci-host-amd64-1b.internal.efficios.com'
+      # Work-around for the following guest error in bookworm-backports:
+      #   virtio: device uses modern interface but does not have VIRTIO_F_VERSION_1
+      cpu_features:
+        lm: disable
+    meta:
+      address: 172.18.17.22
+  - jenkins:
+      name: 'ci-rootnode-deb12-i386-1c-01'
+      label: 'deb12 deb12-i386-rootnode'
+      mode: EXCLUSIVE
+      config:
+        remoteFS: '/root'
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1c.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-deb12-i386-1c-01'
+        launcher/delegate: 'hudson.plugins.sshslaves.SSHLauncher=class'
+        launcher/delegate/port: '22'
+        launcher/delegate/host: 'ci-rootnode-deb12-i386-1c-01.internal.efficios.com'
+        launcher/delegate/credentialsId: 'bb5a81cf-346b-43fc-8586-3dc5e43801be'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1c.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-deb12-i386-1c-01'
+        snapshotName: ''
+        beforeJobSnapshotName: 'base-configuration'
+        startupWaitingPeriodSeconds: '20'
+        launcher/waitTimeMs: '20000'
+        shutdownMethod: 'destroy'
+    vm:
+      name: 'ci-rootnode-deb12-i386-1c-01'
+      disk: '/var/lib/libvirt/images/ci-rootnode-deb12-i386-1c-01.qcow'
+      host: 'ci-host-amd64-1c.internal.efficios.com'
+      # Work-around for the following guest error in bookworm-backports:
+      #   virtio: device uses modern interface but does not have VIRTIO_F_VERSION_1
+      cpu_features:
+        lm: disable
+    meta:
+      address: 172.18.17.23

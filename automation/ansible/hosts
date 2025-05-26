@@ -197,6 +197,8 @@ ci-rootnode-deb12-amd64-2b-01
 ci-rootnode-deb12-amd64-2c-01
 ci-rootnode-deb12-amd64-2d-01
 ci-rootnode-deb12-i386-1a-01
+ci-rootnode-deb12-i386-1b-01
+ci-rootnode-deb12-i386-1c-01
 ci-rootnode-deb12-arm64-1a-01
 ci-rootnode-deb12-arm64-1b-01
 ci-rootnode-deb12-arm64-2a-01
