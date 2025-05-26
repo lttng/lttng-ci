@@ -40,7 +40,7 @@
     repos_Ubuntu:
       - "LP-PPA-efficios-ci:${distro_codename}"
     repos_Debian: []
-    repos: "{{repos_base|union(lookup('vars', 'repos_' + ansible_distribution, default=[]))}}"
+    repos: "{{repos_base|union(lookup('vars', 'repos_' + ansible_distribution, default=[]))|sort}}"
 
 - name: Enable unattended upgrades
   block:
