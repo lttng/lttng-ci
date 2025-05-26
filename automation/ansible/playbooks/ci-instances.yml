@@ -37,11 +37,11 @@
         object: "{{item.vm}}"
       with_items: "{{containers}}"
     - name: Update DNS entries
-      when: not skip_dns and inventory_hostname == 'localhost' and item.meta|default(false) and (not limit or ('vm' in item and item.vm.name in limit) or ('lxd' in item and item.lxd.name in limit))
+      when: not skip_dns and inventory_hostname == 'localhost' and item.meta|default(false) and (not limit or ('vm' in item and item.vm.name in limit) or ('lxd' in item and item.lxd.name in limit) or ('jenkins' in item and item.jenkins.node_name|default('') in limit))
       with_items: "{{containers}}"
       ansible.builtin.command:
         argv: [
-          '../scripts/update_dns_entry.py', '-n', "{{item.lxd.name|default(item.vm.name)}}",
+          '../scripts/update_dns_entry.py', '-n', "{{item.lxd.name|default(item.vm.name|default(item.jenkins.node_name))}}",
           '-z', "{{search_domain}}",
           '-v', "{{item.meta.address}}",
           '-s', "{{name_server}}",
