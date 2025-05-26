@@ -99,7 +99,6 @@ containers:
         alias: debian/bookworm/cloud/arm64
     jenkins:
       label: 'deb12-arm64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.88
     lxd:
@@ -116,7 +115,6 @@ containers:
         alias: debian/bookworm/cloud/armhf
     jenkins:
       label: 'deb12-armhf deb12'
-      mode: EXCLUSIVE
   # ci-host-arm64-1b
   - meta:
       address: 172.18.16.89
@@ -134,7 +132,6 @@ containers:
         alias: debian/bookworm/cloud/arm64
     jenkins:
       label: 'deb12-arm64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.90
     lxd:
@@ -151,7 +148,6 @@ containers:
         alias: debian/bookworm/cloud/armhf
     jenkins:
       label: 'deb12-armhf deb12'
-      mode: EXCLUSIVE
   # ci-host-arm64-2a
   - meta:
       address: 172.18.16.100
@@ -169,7 +165,6 @@ containers:
         alias: debian/bookworm/cloud/arm64
     jenkins:
       label: 'deb12-arm64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.101
     lxd:
@@ -186,7 +181,6 @@ containers:
         alias: debian/bookworm/cloud/armhf
     jenkins:
       label: 'deb12-armhf deb12'
-      mode: EXCLUSIVE
   # ci-host-arm64-2b
   - meta:
       address: 172.18.16.102
@@ -204,7 +198,6 @@ containers:
         alias: debian/bookworm/cloud/arm64
     jenkins:
       label: 'deb12-arm64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.103
     lxd:
@@ -221,7 +214,6 @@ containers:
         alias: debian/bookworm/cloud/armhf
     jenkins:
       label: 'deb12-armhf deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.18.1
     lxd:
@@ -245,7 +237,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.10
     lxd:
@@ -253,7 +244,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.11
     lxd:
@@ -261,7 +251,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.12
     lxd:
@@ -269,7 +258,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.13
     lxd:
@@ -277,7 +265,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.14
     lxd:
@@ -285,7 +272,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.15
     lxd:
@@ -293,7 +279,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.16
     lxd:
@@ -301,7 +286,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.17
     lxd:
@@ -309,7 +293,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.18
     lxd:
@@ -317,7 +300,6 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.19
     lxd:
@@ -325,7 +307,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.20
     lxd:
@@ -333,7 +314,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.21
     lxd:
@@ -341,7 +321,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.22
     lxd:
@@ -349,7 +328,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.23
     lxd:
@@ -357,7 +335,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.24
     lxd:
@@ -365,7 +342,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.25
     lxd:
@@ -373,7 +349,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.26
     lxd:
@@ -381,7 +356,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.27
     lxd:
@@ -389,7 +363,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.28
     lxd:
@@ -397,7 +370,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.29
     lxd:
@@ -405,7 +377,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.30
     lxd:
@@ -413,7 +384,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.31
     lxd:
@@ -421,7 +391,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.32
     lxd:
@@ -429,7 +398,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.33
     lxd:
@@ -437,7 +405,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.34
     lxd:
@@ -445,7 +412,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.35
     lxd:
@@ -453,7 +419,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.36
     lxd:
@@ -461,7 +426,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.37
     lxd:
@@ -469,7 +433,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.38
     lxd:
@@ -477,7 +440,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.39
     lxd:
@@ -485,7 +447,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.40
     lxd:
@@ -493,7 +454,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.41
     lxd:
@@ -501,7 +461,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.42
     lxd:
@@ -509,7 +468,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.43
     lxd:
@@ -517,7 +475,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.44
     lxd:
@@ -525,7 +482,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.45
     lxd:
@@ -533,7 +489,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.46
     lxd:
@@ -541,7 +496,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.47
     lxd:
@@ -549,7 +503,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.48
     lxd:
@@ -557,7 +510,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.49
     lxd:
@@ -565,7 +517,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.50
     lxd:
@@ -573,7 +524,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.51
     lxd:
@@ -581,7 +531,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.52
     lxd:
@@ -589,7 +538,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.53
     lxd:
@@ -597,7 +545,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.54
     lxd:
@@ -605,7 +552,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.55
     lxd:
@@ -613,7 +559,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.56
     lxd:
@@ -621,7 +566,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.57
     lxd:
@@ -629,7 +573,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.58
     lxd:
@@ -637,7 +580,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.59
     lxd:
@@ -645,7 +587,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.60
     lxd:
@@ -653,7 +594,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.61
     lxd:
@@ -661,7 +601,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.62
     lxd:
@@ -669,7 +608,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.63
     lxd:
@@ -677,7 +615,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.64
     lxd:
@@ -685,7 +622,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.65
     lxd:
@@ -693,7 +629,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.66
     lxd:
@@ -701,7 +636,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.67
     lxd:
@@ -709,7 +643,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.68
     lxd:
@@ -717,7 +650,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.69
     lxd:
@@ -725,7 +657,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.70
     lxd:
@@ -733,7 +664,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.71
     lxd:
@@ -741,7 +671,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.72
     lxd:
@@ -749,7 +678,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.73
     lxd:
@@ -757,7 +685,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.74
     lxd:
@@ -765,7 +692,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.75
     lxd:
@@ -773,7 +699,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.76
     lxd:
@@ -781,7 +706,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.77
     lxd:
@@ -789,7 +713,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.78
     lxd:
@@ -797,7 +720,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
-      mode: EXCLUSIVE
   # @NOTE: debian/bookworm/cloud/i386 isn't an image
   # available from images.linuxcontainers.org since they
   # reduced architecture to save storage space. The instances
@@ -812,7 +734,6 @@ containers:
         alias: debian/bookworm/cloud/i386
     jenkins:
       label: 'deb12-i386 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.80
     lxd:
@@ -820,7 +741,6 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-i386 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.81
     lxd:
@@ -828,7 +748,6 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-i386 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.82
     lxd:
@@ -836,7 +755,6 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-i386 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.83
     lxd:
@@ -844,7 +762,6 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-i386 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.84
     lxd:
@@ -852,7 +769,6 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-i386 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.85
     lxd:
@@ -860,7 +776,6 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-i386 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.86
     lxd:
@@ -868,7 +783,6 @@ containers:
       target: ci-host-amd64-2d
     jenkins:
       label: 'deb12-i386 deb12'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.94
     lxd:
@@ -879,7 +793,6 @@ containers:
         type: image
     jenkins:
       label: 'sles15sp5-amd64'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.95
     lxd:
@@ -890,7 +803,6 @@ containers:
         type: image
     jenkins:
       label: 'sles15sp5-amd64'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.96
     lxd:
@@ -901,12 +813,10 @@ containers:
         type: image
     jenkins:
       label: 'sles15sp5-amd64'
-      mode: EXCLUSIVE
   - meta:
       address: 172.18.16.97
     jenkins:
       label: 'sles12sp5-amd64'
-      mode: EXCLUSIVE
     vm:
       name: 'ci-node-sles12sp5-amd64-2a-01'
       disk: '/var/lib/libvirt/images/ci-node-sles12sp5-amd64-2a-01.qcow'
@@ -916,7 +826,6 @@ containers:
       address: 172.18.16.98
     jenkins:
       label: 'sles12sp5-amd64'
-      mode: EXCLUSIVE
     vm:
       name: 'ci-node-sles12sp5-amd64-2b-01'
       disk: '/var/lib/libvirt/images/ci-node-sles12sp5-amd64-2b-01.qcow'
@@ -926,7 +835,6 @@ containers:
       address: 172.18.16.99
     jenkins:
       label: 'sles12sp5-amd64'
-      mode: EXCLUSIVE
     vm:
       name: 'ci-node-sles12sp5-amd64-2c-01'
       disk: '/var/lib/libvirt/images/ci-node-sles12sp5-amd64-2c-01.qcow'
@@ -936,7 +844,6 @@ containers:
       address: 172.18.16.104
     jenkins:
       label: 'yocto33-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-yocto33-amd64-2a-01
       target: ci-host-amd64-2a
@@ -947,7 +854,6 @@ containers:
       address: 172.18.16.105
     jenkins:
       label: 'yocto33-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-yocto33-amd64-2b-01
       target: ci-host-amd64-2b
@@ -958,7 +864,6 @@ containers:
       address: 172.18.16.106
     jenkins:
       label: 'deb13-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-deb13-amd64-1a-01
       target: ci-host-amd64-1a
@@ -969,7 +874,6 @@ containers:
       address: 172.18.16.107
     jenkins:
       label: 'deb13-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-deb13-amd64-1b-01
       target: ci-host-amd64-1b
@@ -980,7 +884,6 @@ containers:
       address: 172.18.16.108
     jenkins:
       label: 'deb13-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-deb13-amd64-1c-01
       target: ci-host-amd64-1c
@@ -991,7 +894,6 @@ containers:
       address: 172.18.16.109
     jenkins:
       label: 'deb13-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-deb13-amd64-1d-01
       target: ci-host-amd64-1d
@@ -1002,7 +904,6 @@ containers:
       address: 172.18.16.110
     jenkins:
       label: 'deb13-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-deb13-amd64-2a-01
       target: ci-host-amd64-2a
@@ -1013,7 +914,6 @@ containers:
       address: 172.18.16.111
     jenkins:
       label: 'deb13-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-deb13-amd64-2b-01
       target: ci-host-amd64-2b
@@ -1024,7 +924,6 @@ containers:
       address: 172.18.16.112
     jenkins:
       label: 'deb13-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-deb13-amd64-2c-01
       target: ci-host-amd64-2c
@@ -1035,7 +934,6 @@ containers:
       address: 172.18.16.113
     jenkins:
       label: 'deb13-amd64'
-      mode: EXCLUSIVE
     lxd:
       name: ci-node-deb13-amd64-2d-01
       target: ci-host-amd64-2d
@@ -1046,25 +944,21 @@ containers:
       address: 'ci-node-deb12-arm64-osuosl-01'
     jenkins:
       label: 'deb12-arm64'
-      mode: EXCLUSIVE
       node_name: 'ci-node-deb12-arm64-osuosl-01'
   - meta:
       address: 'ci-node-deb12-arm64-osuosl-02'
     jenkins:
       label: 'deb12-arm64'
-      mode: EXCLUSIVE
       node_name: 'ci-node-deb12-arm64-osuosl-02'
   - meta:
       address: 'ci-node-deb12-arm64-osuosl-03'
     jenkins:
       label: 'deb12-arm64'
-      mode: EXCLUSIVE
       node_name: 'ci-node-deb12-arm64-osuosl-03'
   - meta:
       address: 'ci-node-deb12-arm64-osuosl-04'
     jenkins:
       label: 'deb12-arm64'
-      mode: EXCLUSIVE
       node_name: 'ci-node-deb12-arm64-osuosl-04'
   # "Root " nodes in libvirt, since Jenkins can use the "libvirt agents" plugin
   # to revert to a specific snapshot before running a job
@@ -1078,7 +972,6 @@ containers:
   - jenkins:
       name: 'ci-rootnode-deb12-amd64-1a-01'
       label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1a.internal.efficios.com'
@@ -1103,7 +996,6 @@ containers:
   - jenkins:
       name: 'ci-rootnode-deb12-i386-1a-01'
       label: 'deb12 deb12-i386-rootnode'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1a.internal.efficios.com'
@@ -1132,7 +1024,6 @@ containers:
   - jenkins:
       label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-1b-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1b.internal.efficios.com'
@@ -1157,7 +1048,6 @@ containers:
   - jenkins:
       label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-1c-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1c.internal.efficios.com'
@@ -1204,7 +1094,6 @@ containers:
   - jenkins:
       label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-2a-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2a.internal.efficios.com'
@@ -1228,7 +1117,6 @@ containers:
   - jenkins:
       label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-2b-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2b.internal.efficios.com'
@@ -1253,7 +1141,6 @@ containers:
   - jenkins:
       label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-2c-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2c.internal.efficios.com'
@@ -1278,7 +1165,6 @@ containers:
   - jenkins:
       label: 'deb12 deb12-amd64-rootnode amd64-rootnode'
       name: 'ci-rootnode-deb12-amd64-2d-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2d.internal.efficios.com'
@@ -1303,7 +1189,6 @@ containers:
   - jenkins:
       label: 'deb12 deb12-amd64-rootnode amd64-rootnode-linux5'
       name: 'ci-rootnode-deb12-amd64-1c-02'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1c.internal.efficios.com'
@@ -1328,7 +1213,6 @@ containers:
   - jenkins:
       label: 'el8-amd64-rootnode'
       name: 'ci-rootnode-el8-amd64-1d-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1d.internal.efficios.com'
@@ -1389,7 +1273,6 @@ containers:
   - jenkins:
       name: "ci-rootnode-deb12-arm64-1a-01"
       label: 'deb12 deb12-arm64-rootnode arm64-rootnode'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-arm64-1a.internal.efficios.com'
@@ -1414,7 +1297,6 @@ containers:
   - jenkins:
       label: 'sles15sp5-amd64-rootnode'
       name: 'ci-rootnode-sles15sp5-amd64-1d-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1d.internal.efficios.com'
@@ -1439,7 +1321,6 @@ containers:
   - jenkins:
       label: 'sles15sp5-amd64-rootnode'
       name: 'ci-rootnode-sles15sp5-amd64-2a-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2a.internal.efficios.com'
@@ -1464,7 +1345,6 @@ containers:
   - jenkins:
       label: 'yocto33-amd64-rootnode'
       name: 'ci-rootnode-yocto33-amd64-2c-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2c.internal.efficios.com'
@@ -1490,7 +1370,6 @@ containers:
   - jenkins:
       label: 'yocto33-amd64-rootnode'
       name: 'ci-rootnode-yocto33-amd64-2d-01'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2d.internal.efficios.com'
@@ -1516,7 +1395,6 @@ containers:
   - jenkins:
       name: 'ci-rootnode-deb12-i386-1b-01'
       label: 'deb12 deb12-i386-rootnode'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1b.internal.efficios.com'
@@ -1545,7 +1423,6 @@ containers:
   - jenkins:
       name: 'ci-rootnode-deb12-i386-1c-01'
       label: 'deb12 deb12-i386-rootnode'
-      mode: EXCLUSIVE
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-1c.internal.efficios.com'

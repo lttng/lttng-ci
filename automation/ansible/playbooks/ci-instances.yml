@@ -57,7 +57,7 @@
         node_state: "{{item.jenkins.state|default('online')}}"
         node_credentials: "{{item.jenkins.credentials|default(jenkins_default_credentials)}}"
         node_message: "{{item.jenkins.message|default('Set offline by ansible')}}"
-        node_mode: "{{item.jenkins.mode|default('NORMAL')}}"
+        node_mode: "{{item.jenkins.mode|default('EXCLUSIVE')}}"
         node_json: "{{item.jenkins.config|default({})|to_json}}"
       ansible.builtin.command:
         argv: [
