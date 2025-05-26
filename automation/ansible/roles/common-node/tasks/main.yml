@@ -24,6 +24,8 @@
     - name: 'Check current core pattern'
       ansible.builtin.command:
         argv: ['cat', '/proc/sys/kernel/core_pattern']
+      check_mode: false
+      changed_when: false
       register: current_core_pattern
     - name: 'Update current core pattern'
       when: current_core_pattern.stdout|trim != common_node_core_pattern
