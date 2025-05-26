@@ -2,13 +2,14 @@
 - name: Check if i386 foreign architecture is enabled in dpkg.
   shell: dpkg --print-foreign-architectures | grep i386
   register: dpkg_i386_is_enabled
-  changed_when: dpkg_i386_is_enabled.rc == 1
   failed_when: dpkg_i386_is_enabled.rc > 1
+  changed_when: false
+  check_mode: false
 
 - name: Add i386 foreign architecture to dpkg.
   command: dpkg --add-architecture i386
-  when: dpkg_i386_is_enabled.rc == 1
+  when: dpkg_i386_is_enabled.rc == 1 and ansible_userspace_architecture|default('') == "x86_64"
 
 - name: Update apt cache.
   apt: update_cache=yes
-  when: dpkg_i386_is_enabled.rc == 1
+  when: dpkg_i386_is_enabled.rc == 1 and ansible_userspace_architecture|default('') == "x86_64"
