@@ -1926,6 +1926,18 @@
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
           java_preferred_jdk: '8'
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          buildtype: slesbuild-gdb
+          babeltrace_buildtype: slesbuild
+          babeltrace_platform: sles15sp5-amd64
+          urcu_buildtype: slesbuild
+          urcu_platform: sles15sp5-amd64
+          ust_buildtype: slesbuild
+          ust_platform: sles15sp5-amd64
+          platforms: !!python/tuple [sles15sp5-amd64-gdb]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
+          java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
