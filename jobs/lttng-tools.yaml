@@ -69,7 +69,9 @@
     python: ''
     timeout: '30'
     touchstone: ''
+    urcu_buildtype: '{buildtype}'
     urcu_job_prefix: ''
+    ust_buildtype: '{buildtype}'
     ust_job_prefix: ''
 
 ## Anchors
@@ -344,7 +346,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{ust_job_prefix}lttng-ust_${{GERRIT_BRANCH}}_{buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
+                project: '{ust_job_prefix}lttng-ust_${{GERRIT_BRANCH}}_{ust_buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
 
       # Copy lttng-ust artifacts if the conf is 'std' or 'agents, there
       # is not a dependency on a specific change, and the gerrit project isn't
@@ -364,7 +366,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{ust_job_prefix}lttng-ust_{ustversion|master}_{buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
+                project: '{ust_job_prefix}lttng-ust_{ustversion|master}_{ust_buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
 
       # Copy liburcu artifacts if we don't depend on a specific liburcu change
       - conditional-step:
@@ -374,7 +376,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{buildtype}/platform=${{platform}},conf=std,build=std'
+                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{urcu_buildtype}/platform=${{platform}},conf=std,build=std'
 
       # Copy babeltrace artifacts if we don't depend on a specific babeltrace change
       - conditional-step:
@@ -384,7 +386,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{buildtype}/platform=${{platform}},conf=std,build=std'
+                project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{urcu_buildtype}/platform=${{platform}},conf=std,build=std'
 
       - shell:
          !include-raw-verbatim: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
