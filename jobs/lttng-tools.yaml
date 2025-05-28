@@ -59,6 +59,7 @@
 
     # Variables
     babeltrace_buildtype: ''  # will default to buildtype
+    babeltrace_platform: '${{platform}}'
     bt_job_prefix: ''
     filter: ''
     github_user: lttng
@@ -71,8 +72,10 @@
     touchstone: ''
     urcu_buildtype: '{buildtype}'
     urcu_job_prefix: ''
+    urcu_platform: '${{platform}}'
     ust_buildtype: '{buildtype}'
     ust_job_prefix: ''
+    ust_platform: '${{platform}}'
 
 ## Anchors
 - _lttng-tools_steps_copyartifact_defaults:
@@ -215,13 +218,13 @@
           project:
             !j2: |
               {{urcu_job_prefix}}liburcu_{%- raw -%}${liburcu_version}{%- endraw -%}
-              _{{cctype|default(buildtype)}}/platform={%- raw %}${platform}{%- endraw -%}
+              _{{cctype|default(buildtype)}}/platform={%- raw %}{urcu_platform}{%- endraw -%}
               ,conf={%- raw -%}${liburcu_conf}{%- endraw -%},build=std,{%- if ccs|default(false) -%}cc={%- raw -%}${cc}{%- endraw -%},{%- endif -%}
 
       # Always copy babeltrace artifacts
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_${{babeltrace_buildtype}}/platform=${{platform}},conf=${{babeltrace_conf}},build=std'
+          project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_${{babeltrace_buildtype}}/platform={babeltrace_platform},conf=${{babeltrace_conf}},build=std'
 
       # Some conf do not require lttng-ust artifacts
       - conditional-step:
@@ -236,7 +239,7 @@
                 project:
                   !j2: |
                     {{ust_job_prefix}}lttng-ust_{{ustversion}}_{{cctype|default(buildtype)}}/liburcu_version={%- raw -%}${liburcu_version}{%- endraw -%}
-                    ,platform={%- raw %}${platform}{%- endraw -%},conf={%- raw -%}${ust_conf}{%- endraw -%}
+                    ,platform={%- raw %}{ust_platform}{%- endraw -%},conf={%- raw -%}${ust_conf}{%- endraw -%}
                     ,build=std,{% if ccs|default(false) %}cc={%- raw -%}${cc}{%- endraw -%}{% endif %}
 
       # rootbuild requires a checkout of modules
@@ -347,7 +350,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{ust_job_prefix}lttng-ust_${{GERRIT_BRANCH}}_{ust_buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
+                project: '{ust_job_prefix}lttng-ust_${{GERRIT_BRANCH}}_{ust_buildtype}/liburcu_version=${{liburcu_version}},platform={ust_platform},conf=${{conf}},build=std'
 
       # Copy lttng-ust artifacts if the conf is 'std' or 'agents, there
       # is not a dependency on a specific change, and the gerrit project isn't
@@ -367,7 +370,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{ust_job_prefix}lttng-ust_{ustversion|master}_{ust_buildtype}/liburcu_version=${{liburcu_version}},platform=${{platform}},conf=${{conf}},build=std'
+                project: '{ust_job_prefix}lttng-ust_{ustversion|master}_{ust_buildtype}/liburcu_version=${{liburcu_version}},platform={ust_platform},conf=${{conf}},build=std'
 
       # Copy liburcu artifacts if we don't depend on a specific liburcu change
       - conditional-step:
@@ -377,7 +380,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{urcu_buildtype}/platform=${{platform}},conf=std,build=std'
+                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{urcu_buildtype}/platform={urcu_platform},conf=std,build=std'
 
       # Copy babeltrace artifacts if we don't depend on a specific babeltrace change
       - conditional-step:
@@ -387,7 +390,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{urcu_buildtype}/platform=${{platform}},conf=std,build=std'
+                project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{urcu_buildtype}/platform={babeltrace_platform},conf=std,build=std'
 
       - shell:
          !include-raw-verbatim: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
@@ -446,7 +449,7 @@
       # Always copy liburcu artifacts
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_winbuild/platform=${{platform}},conf=std,build=std'
+          project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_winbuild/platform={ust_platform},conf=std,build=std'
 
       - inject:
           properties-content: |
