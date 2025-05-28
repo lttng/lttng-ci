@@ -1,0 +1,31 @@
+---
+common_node_packages:
+  - abigail-tools
+  - autoconf
+  - automake
+  - bison
+  - build-essential
+  - clang
+  - clang-tools
+  - cloc
+  - curl
+  - openjdk-21-jdk-headless
+  - emacs-nox
+  - flex
+  - gettext
+  - git
+  - htop
+  - jq
+  - libssl-dev
+  - libtap-harness-archive-perl
+  - libtool-bin
+  - lzop
+  - maven
+  - openssh-server
+  - pbzip2
+  - psmisc
+  - rsync
+  - sudo
+  - tree
+  - vim
+  - virtualenv
