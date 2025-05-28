@@ -1920,6 +1920,17 @@
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           urcuversions: !!python/tuple [master]
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          buildtype: portbuild
+          version: master
+          platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
+          nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
+          filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
+          timeout: '90'
+          # Don't run this automatically
+          triggers: {}
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
