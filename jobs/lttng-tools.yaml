@@ -299,6 +299,8 @@
           if [ "{python}" != "" ]; then
             echo "PYTHON={python}" >> env.properties
           fi
+          # Make the serial test runner aware of the current job timeout limit
+          echo "LTTNG_TEST_SERIAL_TEST_TIMEOUT_MINUTES={timeout}" >> env.properties
       - inject:
           properties-file: env.properties
       - shell:
