@@ -1472,7 +1472,7 @@ containers:
   - jenkins:
       name: 'ci-rootnode-deb12-armhf-2a-01'
       node_name: 'ci-rootnode-deb12-armhf-2a-01'
-      label: 'deb12 deb12-arm64-rootnode'
+      label: 'deb12 deb12-armhf-rootnode'
       config:
         remoteFS: '/root'
         launcher/hypervisorDescription: 'QEMU+ssh - ci-host-arm64-2a.internal.efficios.com'
