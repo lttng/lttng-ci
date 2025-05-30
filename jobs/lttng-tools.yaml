@@ -218,8 +218,7 @@
           project:
             !j2: |
               {{urcu_job_prefix}}liburcu_{%- raw -%}${liburcu_version}{%- endraw -%}
-              _{{cctype|default(buildtype)}}/platform={%- raw %}{urcu_platform}{%- endraw -%}
-              ,conf={%- raw -%}${liburcu_conf}{%- endraw -%},build=std,{%- if ccs|default(false) -%}cc={%- raw -%}${cc}{%- endraw -%},{%- endif -%}
+              _{{cctype|default(buildtype)}}/platform={{urcu_platform}},conf={%- raw -%}${liburcu_conf}{%- endraw -%},build=std,{%- if ccs|default(false) -%}cc={%- raw -%}${cc}{%- endraw -%},{%- endif -%}
 
       # Always copy babeltrace artifacts
       - copyartifact:
@@ -239,7 +238,7 @@
                 project:
                   !j2: |
                     {{ust_job_prefix}}lttng-ust_{{ustversion}}_{{cctype|default(buildtype)}}/liburcu_version={%- raw -%}${liburcu_version}{%- endraw -%}
-                    ,platform={%- raw %}{ust_platform}{%- endraw -%},conf={%- raw -%}${ust_conf}{%- endraw -%}
+                    ,platform={{ust_platform}},conf={%- raw -%}${ust_conf}{%- endraw -%}
                     ,build=std,{% if ccs|default(false) %}cc={%- raw -%}${cc}{%- endraw -%}{% endif %}
 
       # rootbuild requires a checkout of modules
