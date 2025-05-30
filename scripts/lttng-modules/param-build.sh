@@ -655,7 +655,7 @@ build_linux_kernel() {
         patch_linux_kernel 9feeb638cde083c737e295c0547f1b4f28e99583
     fi
 
-    if ( { vergte "${kversion}" "4.12"; } && { verlt "${kversion}" "4.20.17"; } ) || \
+    if ( { vergte "${kversion}" "4.12"; } && { verlte "${kversion}" "4.20.17"; } ) || \
        ( { vergte "${kversion}" "5.0"; } && { verlt "${kversion}" "5.0.12"; } ) ; then
         # Old kernels can fail to build while on newer host kernels with errors
         # such as:
