@@ -1474,6 +1474,7 @@
       # Stable-2.14 #
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           version: stable-2.14
+          ustversion: 'stable-2.14'
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
@@ -1487,6 +1488,7 @@
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
@@ -1495,14 +1497,17 @@
           confs: !!python/tuple [agents]
           java_agents: 'false'
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild_extended
           version: stable-2.14
+          ustversion: 'stable-2.14'
           babeltrace_buildtype: yoctobuild
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
@@ -1510,20 +1515,25 @@
       - '{job_prefix}lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
       - 'lttng-tools_{version}_winbuild':
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
       - '{job_prefix}lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           version: stable-2.14
+          ustversion: 'stable-2.14'
       - '{job_prefix}lttng-tools_{version}_long_regression':
           version: stable-2.14
+          ustversion: 'stable-2.14'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           version: stable-2.14
+          ustversion: 'stable-2.14'
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
@@ -1531,6 +1541,7 @@
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: portbuild
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
@@ -1539,6 +1550,7 @@
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1549,6 +1561,7 @@
           confs: !!python/tuple [agents]
           java_agents: 'false'
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
@@ -1558,6 +1571,7 @@
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
           version: stable-2.14
+          ustversion: 'stable-2.14'
           platforms: !!python/tuple [yocto33-amd64]
           nodes: !!python/tuple [yocto33-amd64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
@@ -1565,16 +1579,19 @@
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
           version: stable-2.14
+          ustversion: 'stable-2.14'
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
       - 'lttng-tools_{version}_scan-build':
           version: stable-2.14
+          ustversion: 'stable-2.14'
           urcuversion: master
           ustversion: stable-2.14
           babelversion: master
       - 'lttng-tools_{version}_coverity':
           version: stable-2.14
+          ustversion: 'stable-2.14'
           urcuversion: master
           ustversion: stable-2.14
           babelversion: master
