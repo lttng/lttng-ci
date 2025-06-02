@@ -61,6 +61,9 @@
     babeltrace_buildtype: ''  # will default to buildtype
     babeltrace_platform: '${{platform}}'
     bt_job_prefix: ''
+    builds: !!python/tuple [std]
+    buildtype: 'linuxbuild'
+    confs: !!python/tuple [std]
     filter: ''
     github_user: lttng
     java_agents: 'true'  # when building with the agents config, include java agents
@@ -76,6 +79,7 @@
     ust_buildtype: '{buildtype}'
     ust_job_prefix: ''
     ust_platform: '${{platform}}'
+    ustversion: '{version}'
 
 ## Anchors
 - _lttng-tools_steps_copyartifact_defaults:
@@ -1341,44 +1345,26 @@
 
 ## Projects
 - project:
-    name: lttng-tools
-    job_prefix: ''
-    ust_job_prefix: ''
-    urcu_job_prefix: ''
-    bt_job_prefix: ''
-    github_user: lttng
+    name: lttng-tools-master
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
-    buildtype: linuxbuild
-    ustversion: master
     urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
     babelversions: !!python/tuple [stable-2.1]
     platforms: !!python/tuple [deb12-amd64]
-    builds: !!python/tuple [std]
-    confs: !!python/tuple [std]
-    version:
-      - stable-2.12
-      - stable-2.13
-      - stable-2.14
-      - master
-    touchstone: ''
-    filter: ''
+    version: 'master'
     jobs:
       # Master #
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          version: master
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
-          version: master
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
-          version: master
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
@@ -1386,43 +1372,34 @@
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: master
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild
-          version: master
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild_extended
-          version: master
           babeltrace_buildtype: yoctobuild
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
-          version: master
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
       - 'lttng-tools_{version}_winbuild':
-          version: master
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
       - '{job_prefix}lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          version: master
-      - '{job_prefix}lttng-tools_{version}_long_regression':
-          version: master
+      - '{job_prefix}lttng-tools_{version}_long_regression': {}
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
-          version: master
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: portbuild
-          version: master
           platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
@@ -1430,7 +1407,6 @@
           timeout: '90'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
-          version: master
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1440,7 +1416,6 @@
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: master
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
@@ -1449,21 +1424,17 @@
           babeltrace_buildtype: yoctobuild
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-          version: master
           platforms: !!python/tuple [yocto33-amd64]
           nodes: !!python/tuple [yocto33-amd64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
-          version: master
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
       - 'lttng-tools_{version}_scan-build':
-          version: master
           urcuversion: master
-          ustversion: master
           babelversion: master
       - 'lttng-tools_{version}_coverity':
           version: master
@@ -1471,24 +1442,26 @@
           ustversion: master
           babelversion: master
 
-      # Stable-2.14 #
+- project:
+    name: lttng-tools-stable-2.14
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
+    urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
+    babelversions: !!python/tuple [stable-2.1]
+    platforms: !!python/tuple [deb12-amd64]
+    version: 'stable-2.14'
+    jobs:
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="stable-2.14"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
-          version: stable-2.14
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
@@ -1496,52 +1469,34 @@
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild_extended
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           babeltrace_buildtype: yoctobuild
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
       - 'lttng-tools_{version}_winbuild':
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
       - '{job_prefix}lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          version: stable-2.14
-          ustversion: 'stable-2.14'
-      - '{job_prefix}lttng-tools_{version}_long_regression':
-          version: stable-2.14
-          ustversion: 'stable-2.14'
+      - '{job_prefix}lttng-tools_{version}_long_regression': {}
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: portbuild
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
@@ -1549,8 +1504,6 @@
           timeout: '90'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1560,8 +1513,6 @@
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
@@ -1570,30 +1521,20 @@
           babeltrace_buildtype: yoctobuild
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           platforms: !!python/tuple [yocto33-amd64]
           nodes: !!python/tuple [yocto33-amd64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
       - 'lttng-tools_{version}_scan-build':
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           urcuversion: master
-          ustversion: stable-2.14
           babelversion: master
       - 'lttng-tools_{version}_coverity':
-          version: stable-2.14
-          ustversion: 'stable-2.14'
           urcuversion: master
-          ustversion: stable-2.14
           babelversion: master
       - 'lttng-tools_{version}_release':
           version: v2.14
@@ -1601,81 +1542,63 @@
           urcuversion: stable-0.15
           babelversion: stable-2.1
 
-      # stable-2.13
+- project:
+    name: lttng-tools-stable-2.13
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
+    urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
+    babelversions: !!python/tuple [stable-2.1]
+    platforms: !!python/tuple [deb12-amd64]
+    version: 'stable-2.13'
+    jobs:
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          version: stable-2.13
-          ustversion: stable-2.13
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
+          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           confs: !!python/tuple [agents]
-          urcuversions: !!python/tuple [stable-0.13]
+          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild_extended
-          version: stable-2.13
-          ustversion: stable-2.13
           babeltrace_buildtype: yoctobuild
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
       - 'lttng-tools_{version}_winbuild':
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
       - '{job_prefix}lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          version: stable-2.13
-          ustversion: stable-2.13
-      - '{job_prefix}lttng-tools_{version}_long_regression':
-          version: stable-2.13
-          ustversion: stable-2.13
+      - '{job_prefix}lttng-tools_{version}_long_regression': {}
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.13
-          ustversion: stable-2.13
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: portbuild
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
@@ -1683,8 +1606,6 @@
           timeout: '90'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1695,8 +1616,6 @@
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
@@ -1705,49 +1624,44 @@
           babeltrace_buildtype: yoctobuild
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-          version: stable-2.13
-          ustversion: stable-2.13
           platforms: !!python/tuple [yocto33-amd64]
           nodes: !!python/tuple [yocto33-amd64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
-          version: stable-2.13
-          ustversion: stable-2.13
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
       - 'lttng-tools_{version}_release':
           version: v2.13
-          ustversion: stable-2.13
           urcuversion: stable-0.13
+          ustversion: stable-2.13
           babelversion: stable-2.1
       - 'lttng-tools_{version}_scan-build':
-          version: stable-2.13
           urcuversion: stable-0.13
-          ustversion: stable-2.13
           babelversion: stable-2.1
 
-      # stable-2.12
+- project:
+    name: lttng-tools-stable-2.12
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
+    urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
+    babelversions: !!python/tuple [stable-2.1]
+    platforms: !!python/tuple [deb12-amd64]
+    version: 'stable-2.12'
+    jobs:
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          version: stable-2.12
-          ustversion: stable-2.12
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
-          version: stable-2.12
-          ustversion: stable-2.12
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
-          version: stable-2.12
-          ustversion: stable-2.12
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           confs: !!python/tuple [agents]
@@ -1756,56 +1670,38 @@
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: stable-2.12
-          ustversion: stable-2.12
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: elbuild_extended
           babeltrace_buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: stable-2.12
-          ustversion: stable-2.12
           urcuversions: !!python/tuple [stable-0.12]
           platforms: !!python/tuple [el8-amd64, el9-amd64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild
-          version: stable-2.12
-          ustversion: stable-2.12
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild_extended
-          version: stable-2.12
-          ustversion: stable-2.12
           babeltrace_buildtype: yoctobuild
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_macosbuild':
           buildtype: macosbuild
-          version: stable-2.12
-          ustversion: stable-2.12
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
       - 'lttng-tools_{version}_winbuild':
-          version: stable-2.12
-          ustversion: stable-2.12
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
-      - '{job_prefix}lttng-tools_{version}_long_regression':
-          version: stable-2.12
-          ustversion: stable-2.12
+      - '{job_prefix}lttng-tools_{version}_long_regression': {}
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
-          version: stable-2.12
-          ustversion: stable-2.12
           nodes: !!python/tuple [deb12-amd64-rootnode-linux5]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode-linux5" && platform=="deb12-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
-          version: stable-2.12
-          ustversion: stable-2.12
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1816,8 +1712,6 @@
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: stable-2.12
-          ustversion: stable-2.12
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           builds: !!python/tuple [std]
@@ -1827,8 +1721,6 @@
           babeltrace_buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
-          version: stable-2.12
-          ustversion: stable-2.12
           urcuversions: !!python/tuple [stable-0.12]
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
@@ -1839,33 +1731,25 @@
           babeltrace_buildtype: yoctobuild
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-          version: stable-2.12
-          ustversion: stable-2.12
           urcuversions: !!python/tuple [stable-0.12]
           platforms: !!python/tuple [yocto33-amd64]
           nodes: !!python/tuple [yocto33-amd64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - 'lttng-tools_{version}_release':
           version: v2.12
-          ustversion: stable-2.12
           urcuversion: stable-0.13
+          ustversion: stable-2.12
           babelversion: stable-2.1
       - 'lttng-tools_{version}_scan-build':
-          version: stable-2.12
           urcuversion: stable-0.13
-          ustversion: stable-2.12
           babelversion: stable-2.1
 
 - project:
     name: dev_jgalar_lttng-tools
     job_prefix: 'dev_jgalar_'
-    ust_job_prefix: ''
-    urcu_job_prefix: ''
-    bt_job_prefix: ''
     user: jgalar
     github_user: jgalar
     email_to: 'jgalar@efficios.com'
-    buildtype: linuxbuild
     version: master-staging
     ustversion: master
     platforms: !!python/tuple [deb12-amd64]
@@ -1873,8 +1757,6 @@
     confs: !!python/tuple [std, no-ust, agents]
     urcuversions: !!python/tuple [master]
     babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
-    filter: ''
-    touchstone: ''
     jobs:
       # Master
       - 'dev_{user}_lttng-tools_{version}_{buildtype}': {}
@@ -1920,12 +1802,8 @@
 
 - project:
     name: review-lttng-tools-master
-    buildtype: linuxbuild
-    version:
-      - master
+    version: master
     platforms: !!python/tuple [deb12-amd64]
-    builds: !!python/tuple [std]
-    confs: !!python/tuple [std]
     urcuversions: !!python/tuple [master]  # For C++ support
     babelversions: !!python/tuple [stable-2.1]
     jobs:
@@ -1997,13 +1875,8 @@
 
 - project:
     name: review-lttng-tools-stable-2.14
-    buildtype: linuxbuild
-    version:
-      - stable-2.14
-    ustversion: stable-2.14
+    version: stable-2.14
     platforms: !!python/tuple [deb12-amd64]
-    builds: !!python/tuple [std]
-    confs: !!python/tuple [std]
     babelversions: !!python/tuple [stable-2.1]
     urcuversions: !!python/tuple [master]
     jobs:
@@ -2054,13 +1927,8 @@
 
 - project:
     name: review-lttng-tools-stable-2.13
-    buildtype: linuxbuild
-    version:
-      - stable-2.13
-    ustversion: stable-2.13
+    version: stable-2.13
     platforms: !!python/tuple [deb12-amd64]
-    builds: !!python/tuple [std]
-    confs: !!python/tuple [std]
     urcuversions: !!python/tuple [master]
     babelversions: !!python/tuple [stable-2.1]
     jobs:
@@ -2087,13 +1955,8 @@
 
 - project:
     name: review-lttng-tools-stable-2.12
-    buildtype: linuxbuild
-    version:
-      - stable-2.12
-    ustversion: stable-2.12
+    version: stable-2.12
     platforms: !!python/tuple [deb12-amd64]
-    builds: !!python/tuple [std]
-    confs: !!python/tuple [std]
     urcuversions: !!python/tuple [master]
     babelversions: !!python/tuple [stable-2.1]
     jobs:
