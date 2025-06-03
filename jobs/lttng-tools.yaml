@@ -84,6 +84,29 @@
 - defaults:
     <<: *lttng-tools-defaults
     name: lttng-tools-review
+    concurrent: true
+    parameters:
+      - string:
+          name: 'GERRIT_BRANCH'
+          default: 'master'
+      - string:
+          name: 'GERRIT_REFSPEC'
+          default: ''
+          description: 'The refspec to fetch. E.g. `refs/changes/15/14715/2`. You may find it in the gerrit interface for downloading a specific revision of patch'
+      - string:
+          name: 'GERRIT_NAME'
+          default: 'review.lttng.org'
+      - string:
+          name: 'GERRIT_PROJECT'
+          default: 'lttng-tools'
+    scm:
+      - git: &lttng-tools_scm_git_review
+          url: https://review.lttng.org/lttng-tools
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/lttng-tools
+          skip-tag: true
     triggers: !j2-yaml: |
       {% if enable_gerrit_trigger %}
       - gerrit:
@@ -284,23 +307,6 @@
          !include-raw-verbatim:
            - scripts/common/print.sh
            - scripts/lttng-tools/build.sh
-
-- _lttng-tools_parameters_review: &lttng-tools_parameters_review
-    name: 'lttng-tools_parameters_review'
-    parameters:
-      - string:
-          name: 'GERRIT_BRANCH'
-          default: 'master'
-      - string:
-          name: 'GERRIT_REFSPEC'
-          default: ''
-          description: 'The refspec to fetch. E.g. `refs/changes/15/14715/2`. You may find it in the gerrit interface for downloading a specific revision of patch'
-      - string:
-          name: 'GERRIT_NAME'
-          default: 'review.lttng.org'
-      - string:
-          name: 'GERRIT_PROJECT'
-          default: 'lttng-tools'
 
 - _lttng-tools_builders_review: &lttng-tools_builders_review
     name: 'lttng-tools_builders_review'
@@ -862,16 +868,6 @@
 - job-template:
     name: dev_review_lttng-tools_{version}_{buildtype}
     defaults: lttng-tools-review
-    concurrent: true
-
-    scm:
-      - git: &lttng-tools_scm_git_review
-          url: https://review.lttng.org/lttng-tools
-          refspec: 'refs/changes/*:refs/changes/*'
-          branches:
-            - '$GERRIT_REFSPEC'
-          basedir: src/lttng-tools
-          skip-tag: true
 
     properties: &lttng-tools_properties_review_defaults
       - inject: *lttng-tools_property_inject_defaults
@@ -884,7 +880,6 @@
 
     <<: *lttng-tools_matrix_axes_defaults
     <<: *lttng-tools_builders_review
-    <<: *lttng-tools_parameters_review
 
     publishers: &lttng-tools_publishers_review_defaults
       # On build abort (timeout), wait 10 seconds before running the other post
@@ -910,7 +905,6 @@
 - job-template:
     name: 'dev_review_lttng-tools_{version}_{cctype}'
     defaults: lttng-tools-review
-    concurrent: true
     <<: *lttng-tools_matrix_axes_defaults
     axes:
       - axis:
@@ -932,16 +926,10 @@
     <<: *lttng-tools_publishers_defaults
     properties: *lttng-tools_properties_review_defaults
     publishers: *lttng-tools_publishers_review_defaults
-    scm:
-      - git: *lttng-tools_scm_git_review
 
 - job-template:
     name: dev_review_lttng-tools_{version}_smokebuild
     defaults: lttng-tools-review
-    concurrent: true
-
-    scm:
-      - git: *lttng-tools_scm_git_review
 
     triggers:
       - gerrit: &lttng-tools_trigger_gerrit_smoke_1
@@ -981,10 +969,6 @@
 - job-template:
     name: dev_review_lttng-tools_{version}_clang-tidy
     defaults: lttng-tools-review
-    concurrent: true
-
-    scm:
-      - git: *lttng-tools_scm_git_review
 
     triggers:
       - gerrit: &lttng-tools_trigger_gerrit_smoke_2
@@ -1070,10 +1054,6 @@
 - job-template:
     name: 'dev_review_lttng-tools_{version}_root_{buildtype}'
     defaults: lttng-tools-review
-    concurrent: true
-
-    scm:
-      - git: *lttng-tools_scm_git_review
 
     properties:
       - inject: *lttng-tools_property_inject_defaults
@@ -1091,7 +1071,6 @@
 
     <<: *lttng-tools_matrix_axes_rootbuild
     <<: *lttng-tools_builders_review
-    <<: *lttng-tools_parameters_review
 
     publishers:
       - tap: *lttng-tools_publisher_tap_defaults
@@ -1102,10 +1081,6 @@
 - job-template:
     name: 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}'
     defaults: lttng-tools-review
-    concurrent: true
-
-    scm:
-      - git: *lttng-tools_scm_git_default
 
     triggers:
       - gerrit:
@@ -1147,7 +1122,6 @@
 - job-template:
     name: 'dev_review_lttng-tools_{version}_root_{cctype}'
     defaults: lttng-tools-review
-    concurrent: true
     <<: *lttng-tools_matrix_axes_rootbuild
     axes:
       - axis:
@@ -1171,16 +1145,10 @@
     <<: *lttng-tools_publishers_defaults
     properties: *lttng-tools_properties_review_defaults
     publishers: *lttng-tools_publishers_review_defaults
-    scm:
-      - git: *lttng-tools_scm_git_review
 
 - job-template:
     name: 'dev_review_lttng-tools_{version}_check-format'
-    defaults: lttng-tools
-    concurrent: true
-
-    scm:
-      - git: *lttng-tools_scm_git_review
+    defaults: lttng-tools-review
 
     triggers:
       - gerrit: *lttng-tools_trigger_gerrit_smoke_1
