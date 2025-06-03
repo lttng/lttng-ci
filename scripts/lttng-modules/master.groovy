@@ -753,8 +753,9 @@ switch (kverfilter) {
     lts_kversions.add(kversionFactory.factory("v5.4"))  // LTS until December 2025
     lts_kversions.add(kversionFactory.factory("v5.10")) // LTS until December 2026
     lts_kversions.add(kversionFactory.factory("v5.15")) // LTS until December 2026
-    lts_kversions.add(kversionFactory.factory("v6.1"))  // LTS until December 2026
+    lts_kversions.add(kversionFactory.factory("v6.1"))  // LTS until December 2027
     lts_kversions.add(kversionFactory.factory("v6.6"))  // LTS until December 2026
+    lts_kversions.add(kversionFactory.factory("v6.12")) // LTS until December 2026
 
     // First filter the head of each branch
     for (i = 0; i < kversions.size(); i++) {
