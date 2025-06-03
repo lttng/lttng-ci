@@ -363,7 +363,8 @@
           basedir: src/lttng-modules
           skip-tag: true
 
-    triggers:
+    triggers: !j2-yaml: |
+      {% if enable_gerrit_trigger %}
       - gerrit:
           trigger-on:
             - comment-added-event:
@@ -381,6 +382,7 @@
               branches:
                 - branch-compare-type: 'PLAIN'
                   branch-pattern: '{mversion}'
+      {% else %}[]{% endif %}
 
     properties:
       - build-discarder:
@@ -395,6 +397,9 @@
 
     publishers:
       - workspace-cleanup
+
+    # Job variables
+    enable_gerrit_trigger: true
 
 - job-template:
     name: 'dev_review_lttng-modules_{mversion}_build-{elversion}'
