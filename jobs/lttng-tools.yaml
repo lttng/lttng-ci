@@ -859,8 +859,29 @@
     <<: *lttng-tools_publishers_defaults
 
 - job-template:
+    name: 'dev_review_lttng-tools_{version}_macosbuild'
+    defaults: lttng-tools-review
+    wrappers:
+      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
+      - timeout: *lttng-tools_wrapper_timeout_defaults
+      - timestamps
+      - workspace-cleanup
+
+    <<: *lttng-tools_matrix_axes_defaults
+    <<: *lttng-tools_builders_defaults
+    <<: *lttng-tools_publishers_defaults
+
+- job-template:
     name: lttng-tools_{version}_winbuild
     defaults: lttng-tools
+
+    <<: *lttng-tools_matrix_axes_defaults
+    <<: *lttng-tools_builders_win
+    <<: *lttng-tools_publishers_win
+
+- job-template:
+    name: 'dev_review_lttng-tools_{version}_winbuild'
+    defaults: lttng-tools-review
 
     <<: *lttng-tools_matrix_axes_defaults
     <<: *lttng-tools_builders_win
@@ -1836,6 +1857,15 @@
           confs: !!python/tuple [agents]
           filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
+      - 'dev_review_lttng-tools_{version}_macosbuild':
+          buildtype: macosbuild
+          platforms: !!python/tuple [macos-arm64]
+          confs: !!python/tuple [relayd-only]
+          enable_gerrit_trigger: false
+      - 'dev_review_lttng-tools_{version}_winbuild':
+          platforms: !!python/tuple [cygwin64]
+          confs: !!python/tuple [relayd-only]
+          enable_gerrit_trigger: false
       - 'dev_review_lttng-tools_{version}_smokebuild':
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [agents]
