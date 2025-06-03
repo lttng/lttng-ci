@@ -126,6 +126,19 @@
           <<: *lttng-modules_build_parameter_kbuildjob
       - string:
           <<: *lttng-modules_build_parameter_kconfig_profile
+      - string:
+          name: 'GERRIT_BRANCH'
+          default: 'master'
+      - string:
+          name: 'GERRIT_REFSPEC'
+          default: ''
+          description: 'The refspec to fetch. E.g. `refs/changes/15/14715/2`. You may find it in the gerrit interface for downloading a specific revision of patch'
+      - string:
+          name: 'GERRIT_NAME'
+          default: 'review.lttng.org'
+      - string:
+          name: 'GERRIT_PROJECT'
+          default: 'lttng-modules'
 
 - _lttng-modules_build_parameters_el: &lttng-modules_build_parameters_el
     name: 'lttng-modules_build_parameters_el'
