@@ -1195,6 +1195,18 @@
           kverceil: ''
           kverfilter: lts-head
       - 'dev_review_lttng-modules_{mversion}_{buildtype}':
+          buildtype: crossbuild_nocompat
+          parambuildtype: crossbuild
+          kconfig_profile: nocompat
+          mversion:
+            - master
+            - stable-2.14
+            - stable-2.13
+          kverfloor: v4.4
+          kverceil: ''
+          kverfilter: lts-head
+          enable_gerrit_trigger: false
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}':
           mversion: stable-2.13
           kverfloor: v3.0
           kverceil: ''
