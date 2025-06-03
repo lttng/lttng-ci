@@ -1,6 +1,6 @@
 ---
 ## Defaults
-- defaults:
+- defaults: &lttng-tools-defaults
     name: lttng-tools
     description: |
       The lttng-tools project provides a session daemon (lttng-sessiond)
@@ -80,6 +80,27 @@
     ust_job_prefix: ''
     ust_platform: '${{platform}}'
     ustversion: '{version}'
+
+- defaults:
+    <<: *lttng-tools-defaults
+    name: lttng-tools-review
+    triggers: !j2-yaml: |
+      {% if enable_gerrit_trigger %}
+      - gerrit:
+          trigger-on:
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: 1
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-tools'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
+      {% else %}[]{% endif %}
+
+    # Job variables
+    enable_gerrit_trigger: true
 
 ## Anchors
 - _lttng-tools_steps_copyartifact_defaults:
@@ -659,7 +680,6 @@
       - ircbot: *lttng-tools_publisher_ircbot_defaults
       - email-ext: *lttng-tools_publisher_email-ext_defaults
 
-
 ## Templates
 - job-template:
     name: '{job_prefix}lttng-tools_{version}_{buildtype}'
@@ -841,7 +861,7 @@
 
 - job-template:
     name: dev_review_lttng-tools_{version}_{buildtype}
-    defaults: lttng-tools
+    defaults: lttng-tools-review
     concurrent: true
 
     scm:
@@ -852,19 +872,6 @@
             - '$GERRIT_REFSPEC'
           basedir: src/lttng-tools
           skip-tag: true
-
-    triggers: &lttng-tools_triggers_review_default
-      - gerrit: &lttng-tools_trigger_gerrit_default
-          trigger-on:
-            - comment-added-event:
-                approval-category: 'CI-Build'
-                approval-value: 1
-          projects:
-            - project-compare-type: 'PLAIN'
-              project-pattern: 'lttng-tools'
-              branches:
-                - branch-compare-type: 'PLAIN'
-                  branch-pattern: '{version}'
 
     properties: &lttng-tools_properties_review_defaults
       - inject: *lttng-tools_property_inject_defaults
@@ -902,7 +909,7 @@
 
 - job-template:
     name: 'dev_review_lttng-tools_{version}_{cctype}'
-    defaults: lttng-tools
+    defaults: lttng-tools-review
     concurrent: true
     <<: *lttng-tools_matrix_axes_defaults
     axes:
@@ -927,11 +934,10 @@
     publishers: *lttng-tools_publishers_review_defaults
     scm:
       - git: *lttng-tools_scm_git_review
-    triggers: *lttng-tools_triggers_review_default
 
 - job-template:
     name: dev_review_lttng-tools_{version}_smokebuild
-    defaults: lttng-tools
+    defaults: lttng-tools-review
     concurrent: true
 
     scm:
@@ -974,7 +980,7 @@
 
 - job-template:
     name: dev_review_lttng-tools_{version}_clang-tidy
-    defaults: lttng-tools
+    defaults: lttng-tools-review
     concurrent: true
 
     scm:
@@ -1063,14 +1069,11 @@
 
 - job-template:
     name: 'dev_review_lttng-tools_{version}_root_{buildtype}'
-    defaults: lttng-tools
+    defaults: lttng-tools-review
     concurrent: true
 
     scm:
       - git: *lttng-tools_scm_git_review
-
-    triggers:
-      - gerrit: *lttng-tools_trigger_gerrit_default
 
     properties:
       - inject: *lttng-tools_property_inject_defaults
@@ -1098,7 +1101,7 @@
 
 - job-template:
     name: 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}'
-    defaults: lttng-tools
+    defaults: lttng-tools-review
     concurrent: true
 
     scm:
@@ -1143,7 +1146,7 @@
 
 - job-template:
     name: 'dev_review_lttng-tools_{version}_root_{cctype}'
-    defaults: lttng-tools
+    defaults: lttng-tools-review
     concurrent: true
     <<: *lttng-tools_matrix_axes_rootbuild
     axes:
@@ -1170,7 +1173,6 @@
     publishers: *lttng-tools_publishers_review_defaults
     scm:
       - git: *lttng-tools_scm_git_review
-    triggers: *lttng-tools_triggers_review_default
 
 - job-template:
     name: 'dev_review_lttng-tools_{version}_check-format'
@@ -1824,8 +1826,7 @@
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
           timeout: '90'
-          # Don't run this automatically
-          triggers: {}
+          enable_gerrit_trigger: false
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
