@@ -64,6 +64,7 @@
     builds: !!python/tuple [std]
     buildtype: 'linuxbuild'
     confs: !!python/tuple [std]
+    email_to: ''
     filter: ''
     github_user: lttng
     java_agents: 'true'  # when building with the agents config, include java agents
