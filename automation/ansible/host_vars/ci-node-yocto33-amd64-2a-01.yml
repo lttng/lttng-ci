@@ -7,7 +7,7 @@ netplan_content: |
     version: 2
     renderer: networkd
     ethernets:
-      enp1s0:
+      eth0:
         dhcp4: no
         addresses:
           - 172.18.16.104/16
