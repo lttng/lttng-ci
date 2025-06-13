@@ -9,6 +9,7 @@ common_node_packages:
   - clang-tools
   - cloc
   - curl
+  - default-jdk
   - openjdk-17-jdk-headless
   - emacs-nox
   - flex
