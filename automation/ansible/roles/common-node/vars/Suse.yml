@@ -10,6 +10,7 @@ common_node_packages:
   - bison
   - curl
   - flex
+  - gdb
   - gettext-runtime
   - git-core
   - java-1_8_0-openjdk-devel

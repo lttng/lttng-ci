@@ -13,6 +13,7 @@ common_node_packages:
   - openjdk-21-jdk-headless
   - emacs-nox
   - flex
+  - gdb
   - gettext
   - git
   - htop

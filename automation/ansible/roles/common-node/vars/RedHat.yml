@@ -9,6 +9,7 @@ common_node_packages:
   - flex
   - gcc
   - gcc-c++
+  - gdb
   - gettext
   - git
   - htop
