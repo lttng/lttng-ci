@@ -1384,6 +1384,7 @@
       - '{job_prefix}lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          builds: !!python/tuple [std]
       - '{job_prefix}lttng-tools_{version}_long_regression': {}
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
@@ -1422,6 +1423,7 @@
       - '{job_prefix}lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
+          builds: !!python/tuple [std]
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
@@ -1481,6 +1483,7 @@
       - '{job_prefix}lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          builds: !!python/tuple [std]
       - '{job_prefix}lttng-tools_{version}_long_regression': {}
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
@@ -1519,6 +1522,7 @@
       - '{job_prefix}lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
+          builds: !!python/tuple [std]
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
@@ -1584,6 +1588,7 @@
       - '{job_prefix}lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          builds: !!python/tuple [std]
       - '{job_prefix}lttng-tools_{version}_long_regression': {}
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
@@ -1622,6 +1627,7 @@
       - '{job_prefix}lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
+          builds: !!python/tuple [std]
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
@@ -1808,6 +1814,7 @@
       - 'dev_review_lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          builds: !!python/tuple [std]
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           buildtype: portbuild
           version: master
@@ -1889,6 +1896,7 @@
       - 'dev_review_lttng-tools_{version}_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          builds: !!python/tuple [std]
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
@@ -1908,6 +1916,7 @@
       - 'dev_review_lttng-tools_{version}_root_{cctype}':
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
+          builds: !!python/tuple [std]
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
