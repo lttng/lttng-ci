@@ -42,13 +42,11 @@
 - ansible.builtin.include_tasks: users.yml
   tags:
     - always
-  tags:
     - access
   when: ansible_os_family != 'Windows'
 
 - ansible.builtin.include_tasks: users-Windows.yml
   tags:
     - always
-  tags:
     - access
   when: ansible_os_family == 'Windows'
