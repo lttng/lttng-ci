@@ -111,10 +111,14 @@
     triggers: !j2-yaml: |
       {% if enable_gerrit_trigger %}
       - gerrit:
+          {% if gerrit_approval_values %}
           trigger-on:
+            {% for value in gerrit_approval_values %}
             - comment-added-event:
                 approval-category: 'CI-Build'
-                approval-value: 1
+                approval-value: '{{ value }}'
+            {% endfor %}
+          {% endif %}
           projects:
             - project-compare-type: 'PLAIN'
               project-pattern: 'lttng-tools'
@@ -125,6 +129,10 @@
 
     # Job variables
     enable_gerrit_trigger: true
+    _gerrit_approval_complete: !!python/tuple [3]
+    _gerrit_approval_fast_and_more: !!python/tuple [2, 3]
+    _gerrit_approval_build_only_and_more: !!python/tuple [1, 2, 3]
+    gerrit_approval_values: '{_gerrit_approval_complete}'
 
 ## Anchors
 - _lttng-tools_steps_copyartifact_defaults:
@@ -332,6 +340,13 @@
           fi
           # Make the serial test runner aware of the current job timeout limit
           echo "LTTNG_TEST_SERIAL_TEST_TIMEOUT_MINUTES={timeout}" >> env.properties
+
+          # If started with CI-Build, disable tests when the value == 1
+          ci_build_value="$(echo "$GERRIT_EVENT_UPDATED_APPROVALS" | jq -r '.["CI-Build"].value')"
+          if [[ "$ci_build_value" == "1" ]]; then
+            echo "Disabling tests"
+            echo "LTTNG_TOOLS_RUN_TESTS=no" >> env.properties
+          fi
       - inject:
           properties-file: env.properties
       - shell:
@@ -1345,74 +1360,81 @@
     version: 'master'
     jobs:
       # Master #
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          builds: !!python/tuple [std, oot, dist]
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_linuxbuild
+          builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
-          confs: !!python/tuple [std, no-ust, agents]
-          timeout: '45'
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
-          confs: !!python/tuple [agents]
-          java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{cctype}': &job_lttng-tools_master_clangbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
+          builds: !!python/tuple [std]
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_elbuild
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_portbuild
+          buildtype: portbuild
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          confs: !!python/tuple [std, no-ust, agents]
+          timeout: '45'
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_slesbuild
+          buildtype: slesbuild
+          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          confs: !!python/tuple [agents]
+          java_preferred_jdk: '8'
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_yoctobuild
           buildtype: yoctobuild
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_macosbuild':
+      - '{job_prefix}lttng-tools_{version}_macosbuild': &job_lttng-tools_master_macosbuild
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
-      - 'lttng-tools_{version}_winbuild':
+      - 'lttng-tools_{version}_winbuild': &job_lttng-tools_master_winbuild
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
-      - '{job_prefix}lttng-tools_{version}_{cctype}':
-          cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          builds: !!python/tuple [std]
       - '{job_prefix}lttng-tools_{version}_long_regression': {}
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_linuxbuild
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
-          buildtype: portbuild
-          platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
-          nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
+      - '{job_prefix}lttng-tools_{version}_root_{cctype}': &job_lttng-tools_master_root_clangbuild
+          cctype: clangbuild
+          ccs: !!python/tuple [clang-16]
+          builds: !!python/tuple [std]
+          nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
-          timeout: '90'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
-          buildtype: slesbuild
-          platforms: !!python/tuple [sles15sp5-amd64]
-          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
-          java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_elbuild
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_portbuild
+          buildtype: portbuild
+          platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
+          nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
+          confs: !!python/tuple [agents]
+          filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
+          timeout: '90'
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_slesbuild
+          buildtype: slesbuild
+          platforms: !!python/tuple [sles15sp5-amd64]
+          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
+          confs: !!python/tuple [agents]
+          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
+          java_preferred_jdk: '8'
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
           confs: !!python/tuple [agents]
@@ -1420,17 +1442,10 @@
           platforms: !!python/tuple [yocto33-amd64]
           nodes: !!python/tuple [yocto33-amd64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
-      - '{job_prefix}lttng-tools_{version}_root_{cctype}':
-          cctype: clangbuild
-          ccs: !!python/tuple [clang-16]
-          builds: !!python/tuple [std]
-          nodes: !!python/tuple [deb12-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
-      - 'lttng-tools_{version}_scan-build':
+      - 'lttng-tools_{version}_scan-build': &job_lttng-tools_master_scan-build
           urcuversion: master
           babelversion: master
-      - 'lttng-tools_{version}_coverity':
+      - 'lttng-tools_{version}_coverity': &job_lttng-tools_master_coverity
           version: master
           urcuversion: master
           ustversion: master
@@ -1444,74 +1459,74 @@
     platforms: !!python/tuple [deb12-amd64]
     version: 'stable-2.14'
     jobs:
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
-          builds: !!python/tuple [std, oot, dist]
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_linuxbuild
+          builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="stable-2.14"))'
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_portbuild
           buildtype: portbuild
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_elbuild
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_yoctobuild
           buildtype: yoctobuild
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_macosbuild':
+      - '{job_prefix}lttng-tools_{version}_macosbuild': &job_lttng-tools_stable-2-14_macosbuild
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
-      - 'lttng-tools_{version}_winbuild':
+      - 'lttng-tools_{version}_winbuild': &job_lttng-tools_stable-2-14_winbuild
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
-      - '{job_prefix}lttng-tools_{version}_{cctype}':
+      - '{job_prefix}lttng-tools_{version}_{cctype}': &job_lttng-tools_stable-2-14_clangbuild
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           builds: !!python/tuple [std]
       - '{job_prefix}lttng-tools_{version}_long_regression': {}
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_linuxbuild
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_portbuild
           buildtype: portbuild
           platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
           timeout: '90'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_elbuild
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
           confs: !!python/tuple [agents]
@@ -1519,7 +1534,7 @@
           platforms: !!python/tuple [yocto33-amd64]
           nodes: !!python/tuple [yocto33-amd64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
-      - '{job_prefix}lttng-tools_{version}_root_{cctype}':
+      - '{job_prefix}lttng-tools_{version}_root_{cctype}': &job_lttng-tools_stable-2-14_root_clangbuild
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
           builds: !!python/tuple [std]
@@ -1546,62 +1561,62 @@
     platforms: !!python/tuple [deb12-amd64]
     version: 'stable-2.13'
     jobs:
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_linuxbuild
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, no-ust, agents, debug-rcu, tls_fallback]
           filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_portbuild
           buildtype: portbuild
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
           timeout: '45'
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_elbuild
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_yoctobuild
           buildtype: yoctobuild
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
-      - '{job_prefix}lttng-tools_{version}_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_macosbuild':
+      - '{job_prefix}lttng-tools_{version}_macosbuild': &job_lttng-tools_stable-2-13_macosbuild
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
-      - 'lttng-tools_{version}_winbuild':
+      - 'lttng-tools_{version}_winbuild': &job_lttng-tools_stable-2-13_winbuild
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
-      - '{job_prefix}lttng-tools_{version}_{cctype}':
+      - '{job_prefix}lttng-tools_{version}_{cctype}': &job_lttng-tools_stable-2-13_clangbuild
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           builds: !!python/tuple [std]
       - '{job_prefix}lttng-tools_{version}_long_regression': {}
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_linuxbuild
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_portbuild
           buildtype: portbuild
           platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
           nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
           timeout: '90'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
           nodes: !!python/tuple [sles15sp5-amd64-rootnode]
@@ -1609,14 +1624,14 @@
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_elbuild
           buildtype: elbuild
           confs: !!python/tuple [agents]
           java_agents: 'false'
           platforms: !!python/tuple [el8-amd64]
           nodes: !!python/tuple [el8-amd64-rootnode]
           filter: '(node=="el8-amd64-rootnode" && platform=="el8-amd64")'
-      - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
           confs: !!python/tuple [agents]
@@ -1624,7 +1639,7 @@
           platforms: !!python/tuple [yocto33-amd64]
           nodes: !!python/tuple [yocto33-amd64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
-      - '{job_prefix}lttng-tools_{version}_root_{cctype}':
+      - '{job_prefix}lttng-tools_{version}_root_{cctype}': &job_lttng-tools_stable-2-13_root_clangbuild
           cctype: clangbuild
           ccs: !!python/tuple [clang-16]
           builds: !!python/tuple [std]
@@ -1806,29 +1821,41 @@
     babelversions: !!python/tuple [stable-2.1]
     jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          builds: !!python/tuple [std, oot, dist, oot-dist]
-          confs: !!python/tuple [std, no-ust, agents]
-          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
-          urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
-          filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
+          <<: *job_lttng-tools_master_linuxbuild
+          gerrit_approval_values: '{_gerrit_approval_build_only_and_more}'
       - 'dev_review_lttng-tools_{version}_{cctype}':
-          cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          builds: !!python/tuple [std]
-      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          buildtype: portbuild
-          version: master
-          platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
-          nodes: !!python/tuple [deb12-i386-rootnode, deb12-armhf-rootnode, deb12-arm64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
-          timeout: '90'
-          enable_gerrit_trigger: false
+          <<: *job_lttng-tools_master_clangbuild
+          gerrit_approval_values: "{_gerrit_approval_fast_and_more}"
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
-          confs: !!python/tuple [agents]
-          java_preferred_jdk: '8'
+          <<: *job_lttng-tools_master_elbuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_master_portbuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_master_slesbuild
+          gerrit_approval_values: "{_gerrit_approval_build_only_and_more}"
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_master_yoctobuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_master_yoctobuild_extended
+      - 'dev_review_lttng-tools_{version}_macosbuild':
+          <<: *job_lttng-tools_master_macosbuild
+      - 'dev_review_lttng-tools_{version}_winbuild':
+          <<: *job_lttng-tools_master_winbuild
+      # @TODO: long_regression
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_master_root_linuxbuild
+          gerrit_approval_values: "{_gerrit_approval_fast_and_more}"
+      - 'dev_review_lttng-tools_{version}_root_{cctype}':
+          <<: *job_lttng-tools_master_root_clangbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_master_root_elbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_master_root_portbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_master_root_slesbuild
+          gerrit_approval_values: "{_gerrit_approval_fast_and_more}"
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_master_root_yoctobuild_extended
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild-gdb
           babeltrace_buildtype: slesbuild
@@ -1840,39 +1867,14 @@
           platforms: !!python/tuple [sles15sp5-amd64-gdb]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          nodes: !!python/tuple [deb12-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
-          modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
           modules_branch_pattern: 'master|stable-2.13'
           modules_aligned_access: !!python/tuple ['default', 'force']
-      - 'dev_review_lttng-tools_{version}_root_{cctype}':
-          cctype: clangbuild
-          ccs: !!python/tuple [clang-16]
-          nodes: !!python/tuple [deb12-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
-      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          buildtype: slesbuild
-          platforms: !!python/tuple [sles15sp5-amd64]
-          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
-          java_preferred_jdk: '8'
-      - 'dev_review_lttng-tools_{version}_macosbuild':
-          buildtype: macosbuild
-          platforms: !!python/tuple [macos-arm64]
-          confs: !!python/tuple [relayd-only]
-          enable_gerrit_trigger: false
-      - 'dev_review_lttng-tools_{version}_winbuild':
-          platforms: !!python/tuple [cygwin64]
-          confs: !!python/tuple [relayd-only]
-          enable_gerrit_trigger: false
+          # This job is triggered by lttng-ust which doesn't use the same CI-Build levels
+          gerrit_approval_values: !!python/tuple [1]
       - 'dev_review_lttng-tools_{version}_smokebuild':
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [agents]
@@ -1888,45 +1890,47 @@
     urcuversions: !!python/tuple [master]
     jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          builds: !!python/tuple [std, oot, dist, oot-dist]
-          confs: !!python/tuple [std, no-ust, agents]
-          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
-          urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
-          filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust")))'
+          <<: *job_lttng-tools_stable-2-14_linuxbuild
+          gerrit_approval_values: '{_gerrit_approval_build_only_and_more}'
       - 'dev_review_lttng-tools_{version}_{cctype}':
-          cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
-          builds: !!python/tuple [std]
+          <<: *job_lttng-tools_stable-2-14_clangbuild
+          gerrit_approval_values: '{_gerrit_approval_fast_and_more}'
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
-          confs: !!python/tuple [agents]
-          java_preferred_jdk: '8'
+          <<: *job_lttng-tools_stable-2-14_elbuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_portbuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_slesbuild
+          gerrit_approval_values: '{_gerrit_approval_build_only_and_more}'
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_yoctobuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_yoctobuild_extended
+      - 'dev_review_lttng-tools_{version}_macosbuild':
+          <<: *job_lttng-tools_stable-2-14_macosbuild
+      - 'dev_review_lttng-tools_{version}_winbuild':
+          <<: *job_lttng-tools_stable-2-14_winbuild
+      # @TODO: long_regression
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          nodes: !!python/tuple [deb12-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
-          modules_aligned_access: !!python/tuple ['default', 'force']
+          <<: *job_lttng-tools_stable-2-14_root_linuxbuild
+          gerrit_approval_values: '{_gerrit_approval_fast_and_more}'
+      - 'dev_review_lttng-tools_{version}_root_{cctype}':
+          <<: *job_lttng-tools_stable-2-14_root_clangbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_root_elbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_root_portbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_root_slesbuild
+          gerrit_approval_values: '{_gerrit_approval_fast_and_more}'
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_root_yoctobuild_extended
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
           modules_branch_pattern: 'stable-2.14|stable-2.13'
           modules_aligned_access: !!python/tuple ['default', 'force']
-      - 'dev_review_lttng-tools_{version}_root_{cctype}':
-          cctype: clangbuild
-          ccs: !!python/tuple [clang-16]
-          builds: !!python/tuple [std]
-          nodes: !!python/tuple [deb12-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
-      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          buildtype: slesbuild
-          platforms: !!python/tuple [sles15sp5-amd64]
-          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
-          java_preferred_jdk: '8'
       - 'dev_review_lttng-tools_{version}_smokebuild':
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [agents]
@@ -1942,25 +1946,43 @@
     babelversions: !!python/tuple [stable-2.1]
     jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          builds: !!python/tuple [std, oot, dist, oot-dist]
-          confs: !!python/tuple [std, no-ust, agents]
-          urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
+          <<: *job_lttng-tools_stable-2-13_linuxbuild
+          gerrit_approval_values: '{_gerrit_approval_build_only_and_more}'
+      - 'dev_review_lttng-tools_{version}_{cctype}':
+          <<: *job_lttng-tools_stable-2-13_clangbuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_elbuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_slesbuild
+          gerrit_approval_values: '{_gerrit_approval_build_only_and_more}'
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_yoctobuild
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_yoctobuild_extended
+      - 'dev_review_lttng-tools_{version}_macosbuild':
+          <<: *job_lttng-tools_stable-2-13_macosbuild
+      - 'dev_review_lttng-tools_{version}_winbuild':
+          <<: *job_lttng-tools_stable-2-13_winbuild
+      # @TODO long_regression
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          nodes: !!python/tuple [deb12-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
+          <<: *job_lttng-tools_stable-2-13_root_linuxbuild
+          gerrit_approval_values: '{_gerrit_approval_fast_and_more}'
+      - 'dev_review_lttng-tools_{version}_root_{cctype}':
+          <<: *job_lttng-tools_stable-2-13_root_clangbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_root_elbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_root_portbuild
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_root_slesbuild
+          gerrit_approval_values: '{_gerrit_approval_fast_and_more}'
+      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_root_yoctobuild_extended
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
           modules_branch_pattern: 'master|stable-2.13'
-      - 'dev_review_lttng-tools_{version}_root_{buildtype}':
-          buildtype: slesbuild
-          platforms: !!python/tuple [sles15sp5-amd64]
-          nodes: !!python/tuple [sles15sp5-amd64-rootnode]
-          confs: !!python/tuple [agents]
-          filter: '(node=="sles15sp5-amd64-rootnode" && platform=="sles15sp5-amd64")'
-          java_preferred_jdk: '8'
 
 - project:
     name: review-lttng-tools-stable-2.12
@@ -1968,6 +1990,8 @@
     platforms: !!python/tuple [deb12-amd64]
     urcuversions: !!python/tuple [master]
     babelversions: !!python/tuple [stable-2.1]
+    # Run the few dev review jobs on any CI-Build vote as before
+    gerrit_approval_values: !!python/tuple [1, 2, 3]
     jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
