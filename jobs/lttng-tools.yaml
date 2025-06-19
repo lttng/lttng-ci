@@ -55,8 +55,11 @@
 
     properties:
       - inject: &lttng-tools_property_inject_defaults
-          properties-content: |
+          properties-content: !j2: |
             PROJECT_NAME=lttng-tools
+            {% for item in job_properties %}
+            {{item.name}}={{item.value}}
+            {% endfor %}
       - build-discarder: &lttng-tools_property_build-discarder_defaults
           num-to-keep: 20
           artifact-num-to-keep: 2
@@ -76,6 +79,7 @@
     java_agents: 'true'  # when building with the agents config, include java agents
     java_preferred_jdk: 'default'
     job_prefix: ''
+    job_properties: []
     modules_aligned_access: !!python/tuple ['default']
     python: ''
     timeout: '30'
