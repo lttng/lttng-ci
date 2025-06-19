@@ -1835,17 +1835,6 @@
           gerrit_approval_values: "{_gerrit_approval_fast_and_more}"
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           <<: *job_lttng-tools_master_root_yoctobuild_extended
-      - 'dev_review_lttng-tools_{version}_{buildtype}':
-          buildtype: slesbuild-gdb
-          babeltrace_buildtype: slesbuild
-          babeltrace_platform: sles15sp5-amd64
-          urcu_buildtype: slesbuild
-          urcu_platform: sles15sp5-amd64
-          ust_buildtype: slesbuild
-          ust_platform: sles15sp5-amd64
-          platforms: !!python/tuple [sles15sp5-amd64-gdb]
-          confs: !!python/tuple [agents]
-          java_preferred_jdk: '8'
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
