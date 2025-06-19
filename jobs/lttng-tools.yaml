@@ -948,25 +948,6 @@
     name: dev_review_lttng-tools_{version}_clang-tidy
     defaults: lttng-tools-review
 
-    triggers:
-      - gerrit: &lttng-tools_trigger_gerrit_smoke_2
-          trigger-on:
-            - comment-added-event:
-                approval-category: 'Smoke-Build-Lvl2'
-                approval-value: 1
-          projects:
-            - project-compare-type: 'PLAIN'
-              project-pattern: 'lttng-tools'
-              branches:
-                - branch-compare-type: 'PLAIN'
-                  branch-pattern: '{version}'
-          skip-vote:
-            successful: true
-            failed: true
-            unstable: true
-            notbuilt: true
-            aborted: true
-
     properties:
       - inject:
           properties-content: |
@@ -1127,10 +1108,6 @@
 - job-template:
     name: 'dev_review_lttng-tools_{version}_check-format'
     defaults: lttng-tools-review
-
-    triggers:
-      - gerrit: *lttng-tools_trigger_gerrit_smoke_1
-
     node: 'deb12-amd64'
 
     builders:
@@ -1849,7 +1826,9 @@
           gerrit_approval_values: !!python/tuple [1]
       - 'dev_review_lttng-tools_{version}_clang-tidy':
           confs: !!python/tuple [agents]
-      - 'dev_review_lttng-tools_{version}_check-format': {}
+          gerrit_approval_values: !!python/tuple [1]
+      - 'dev_review_lttng-tools_{version}_check-format':
+          gerrit_approval_values: !!python/tuple [1]
 
 - project:
     name: review-lttng-tools-stable-2.14
@@ -1906,7 +1885,9 @@
           confs: !!python/tuple [agents]
       - 'dev_review_lttng-tools_{version}_clang-tidy':
           confs: !!python/tuple [agents]
-      - 'dev_review_lttng-tools_{version}_check-format': {}
+          gerrit_approval_values: !!python/tuple [1]
+      - 'dev_review_lttng-tools_{version}_check-format':
+          gerrit_approval_values: !!python/tuple [1]
 
 - project:
     name: review-lttng-tools-stable-2.13
