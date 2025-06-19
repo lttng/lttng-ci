@@ -683,9 +683,7 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
 
         cd "${OWD}"
     fi
-fi
-
-if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ "$conf" =~ (no-ust|relayd-only) ]]; then
+else
     # The TAP plugin will fail the job if no test logs are present
     mkdir -p "$TAPDIR/no-tests"
     echo "1..1" > "$TAPDIR/no-tests/tests.log"
