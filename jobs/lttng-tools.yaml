@@ -1,4 +1,5 @@
 ---
+
 ## Defaults
 - defaults: &lttng-tools-defaults
     name: lttng-tools
@@ -23,7 +24,8 @@
       - timestamps
       - workspace-cleanup
       - raw: &lttng-tools_wrapper_proc-cleaner_defaults
-          xml: |
+          xml: !j2: |
+            {% if wrapper_proc_cleaner %}
             <org.jenkinsci.plugins.proccleaner.PreBuildCleanup plugin="proc-cleaner-plugin">
               <cleaner class="org.jenkinsci.plugins.proccleaner.PsCleaner">
                 <killerType>org.jenkinsci.plugins.proccleaner.PsAllKiller</killerType>
@@ -32,6 +34,10 @@
                 <systemProcessesFilterOff>false</systemProcessesFilterOff>
               </cleaner>
             </org.jenkinsci.plugins.proccleaner.PreBuildCleanup>
+            {% else %}
+            {# this satisfies xml.etree.ElementTree.fromstring() #}
+            <empty></empty>
+            {% endif %}
 
     scm:
       - git: &lttng-tools_scm_git_default
@@ -81,6 +87,7 @@
     ust_job_prefix: ''
     ust_platform: '${{platform}}'
     ustversion: '{version}'
+    wrapper_proc_cleaner: true
 
 - defaults:
     <<: *lttng-tools-defaults
@@ -756,20 +763,6 @@
     <<: *lttng-tools_publishers_defaults
 
 - job-template:
-    name: 'dev_{user}_lttng-tools_{version}_macosbuild'
-    defaults: lttng-tools
-
-    wrappers:
-      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout: *lttng-tools_wrapper_timeout_defaults
-      - timestamps
-      - workspace-cleanup
-
-    <<: *lttng-tools_matrix_axes_defaults
-    <<: *lttng-tools_builders_defaults
-    <<: *lttng-tools_publishers_defaults
-
-- job-template:
     name: '{job_prefix}lttng-tools_{version}_long_regression'
     defaults: lttng-tools
     properties:
@@ -858,33 +851,6 @@
       - reverse:
             jobs: '{ust_job_prefix}lttng-ust_{version}_{cctype}'
             result: 'success'
-
-- job-template:
-    name: '{job_prefix}lttng-tools_{version}_macosbuild'
-    defaults: lttng-tools
-
-    wrappers:
-      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout: *lttng-tools_wrapper_timeout_defaults
-      - timestamps
-      - workspace-cleanup
-
-    <<: *lttng-tools_matrix_axes_defaults
-    <<: *lttng-tools_builders_defaults
-    <<: *lttng-tools_publishers_defaults
-
-- job-template:
-    name: 'dev_review_lttng-tools_{version}_macosbuild'
-    defaults: lttng-tools-review
-    wrappers:
-      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout: *lttng-tools_wrapper_timeout_defaults
-      - timestamps
-      - workspace-cleanup
-
-    <<: *lttng-tools_matrix_axes_defaults
-    <<: *lttng-tools_builders_defaults
-    <<: *lttng-tools_publishers_defaults
 
 - job-template:
     name: lttng-tools_{version}_winbuild
@@ -1393,10 +1359,11 @@
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_macosbuild': &job_lttng-tools_master_macosbuild
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_macosbuild
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
+          wrapper_proc_cleaner: false
       - 'lttng-tools_{version}_winbuild': &job_lttng-tools_master_winbuild
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
@@ -1488,10 +1455,11 @@
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_macosbuild': &job_lttng-tools_stable-2-14_macosbuild
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_macosbuild
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
+          wrapper_proc_cleaner: false
       - 'lttng-tools_{version}_winbuild': &job_lttng-tools_stable-2-14_winbuild
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
@@ -1593,10 +1561,11 @@
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_macosbuild': &job_lttng-tools_stable-2-13_macosbuild
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_macosbuild
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
+          wrapper_proc_cleaner: false
       - 'lttng-tools_{version}_winbuild': &job_lttng-tools_stable-2-13_winbuild
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
@@ -1701,10 +1670,11 @@
           platforms: !!python/tuple [yocto33-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
-      - '{job_prefix}lttng-tools_{version}_macosbuild':
+      - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           confs: !!python/tuple [relayd-only]
+          wrapper_proc_cleaner: false
       - 'lttng-tools_{version}_winbuild':
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
@@ -1778,12 +1748,13 @@
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
           builds: !!python/tuple [std]
           babelversions: !!python/tuple [stable-1.5, master]
-      - 'dev_{user}_lttng-tools_{version}_macosbuild':
+      - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           buildtype: macosbuild
           platforms: !!python/tuple [macos-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [relayd-only]
           babelversions: !!python/tuple [stable-2.0]
+          wrapper_proc_cleaner: false
 
       # stable-2.13
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -1837,7 +1808,7 @@
           <<: *job_lttng-tools_master_yoctobuild
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           <<: *job_lttng-tools_master_yoctobuild_extended
-      - 'dev_review_lttng-tools_{version}_macosbuild':
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
           <<: *job_lttng-tools_master_macosbuild
       - 'dev_review_lttng-tools_{version}_winbuild':
           <<: *job_lttng-tools_master_winbuild
@@ -1878,6 +1849,7 @@
       - 'dev_review_lttng-tools_{version}_smokebuild':
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [agents]
+          gerrit_approval_values: !!python/tuple [1]
       - 'dev_review_lttng-tools_{version}_clang-tidy':
           confs: !!python/tuple [agents]
       - 'dev_review_lttng-tools_{version}_check-format': {}
@@ -1906,7 +1878,7 @@
           <<: *job_lttng-tools_stable-2-14_yoctobuild
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           <<: *job_lttng-tools_stable-2-14_yoctobuild_extended
-      - 'dev_review_lttng-tools_{version}_macosbuild':
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
           <<: *job_lttng-tools_stable-2-14_macosbuild
       - 'dev_review_lttng-tools_{version}_winbuild':
           <<: *job_lttng-tools_stable-2-14_winbuild
@@ -1959,7 +1931,7 @@
           <<: *job_lttng-tools_stable-2-13_yoctobuild
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           <<: *job_lttng-tools_stable-2-13_yoctobuild_extended
-      - 'dev_review_lttng-tools_{version}_macosbuild':
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
           <<: *job_lttng-tools_stable-2-13_macosbuild
       - 'dev_review_lttng-tools_{version}_winbuild':
           <<: *job_lttng-tools_stable-2-13_winbuild
