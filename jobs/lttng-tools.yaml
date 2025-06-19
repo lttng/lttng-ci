@@ -767,35 +767,6 @@
     <<: *lttng-tools_publishers_defaults
 
 - job-template:
-    name: '{job_prefix}lttng-tools_{version}_long_regression'
-    defaults: lttng-tools
-    properties:
-      - inject:
-          properties-content: |
-            PROJECT_NAME=lttng-tools
-            LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION=yes
-      - build-discarder: *lttng-tools_property_build-discarder_defaults
-      - github: *lttng-tools_property_github_defaults
-
-    wrappers:
-      - ansicolor: *lttng-tools_wrapper_ansicolor_defaults
-      - timeout: *lttng-tools_wrapper_timeout_defaults
-      - timestamps
-      - workspace-cleanup
-      - raw: *lttng-tools_wrapper_proc-cleaner_defaults
-
-    <<: *lttng-tools_matrix_axes_defaults
-    <<: *lttng-tools_builders_defaults
-    <<: *lttng-tools_publishers_defaults
-
-    triggers:
-      - pollscm: *lttng-tools_trigger_pollscm_default
-      - reverse:
-            jobs: '{ust_job_prefix}lttng-ust_{version}_{buildtype}'
-            result: 'success'
-    timeout: '45'
-
-- job-template:
     name: '{job_prefix}lttng-tools_{version}_root_{buildtype}'
     defaults: lttng-tools
 
@@ -1371,7 +1342,15 @@
       - 'lttng-tools_{version}_winbuild': &job_lttng-tools_master_winbuild
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
-      - '{job_prefix}lttng-tools_{version}_long_regression': {}
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_long_regression
+          buildtype: long_regression
+          babeltrace_buildtype: linuxbuild
+          urcu_buildtype: linuxbuild
+          ust_buildtype: linuxbuild
+          job_properties:
+            - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
+              value: 'yes'
+          timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_linuxbuild
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1471,7 +1450,15 @@
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           builds: !!python/tuple [std]
-      - '{job_prefix}lttng-tools_{version}_long_regression': {}
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_long_regression
+          buildtype: long_regression
+          babeltrace_buildtype: linuxbuild
+          urcu_buildtype: linuxbuild
+          ust_buildtype: linuxbuild
+          job_properties:
+            - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
+              value: 'yes'
+          timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_linuxbuild
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1577,7 +1564,15 @@
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16]
           builds: !!python/tuple [std]
-      - '{job_prefix}lttng-tools_{version}_long_regression': {}
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_long_regression
+          buildtype: long_regression
+          babeltrace_buildtype: linuxbuild
+          urcu_buildtype: linuxbuild
+          ust_buildtype: linuxbuild
+          job_properties:
+            - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
+              value: 'yes'
+          timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_linuxbuild
           nodes: !!python/tuple [deb12-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1682,7 +1677,15 @@
       - 'lttng-tools_{version}_winbuild':
           platforms: !!python/tuple [cygwin64]
           confs: !!python/tuple [relayd-only]
-      - '{job_prefix}lttng-tools_{version}_long_regression': {}
+      - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-12_long_regression
+          buildtype: long_regression
+          babeltrace_buildtype: linuxbuild
+          urcu_buildtype: linuxbuild
+          ust_buildtype: linuxbuild
+          job_properties:
+            - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
+              value: 'yes'
+          timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode-linux5]
           confs: !!python/tuple [agents]
@@ -1816,7 +1819,8 @@
           <<: *job_lttng-tools_master_macosbuild
       - 'dev_review_lttng-tools_{version}_winbuild':
           <<: *job_lttng-tools_master_winbuild
-      # @TODO: long_regression
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_master_long_regression
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           <<: *job_lttng-tools_master_root_linuxbuild
           gerrit_approval_values: "{_gerrit_approval_fast_and_more}"
@@ -1886,7 +1890,8 @@
           <<: *job_lttng-tools_stable-2-14_macosbuild
       - 'dev_review_lttng-tools_{version}_winbuild':
           <<: *job_lttng-tools_stable-2-14_winbuild
-      # @TODO: long_regression
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-14_long_regression
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           <<: *job_lttng-tools_stable-2-14_root_linuxbuild
           gerrit_approval_values: '{_gerrit_approval_fast_and_more}'
@@ -1939,7 +1944,8 @@
           <<: *job_lttng-tools_stable-2-13_macosbuild
       - 'dev_review_lttng-tools_{version}_winbuild':
           <<: *job_lttng-tools_stable-2-13_winbuild
-      # @TODO long_regression
+      - 'dev_review_lttng-tools_{version}_{buildtype}':
+          <<: *job_lttng-tools_stable-2-13_long_regression
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           <<: *job_lttng-tools_stable-2-13_root_linuxbuild
           gerrit_approval_values: '{_gerrit_approval_fast_and_more}'
