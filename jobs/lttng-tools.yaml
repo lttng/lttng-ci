@@ -286,7 +286,7 @@
           project:
             !j2: |
               {{urcu_job_prefix}}liburcu_{%- raw -%}${liburcu_version}{%- endraw -%}
-              _{{cctype|default(buildtype)}}/platform={{urcu_platform}},conf={%- raw -%}${liburcu_conf}{%- endraw -%},build=std,{%- if ccs|default(false) -%}cc={%- raw -%}${cc}{%- endraw -%},{%- endif -%}
+              _{{cctype|default(urcu_buildtype)}}/platform={{urcu_platform}},conf={%- raw -%}${liburcu_conf}{%- endraw -%},build=std,{%- if ccs|default(false) -%}cc={%- raw -%}${cc}{%- endraw -%},{%- endif -%}
 
       # Always copy babeltrace artifacts
       - copyartifact:
@@ -305,7 +305,7 @@
                 <<: *lttng-tools_steps_copyartifact_defaults
                 project:
                   !j2: |
-                    {{ust_job_prefix}}lttng-ust_{{ustversion}}_{{cctype|default(buildtype)}}/liburcu_version={%- raw -%}${liburcu_version}{%- endraw -%}
+                    {{ust_job_prefix}}lttng-ust_{{ustversion}}_{{cctype|default(ust_buildtype)}}/liburcu_version={%- raw -%}${liburcu_version}{%- endraw -%}
                     ,platform={{ust_platform}},conf={%- raw -%}${ust_conf}{%- endraw -%}
                     ,build=std,{% if ccs|default(false) %}cc={%- raw -%}${cc}{%- endraw -%}{% endif %}
 
