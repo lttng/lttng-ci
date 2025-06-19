@@ -622,7 +622,9 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
     # Copy the test suites top-level log which includes all tests failures
     rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
 
-    if [ "$LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION" = "yes" ]; then
+    if [ "$LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION" = "yes" ] && [ -f "tests/long_regression" ]; then
+        # Newer versions (2.15+) of lttng-tools don't have a `long_regression` file, and the long regression
+        # tests will run when `LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION` is set in the environment.
         print_header "Run long regression tests"
         cd tests
         mkdir -p "$TAPDIR/long_regression"
