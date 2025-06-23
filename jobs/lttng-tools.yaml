@@ -400,9 +400,11 @@
           condition-operands:
               - condition-kind: shell
                 condition-command: 'test "$GERRIT_DEP_LTTNG_UST" = ""'
-              - condition-kind: regex-match
-                label: '$conf'
-                regex: (std|agents)
+              - condition-kind: not
+                condition-operand:
+                  condition-kind: regex-match
+                  label: '$conf'
+                  regex: '(no-ust|relayd-only)'
               - condition-kind: regex-match
                 label: '$GERRIT_PROJECT'
                 regex: '(lttng-tools)'
@@ -420,9 +422,11 @@
           condition-operands:
               - condition-kind: shell
                 condition-command: 'test "$GERRIT_DEP_LTTNG_UST" = ""'
-              - condition-kind: regex-match
-                label: '$conf'
-                regex: (std|agents)
+              - condition-kind: not
+                condition-operand:
+                  condition-kind: regex-match
+                  label: '$conf'
+                  regex: '(no-ust|relayd-only)'
               - condition-kind: shell
                 label: '$GERRIT_PROJECT'
                 regex: 'if [[ $GERRIT_PROJECT =~ "lttng-tools" ]] ; then exit 1 ; fi'
