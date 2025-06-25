@@ -70,9 +70,12 @@ git rev-list --format=%B --max-count=1 HEAD | while read -r line; do
     fi
 
     # Export the GERRIT_DEP_... into the property file for further jenkins usage
-    echo "GERRIT_DEP_${project_sanitize^^}=${gerrit_id}" >> "$property_file"
+    # Bash case modification e.g. `${x^^}` was introduced in bash 4. MacOSX provides
+    # only bash 3.x, so use 'tr' to upper case
+    project_sanitize_upper="$(echo "${project_sanitize}" | tr '[:lower:]' '[:upper:]')"
+    echo "GERRIT_DEP_${project_sanitize_upper}=${gerrit_id}" >> "$property_file"
     # Deactivate tests for the project
-    echo "${project_sanitize^^}_RUN_TESTS=no" >> "$property_file"
+    echo "${project_sanitize_upper}_RUN_TESTS=no" >> "$property_file"
 
     # Get the change latest ref
     case $project in
