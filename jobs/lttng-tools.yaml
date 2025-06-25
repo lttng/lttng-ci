@@ -488,8 +488,15 @@
 
       # Build lttng-ust if we depend on a specific lttng-ust change
       - conditional-step:
-          condition-kind: shell
-          condition-command: 'test "$GERRIT_DEP_LTTNG_UST" != ""'
+          condition-kind: and
+          condition-operands:
+            - condition-kind: shell
+              condition-command: 'test "$GERRIT_DEP_LTTNG_UST" != ""'
+            - condition-kind: not
+              condition-operand:
+                condition-kind: regex-match
+                label: '$conf'
+                regex: '(no-ust|relayd-only)'
           steps:
             - shell:
                !include-raw-verbatim:
