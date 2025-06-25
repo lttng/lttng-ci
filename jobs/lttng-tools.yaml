@@ -457,7 +457,7 @@
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
-                project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{urcu_buildtype}/platform={babeltrace_platform},conf=std,build=std'
+                project: '{bt_job_prefix}babeltrace_${{babeltrace_version}}_{babeltrace_buildtype}/platform={babeltrace_platform},conf=std,build=std'
 
       - shell:
          !include-raw-verbatim: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
