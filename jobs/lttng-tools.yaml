@@ -67,7 +67,7 @@
           url: https://github.com/{github_user}/lttng-tools
 
     # Variables
-    babeltrace_buildtype: ''  # will default to buildtype
+    babeltrace_buildtype: '{buildtype}'
     babeltrace_platform: '${{platform}}'
     bt_job_prefix: ''
     builds: !!python/tuple [std]
@@ -260,11 +260,7 @@
 
           echo "liburcu_conf=$liburcu_conf" >> env.properties
           echo "babeltrace_conf=$babeltrace_conf" >> env.properties
-          if [[ "{babeltrace_buildtype}" != "" ]]; then
-            echo "babeltrace_buildtype={babeltrace_buildtype}" >> env.properties
-          else
-            echo "babeltrace_buildtype={buildtype}" >> env.properties
-          fi
+          echo "babeltrace_buildtype={babeltrace_buildtype}" >> env.properties
 
           echo "ust_conf=$ust_conf" >> env.properties
           echo "LTTNG_TOOLS_JAVA_AGENTS={java_agents|true}" >> env.properties
