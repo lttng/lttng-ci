@@ -345,6 +345,9 @@
             echo "LTTNG_TESTS_TAP_AUTOTIME=0" >> env.properties
           fi
           echo "LTTNG_TOOLS_JAVA_AGENTS={java_agents|true}" >> env.properties
+          # If not using java_agents, disable that for any lttng-ust which may be
+          # built via depends-on
+          echo "LTTNG_UST_JAVA_AGENTS={java_agents|false}" >> env.properties
           echo "java_preferred_jdk={java_preferred_jdk}" >> env.properties
           if [ "{python}" != "" ]; then
             echo "PYTHON={python}" >> env.properties
@@ -358,6 +361,7 @@
             echo "Disabling tests"
             echo "LTTNG_TOOLS_RUN_TESTS=no" >> env.properties
           fi
+
       - inject:
           properties-file: env.properties
       - shell:
