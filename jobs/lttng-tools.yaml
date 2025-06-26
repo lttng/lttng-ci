@@ -437,13 +437,34 @@
 
       # Copy liburcu artifacts if we don't depend on a specific liburcu change
       - conditional-step:
-          condition-kind: shell
-          on-evaluation-failure: run
-          condition-command: 'test "$GERRIT_DEP_USERSPACE_RCU" = ""'
+          condition-kind: and
+          condition-operands:
+            - condition-kind: shell
+              condition-command: 'test "$GERRIT_DEP_USERSPACE_RCU" = ""'
+            # When debug-rcu or tls_fallback, we need a different urcu build
+            - condition-kind: not
+              condition-operand:
+                condition-kind: regex-match
+                label: '$conf'
+                regex: '(debug-rcu|tls_fallback)'
           steps:
             - copyartifact:
                 <<: *lttng-tools_steps_copyartifact_defaults
                 project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{urcu_buildtype}/platform={urcu_platform},conf=std,build=std'
+
+      - conditional-step:
+          condition-kind: and
+          condition-operands:
+            - condition-kind: shell
+              condition-command: 'test "$GERRIT_DEP_USERSPACE_RCU" = ""'
+            # When debug-rcu or tls_fallback, we need a different urcu build
+            - condition-kind: regex-match
+              label: '$conf'
+              regex: '(debug-rcu|tls_fallback)'
+          steps:
+            - copyartifact:
+                <<: *lttng-tools_steps_copyartifact_defaults
+                project: '{urcu_job_prefix}liburcu_${{liburcu_version}}_{urcu_buildtype}/platform={urcu_platform},conf=${{conf}},build=std'
 
       # Copy babeltrace artifacts if we don't depend on a specific babeltrace change
       - conditional-step:
