@@ -839,6 +839,10 @@ while ( kversions.size() != 0 || ongoingBuild.size() != 0 ) {
       new StringParameterValue('getsrc_version', build.buildVariableResolver.resolve('getsrc_version'))
     ]
 
+    if (uversion) {
+      job_params.add(new StringParameterValue('uversion', uversion))
+    }
+
     // Launch the parametrized build
     def param_build = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(job_params))
     println "triggering ${joburl} for the ${mbranch} branch on kernel ${kversion}"

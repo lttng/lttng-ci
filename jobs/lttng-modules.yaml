@@ -220,7 +220,7 @@
           default: 'git://git-mirror.internal.efficios.com/git/ubuntu-{uversion}.git'
       - string:
           <<: *lttng-modules_build_parameter_kbuildjob
-      - string:
+      - string: &lttng-modules_build_parameter_uversion
           name: 'uversion'
           default: '{uversion}'
           description: 'The Ubuntu release version name (e.g. jammy)'
@@ -691,6 +691,9 @@
           name: 'FAIL_ON_WARNINGS'
           default: false
           description: "Fail the lttng-modules build if there are any warnings"
+      - string:
+          <<: *lttng-modules_build_parameter_uversion
+          default: ''
 
     concurrent: true
 
@@ -752,6 +755,9 @@
           name: 'kgitrepo'
           default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
           description: 'The linux kernel git repository url.'
+      - string:
+          <<: *lttng-modules_build_parameter_uversion
+          default: ''
 
     concurrent: true
 
@@ -867,6 +873,9 @@
           description: 'The linux kernel git repository url.'
       - string:
           <<: *lttng-modules_build_parameter_kconfig_profile
+      - string:
+          <<: *lttng-modules_build_parameter_uversion
+          default: ''
 
     concurrent: true
 
