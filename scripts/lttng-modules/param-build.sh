@@ -382,17 +382,38 @@ build_linux_kernel() {
           exit 0
         fi
 
-        if [[ "${cross_arch}" == "riscv64" ]]; then
-            BROKEN=(
-                "Ubuntu-6.8.0-60.63"  # btrfs_bio_end_io
-                "Ubuntu-hwe-6.8-6.8.0-60.63_22.04.1"  # btrfs_bio_end_io
-            )
-            for broken in "${BROKEN[@]}"; do
-                if [[ "${broken}" == "${ktag}" ]]; then
-                    echo "Known broken kernel build, skipping"
-                    exit 0
+        # A lot of Ubuntu tags don't build against all architectures. Double-check
+        # that there is a linux-image for the cross architecture in an archive for
+        # the distribution version (e.g. noble).
+        if [ -n "${cross_arch:-}" ]; then
+            if [ -z "${uversion:-}" ]; then
+                echo "uversion not set"
+                exit 1
+            fi
+
+            # Extract version for package name
+            #ubuntu_package_name="linux-image-$(echo "${ktag}" | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+-[0-9]+')-generic"
+            version_from_tag="$(echo "${ktag}" | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+-[0-9]+.*' | tr '_' '~')"
+            endpoint="https://api.launchpad.net/1.0/ubuntu/+archive/primary?ws.op=getPublishedBinaries&binary_name=linux-image-generic&distro_arch_series=https://api.launchpad.net/1.0/ubuntu/${uversion}/${cross_arch}"
+            versions=()
+            while read -r line ; do
+                versions+=("${line}")
+            done < <(curl "${endpoint}" | jq -r '.entries[] | select(.pocket != "Proposed") | .binary_package_version' | sort -V | uniq)
+
+            found=
+            for version in "${versions[@]}" ; do
+                if [ "${version}" == "${version_from_tag}" ]; then
+                    found=0
+                    break
                 fi
             done
+
+            if [ -z "${found}" ]; then
+                echo "No binary with version '${version_from_tag}' matching tag '${ktag}' found, skipping build" >&2
+                echo "Versions:" >&2
+                echo "${versions[*]}" >&2
+                exit 0
+            fi
         fi
 
         FAKEROOT_ARGS=(
