@@ -131,17 +131,17 @@
           <<: *lttng-modules_build_parameter_kbuildjob
       - string:
           <<: *lttng-modules_build_parameter_kconfig_profile
-      - string:
+      - string: &lttng-modules_build_parameter_gerrit_branch
           name: 'GERRIT_BRANCH'
           default: 'master'
-      - string:
+      - string: &lttng-modules_build_parameter_gerrit_refspec
           name: 'GERRIT_REFSPEC'
           default: ''
           description: 'The refspec to fetch. E.g. `refs/changes/15/14715/2`. You may find it in the gerrit interface for downloading a specific revision of patch'
-      - string:
+      - string: &lttng-modules_build_parameter_gerrit_name
           name: 'GERRIT_NAME'
           default: 'review.lttng.org'
-      - string:
+      - string: &lttng-modules_build_parameter_gerrit_project
           name: 'GERRIT_PROJECT'
           default: 'lttng-modules'
 
@@ -583,6 +583,51 @@
 
     <<: *lttng-modules_build_parameters_ubuntu
     <<: *lttng-modules_build_builders_defaults
+
+- job-template:
+    name: 'dev_review_lttng-modules_{mversion}_{buildtype}-{uversion}'
+    defaults: lttng-modules
+    node: 'master'
+    publishers:
+      - workspace-cleanup
+    triggers: []
+    scm:
+      - git:
+          url: https://review.lttng.org/lttng-modules
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src/lttng-modules
+          skip-tag: true
+
+    <<: *lttng-modules_build_builders_defaults
+    parameters:
+      - string:
+          <<: *lttng-modules_build_parameter_maxConcurrentBuild
+      - string:
+          <<: *lttng-modules_build_parameter_kverfloor
+      - string:
+          <<: *lttng-modules_build_parameter_kverceil
+      - string:
+          <<: *lttng-modules_build_parameter_kverfilter
+      - string:
+          <<: *lttng-modules_build_parameter_kverrc
+          default: 'false'
+      - string:
+          <<: *lttng-modules_build_parameter_kgitrepo
+          default: 'git://git-mirror.internal.efficios.com/git/ubuntu-{uversion}.git'
+      - string:
+          <<: *lttng-modules_build_parameter_kbuildjob
+      - string:
+          <<: *lttng-modules_build_parameter_uversion
+      - string:
+          <<: *lttng-modules_build_parameter_gerrit_branch
+      - string:
+          <<: *lttng-modules_build_parameter_gerrit_refspec
+      - string:
+          <<: *lttng-modules_build_parameter_gerrit_name
+      - string:
+          <<: *lttng-modules_build_parameter_gerrit_project
 
 - job-template:
     name: lttng-modules_{mversion}_fullbuild-{uversion}
@@ -1260,6 +1305,19 @@
             - sles15sp5
           buildtype: build
           parambuildtype: build
+          kverfloor: ''
+          kverceil: ''
+          kverfilter: stable-head
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}-{uversion}':
+          mversion:
+            - master
+            - stable-2.13
+          uversion:
+            - focal
+            - jammy
+            - noble
+          buildtype: crossbuild
+          parambuildtype: crossbuild
           kverfloor: ''
           kverceil: ''
           kverfilter: stable-head
