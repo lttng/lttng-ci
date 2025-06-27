@@ -21,7 +21,7 @@ import hudson.console.HyperlinkNote
 import java.util.concurrent.CancellationException
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
-
+import groovy.json.JsonSlurper
 
 class InvalidKVersionException extends Exception {
   public InvalidKVersionException(String message) {
@@ -636,32 +636,49 @@ if (elversion != null) {
 } else if (uversion != null) {
   distroversion = uversion
   kversionFactory = new UbuntuKVersion()
-  switch (uversion) {
-    case 'jammy':
-      matchStrs = [
-        ~/^refs\/tags\/(Ubuntu-5\.15\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-6\.8-6\.8\.0-.*_22\.04\.\d+)$/,
-      ]
-      break
+  if (uversion in ['focal', 'jammy']) {
+    switch (uversion) {
+      case 'jammy':
+        matchStrs = [
+          ~/^refs\/tags\/(Ubuntu-5\.15\.0-\d{1,3}?\.[\d]+)$/,
+          ~/^refs\/tags\/(Ubuntu-hwe-6\.8-6\.8\.0-.*_22\.04\.\d+)$/,
+        ]
+        break
 
-    case 'focal':
-      matchStrs = [
-        ~/^refs\/tags\/(Ubuntu-5\.4\.0-\d{1,3}?\.[\d]+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-5\.15-5\.15\.0-.*_20\.04\.\d+)$/,
-        ~/^refs\/tags\/(Ubuntu-hwe-6\.8-6\.8\.0-.*_20\.04\.\d+)$/,
-      ]
-      break
+      case 'focal':
+        matchStrs = [
+          ~/^refs\/tags\/(Ubuntu-5\.4\.0-\d{1,3}?\.[\d]+)$/,
+          ~/^refs\/tags\/(Ubuntu-hwe-5\.15-5\.15\.0-.*_20\.04\.\d+)$/,
+          ~/^refs\/tags\/(Ubuntu-hwe-6\.8-6\.8\.0-.*_20\.04\.\d+)$/,
+        ]
+        break
+    }
+  }
+  else {
+    // Get the versions of built binaries for the release
+    // This assumes amd64 since that arch tends to see more releases than the others.
+    def api_url_string = "https://api.launchpad.net/1.0/ubuntu/+archive/primary?ws.op=getPublishedBinaries&binary_name=linux-image-generic&distro_arch_series=https://api.launchpad.net/1.0/ubuntu/${uversion}/amd64"
+    def api_url = new URL(api_url_string.toString())
+    def binaries = new JsonSlurper().parse(api_url)
+    def versions = []
+    for (entry in binaries.entries) {
+      if (entry.pocket == "Proposed") {
+        continue
+      }
 
-    case 'noble':
-      matchStrs = [
-        ~/^refs\/tags\/(Ubuntu-6\.8\.0-\d{1,3}?\.[\d]+)$/,
-      ]
-      break
+      versions.add(entry.binary_package_version)
+    }
 
-    default:
-      println "Unsupported Ubuntu version: ${uversion}"
-      throw new InterruptedException()
-      break
+    versions = versions.toSet()
+    for (version in versions) {
+      println("Version: ${version}")
+      matchStrs.add(
+        ~/^refs\/tags\/(Ubuntu-${version}.*)$/
+      )
+      matchStrs.add(
+        ~/^refs\/tags\/(Ubuntu-hwe-${version}.*)$/
+      )
+    }
   }
 } else {
   // Vanilla
