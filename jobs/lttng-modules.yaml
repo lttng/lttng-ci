@@ -223,7 +223,7 @@
       - string:
           name: 'uversion'
           default: '{uversion}'
-          description: 'The lowest kernel version to build.'
+          description: 'The Ubuntu release version name (e.g. jammy)'
 
 - _lttng-modules_build_parameters_rt: &lttng-modules_build_parameters_rt
     name: 'lttng-modules_build_parameters_rt'
