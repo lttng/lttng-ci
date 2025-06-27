@@ -68,6 +68,11 @@
           send-to:
             - recipients
 
+    # Job variables
+    github_user: lttng
+    github_name: lttng-modules
+    email_to: ''
+
 
 ## Anchors
 - _lttng-modules_build_parameters_defaults: &lttng-modules_build_parameters_defaults
@@ -917,8 +922,6 @@
 ## Project
 - project:
     name: lttng-modules
-    github_user: lttng
-    github_name: lttng-modules
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     mversion:
       - stable-2.12
@@ -1255,8 +1258,6 @@
 - project:
     name: lttng-modules-dev-mjeanson
     github_user: mjeanson
-    github_name: lttng-modules
-    email_to: ''
     jobs:
       - 'dev_mjeanson_lttng-modules_PARAM_build':
           platforms: !!python/tuple [deb12-amd64]
