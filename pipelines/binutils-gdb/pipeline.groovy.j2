@@ -930,6 +930,13 @@ exit 0
                 }
               }
 
+              sh(
+                label: 'gdb.fail.sum',
+                script: """#!/usr/bin/bash
+cat "\${WORKSPACE}/results/${TARGET_BOARD}/gdb.fail.sum"
+"""
+              )
+
               stash(name: "binutils-gdb-results-${TARGET_BOARD}", includes: 'results/**')
             }
           }
