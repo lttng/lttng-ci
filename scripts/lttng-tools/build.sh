@@ -161,6 +161,7 @@ cc=${cc:-}
 LTTNG_TOOLS_MAKE_INSTALL="${LTTNG_TOOLS_MAKE_INSTALL:-yes}"
 LTTNG_TOOLS_MAKE_CLEAN="${LTTNG_TOOLS_MAKE_CLEAN:-yes}"
 LTTNG_TOOLS_GEN_COMPILE_COMMANDS="${LTTNG_TOOLS_GEN_COMPILE_COMMANDS:-no}"
+LTTNG_TOOLS_PARALLEL_TESTS="${LTTNG_TOOLS_PARALLEL_TESTS:-no}"
 LTTNG_TOOLS_RUN_TESTS="${LTTNG_TOOLS_RUN_TESTS:-yes}"
 LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="${LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION:-no}"
 LTTNG_TOOLS_RUN_UST_JAVA_TESTS="${LTTNG_TOOLS_RUN_UST_JAVA_TESTS:-yes}"
@@ -614,7 +615,12 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         systemctl stop systemd-timesyncd.service || true
     fi
 
-    make --keep-going check || exit_status=1
+    MAKE_ARGS=('--keep-going' 'check')
+    if [[ "${LTTNG_TOOLS_PARALLEL_TESTS}" == "yes" ]]; then
+        MAKE_ARGS+=("-j$(${NPROC})")
+    fi
+
+    make "${MAKE_ARGS[@]}" || exit_status=1
 
     # Copy tap logs for the jenkins tap parser before cleaning the build dir
     rsync -a --exclude 'test-suite.log' --include '*/' --include '*.log' --include '*.logfile' --exclude='*' tests/ "$TAPDIR"

@@ -1269,6 +1269,9 @@
     babelversions: !!python/tuple [stable-2.1]
     platforms: !!python/tuple [deb12-amd64]
     version: 'master'
+    job_properties:
+      - name: LTTNG_TOOLS_PARALLEL_TESTS
+        value: 'yes'
     jobs:
       # Master #
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_linuxbuild
@@ -1318,6 +1321,8 @@
           urcu_buildtype: linuxbuild
           ust_buildtype: linuxbuild
           job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'yes'
             - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
               value: 'yes'
           timeout: '45'
@@ -1767,6 +1772,9 @@
     platforms: !!python/tuple [deb12-amd64]
     urcuversions: !!python/tuple [master]  # For C++ support
     babelversions: !!python/tuple [stable-2.1]
+    job_properties:
+      - name: LTTNG_TOOLS_PARALLEL_TESTS
+        value: 'yes'
     jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           <<: *job_lttng-tools_master_linuxbuild
