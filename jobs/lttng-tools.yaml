@@ -1295,7 +1295,7 @@
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_slesbuild
           buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          platforms: !!python/tuple [sles15sp5-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_yoctobuild
@@ -1396,7 +1396,7 @@
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_slesbuild
           buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          platforms: !!python/tuple [sles15sp5-amd64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_elbuild
@@ -1508,7 +1508,7 @@
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_slesbuild
           buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          platforms: !!python/tuple [sles15sp5-amd64]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           java_preferred_jdk: '8'
@@ -1618,7 +1618,7 @@
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
-          platforms: !!python/tuple [sles12sp5-amd64, sles15sp5-amd64]
+          platforms: !!python/tuple [sles15sp5-amd64]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
