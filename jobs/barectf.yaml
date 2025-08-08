@@ -15,7 +15,7 @@
       - ansicolor: &barectf_wrapper_ansicolor_defaults
           colormap: xterm
       - timeout: &barectf_wrapper_timeout_defaults
-          timeout: 20
+          timeout: "{timeout}"
           fail: true
           type: no-activity
       - timestamps
@@ -51,6 +51,9 @@
           strategy: statechange-only
           message-type: summary
           matrix-notifier: only-parent
+
+    # Job variables
+    timeout: 20
 
 
 ## Templates ##
@@ -171,6 +174,8 @@
       - 'barectf_{version}_{buildtype}':
           buildtype: yoctobuild
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
+          # It can take a long time to run pip install
+          timeout: 60
 
 - project:
     name: review-barectf
