@@ -445,7 +445,7 @@
             - master
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: yoctobuild_extended
-          platforms: !!python/tuple [yocto33-amd64]
+          platforms: !!python/tuple [yocto33-amd64, yocto33-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
