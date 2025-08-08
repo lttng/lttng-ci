@@ -667,7 +667,7 @@
             - master
             - stable-2.13
             - stable-2.14
-          platforms: !!python/tuple [yocto33-amd64]
+          platforms: !!python/tuple [yocto33-amd64, yocto33-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.12, stable-0.13, stable-0.14, stable-0.15, master]
@@ -835,7 +835,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: yoctobuild_extended
           version: stable-2.12
-          platforms: !!python/tuple [yocto33-amd64]
+          platforms: !!python/tuple [yocto33-amd64, yocto33-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           liburcu_versions: !!python/tuple [stable-0.11, stable-0.12, stable-0.13, stable-0.14, stable-0.15, master]
