@@ -242,6 +242,8 @@ ci-rootnode-el8-amd64-1d-01
 [node_yocto]
 ci-node-yocto33-amd64-2a-01 ansible_host=172.18.16.104
 ci-node-yocto33-amd64-2b-01 ansible_host=172.18.16.105
+ci-node-yocto33-arm64-2a-01
+ci-node-yocto33-arm64-2b-01
 ci-rootnode-yocto33-amd64-2c-01
 ci-rootnode-yocto33-amd64-2d-01
 

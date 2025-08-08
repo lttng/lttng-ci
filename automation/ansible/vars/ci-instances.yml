@@ -941,6 +941,26 @@ containers:
         alias: debian/trixie/cloud/amd64/ci-node/incus
         type: image
   - meta:
+      address: 172.18.16.114
+    jenkins:
+      label: 'yocto33-arm64'
+    lxd:
+      name: ci-node-yocto33-arm64-2a-01
+      target: ci-host-arm64-2a
+      source:
+        alias: yocto/hardknott/arm64/incus
+        type: image
+  - meta:
+      address: 172.18.16.115
+    jenkins:
+      label: 'yocto33-arm64'
+    lxd:
+      name: ci-node-yocto33-arm64-2b-01
+      target: ci-host-arm64-2b
+      source:
+        alias: yocto/hardknott/arm64/incus
+        type: image
+  - meta:
       address: 'ci-node-deb12-arm64-osuosl-01'
     jenkins:
       label: 'deb12-arm64'
