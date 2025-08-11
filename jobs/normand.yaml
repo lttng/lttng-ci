@@ -165,7 +165,7 @@
     jobs:
       - 'normand_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
 
 - project:
     name: review-normand
@@ -176,7 +176,7 @@
     jobs:
       - 'dev_review_normand_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
 
 - project:
     name: normand-views
