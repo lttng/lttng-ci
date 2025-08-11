@@ -864,6 +864,10 @@ containers:
       address: 172.18.16.106
     jenkins:
       label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-1a-01
       target: ci-host-amd64-1a
@@ -874,6 +878,10 @@ containers:
       address: 172.18.16.107
     jenkins:
       label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-1b-01
       target: ci-host-amd64-1b
@@ -884,6 +892,10 @@ containers:
       address: 172.18.16.108
     jenkins:
       label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-1c-01
       target: ci-host-amd64-1c
@@ -894,6 +906,10 @@ containers:
       address: 172.18.16.109
     jenkins:
       label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-1d-01
       target: ci-host-amd64-1d
@@ -904,6 +920,10 @@ containers:
       address: 172.18.16.110
     jenkins:
       label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-2a-01
       target: ci-host-amd64-2a
@@ -914,6 +934,10 @@ containers:
       address: 172.18.16.111
     jenkins:
       label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-2b-01
       target: ci-host-amd64-2b
@@ -924,6 +948,10 @@ containers:
       address: 172.18.16.112
     jenkins:
       label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-2c-01
       target: ci-host-amd64-2c
@@ -934,6 +962,10 @@ containers:
       address: 172.18.16.113
     jenkins:
       label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-2d-01
       target: ci-host-amd64-2d
