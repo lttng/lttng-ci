@@ -35,7 +35,7 @@
       - master
     builds: !!python/tuple [std]
     confs: !!python/tuple [std]
-    platforms: !!python/tuple [deb12-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     libside_git_url: https://git.efficios.com/libside.git
     filter: ''
     email_to: ''
@@ -56,15 +56,15 @@
       - '{job_prefix}libside_{versions}_{buildtypes}_{cctype}_rseq-{librseq_versions}':
           ccs:
             - gcc-4.8
-            - gcc-11
             - gcc-12
+            - gcc-13
+            - gcc-14
       - '{job_prefix}libside_{versions}_{buildtypes}_{cctype}_rseq-{librseq_versions}':
           cctype: clang
           ccs:
-            - clang-13
-            - clang-14
-            - clang-15
-            - clang-16
+            - clang-17
+            - clang-18
+            - clang-19
 - project:
     name: libside-views
     views:

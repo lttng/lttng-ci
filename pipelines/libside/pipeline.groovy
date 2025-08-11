@@ -58,7 +58,7 @@ pipeline {
   stages {
     stage('Checkout') {
       agent {
-        label 'deb12-amd64'
+        label 'deb13-amd64'
       }
 
       steps {
