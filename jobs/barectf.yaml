@@ -170,7 +170,7 @@
     jobs:
       - 'barectf_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
       - 'barectf_{version}_{buildtype}':
           buildtype: yoctobuild
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
@@ -188,7 +188,7 @@
     jobs:
       - 'dev_review_barectf_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
 
 - project:
     name: barectf-views
