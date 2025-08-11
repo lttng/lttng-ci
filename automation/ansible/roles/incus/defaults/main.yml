@@ -1,3 +1,14 @@
 ---
 
+incus_container_defaults:
+  url: "unix:/var/lib/incus/unix.socket"
+  ephemeral: false
+  profiles:
+    - ci-node
+  source:
+    type: image
+    mode: pull
+    alias: debian/trixie/cloud/amd64/ci-node/incus
+  wait_for_container: true
+
 incus_core_pattern: '/tmp/core-%p'

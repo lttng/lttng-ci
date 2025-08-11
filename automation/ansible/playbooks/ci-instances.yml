@@ -2,7 +2,7 @@
 - hosts: cluster_ci:localhost
   vars_files:
     - ../vars/ci-instances.yml
-    - ../roles/lxd/defaults/main.yml
+    - ../roles/incus/defaults/main.yml
     - ../roles/libvirt/vars/main.yml
   vars:
     skip_libvirt: false
@@ -16,7 +16,7 @@
     - name: Manage instances
       when: item.lxd|default(false) and not skip_lxd and inventory_hostname == lxd_host and (not limit or item.lxd.name in limit)
       include_tasks:
-        file: '../roles/lxd/tasks/container.yml'
+        file: '../roles/incus/tasks/container.yml'
       vars:
         object: >-
           {{item.lxd|

@@ -1,0 +1,7 @@
+---
+- name: Merge defaults
+  set_fact:
+    incus_container_config: "{{incus_container_defaults|combine(object)}}"
+
+- name: "Manage container {{incus_container_config.name|default('Unknown')}}"
+  community.general.lxd_container: "{{incus_container_config}}"
