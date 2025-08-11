@@ -46,9 +46,13 @@ def calculateLabel(arch, cross_host_arch) {
     x86: 'i386',
     x86_64: 'amd64',
   ]
-  default_distro = 'deb12'
+  default_distro = 'deb13'
   distro_map = [
-    'riscv64': 'deb13',
+    'arm64': 'deb12',
+    'armhf': 'deb12',
+    'i386': 'deb12',
+    'ppc64el': 'deb12',
+    'x86': 'deb12',
   ]
 
   def _distro = distro_map.get(cross_host_arch ?: arch, default_distro)

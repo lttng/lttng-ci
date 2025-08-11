@@ -21,7 +21,7 @@
     github_branch_pattern: 'origin/ci/*'
     stable_mirror: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
     email_to: ''
-    default_label: 'deb12-amd64'
+    default_label: 'deb13-amd64'
     job_prefix: ''
     job_suffix: ''
     skip_arches: ''
