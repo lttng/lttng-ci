@@ -260,7 +260,7 @@
 - job-template:
     name: librseq_{version}_scan-build
     defaults: librseq
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -280,7 +280,7 @@
 - job-template:
     name: librseq_{version}_coverity
     defaults: librseq
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -321,7 +321,7 @@
     github_user: compudj
     github_name: librseq
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     version:
       - master
     jobs:
@@ -333,8 +333,8 @@
           cctype: clangbuild
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static]
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - 'librseq_{version}_{buildtype}':
           buildtype: portbuild
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
@@ -350,7 +350,7 @@
     jobs:
       - 'dev_review_librseq_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static]
       - 'dev_review_librseq_{version}_{buildtype}':
