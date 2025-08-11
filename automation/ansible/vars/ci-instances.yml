@@ -875,6 +875,132 @@ containers:
         alias: debian/trixie/cloud/amd64/ci-node/incus
         type: image
   - meta:
+      address: 172.18.16.116
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-02
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.117
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-03
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.118
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-04
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.119
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-05
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.120
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-06
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.121
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-07
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.122
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-08
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.123
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-09
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.124
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1a-10
+      target: ci-host-amd64-1a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
       address: 172.18.16.107
     jenkins:
       label: 'deb13-amd64'
@@ -884,6 +1010,132 @@ containers:
         retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-1b-01
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.125
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-02
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.126
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-03
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.127
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-04
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.128
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-05
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.129
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-06
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.130
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-07
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.131
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-08
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.132
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-09
+      target: ci-host-amd64-1b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.133
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1b-10
       target: ci-host-amd64-1b
       source:
         alias: debian/trixie/cloud/amd64/ci-node/incus
@@ -903,6 +1155,132 @@ containers:
         alias: debian/trixie/cloud/amd64/ci-node/incus
         type: image
   - meta:
+      address: 172.18.16.134
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-02
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.135
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-03
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.136
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-04
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.137
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-05
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.138
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-06
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.139
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-07
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.140
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-08
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.141
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-09
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.142
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1c-10
+      target: ci-host-amd64-1c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
       address: 172.18.16.109
     jenkins:
       label: 'deb13-amd64'
@@ -912,6 +1290,132 @@ containers:
         retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-1d-01
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.143
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-02
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.144
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-03
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.145
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-04
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.146
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-05
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.147
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-06
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.148
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-07
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.177
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-08
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.149
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-09
+      target: ci-host-amd64-1d
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.150
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-1d-10
       target: ci-host-amd64-1d
       source:
         alias: debian/trixie/cloud/amd64/ci-node/incus
@@ -931,6 +1435,132 @@ containers:
         alias: debian/trixie/cloud/amd64/ci-node/incus
         type: image
   - meta:
+      address: 172.18.16.151
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-02
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.152
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-03
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.153
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-04
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.154
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-05
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.155
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-06
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.156
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-07
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.157
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-08
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.158
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-09
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.159
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2a-10
+      target: ci-host-amd64-2a
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
       address: 172.18.16.111
     jenkins:
       label: 'deb13-amd64'
@@ -945,6 +1575,132 @@ containers:
         alias: debian/trixie/cloud/amd64/ci-node/incus
         type: image
   - meta:
+      address: 172.18.16.160
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-02
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.161
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-03
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.162
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-04
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.163
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-05
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.164
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-06
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.165
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-07
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.166
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-08
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.167
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-09
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.168
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2b-10
+      target: ci-host-amd64-2b
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
       address: 172.18.16.112
     jenkins:
       label: 'deb13-amd64'
@@ -954,6 +1710,132 @@ containers:
         retentionStrategy/idleDelay: '5'
     lxd:
       name: ci-node-deb13-amd64-2c-01
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.178
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-02
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.169
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-03
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.170
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-04
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.171
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-05
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.172
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-06
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.173
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-07
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.174
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-08
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.175
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-09
+      target: ci-host-amd64-2c
+      source:
+        alias: debian/trixie/cloud/amd64/ci-node/incus
+        type: image
+  - meta:
+      address: 172.18.16.176
+    jenkins:
+      label: 'deb13-amd64'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
+    lxd:
+      name: ci-node-deb13-amd64-2c-10
       target: ci-host-amd64-2c
       source:
         alias: debian/trixie/cloud/amd64/ci-node/incus
