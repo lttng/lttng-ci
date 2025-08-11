@@ -2,7 +2,7 @@
 ## Defaults:
 - defaults:
     name: lttng-docs
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
     description: |
       The lttng-docs project provides the online documentation for the
       LTTng project at https://lttng.org/docs
