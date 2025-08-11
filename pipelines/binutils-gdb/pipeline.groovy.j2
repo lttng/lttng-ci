@@ -750,7 +750,7 @@ pipeline {
   stages {
     stage('Checkout') {
       agent {
-        label 'deb12-amd64'
+        label 'deb13-amd64'
       }
 
       stages {
@@ -953,7 +953,7 @@ cat "\${WORKSPACE}/results/${TARGET_BOARD}/gdb.fail.sum"
 
     stage('Analysis') {
       agent {
-        label 'deb12-amd64'
+        label 'deb13-amd64'
       }
 
       steps {

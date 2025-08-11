@@ -44,7 +44,7 @@
     # Job variables
     cctype: gcc
     buildtype: linuxbuild
-    platform: deb12-amd64
+    platform: deb13-amd64
     git_url: 'git://git-mirror.internal.efficios.com/git/binutils-gdb.git'
 
 - job-template:
@@ -54,7 +54,7 @@
     # Job variables
     cctype: gcc
     buildtype: linuxbuild
-    platform: deb12-amd64
+    platform: deb13-amd64
     git_url: 'git://git-mirror.internal.efficios.com/git/binutils-gdb.git'
     triggers:
       - gerrit:
