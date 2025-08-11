@@ -169,7 +169,7 @@
 - job-template:
     name: images_distrobuilder
     defaults: imagebuilder
-    node: 'deb12-amd64-rootnode'
+    node: 'deb13-amd64-rootnode'
     <<: *images_parameters_distrobuilder_defaults
     <<: *images_properties_defaults
     builders:
@@ -178,7 +178,7 @@
 - job-template:
     name: images_imagebuilder
     defaults: imagebuilder
-    node: 'deb12-amd64-rootnode'
+    node: 'deb13-amd64-rootnode'
     <<: *images_parameters_imagebuilder_defaults
     <<: *images_properties_defaults
     builders:
