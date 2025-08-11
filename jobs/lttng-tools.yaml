@@ -1304,7 +1304,7 @@
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
-          platforms: !!python/tuple [yocto33-amd64]
+          platforms: !!python/tuple [yocto33-amd64, yocto33-arm64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_macosbuild
@@ -1410,7 +1410,7 @@
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
-          platforms: !!python/tuple [yocto33-amd64]
+          platforms: !!python/tuple [yocto33-amd64, yocto33-arm64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_macosbuild
@@ -1524,7 +1524,7 @@
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
-          platforms: !!python/tuple [yocto33-amd64]
+          platforms: !!python/tuple [yocto33-amd64, yocto33-arm64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_macosbuild
@@ -1641,7 +1641,7 @@
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
-          platforms: !!python/tuple [yocto33-amd64]
+          platforms: !!python/tuple [yocto33-amd64, yocto33-arm64]
           confs: !!python/tuple [agents]
           java_preferred_jdk: '8'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
