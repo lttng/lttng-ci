@@ -5,6 +5,11 @@
 - name: Ensure common_node packages are installed.
   apt: "name={{ common_node_packages }} state=present"
 
+- name: Install binutils-gold
+  when: ansible_architecture != 'riscv64' and ansible_distribution_version is version('13', '>=')
+  ansible.builtin.package:
+    name: binutils-gold
+
 - name: Install linux headers
   when: ansible_virtualization_role == "host" or (ansible_virtualization_role == "guest" and ansible_virtualization_type == "kvm")
   block:
