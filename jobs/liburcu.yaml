@@ -398,7 +398,7 @@
       # Common
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
@@ -509,7 +509,7 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
@@ -545,7 +545,7 @@
           touchstone: '(build == "std")'
       - 'dev_review_liburcu_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: ''

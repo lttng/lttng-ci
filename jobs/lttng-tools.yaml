@@ -1291,7 +1291,7 @@
           platforms: !!python/tuple [el8-amd64, el9-amd64, el8-arm64, el9-arm64]
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_portbuild
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_slesbuild
@@ -1392,7 +1392,7 @@
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="stable-2.14"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_portbuild
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_slesbuild
@@ -1504,7 +1504,7 @@
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_portbuild
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
           timeout: '45'
@@ -1616,7 +1616,7 @@
           filter: '(build=="std") || ((babeltrace_version=="stable-2.0" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
@@ -1730,7 +1730,7 @@
       - 'dev_{user}_lttng-tools_{version}_{buildtype}': {}
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           babelversions: !!python/tuple [stable-1.5, master]
       - 'dev_{user}_lttng-tools_{version}_{buildtype}':
@@ -1750,7 +1750,7 @@
           buildtype: portbuild
           version: stable-2.13-staging
           ustversion: stable-2.13
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
@@ -1764,7 +1764,7 @@
           buildtype: portbuild
           version: stable-2.12-staging
           ustversion: stable-2.12
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           urcuversions: !!python/tuple [stable-0.13]
           babelversions: !!python/tuple [stable-2.0]
