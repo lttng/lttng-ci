@@ -1101,7 +1101,7 @@
 - job-template:
     name: 'dev_review_lttng-tools_{version}_check-format'
     defaults: lttng-tools-review
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     builders:
       - shell:
@@ -1121,7 +1121,7 @@
 - job-template:
     name: lttng-tools_{version}_release
     defaults: lttng-tools
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -1140,13 +1140,13 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb13-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
+          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb13-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=agents,build=std'
+          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb13-amd64,conf=agents,build=std'
       - shell:
           !include-raw-verbatim: scripts/lttng-tools/prebuild_clean_processes_coredumps.sh
       - shell:
@@ -1179,7 +1179,7 @@
 - job-template:
     name: lttng-tools_{version}_scan-build
     defaults: lttng-tools
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -1188,13 +1188,13 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb13-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
+          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb13-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=std,build=std'
+          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb13-amd64,conf=std,build=std'
       - shell:
           !include-raw-verbatim: scripts/common/scan-build.sh
 
@@ -1208,7 +1208,7 @@
 - job-template:
     name: lttng-tools_{version}_coverity
     defaults: lttng-tools
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -1228,13 +1228,13 @@
     builders:
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
+          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb13-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb12-amd64,conf=std,build=std'
+          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb13-amd64,conf=std,build=std'
       - copyartifact:
           <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb12-amd64,conf=std,build=std'
+          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb13-amd64,conf=std,build=std'
       - shell:
           !include-raw-verbatim: scripts/common/coverity.sh
 
