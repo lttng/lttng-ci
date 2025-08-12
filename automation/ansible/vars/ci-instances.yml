@@ -1875,25 +1875,41 @@ containers:
         alias: yocto/hardknott/arm64/incus
         type: image
   - meta:
-      address: 'ci-node-deb12-arm64-osuosl-01'
+      address: 'ci-node-deb13-arm64-osuosl-01'
     jenkins:
-      label: 'deb12-arm64'
-      node_name: 'ci-node-deb12-arm64-osuosl-01'
+      label: 'deb13-arm64'
+      node_name: 'ci-node-deb13-arm64-osuosl-01'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
   - meta:
-      address: 'ci-node-deb12-arm64-osuosl-02'
+      address: 'ci-node-deb13-arm64-osuosl-02'
     jenkins:
-      label: 'deb12-arm64'
-      node_name: 'ci-node-deb12-arm64-osuosl-02'
+      label: 'deb13-arm64'
+      node_name: 'ci-node-deb13-arm64-osuosl-02'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
   - meta:
-      address: 'ci-node-deb12-arm64-osuosl-03'
+      address: 'ci-node-deb13-arm64-osuosl-03'
     jenkins:
-      label: 'deb12-arm64'
-      node_name: 'ci-node-deb12-arm64-osuosl-03'
+      label: 'deb13-arm64'
+      node_name: 'ci-node-deb13-arm64-osuosl-03'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
   - meta:
-      address: 'ci-node-deb12-arm64-osuosl-04'
+      address: 'ci-node-deb13-arm64-osuosl-04'
     jenkins:
-      label: 'deb12-arm64'
-      node_name: 'ci-node-deb12-arm64-osuosl-04'
+      label: 'deb13-arm64'
+      node_name: 'ci-node-deb13-arm64-osuosl-04'
+      config:
+        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+        retentionStrategy/inDemandDelay: '0'
+        retentionStrategy/idleDelay: '5'
   # "Root " nodes in libvirt, since Jenkins can use the "libvirt agents" plugin
   # to revert to a specific snapshot before running a job
   #

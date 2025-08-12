@@ -62,10 +62,10 @@ ci-node-deb12-arm64-1a-01
 ci-node-deb12-arm64-1b-01
 ci-node-deb12-arm64-2a-01
 ci-node-deb12-arm64-2b-01
-ci-node-deb12-arm64-osuosl-01
-ci-node-deb12-arm64-osuosl-02
-ci-node-deb12-arm64-osuosl-03
-ci-node-deb12-arm64-osuosl-04
+ci-node-deb13-arm64-osuosl-01
+ci-node-deb13-arm64-osuosl-02
+ci-node-deb13-arm64-osuosl-03
+ci-node-deb13-arm64-osuosl-04
 ci-node-el8-arm64-01
 ci-node-el9-arm64-01
 
