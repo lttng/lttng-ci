@@ -810,9 +810,6 @@ exit \$failed
         LDFLAGS = "-fsanitize=address"
         CC = "${ -> get_cc(params.CCTYPE) }"
         CXX = "${ -> get_cxx(params.CCTYPE) }"
-
-        // @FIXME: use cc version
-        LD_LIBRARY_PATH = "/usr/lib/gcc/x86_64-linux-gnu/12:${env.LD_LIBRARY_PATH}"
       }
 
       stages {
