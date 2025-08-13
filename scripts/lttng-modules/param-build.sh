@@ -223,7 +223,7 @@ select_compiler() {
         done
     fi
 
-    if [ -z "$selected_cc" ]; then
+    if [ -z "${selected_cc:-}" ]; then
       echo "Found no suitable compiler."
       exit 1
     fi
