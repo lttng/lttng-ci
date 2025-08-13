@@ -214,7 +214,12 @@ select_compiler() {
                     # branches between 4.x and 5.15 can be built with gcc-12.
                     # @see https://lore.kernel.org/lkml/20494.1643237814@turing-police/
                     # @see https://gitlab.com/linux-kernel/stable/-/commit/52a9dab6d892763b2a8334a568bd4e2c1a6fde66
-                    continue
+                    # As Debian trixie doesn't ship with gcc-11, try to fiddle with flags instead.
+                    # For Debian bookworm, skip this compiler to maintain the same behaviour as
+                    # done previously.
+                    if { verlt "$(lsb_release --short --release)" "13"; }; then
+                        continue
+                    fi
                 fi
                 selected_cc="$cc"
                 selected_cc_version="$cc_version"
@@ -238,11 +243,16 @@ select_compiler() {
     cd -
 }
 
+get_libc_version() {
+    ldd --version | head -n1 | grep -Eo 'GLIBC [0-9]+\.[0-9]+' | cut -d' ' -f2
+}
+
 export_kbuild_flags() {
     local _KAFLAGS
     local _KCFLAGS
     local _KCPPFLAGS
     local _HOSTCFLAGS
+
 
     _KAFLAGS=()
     _KCFLAGS=()
@@ -321,10 +331,12 @@ patch_linux_kernel() {
 }
 
 build_linux_kernel() {
+    local libc_version=
     cd "$LINUX_SRCOBJ_DIR"
 
     kversion=$(make -s kernelversion "${make_args[@]}")
     pahole_version="$(pahole --version | tr -d 'v')"
+    libc_version="$(get_libc_version)"
 
     if { verlt "${kversion}" "3.3"; } && [ "${vanilla_config}" = "imx_v6_v7_defconfig" ] ; then
         # imx_v6_v7 didn't exist before 06965c39b4c63933fa0a1cde2237ef85477c5655
@@ -595,6 +607,15 @@ build_linux_kernel() {
         sed -i 's#KBUILD_LDFLAGS_MODULE += arch/powerpc/lib/crtsavres.o#KBUILD_LDFLAGS_MODULE += $(objtree)/arch/powerpc/lib/crtsavres.o#' arch/powerpc/Makefile
     fi
 
+    if { verlt "${kversion}" "5.17"; } && { vergt "${selected_cc_version}" "11"; } ; then
+        # Using gcc-12+ with '-Wuse-after-free' breaks the build of older
+        # kernels (in particular, objtool). Some releases on LTS
+        # branches between 4.x and 5.15 can be built with gcc-12.
+        # @see https://lore.kernel.org/lkml/20494.1643237814@turing-police/
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/52a9dab6d892763b2a8334a568bd4e2c1a6fde66
+        patch_linux_kernel 52a9dab6d892763b2a8334a568bd4e2c1a6fde66
+    fi
+
     if { verlt "${kversion}" "5.11"; } && { vergte "${kversion}" "4.10"; } ; then
         # Binutils > 2.35 strips empty symbol tables, causing obltool to fail
         # in certain cases when files are empty.
@@ -606,6 +627,13 @@ build_linux_kernel() {
         if { verlt "${kversion}" "4.18"; } ; then
             patch_linux_kernel e81e0724432542af8d8c702c31e9d82f57b1ff31
         fi
+    fi
+
+    if { verlt "${kversion}" "5.6"; } && { vergte "${libc_version}" "2.38"; }; then
+        # glibc introduces strlcpy, this causes redundant declaration warnings prior to 5.6
+        # e.g. tools/include/linux/string.h:17:15: error: redundant redeclaration of ‘strlcpy’ [-Werror=redundant-decls]
+        # @see https://gitlab.com/linux-kernel/stable/-/commit/6c4798d3f08b81c2c52936b10e0fa872590c96ae
+        patch_linux_kernel 6c4798d3f08b81c2c52936b10e0fa872590c96ae
     fi
 
     if { vergt "${selected_cc_version}" "7"; } && { vergte "${kversion}" "4.14"; } && { verlt "${kversion}" "4.17"; } ; then
@@ -655,6 +683,14 @@ build_linux_kernel() {
         # been observed in v4.18-rt
         #
         patch_linux_kernel 303a339f30a9441c4695d3d2cc78f1b33cd959ff
+    fi
+
+    if { vergte "${kversion}" "4.17"; } && { verlt "${kversion}" "4.18"; } && { vergt "${selected_cc_version}" "13"; }; then
+        # In function ‘check_copy_size’,
+        # inlined from ‘copy_to_user’ at ./include/linux/uaccess.h:154:6,
+        # inlined from ‘afs_proc_rootcell_read’ at fs/afs/proc.c:370:6:
+        # ./include/linux/thread_info.h:134:25: error: call to ‘__bad_copy_from’ declared with attribute error: copy source size is too small
+        scripts/config --disable CONFIG_AFS_FS
     fi
 
     if { vergte "${kversion}" "4.15"; } && { verlt "${kversion}" "4.18"; } ; then
