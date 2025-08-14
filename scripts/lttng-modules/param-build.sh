@@ -45,8 +45,7 @@ if [ -z "${arch:-}" ] ; then
 fi
 
 # Misc globals
-SLES_RELEASE=''  # Set in export_kbuild_flags
-
+SLES_RELEASE=''  # Set in select_compiler
 
 ## FUNCTIONS ##
 
@@ -196,6 +195,14 @@ select_compiler() {
         exit 0
     fi
 
+    if [ -f "init/Kconfig.suse" ]; then
+        # Get values from git tag, eg. 'rpm-5.14.21-150400.24.108'
+        # Note: the "150400" type of SUSE major version is only present on tags
+        # from 2022 and newer (about half-way through SLE15SP3).
+        # This will not work as expected on earlier tags.
+        SLES_RELEASE="$(echo "${ktag}" | cut -d '-' -f 3 | cut -d'.' -f 1)"
+    fi
+
     if { verlt "$kversion" "4.4"; }; then
         # Force gcc-4.8 for kernels before 4.4
         selected_cc='gcc-4.8'
@@ -224,6 +231,18 @@ select_compiler() {
                         continue
                     fi
                 fi
+
+                if { verlt "${kversion}" "6.9"; } && { vergt "${cc_version}" "12"; } ; then
+                    if [ "${cross_arch}" = "powerpc" ] || [ "${cross_arch}" = "ppc64el" ] ; then
+                        # skip this compiler
+                        # gcc-13+ properly enforces assembly alignment and not all powerpc
+                        # assembly is properly aligned
+                        # @see 2d43cc701b96f910f50915ac4c2a0cae5deb734c
+                        # @see 39190ac7cff1fd15135fa8e658030d9646fdb5f2
+                        continue
+                    fi
+                fi
+
                 selected_cc="$cc"
                 selected_cc_version="$cc_version"
                 break
@@ -260,14 +279,6 @@ export_kbuild_flags() {
     _KCFLAGS=()
     _KCPPFLAGS=()
     _HOSTCFLAGS=()
-
-    if [ -f "init/Kconfig.suse" ]; then
-        # Get values from git tag, eg. 'rpm-5.14.21-150400.24.108'
-        # Note: the "150400" type of SUSE major version is only present on tags
-        # from 2022 and newer (about half-way through SLE15SP3).
-        # This will not work as expected on earlier tags.
-        SLES_RELEASE="$(echo "${ktag}" | cut -d '-' -f 3 | cut -d'.' -f 1)"
-    fi
 
     if { vergte "$selected_cc_version" "6"; }; then
         # Older kernel Makefiles do not expect the compiler to default to PIE
@@ -613,6 +624,20 @@ build_linux_kernel() {
       if [ -f "arch/x86/kvm/vmx.c" ]; then
         sed -i 's/ R"/ R "/g; s/"R"/" R "/g' arch/x86/kvm/vmx.c
       fi
+    fi
+
+    # Preferably not using gcc-13+ with these version, but attempt to patch as a fallback
+    if { vergte "${selected_cc_version}" "13"; }; then
+        if [ "${cross_arch}" = "powerpc" ] || [ "${cross_arch}" = "ppc64el" ]; then
+            if { verlt "${kversion}" "6.10"; }; then
+                # Error: operand out of domain (19 is not a multiple of 4
+                patch_linux_kernel 2d43cc701b96f910f50915ac4c2a0cae5deb734c
+            fi
+
+            if { verlt "${kversion}" "6.12"; }; then
+                patch_linux_kernel 39190ac7cff1fd15135fa8e658030d9646fdb5f2
+            fi
+        fi
     fi
 
     if { vergte "${kversion}" "6.13"; } && [ "${cross_arch}" = "powerpc" ]; then
