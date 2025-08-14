@@ -607,6 +607,12 @@ build_linux_kernel() {
         sed -i 's#KBUILD_LDFLAGS_MODULE += arch/powerpc/lib/crtsavres.o#KBUILD_LDFLAGS_MODULE += $(objtree)/arch/powerpc/lib/crtsavres.o#' arch/powerpc/Makefile
     fi
 
+    openssl_version="$(pkg-config --modversion openssl)"
+    if { verlt "${kversion}" "5.19"; } && { vergt "${openssl_version}" "3.0"; }; then
+        # Silence deprecation warnings in sign-file.c
+        patch_linux_kernel 6bfb56e93bcef41859c2d5ab234ffd80b691be35
+    fi
+
     if { verlt "${kversion}" "5.17"; } && { vergt "${selected_cc_version}" "11"; } ; then
         # Using gcc-12+ with '-Wuse-after-free' breaks the build of older
         # kernels (in particular, objtool). Some releases on LTS
@@ -614,6 +620,10 @@ build_linux_kernel() {
         # @see https://lore.kernel.org/lkml/20494.1643237814@turing-police/
         # @see https://gitlab.com/linux-kernel/stable/-/commit/52a9dab6d892763b2a8334a568bd4e2c1a6fde66
         patch_linux_kernel 52a9dab6d892763b2a8334a568bd4e2c1a6fde66
+
+        # check.c:2836:58: error: ‘%d’ directive output may be truncated writing between 1 and 10
+        # bytes into a region of size 9 [-Werror=format-truncation=]
+        patch_linux_kernel 82880283d7fcd0a1d20964a56d6d1a5cc0df0713
     fi
 
     if { verlt "${kversion}" "5.11"; } && { vergte "${kversion}" "4.10"; } ; then
