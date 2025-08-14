@@ -44,6 +44,9 @@ if [ -z "${arch:-}" ] ; then
     fi
 fi
 
+# Misc globals
+SLES_RELEASE=''  # Set in export_kbuild_flags
+
 
 ## FUNCTIONS ##
 
@@ -253,11 +256,18 @@ export_kbuild_flags() {
     local _KCPPFLAGS
     local _HOSTCFLAGS
 
-
     _KAFLAGS=()
     _KCFLAGS=()
     _KCPPFLAGS=()
     _HOSTCFLAGS=()
+
+    if [ -f "init/Kconfig.suse" ]; then
+        # Get values from git tag, eg. 'rpm-5.14.21-150400.24.108'
+        # Note: the "150400" type of SUSE major version is only present on tags
+        # from 2022 and newer (about half-way through SLE15SP3).
+        # This will not work as expected on earlier tags.
+        SLES_RELEASE="$(echo "${ktag}" | cut -d '-' -f 3 | cut -d'.' -f 1)"
+    fi
 
     if { vergte "$selected_cc_version" "6"; }; then
         # Older kernel Makefiles do not expect the compiler to default to PIE
@@ -268,6 +278,14 @@ export_kbuild_flags() {
             -fno-stack-protector
         )
         _KCPPFLAGS+=(-fno-pie)
+    fi
+
+    if { vergte "${selected_cc_version}" "14"; } && [ "${SLES_RELEASE}" == "150500" ]; then
+        # This warning didn't happen on deb12 runners w/ gcc-12.
+        # kernel/sched/sched.h:3043:32: error: passing argument 1 of ‘cpu_util_cfs’
+        # makes pointer from integer without a cast [-Wint-conversion]
+        _HOSTCFLAGS+=(-Wno-error=int-conversion)
+        _KCFLAGS+=(-Wno-error=int-conversion)
     fi
 
     if { vergte "${selected_cc_version}" "10"; } && { verlt "${kversion}" "5.10"; } ; then
@@ -521,11 +539,6 @@ build_linux_kernel() {
     esac
 
     if [ -f "init/Kconfig.suse" ] ; then
-        # Get values from git tag, eg. 'rpm-5.14.21-150400.24.108'
-        # Note: the "150400" type of SUSE major version is only present on tags
-        # from 2022 and newer (about half-way through SLE15SP3).
-        # This will not work as expected on earlier tags.
-        SLES_RELEASE="$(echo "${ktag}" | cut -d '-' -f 3 | cut -d'.' -f 1)"
         scripts/config --set-val CONFIG_SUSE_VERSION $((10#"$(echo "${SLES_RELEASE}" | head -c 2)"))
         scripts/config --set-val CONFIG_SUSE_PATCHLEVEL $((10#"$(echo "${SLES_RELEASE}" | head -c 4 | tail -c 2)"))
 
