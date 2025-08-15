@@ -45,6 +45,7 @@ if [ -z "${arch:-}" ] ; then
 fi
 
 # Misc globals
+BINUTILS_VERSION=''
 SLES_RELEASE=''  # Set in select_compiler
 
 ## FUNCTIONS ##
@@ -245,6 +246,7 @@ select_compiler() {
 
                 selected_cc="$cc"
                 selected_cc_version="$cc_version"
+                BINUTILS_VERSION="$(get_ld_version)"
                 break
             fi
         done
@@ -267,6 +269,10 @@ select_compiler() {
 
 get_libc_version() {
     ldd --version | head -n1 | grep -Eo 'GLIBC [0-9]+\.[0-9]+' | cut -d' ' -f2
+}
+
+get_ld_version() {
+    "${CROSS_COMPILE:-}ld" --version | head -n1 | grep -Eo '[0-9]+\.[0-9]+'
 }
 
 export_kbuild_flags() {
