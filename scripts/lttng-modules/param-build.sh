@@ -646,9 +646,14 @@ build_linux_kernel() {
         patch_linux_kernel 6df2a016c0c8a3d0933ef33dd192ea6606b115e3
     fi
 
-    # Preferably not using gcc-13+ with these version, but attempt to patch as a fallback
-    if { vergte "${selected_cc_version}" "13"; }; then
-        if [ "${cross_arch}" = "powerpc" ] || [ "${cross_arch}" = "ppc64el" ]; then
+    if [ "${cross_arch}" = "powerpc" ] || [ "${cross_arch}" = "ppc64el" ]; then
+        if { vergte "${selected_cc_version}" "12";} && { verlt "${kversion}" "5.10"; }; then
+            # arch/powerpc/boot/util.S:49: Error: junk at end of line
+            patch_linux_kernel 8b14e1dff067195dca7a42321771437cb33a99e9
+        fi
+
+        # Preferably not using gcc-13+ with these versions, but attempt to patch as a fallback
+        if { vergte "${selected_cc_version}" "13"; }; then
             if { verlt "${kversion}" "6.10"; }; then
                 # Error: operand out of domain (19 is not a multiple of 4
                 patch_linux_kernel 2d43cc701b96f910f50915ac4c2a0cae5deb734c
