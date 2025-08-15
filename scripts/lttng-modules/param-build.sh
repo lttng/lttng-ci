@@ -640,6 +640,12 @@ build_linux_kernel() {
       fi
     fi
 
+    if { vergte "${BINUTILS_VERSION}" "2.38"; } && { vergte "${selected_cc_version}" "12"; } && [ "${cross_arch}" = "riscv64" ] && { verlt "${kversion}" "5.17"; }; then
+        # ./arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode
+        # `csrr a5,0xc01', extension `zicsr' required
+        patch_linux_kernel 6df2a016c0c8a3d0933ef33dd192ea6606b115e3
+    fi
+
     # Preferably not using gcc-13+ with these version, but attempt to patch as a fallback
     if { vergte "${selected_cc_version}" "13"; }; then
         if [ "${cross_arch}" = "powerpc" ] || [ "${cross_arch}" = "ppc64el" ]; then
