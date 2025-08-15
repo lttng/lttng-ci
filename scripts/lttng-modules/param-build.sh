@@ -665,6 +665,44 @@ build_linux_kernel() {
         fi
     fi
 
+    if [ "${cross_arch}" = "armhf" ]; then
+        # binutils >= 2.41 stops accepting solaris-style section names for
+        # non-SPARC elf targets
+        # @see binutils-gdb 4cb88cfae84363cef6ed59d9d458a20ff2e1e893
+        # ("PR11601, Solaris assembler compatibility doesn't work")
+        #
+        if { vergte "${BINUTILS_VERSION}" "2.41"; } && { verlt "${kversion}" "5.5"; }; then
+            # arch/arm/mm/proc-v6.S:267: Error: junk at end of line,
+            # first unrecognized character is `#'
+            patch_linux_kernel 790756c7e0229dedc83bf058ac69633045b1000e
+            if [[ "$(find arch/arm -iname '*.S.rej' | wc -l)" -gt "0" ]]; then
+                while read -r reject_file ; do
+                    base_file="${reject_file%.rej}"
+                    sed -i 's/#alloc, #execinstr/"ax"/' "${base_file}"
+                    sed -i 's/#alloc/"a"/' "${base_file}"
+                done < <(find arch/arm/ -iname '*.S.rej')
+            fi
+
+            if { verlt "${kversion}" "4.6"; }; then
+                while read -r file ; do
+                    sed -i 's/#alloc, #execinstr/"ax"/' "${file}"
+                    sed -i 's/#alloc/"a"/' "${file}"
+                done < <(find arch/arm -iname 'piggy.*.S')
+            fi
+       fi
+    fi
+
+    if [ "${cross_arch}" = "arm64" ]; then
+        if { vergte "${BINUTILS_VERSION}" "2.41"; } && { verlt "${kversion}" "4.5"; }; then
+            # binutils >= 2.41 stops accepting solaris-style section names for
+            # non-SPARC elf targets
+            # @see binutils-gdb 4cb88cfae84363cef6ed59d9d458a20ff2e1e893
+            # ("PR11601, Solaris assembler compatibility doesn't work")
+            #
+            patch_linux_kernel f00083cae331e5d3eecade6b4fdc35d0825e73ef
+        fi
+    fi
+
     if { vergte "${kversion}" "6.13"; } && [ "${cross_arch}" = "powerpc" ]; then
         # @see https://lore.kernel.org/lkml/20250218-buildfix-extmod-powerpc-v2-1-1e78fcf12b56@efficios.com/
         sed -i 's#KBUILD_LDFLAGS_MODULE += arch/powerpc/lib/crtsavres.o#KBUILD_LDFLAGS_MODULE += $(objtree)/arch/powerpc/lib/crtsavres.o#' arch/powerpc/Makefile
