@@ -244,6 +244,14 @@ select_compiler() {
                     fi
                 fi
 
+                if { verlt "${kversion}" "6.1"; } && { vergt "${cc_version}" "12"; } ; then
+                    # Older kernels don't build on gcc-13+
+                    # @see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=107405
+                    if [ "${cross_arch}" = "armhf" ]; then
+                        continue
+                    fi
+                fi
+
                 selected_cc="$cc"
                 selected_cc_version="$cc_version"
                 BINUTILS_VERSION="$(get_ld_version)"
