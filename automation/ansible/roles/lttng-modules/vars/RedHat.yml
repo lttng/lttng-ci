@@ -10,5 +10,6 @@ lttng_modules_packages:
   - kernel-headers
   - kmod
   - lz4
+  - pbzip2
   - s3cmd
   - zstd

@@ -10,6 +10,7 @@ lttng_modules_packages:
   - kmod
   - libelf-dev
   - lz4
+  - pbzip2
   - s3cmd
   - u-boot-tools
   - zstd
