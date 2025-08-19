@@ -590,9 +590,11 @@ if (elversion != null) {
         // EL 8 (all)
         // ~/^refs\/tags\/(imports\/r8\/kernel-[\d\.-]+.el8.*)$/,
         // EL 8.4
-        ~/^refs\/tags\/(imports\/r8\/kernel-4\.18\.0-305\.[\d\.-]+.el8.*)$/,
+        // ~/^refs\/tags\/(imports\/r8\/kernel-4\.18\.0-305\.[\d\.-]+.el8.*)$/,
         // EL 8.6
-        ~/^refs\/tags\/(imports\/r8\/kernel-4\.18\.0-372\.[\d\.-]+.el8.*)$/,
+        // ~/^refs\/tags\/(imports\/r8\/kernel-4\.18\.0-372\.[\d\.-]+.el8.*)$/,
+        // EL 8.10
+        ~/^refs\/tags\/(imports\/r8\/kernel-4\.18\.0-553\.[\d\.-]+.el8.*)$/,
       ]
       blacklist = []
       break
