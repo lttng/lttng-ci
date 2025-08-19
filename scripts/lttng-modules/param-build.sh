@@ -165,9 +165,19 @@ list_gccs() {
     local gccs
     gccs=()
     IFS=: read -r -a path_array <<< "$PATH"
-    while read -r gcc ; do
-        gccs+=("$gcc")
-    done < <(find "${path_array[@]}" -maxdepth 1 -regex '.*/gcc-[0-9\.]+$' -printf '%f\n' | sort -t- -k2 -V -r)
+
+    if grep -q "rhel" /etc/os-release ; then
+        # EL uses scl w/ gcc-toolset-NN
+        # while read -r line ; do
+        #   gccs+=("/opt/rh/${line}/root/usr/bin/gcc")
+        # done < <(scl list-collections | grep gcc-toolset)
+        gccs+=("$(command -v gcc)")
+    else
+        while read -r gcc ; do
+            gccs+=("$gcc")
+        done < <(find "${path_array[@]}" -maxdepth 1 -regex '.*/gcc-[0-9\.]+$' -printf '%f\n' | sort -t- -k2 -V -r)
+    fi
+
     echo "${gccs[@]}"
 }
 
@@ -218,7 +228,12 @@ select_compiler() {
     else
         for cc in $(list_gccs) ; do
             if "${CROSS_COMPILE:-}${cc}" -I include/ -D__LINUX_COMPILER_H -D__LINUX_COMPILER_TYPES_H -E include/linux/compiler-gcc.h; then
-                cc_version=$(echo "${cc}" | cut -d'-' -f2)
+                if [[ "${cc}" =~ gcc-[0-9]+$ ]]; then
+                    cc_version=$(echo "${cc}" | cut -d'-' -f2)
+                else
+                    cc_version="$("${cc}" --version | head -n1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)"
+                fi
+
                 if { verlt "${kversion}" "5.17"; } && { vergt "${cc_version}" "11"; } ; then
                     # Using gcc-12+ with '-Wuse-after-free' breaks the build of older
                     # kernels (in particular, objtool). Some releases on LTS
@@ -228,8 +243,10 @@ select_compiler() {
                     # As Debian trixie doesn't ship with gcc-11, try to fiddle with flags instead.
                     # For Debian bookworm, skip this compiler to maintain the same behaviour as
                     # done previously.
-                    if { verlt "$(lsb_release --short --release)" "13"; }; then
-                        continue
+                    if command -v lsb_release ; then
+                        if { verlt "$(lsb_release --short --release)" "13"; }; then
+                            continue
+                        fi
                     fi
                 fi
 
@@ -253,6 +270,13 @@ select_compiler() {
                 fi
 
                 selected_cc="$cc"
+                #if [[ "${selected_cc}" =~ gcc-toolset-[0-9]+ ]]; then
+                #    toolset="$(echo "${selected_cc}" | grep -Eo 'gcc-toolset-[0-9]+')"
+                #    # shellcheck disable=SC1091
+                #    source scl_source enable "${toolset}"
+                #    selected_cc=gcc
+                #fi
+
                 selected_cc_version="$cc_version"
                 BINUTILS_VERSION="$(get_ld_version)"
                 break
@@ -423,7 +447,12 @@ build_linux_kernel() {
         # Eg.
         # mm/mempolicy.c: In function ‘mpol_parse_str’:
         # mm/mempolicy.c:2980:26: error: writing 1 byte into a region of size 0 [-Werror=stringop-overflow=]
-        export KCFLAGS="${KCFLAGS} -Wno-error -Wno-all -Wno-error=stringop-overflow -Wno-error=address-of-packed-member"
+        KCFLAGS="${KCFLAGS} -Wno-error -Wno-all -Wno-error=stringop-overflow"
+        if { vergte "${selected_cc_version}" "9"; }; then
+            KCFLAGS="${KCFLAGS} -Wno-error=address-of-packed-member"
+        fi
+
+        export KCFLAGS="${KCFLAGS}"
         ;;
 
       Ubuntu*)
