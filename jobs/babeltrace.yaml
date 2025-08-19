@@ -614,7 +614,7 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb12-s390x, deb12-i386, deb13-arm64]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, prod]
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
@@ -700,7 +700,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386, deb13-arm64]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           warnings_status: FAILED
@@ -738,7 +738,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.1
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386, deb13-arm64]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           warnings_status: WARNING
@@ -776,7 +776,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386, deb13-arm64]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-s390x, deb12-i386, deb13-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           warnings_status: WARNING
@@ -830,7 +830,7 @@
           touchstone: '(build == "std") && (conf == "std")'
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: portbuild
-          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb12-s390x, deb12-i386, deb13-arm64, deb13-arm64]
+          platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb12-ppc64el, deb13-s390x, deb12-i386, deb13-arm64, deb13-arm64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, python-bindings]
           touchstone: '(build == "std") && (conf == "std") && (platform == "deb12-i386")'
