@@ -1,7 +1,14 @@
 ---
+
 lttng_modules_packages:
   - bc
+  - cpio
+  - dwarves
   - elfutils-devel
   - gawk
   - kernel-devel
   - kernel-headers
+  - kmod
+  - lz4
+  - s3cmd
+  - zstd
