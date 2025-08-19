@@ -73,7 +73,6 @@
     github_name: lttng-modules
     email_to: ''
 
-
 ## Anchors
 - _lttng-modules_build_parameters_defaults: &lttng-modules_build_parameters_defaults
     name: 'lttng-modules_build_parameters_defaults'
@@ -261,6 +260,94 @@
          command:
            !include-raw-verbatim: scripts/lttng-modules/master-rt.groovy
 
+
+- defaults:
+    name: lttng-modules_PARAM_build
+    defaults: lttng-modules
+    description: |
+      This is a parametrized job used by 'master' jobs to build any combinations
+      of lttng-modules and linux kernel versions.
+
+      <p>Job is managed by Jenkins Job Builder.</p>
+
+    project-type: matrix
+    node: 'master' # Applies only to matrix flyweight task
+    axes:
+      - axis:
+          type: slave
+          name: platforms
+          values: '{obj:platforms}'
+
+    properties:
+      - build-discarder:
+          days-to-keep: 2
+
+    parameters:
+      - string:
+          name: 'mversion'
+          default: 'master'
+          description: 'The lttng-modules branch to build. Use `refs/XXX` for a specific ref, or a commit hash.'
+      - string:
+          name: 'mgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
+          description: 'The lttng-modules git repository url.'
+      - string:
+          name: 'ktag'
+          default: ''
+          description: 'The linux kernel git tag to build against.'
+      - string:
+          name: 'kgitrepo'
+          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
+          description: 'The linux kernel git repository url.'
+      - string:
+          name: 'kconfig_profile'
+          default: 'default'
+          description: 'The configuration profile to use for the kernel'
+      - string:
+          name: 'distroversion'
+          default: ''
+          description: 'Supplementary distribution version, eg. sles15sp4 or el8'
+      - string:
+          name: 'getsrc_repo'
+          default: 'https://github.com/rocky-linux/rocky-tools.git'
+          description: 'The git repository that contains the getsrc tool'
+      - string:
+          name: 'getsrc_version'
+          default: 'main'
+          description: 'The tag or commit to use when cloning the getsrc tool'
+      - bool:
+          name: 'DEBUG'
+          default: false
+          description: "Enable verbose builds"
+      - bool:
+          name: 'FAIL_ON_WARNINGS'
+          default: false
+          description: "Fail the lttng-modules build if there are any warnings"
+      - string:
+          <<: *lttng-modules_build_parameter_uversion
+          default: ''
+
+    concurrent: true
+
+    scm: []
+
+    triggers: []
+
+    builders:
+      - conditional-step:
+          condition-kind: regex-match
+          label: '$distroversion'
+          regex: '^el.*$'
+          steps:
+            - shell: |
+                #!/bin/bash
+                set -exu
+                git clone -b "$getsrc_version" "$getsrc_repo" src/getsrc
+      - shell:
+          !include-raw-verbatim: scripts/lttng-modules/param-build.sh
+
+    publishers:
+      - workspace-cleanup
 
 ## Templates
 - job-template:
@@ -676,91 +763,11 @@
 
 - job-template:
     name: lttng-modules_PARAM_build
-    defaults: lttng-modules
-    description: |
-      This is a parametrized job used by 'master' jobs to build any combinations
-      of lttng-modules and linux kernel versions.
+    defaults: lttng-modules_PARAM_build
 
-      <p>Job is managed by Jenkins Job Builder.</p>
-
-    project-type: matrix
-    node: 'master' # Applies only to matrix flyweight task
-    axes:
-      - axis:
-          type: slave
-          name: platforms
-          values: '{obj:platforms}'
-
-    properties:
-      - build-discarder:
-          days-to-keep: 2
-
-    parameters:
-      - string:
-          name: 'mversion'
-          default: 'master'
-          description: 'The lttng-modules branch to build. Use `refs/XXX` for a specific ref, or a commit hash.'
-      - string:
-          name: 'mgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
-          description: 'The lttng-modules git repository url.'
-      - string:
-          name: 'ktag'
-          default: ''
-          description: 'The linux kernel git tag to build against.'
-      - string:
-          name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
-          description: 'The linux kernel git repository url.'
-      - string:
-          name: 'kconfig_profile'
-          default: 'default'
-          description: 'The configuration profile to use for the kernel'
-      - string:
-          name: 'distroversion'
-          default: ''
-          description: 'Supplementary distribution version, eg. sles15sp4 or el8'
-      - string:
-          name: 'getsrc_repo'
-          default: 'https://github.com/rocky-linux/rocky-tools.git'
-          description: 'The git repository that contains the getsrc tool'
-      - string:
-          name: 'getsrc_version'
-          default: 'main'
-          description: 'The tag or commit to use when cloning the getsrc tool'
-      - bool:
-          name: 'DEBUG'
-          default: false
-          description: "Enable verbose builds"
-      - bool:
-          name: 'FAIL_ON_WARNINGS'
-          default: false
-          description: "Fail the lttng-modules build if there are any warnings"
-      - string:
-          <<: *lttng-modules_build_parameter_uversion
-          default: ''
-
-    concurrent: true
-
-    scm: []
-
-    triggers: []
-
-    builders:
-      - conditional-step:
-          condition-kind: regex-match
-          label: '$distroversion'
-          regex: '^el.*$'
-          steps:
-            - shell: |
-                #!/bin/bash
-                set -exu
-                git clone -b "$getsrc_version" "$getsrc_repo" src/getsrc
-      - shell:
-          !include-raw-verbatim: scripts/lttng-modules/param-build.sh
-
-    publishers:
-      - workspace-cleanup
+- job-template:
+    name: lttng-modules_PARAM_build_el
+    defaults: lttng-modules_PARAM_build
 
 - job-template:
     name: dev_mjeanson_lttng-modules_PARAM_build
@@ -1076,7 +1083,7 @@
           kverfilter: none
 
       # EL normal builds
-      - 'lttng-modules_{mversion}_{buildtype}-{elversion}':
+      - 'lttng-modules_{mversion}_{buildtype}-{elversion}': &job_lttng-modules_el
           mversion:
             - master
             - stable-2.14
@@ -1085,7 +1092,7 @@
           elversion:
             - el8
           buildtype: build
-          parambuildtype: build
+          parambuildtype: build_el
           kverfloor: ''
           kverceil: ''
           kverfilter: stable-head
@@ -1220,6 +1227,8 @@
       # Parametrized kernel and modules build jobs
       - 'lttng-modules_PARAM_build':
           platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+      - 'lttng-modules_PARAM_build_el':
+          platforms: !!python/tuple [el8-amd64]
       - 'lttng-modules_PARAM_crossbuild':
           platforms: !!python/tuple [deb12-amd64, deb13-amd64]
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, riscv64]
@@ -1283,18 +1292,7 @@
           kverfilter: lts-head
           kverrc: false
       - 'dev_review_lttng-modules_{mversion}_build-{elversion}':
-          mversion:
-            - master
-            - stable-2.14
-            - stable-2.13
-            - stable-2.12
-          elversion:
-            - el8
-          buildtype: build
-          parambuildtype: build
-          kverfloor: ''
-          kverceil: ''
-          kverfilter: stable-head
+          <<: *job_lttng-modules_el
       - 'dev_review_lttng-modules_{mversion}_build-{slesversion}':
           mversion:
             - master
