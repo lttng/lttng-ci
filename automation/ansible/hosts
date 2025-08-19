@@ -83,8 +83,8 @@ ci-node-deb13-riscv64-03
 ci-node-deb13-riscv64-04
 
 [node_s390x]
-ci-node-deb12-s390x-01
-ci-node-deb12-s390x-02
+ci-node-deb13-s390x-01
+ci-node-deb13-s390x-02
 
 [node_i386]
 ci-node-deb12-i386-1a-01
