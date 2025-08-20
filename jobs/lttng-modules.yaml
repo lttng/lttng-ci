@@ -993,7 +993,7 @@
     kconfig_profile: default
     jobs:
       # Vanilla normal builds
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla': &job_lttng-modules_master
           mversion:
             - master
           buildtype: build
@@ -1002,7 +1002,7 @@
           kverceil: ''
           kverfilter: stable-head
           kverrc: true
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla': &job_lttng-modules_master_nocompat
           mversion:
             - master
           buildtype: nocompat
@@ -1021,7 +1021,7 @@
           kverfloor: v4.4
           kverceil: ''
           kverfilter: none
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla': &job_lttng-modules_stable-2-14
           mversion:
             - stable-2.14
           buildtype: build
@@ -1029,7 +1029,7 @@
           kverfloor: v4.4
           kverceil: ''
           kverfilter: stable-head
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla': &job_lttng-modules_stable-2-14_nocompat
           mversion:
             - stable-2.14
           buildtype: nocompat
@@ -1039,7 +1039,7 @@
           kverceil: ''
           kverfilter: stable-head
 
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla': &job_lttng-modules_stable-2-13
           mversion:
             - stable-2.13
           buildtype: build
@@ -1047,7 +1047,7 @@
           kverfloor: v3.0
           kverceil: ''
           kverfilter: stable-head
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla': &job_lttng-modules_stable-2-13_nocompat
           mversion:
             - stable-2.13
           buildtype: nocompat
@@ -1065,7 +1065,7 @@
           kverceil: ''
           kverfilter: none
 
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla': &job_lttng-modules_stable-2-12
           mversion:
             - stable-2.12
           buildtype: build
@@ -1105,7 +1105,7 @@
           kverfilter: stable-head
 
       # SLES normal builders
-      - 'lttng-modules_{mversion}_{buildtype}-{slesversion}':
+      - 'lttng-modules_{mversion}_{buildtype}-{slesversion}': &job_lttng-modules_sles
           mversion:
             - master
             - stable-2.14
@@ -1120,7 +1120,7 @@
           kverfilter: stable-head
 
       # Ubuntu normal builds
-      - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
+      - 'lttng-modules_{mversion}_{buildtype}-{uversion}': &job_lttng-modules_master_ubuntu
           mversion:
             - master
             - stable-2.14
@@ -1158,7 +1158,7 @@
           kverceil: ''
           kverfilter: stable-head
 
-      - 'lttng-modules_{mversion}_{buildtype}-vanilla':
+      - 'lttng-modules_{mversion}_{buildtype}-vanilla': &job_lttng-modules_crossbuild_nocompat
           mversion:
             - master
             - stable-2.14
@@ -1198,9 +1198,10 @@
           kverfilter: stable-head
 
 # Ubuntu cross builds
-      - 'lttng-modules_{mversion}_{buildtype}-{uversion}':
+      - 'lttng-modules_{mversion}_{buildtype}-{uversion}': &job_lttng-modules_master_ubuntu_crossbuild
           mversion:
             - master
+            - stable-2.14
             - stable-2.13
           uversion:
             - focal
@@ -1244,81 +1245,28 @@
     buildtype: build
     jobs:
       - 'dev_review_lttng-modules_{mversion}_{buildtype}':
-          mversion:
-            - master
-            - stable-2.14
-          kverfloor: v4.4
-          kverceil: ''
-          kverfilter: lts-head
+          <<: *job_lttng-modules_master
       - 'dev_review_lttng-modules_{mversion}_{buildtype}':
-          buildtype: nocompat
-          parambuildtype: build
-          kconfig_profile: nocompat
-          mversion:
-            - master
-            - stable-2.14
-          kverfloor: v4.4
-          kverceil: ''
-          kverfilter: lts-head
+          <<: *job_lttng-modules_master_nocompat
       - 'dev_review_lttng-modules_{mversion}_{buildtype}':
-          buildtype: crossbuild_nocompat
-          parambuildtype: crossbuild
-          kconfig_profile: nocompat
-          mversion:
-            - master
-            - stable-2.14
-            - stable-2.13
-          kverfloor: v4.4
-          kverceil: ''
-          kverfilter: lts-head
-          enable_gerrit_trigger: false
+          <<: *job_lttng-modules_stable-2-14
       - 'dev_review_lttng-modules_{mversion}_{buildtype}':
-          mversion: stable-2.13
-          kverfloor: v3.0
-          kverceil: ''
-          kverfilter: lts-head
+          <<: *job_lttng-modules_stable-2-14_nocompat
       - 'dev_review_lttng-modules_{mversion}_{buildtype}':
-          buildtype: nocompat
-          parambuildtype: build
-          kconfig_profile: nocompat
-          mversion: stable-2.13
-          kverfloor: v3.0
-          kverceil: ''
-          kverfilter: lts-head
+          <<: *job_lttng-modules_crossbuild_nocompat
       - 'dev_review_lttng-modules_{mversion}_{buildtype}':
-          mversion: stable-2.12
-          kverfloor: v3.0
-          kverceil: v5.18
-          kverfilter: lts-head
-          kverrc: false
+          <<: *job_lttng-modules_stable-2-13
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}':
+          <<: *job_lttng-modules_stable-2-13_nocompat
+      - 'dev_review_lttng-modules_{mversion}_{buildtype}':
+          <<: *job_lttng-modules_stable-2-12
       - 'dev_review_lttng-modules_{mversion}_build-{elversion}':
           <<: *job_lttng-modules_el
       - 'dev_review_lttng-modules_{mversion}_build-{slesversion}':
-          mversion:
-            - master
-            - stable-2.14
-            - stable-2.13
-            - stable-2.12
-          slesversion:
-            - sles15sp5
-          buildtype: build
-          parambuildtype: build
-          kverfloor: ''
-          kverceil: ''
-          kverfilter: stable-head
+          <<: *job_lttng-modules_sles
       - 'dev_review_lttng-modules_{mversion}_{buildtype}-{uversion}':
-          mversion:
-            - master
-            - stable-2.13
-          uversion:
-            - focal
-            - jammy
-            - noble
-          buildtype: crossbuild
-          parambuildtype: crossbuild
-          kverfloor: ''
-          kverceil: ''
-          kverfilter: stable-head
+          <<: *job_lttng-modules_master_ubuntu_crossbuild
+          enable_gerrit_trigger: false
 
 - project:
     name: lttng-modules-dev-mjeanson
