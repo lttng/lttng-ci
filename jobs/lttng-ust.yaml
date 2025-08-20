@@ -1024,7 +1024,7 @@
     touchstone: ''
     version: master
     #
-    babeltrace_versions: !!python/tuple [stable-2.0]
+    babeltrace_versions: !!python/tuple [stable-2.1]
     liburcu_versions: !!python/tuple [master]
     lttngtools_versions: !!python/tuple [master]
     lttngust_versions: !!python/tuple [master]
