@@ -805,13 +805,11 @@ exit \$failed
 
       environment {
         CFLAGS = "-O2 -g -fsanitize=address"
-        CXXFLAGS = "-O2 -g -fsanitize=address -D_GLIBCXX_DEBUG=1"
+        // g++ on Debian 13 has some false positives with -Warray-bounds.
+        CXXFLAGS = "-O2 -g -fsanitize=address -D_GLIBCXX_DEBUG=1 -Wno-error=array-bounds"
         LDFLAGS = "-fsanitize=address"
         CC = "${ -> get_cc(params.CCTYPE) }"
         CXX = "${ -> get_cxx(params.CCTYPE) }"
-
-        // @FIXME: use cc version
-        LD_LIBRARY_PATH = "/usr/lib/gcc/x86_64-linux-gnu/12:${env.LD_LIBRARY_PATH}"
       }
 
       stages {
