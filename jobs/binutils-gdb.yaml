@@ -46,6 +46,9 @@
     buildtype: linuxbuild
     platform: deb13-amd64
     git_url: 'git://git-mirror.internal.efficios.com/git/binutils-gdb.git'
+    triggers:
+      - pollscm:
+          cron: '@weekly'
 
 - job-template:
     name: dev_review_binutils-gdb_{version}_{buildtype}_{cctype}
