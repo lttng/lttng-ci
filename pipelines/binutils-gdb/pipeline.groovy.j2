@@ -935,6 +935,13 @@ cat "\${WORKSPACE}/results/${TARGET_BOARD}/gdb.fail.sum"
 """
               )
 
+              sh(
+                label: 'known-failures-not-found.sum',
+                script: """#!/usr/bin/bash
+cat "\${WORKSPACE}/results/${TARGET_BOARD}/known-failures-not-found.sum"
+"""
+              )
+
               stash(name: "binutils-gdb-results-${TARGET_BOARD}", includes: 'results/**')
             }
           }
