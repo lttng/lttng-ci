@@ -25,6 +25,21 @@ class OutputFormat(enum.Enum):
         return self.value
 
 
+def get_config(server, nodes, args):
+    data = {}
+    for node in nodes:
+        data[node["name"]] = server.get_node_config(node["name"])
+
+    if args.format == OutputFormat.pprint:
+        pprint.PrettyPrinter().pprint(data)
+    elif args.format == OutputFormat.json:
+        print(json.dumps(data))
+    elif args.format == OutputFormat.pjson:
+        print(json.dumps(data, sort_keys=True, indent=4))
+    else:
+        raise Exception("Unknown output format")
+
+
 def get_hypervisor(server, nodes, args):
     found = 0
     for node in nodes:
@@ -254,6 +269,21 @@ def get_argument_parser():
         choices=list(OutputFormat),
     )
 
+    get_config_parser = subparsers.add_parser(
+        "getconf", help="Get raw node configuration"
+    )
+    get_config_parser.set_defaults(callback=get_config)
+    get_config_parser.add_argument(
+        "node", default="", help="A python regex to filter nodes by", nargs="?"
+    )
+    get_config_parser.add_argument(
+        "-f",
+        "--format",
+        default="pprint",
+        help="The output format",
+        type=OutputFormat,
+        choices=list(OutputFormat),
+    )
     return parser
 
 
