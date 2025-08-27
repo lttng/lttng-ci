@@ -25,19 +25,38 @@ class OutputFormat(enum.Enum):
         return self.value
 
 
+def _print_data(output_format, data):
+    if output_format == OutputFormat.pprint:
+        pprint.PrettyPrinter().pprint(data)
+    elif output_format == OutputFormat.json:
+        print(json.dumps(data))
+    elif output_format == OutputFormat.pjson:
+        print(json.dumps(data, sort_keys=True, indent=4))
+    else:
+        raise Exception("Unknown output format")
+
+
+def get_job_config(server, nodes, args):
+    data = {}
+    jobs = server.get_jobs()
+    logging.debug("{} jobs before filtering".format(len(jobs)))
+    if "job" in args and args.job != "":
+        pattern = re.compile(args.job)
+        jobs = [j for j in jobs if pattern.match(j["name"])]
+
+    logging.debug("{} jobs after filtering".format(len(jobs)))
+    for job in jobs:
+        data[job["name"]] = server.get_job_config(job["name"])
+
+    _print_data(args.format, data)
+
+
 def get_config(server, nodes, args):
     data = {}
     for node in nodes:
         data[node["name"]] = server.get_node_config(node["name"])
 
-    if args.format == OutputFormat.pprint:
-        pprint.PrettyPrinter().pprint(data)
-    elif args.format == OutputFormat.json:
-        print(json.dumps(data))
-    elif args.format == OutputFormat.pjson:
-        print(json.dumps(data, sort_keys=True, indent=4))
-    else:
-        raise Exception("Unknown output format")
+    _print_data(args.format, data)
 
 
 def get_hypervisor(server, nodes, args):
@@ -63,14 +82,7 @@ def get_info(server, nodes, args):
     for node in nodes:
         data.append(server.get_node_info(node["name"]))
 
-    if args.format == OutputFormat.pprint:
-        pprint.PrettyPrinter().pprint(data)
-    elif args.format == OutputFormat.json:
-        print(json.dumps(data))
-    elif args.format == OutputFormat.pjson:
-        print(json.dumps(data, sort_keys=True, indent=4))
-    else:
-        raise Exception("Unknown output format")
+    _print_data(args.format, data)
 
 
 def toggle_nodes(server, nodes, args, want_offline=True):
@@ -277,6 +289,22 @@ def get_argument_parser():
         "node", default="", help="A python regex to filter nodes by", nargs="?"
     )
     get_config_parser.add_argument(
+        "-f",
+        "--format",
+        default="pprint",
+        help="The output format",
+        type=OutputFormat,
+        choices=list(OutputFormat),
+    )
+
+    get_job_config_parser = subparsers.add_parser(
+        "getjobconf", help="Get raw job configuration"
+    )
+    get_job_config_parser.set_defaults(callback=get_job_config)
+    get_job_config_parser.add_argument(
+        "job", default="", help="A python regex to filter jobs by", nargs="?"
+    )
+    get_job_config_parser.add_argument(
         "-f",
         "--format",
         default="pprint",
