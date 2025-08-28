@@ -8,6 +8,15 @@ lxd_host: ci-host-amd64-1a.internal.efficios.com
 # Default host to create libvirt VMs on if not specified
 libvirt_host: ci-host-amd64-1b.internal.efficios.com
 
+_anchors:
+  jenkins:
+    config: &jenkins_ssh_agent_default_config
+      launcher/launchTimeoutSeconds: '5'
+      launcher/retryWaitTime: '5'
+      launcher/maxNumRetries: '2'
+      retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
+      retentionStrategy/inDemandDelay: '0'
+      retentionStrategy/idleDelay: '5'
 # @see https://docs.ansible.com/ansible/latest/collections/community/general/lxd_container_module.html#ansible-collections-community-general-lxd-container-module
 # @example a container instance with the default image (deb12 amd64)
 #   - meta:
@@ -237,6 +246,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.10
     lxd:
@@ -244,6 +255,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.11
     lxd:
@@ -251,6 +264,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.12
     lxd:
@@ -258,6 +273,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.13
     lxd:
@@ -265,6 +282,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.14
     lxd:
@@ -272,6 +291,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.15
     lxd:
@@ -279,6 +300,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.16
     lxd:
@@ -286,6 +309,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.17
     lxd:
@@ -293,6 +318,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.18
     lxd:
@@ -300,6 +327,8 @@ containers:
       target: ci-host-amd64-1a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.19
     lxd:
@@ -307,6 +336,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.20
     lxd:
@@ -314,6 +345,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.21
     lxd:
@@ -321,6 +354,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.22
     lxd:
@@ -328,6 +363,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.23
     lxd:
@@ -335,6 +372,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.24
     lxd:
@@ -342,6 +381,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.25
     lxd:
@@ -349,6 +390,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.26
     lxd:
@@ -356,6 +399,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.27
     lxd:
@@ -363,6 +408,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.28
     lxd:
@@ -370,6 +417,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.29
     lxd:
@@ -377,6 +426,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.30
     lxd:
@@ -384,6 +435,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.31
     lxd:
@@ -391,6 +444,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.32
     lxd:
@@ -398,6 +453,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.33
     lxd:
@@ -405,6 +462,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.34
     lxd:
@@ -412,6 +471,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.35
     lxd:
@@ -419,6 +480,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.36
     lxd:
@@ -426,6 +489,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.37
     lxd:
@@ -433,6 +498,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.38
     lxd:
@@ -440,6 +507,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.39
     lxd:
@@ -447,6 +516,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.40
     lxd:
@@ -454,6 +525,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.41
     lxd:
@@ -461,6 +534,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.42
     lxd:
@@ -468,6 +543,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.43
     lxd:
@@ -475,6 +552,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.44
     lxd:
@@ -482,6 +561,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.45
     lxd:
@@ -489,6 +570,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.46
     lxd:
@@ -496,6 +579,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.47
     lxd:
@@ -503,6 +588,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.48
     lxd:
@@ -510,6 +597,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.49
     lxd:
@@ -517,6 +606,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.50
     lxd:
@@ -524,6 +615,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.51
     lxd:
@@ -531,6 +624,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.52
     lxd:
@@ -538,6 +633,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.53
     lxd:
@@ -545,6 +642,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.54
     lxd:
@@ -552,6 +651,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.55
     lxd:
@@ -559,6 +660,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.56
     lxd:
@@ -566,6 +669,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.57
     lxd:
@@ -573,6 +678,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.58
     lxd:
@@ -580,6 +687,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.59
     lxd:
@@ -587,6 +696,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.60
     lxd:
@@ -594,6 +705,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.61
     lxd:
@@ -601,6 +714,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.62
     lxd:
@@ -608,6 +723,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.63
     lxd:
@@ -615,6 +732,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.64
     lxd:
@@ -622,6 +741,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.65
     lxd:
@@ -629,6 +750,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.66
     lxd:
@@ -636,6 +759,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.67
     lxd:
@@ -643,6 +768,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.68
     lxd:
@@ -650,6 +777,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.69
     lxd:
@@ -657,6 +786,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.70
     lxd:
@@ -664,6 +795,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.71
     lxd:
@@ -671,6 +804,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.72
     lxd:
@@ -678,6 +813,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.73
     lxd:
@@ -685,6 +822,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.74
     lxd:
@@ -692,6 +831,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.75
     lxd:
@@ -699,6 +840,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.76
     lxd:
@@ -706,6 +849,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.77
     lxd:
@@ -713,6 +858,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.78
     lxd:
@@ -720,6 +867,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-amd64 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   # @NOTE: debian/bookworm/cloud/i386 isn't an image
   # available from images.linuxcontainers.org since they
   # reduced architecture to save storage space. The instances
@@ -734,6 +883,8 @@ containers:
         alias: debian/bookworm/cloud/i386
     jenkins:
       label: 'deb12-i386 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.80
     lxd:
@@ -741,6 +892,8 @@ containers:
       target: ci-host-amd64-1b
     jenkins:
       label: 'deb12-i386 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.81
     lxd:
@@ -748,6 +901,8 @@ containers:
       target: ci-host-amd64-1c
     jenkins:
       label: 'deb12-i386 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.82
     lxd:
@@ -755,6 +910,8 @@ containers:
       target: ci-host-amd64-1d
     jenkins:
       label: 'deb12-i386 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.83
     lxd:
@@ -762,6 +919,8 @@ containers:
       target: ci-host-amd64-2a
     jenkins:
       label: 'deb12-i386 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.84
     lxd:
@@ -769,6 +928,8 @@ containers:
       target: ci-host-amd64-2b
     jenkins:
       label: 'deb12-i386 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.85
     lxd:
@@ -776,6 +937,8 @@ containers:
       target: ci-host-amd64-2c
     jenkins:
       label: 'deb12-i386 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.86
     lxd:
@@ -783,6 +946,8 @@ containers:
       target: ci-host-amd64-2d
     jenkins:
       label: 'deb12-i386 deb12'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.94
     lxd:
@@ -793,6 +958,8 @@ containers:
         type: image
     jenkins:
       label: 'sles15sp5-amd64'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.95
     lxd:
@@ -803,6 +970,8 @@ containers:
         type: image
     jenkins:
       label: 'sles15sp5-amd64'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.96
     lxd:
@@ -813,6 +982,8 @@ containers:
         type: image
     jenkins:
       label: 'sles15sp5-amd64'
+      config:
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 172.18.16.97
     jenkins:
@@ -844,6 +1015,8 @@ containers:
       address: 172.18.16.104
     jenkins:
       label: 'yocto33-amd64'
+      config:
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-yocto33-amd64-2a-01
       target: ci-host-amd64-2a
@@ -854,6 +1027,8 @@ containers:
       address: 172.18.16.105
     jenkins:
       label: 'yocto33-amd64'
+      config:
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-yocto33-amd64-2b-01
       target: ci-host-amd64-2b
@@ -865,9 +1040,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-01
       target: ci-host-amd64-1a
@@ -879,9 +1052,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-02
       target: ci-host-amd64-1a
@@ -893,9 +1064,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-03
       target: ci-host-amd64-1a
@@ -907,9 +1076,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-04
       target: ci-host-amd64-1a
@@ -921,9 +1088,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-05
       target: ci-host-amd64-1a
@@ -935,9 +1100,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-06
       target: ci-host-amd64-1a
@@ -949,9 +1112,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-07
       target: ci-host-amd64-1a
@@ -963,9 +1124,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-08
       target: ci-host-amd64-1a
@@ -977,9 +1136,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-09
       target: ci-host-amd64-1a
@@ -991,9 +1148,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1a-10
       target: ci-host-amd64-1a
@@ -1005,9 +1160,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-01
       target: ci-host-amd64-1b
@@ -1019,9 +1172,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-02
       target: ci-host-amd64-1b
@@ -1033,9 +1184,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-03
       target: ci-host-amd64-1b
@@ -1047,9 +1196,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-04
       target: ci-host-amd64-1b
@@ -1061,9 +1208,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-05
       target: ci-host-amd64-1b
@@ -1075,9 +1220,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-06
       target: ci-host-amd64-1b
@@ -1089,9 +1232,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-07
       target: ci-host-amd64-1b
@@ -1103,9 +1244,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-08
       target: ci-host-amd64-1b
@@ -1117,9 +1256,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-09
       target: ci-host-amd64-1b
@@ -1131,9 +1268,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1b-10
       target: ci-host-amd64-1b
@@ -1145,9 +1280,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-01
       target: ci-host-amd64-1c
@@ -1159,9 +1292,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-02
       target: ci-host-amd64-1c
@@ -1173,9 +1304,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-03
       target: ci-host-amd64-1c
@@ -1187,9 +1316,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-04
       target: ci-host-amd64-1c
@@ -1201,9 +1328,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-05
       target: ci-host-amd64-1c
@@ -1215,9 +1340,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-06
       target: ci-host-amd64-1c
@@ -1229,9 +1352,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-07
       target: ci-host-amd64-1c
@@ -1243,9 +1364,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-08
       target: ci-host-amd64-1c
@@ -1257,9 +1376,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-09
       target: ci-host-amd64-1c
@@ -1271,9 +1388,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1c-10
       target: ci-host-amd64-1c
@@ -1285,9 +1400,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-01
       target: ci-host-amd64-1d
@@ -1299,9 +1412,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-02
       target: ci-host-amd64-1d
@@ -1313,9 +1424,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-03
       target: ci-host-amd64-1d
@@ -1327,9 +1436,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-04
       target: ci-host-amd64-1d
@@ -1341,9 +1448,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-05
       target: ci-host-amd64-1d
@@ -1355,9 +1460,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-06
       target: ci-host-amd64-1d
@@ -1369,9 +1472,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-07
       target: ci-host-amd64-1d
@@ -1383,9 +1484,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-08
       target: ci-host-amd64-1d
@@ -1397,9 +1496,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-09
       target: ci-host-amd64-1d
@@ -1411,9 +1508,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-1d-10
       target: ci-host-amd64-1d
@@ -1425,9 +1520,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-01
       target: ci-host-amd64-2a
@@ -1439,9 +1532,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-02
       target: ci-host-amd64-2a
@@ -1453,9 +1544,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-03
       target: ci-host-amd64-2a
@@ -1467,9 +1556,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-04
       target: ci-host-amd64-2a
@@ -1481,9 +1568,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-05
       target: ci-host-amd64-2a
@@ -1495,9 +1580,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-06
       target: ci-host-amd64-2a
@@ -1509,9 +1592,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-07
       target: ci-host-amd64-2a
@@ -1523,9 +1604,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-08
       target: ci-host-amd64-2a
@@ -1537,9 +1616,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-09
       target: ci-host-amd64-2a
@@ -1551,9 +1628,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2a-10
       target: ci-host-amd64-2a
@@ -1565,9 +1640,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-01
       target: ci-host-amd64-2b
@@ -1579,9 +1652,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-02
       target: ci-host-amd64-2b
@@ -1593,9 +1664,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-03
       target: ci-host-amd64-2b
@@ -1607,9 +1676,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-04
       target: ci-host-amd64-2b
@@ -1621,9 +1688,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-05
       target: ci-host-amd64-2b
@@ -1635,9 +1700,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-06
       target: ci-host-amd64-2b
@@ -1649,9 +1712,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-07
       target: ci-host-amd64-2b
@@ -1663,9 +1724,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-08
       target: ci-host-amd64-2b
@@ -1677,9 +1736,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-09
       target: ci-host-amd64-2b
@@ -1691,9 +1748,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2b-10
       target: ci-host-amd64-2b
@@ -1705,9 +1760,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-01
       target: ci-host-amd64-2c
@@ -1719,9 +1772,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-02
       target: ci-host-amd64-2c
@@ -1733,9 +1784,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-03
       target: ci-host-amd64-2c
@@ -1747,9 +1796,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-04
       target: ci-host-amd64-2c
@@ -1761,9 +1808,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-05
       target: ci-host-amd64-2c
@@ -1775,9 +1820,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-06
       target: ci-host-amd64-2c
@@ -1789,9 +1832,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-07
       target: ci-host-amd64-2c
@@ -1803,9 +1844,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-08
       target: ci-host-amd64-2c
@@ -1817,9 +1856,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-09
       target: ci-host-amd64-2c
@@ -1831,9 +1868,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2c-10
       target: ci-host-amd64-2c
@@ -1845,9 +1880,7 @@ containers:
     jenkins:
       label: 'deb13-amd64'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-deb13-amd64-2d-01
       target: ci-host-amd64-2d
@@ -1858,6 +1891,8 @@ containers:
       address: 172.18.16.114
     jenkins:
       label: 'yocto33-arm64'
+      config:
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-yocto33-arm64-2a-01
       target: ci-host-arm64-2a
@@ -1868,6 +1903,8 @@ containers:
       address: 172.18.16.115
     jenkins:
       label: 'yocto33-arm64'
+      config:
+        <<: *jenkins_ssh_agent_default_config
     lxd:
       name: ci-node-yocto33-arm64-2b-01
       target: ci-host-arm64-2b
@@ -1880,36 +1917,28 @@ containers:
       label: 'deb13-arm64'
       node_name: 'ci-node-deb13-arm64-osuosl-01'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 'ci-node-deb13-arm64-osuosl-02'
     jenkins:
       label: 'deb13-arm64'
       node_name: 'ci-node-deb13-arm64-osuosl-02'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 'ci-node-deb13-arm64-osuosl-03'
     jenkins:
       label: 'deb13-arm64'
       node_name: 'ci-node-deb13-arm64-osuosl-03'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
   - meta:
       address: 'ci-node-deb13-arm64-osuosl-04'
     jenkins:
       label: 'deb13-arm64'
       node_name: 'ci-node-deb13-arm64-osuosl-04'
       config:
-        retentionStrategy: 'hudson.slaves.RetentionStrategy$Demand=class'
-        retentionStrategy/inDemandDelay: '0'
-        retentionStrategy/idleDelay: '5'
+        <<: *jenkins_ssh_agent_default_config
   # "Root " nodes in libvirt, since Jenkins can use the "libvirt agents" plugin
   # to revert to a specific snapshot before running a job
   #
