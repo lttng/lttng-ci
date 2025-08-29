@@ -397,6 +397,41 @@ patch_linux_kernel() {
     fi
 }
 
+fetch_ubuntu_versions() {
+    local uversion="${1}"
+    local arch="${2}"
+    local retries=5
+    local backoff=0
+    local backoff_delta=10
+    local output_file
+    local endpoint="https://api.launchpad.net/1.0/ubuntu/+archive/primary?ws.op=getPublishedBinaries&binary_name=linux-image-generic&distro_arch_series=https://api.launchpad.net/1.0/ubuntu/${uversion}/${arch}"
+
+    output_file="$(mktemp)"
+    if ! test -f "${output_file}" ; then
+        echo "Failed to create temp file"
+        exit 1
+    fi
+
+    ret=
+    while [[ "${ret}" != "0" ]]; do
+        if [[ "${ret}" != "" ]]; then
+            sleep "${backoff}"
+            backoff=$((backoff + backoff_delta))
+        fi
+
+        curl -o "${output_file}" "${endpoint}"
+        ret=$!
+    done
+
+    if [[ "${ret}" != "0" ]]; then
+        echo "Failed to get ubuntu versions" >&2
+        exit 1
+    fi
+
+    echo "${output_file}"
+}
+
+
 build_linux_kernel() {
     local libc_version=
     cd "$LINUX_SRCOBJ_DIR"
@@ -478,11 +513,12 @@ build_linux_kernel() {
             # Extract version for package name
             #ubuntu_package_name="linux-image-$(echo "${ktag}" | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+-[0-9]+')-generic"
             version_from_tag="$(echo "${ktag}" | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+-[0-9]+.*' | tr '_' '~')"
-            endpoint="https://api.launchpad.net/1.0/ubuntu/+archive/primary?ws.op=getPublishedBinaries&binary_name=linux-image-generic&distro_arch_series=https://api.launchpad.net/1.0/ubuntu/${uversion}/${cross_arch}"
+            versions_file="$(fetch_ubuntu_versions "${uversion}" "${cross_arch}")"
             versions=()
             while read -r line ; do
                 versions+=("${line}")
-            done < <(curl "${endpoint}" | jq -r '.entries[] | select(.pocket != "Proposed") | .binary_package_version' | sort -V | uniq)
+            done < <(jq -r '.entries[] | select(.pocket != "Proposed") | .binary_package_version' < "${versions_file}" | sort -V | uniq)
+            rm -f "${versions_file}"
 
             found=
             for version in "${versions[@]}" ; do
