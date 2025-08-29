@@ -1278,7 +1278,7 @@
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
     babelversions: !!python/tuple [stable-2.1]
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     version: 'master'
     job_properties:
       - name: LTTNG_TOOLS_PARALLEL_TESTS
@@ -1292,9 +1292,9 @@
           filter: '(build=="std") || ((babeltrace_version=="master" && (conf=="std" || conf=="agents" || conf=="no-ust") && liburcu_version=="master"))'
       - '{job_prefix}lttng-tools_{version}_{cctype}': &job_lttng-tools_master_clangbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
           builds: !!python/tuple [std]
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_elbuild
           buildtype: elbuild
           confs: !!python/tuple [agents]
@@ -1339,17 +1339,17 @@
               value: 'yes'
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_linuxbuild
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master"))) || ((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
+          filter: '((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - '{job_prefix}lttng-tools_{version}_root_{cctype}': &job_lttng-tools_master_root_clangbuild
           cctype: clangbuild
           ccs: !!python/tuple [clang-16, clang-19]
           builds: !!python/tuple [std]
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64" && cc == "clang-16") || (node=="deb13-amd64-rootnode" && platform=="deb13-amd64" && cc=="clang-19")'
+          filter: '(node=="deb13-amd64-rootnode" && platform=="deb13-amd64" && cc=="clang-19")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_elbuild
           buildtype: elbuild
           confs: !!python/tuple [agents]
@@ -1393,7 +1393,7 @@
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
     babelversions: !!python/tuple [stable-2.1]
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     version: 'stable-2.14'
     jobs:
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_linuxbuild
@@ -1435,9 +1435,9 @@
           confs: !!python/tuple [relayd-only]
       - '{job_prefix}lttng-tools_{version}_{cctype}': &job_lttng-tools_stable-2-14_clangbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
           builds: !!python/tuple [std]
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_long_regression
           buildtype: long_regression
           babeltrace_buildtype: linuxbuild
@@ -1448,9 +1448,9 @@
               value: 'yes'
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_linuxbuild
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14"))) || ((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
+          filter: '((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_portbuild
           buildtype: portbuild
@@ -1483,11 +1483,11 @@
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{cctype}': &job_lttng-tools_stable-2-14_root_clangbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-16, clang-19]
+          ccs: !!python/tuple [clang-19]
           builds: !!python/tuple [std]
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64" && cc == "clang-16") || (node=="deb13-amd64-rootnode" && platform=="deb13-amd64" && cc == "clang-19")'
+          filter: '(node=="deb13-amd64-rootnode" && platform=="deb13-amd64" && cc == "clang-19")'
       - 'lttng-tools_{version}_scan-build':
           urcuversion: master
           babelversion: master
@@ -1505,7 +1505,7 @@
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
     babelversions: !!python/tuple [stable-2.1]
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     version: 'stable-2.13'
     jobs:
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_linuxbuild
@@ -1550,9 +1550,9 @@
           confs: !!python/tuple [relayd-only]
       - '{job_prefix}lttng-tools_{version}_{cctype}': &job_lttng-tools_stable-2-13_clangbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
           builds: !!python/tuple [std]
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_long_regression
           buildtype: long_regression
           babeltrace_buildtype: linuxbuild
@@ -1563,9 +1563,9 @@
               value: 'yes'
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_linuxbuild
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64") || (node=="deb13-amd64-rootnode" && platform == "deb13-amd64")'
+          filter: '(node=="deb13-amd64-rootnode" && platform == "deb13-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_portbuild
           buildtype: portbuild
           platforms: !!python/tuple [deb12-i386, deb12-armhf, deb12-arm64]
@@ -1600,9 +1600,9 @@
           cctype: clangbuild
           ccs: !!python/tuple [clang-16, clang-19]
           builds: !!python/tuple [std]
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64" && cc == "clang-16") || (node == "deb13-amd64-rootnode" && platform == "deb13-amd64" && cc == "clang-19")'
+          filter: '(node == "deb13-amd64-rootnode" && platform == "deb13-amd64" && cc == "clang-19")'
       - 'lttng-tools_{version}_release':
           version: v2.13
           urcuversion: stable-0.13
@@ -1617,7 +1617,7 @@
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
     babelversions: !!python/tuple [stable-2.1]
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     version: 'stable-2.12'
     jobs:
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
@@ -1731,7 +1731,7 @@
     email_to: 'jgalar@efficios.com'
     version: master-staging
     ustversion: master
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     builds: !!python/tuple [std, oot, dist]
     confs: !!python/tuple [std, no-ust, agents]
     urcuversions: !!python/tuple [master]
@@ -1783,7 +1783,7 @@
 - project:
     name: review-lttng-tools-master
     version: master
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     urcuversions: !!python/tuple [master]  # For C++ support
     babelversions: !!python/tuple [stable-2.1]
     job_properties:
@@ -1828,9 +1828,9 @@
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           <<: *job_lttng-tools_master_root_yoctobuild_extended
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master"))) || ((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
+          filter: '((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
           modules_branch_pattern: 'master|stable-2.14'
           modules_aligned_access: !!python/tuple ['default', 'force']
           # This job is triggered by lttng-ust which doesn't use the same CI-Build levels
@@ -1855,7 +1855,7 @@
 - project:
     name: review-lttng-tools-stable-2.14
     version: stable-2.14
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     babelversions: !!python/tuple [stable-2.1]
     urcuversions: !!python/tuple [master]
     jobs:
@@ -1897,9 +1897,9 @@
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           <<: *job_lttng-tools_stable-2-14_root_yoctobuild_extended
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14"))) || ((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
+          filter: '((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
           modules_branch_pattern: 'stable-2.14'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-tools_{version}_{buildtype}':
@@ -1913,7 +1913,7 @@
 - project:
     name: review-lttng-tools-stable-2.13
     version: stable-2.13
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     urcuversions: !!python/tuple [master]
     babelversions: !!python/tuple [stable-2.1]
     jobs:
@@ -1952,22 +1952,22 @@
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           <<: *job_lttng-tools_stable-2-13_root_yoctobuild_extended
       - 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}':
-          nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64") || (node=="deb13-amd64-rootnode" && platform=="deb13-amd64")'
+          filter: '(node=="deb13-amd64-rootnode" && platform=="deb13-amd64")'
           modules_branch_pattern: 'stable-2.13'
 
 - project:
     name: review-lttng-tools-stable-2.12
     version: stable-2.12
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     urcuversions: !!python/tuple [master]
     babelversions: !!python/tuple [stable-2.1]
     # Run the few dev review jobs on any CI-Build vote as before
     gerrit_approval_values: !!python/tuple [1, 2, 3]
     jobs:
       - 'dev_review_lttng-tools_{version}_{buildtype}':
-          nodes: !!python/tuple [deb12-amd64-rootnode]
+          nodes: !!python/tuple [deb13-amd64-rootnode]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13, stable-0.14, stable-0.15, master]

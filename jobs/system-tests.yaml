@@ -89,7 +89,7 @@
     description: |
       Runs root_regression and root_destructive_tests on a virtual machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
     <<: *system_tests_parameters_defaults
 
     properties:
@@ -167,7 +167,7 @@
     description: |
       Runs perf_regression tests on a baremetal machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     <<: *system_tests_parameters_defaults
 
@@ -225,7 +225,7 @@
     description: |
       Builds a Linux Kernel and LTTng Modules if necessary
     concurrent: true
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     parameters:
       - string:

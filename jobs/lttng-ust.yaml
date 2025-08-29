@@ -481,7 +481,7 @@
 - job-template:
     name: lttng-ust_{version}_scan-build
     defaults: lttng-ust
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -490,7 +490,7 @@
     builders:
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: liburcu_master_linuxbuild/platform=deb12-amd64,conf=std,build=std
+          project: liburcu_master_linuxbuild/platform=deb13-amd64,conf=std,build=std
       - shell:
           !include-raw-verbatim: scripts/common/scan-build.sh
 
@@ -506,7 +506,7 @@
 - job-template:
     name: lttng-ust_{version}_coverity
     defaults: lttng-ust
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -526,7 +526,7 @@
     builders:
       - copyartifact:
           <<: *lttng-ust_steps_copyartifact_defaults
-          project: liburcu_master_linuxbuild/platform=deb12-amd64,conf=std,build=std
+          project: liburcu_master_linuxbuild/platform=deb13-amd64,conf=std,build=std
       - shell:
           !include-raw-verbatim: scripts/common/coverity.sh
 
@@ -622,7 +622,7 @@
     github_name: lttng-ust
     email_to: 'ci-notification@lists.lttng.org, cc:mathieu.desnoyers@efficios.com'
     liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     jobs:
       ## Master ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -683,7 +683,7 @@
           buildtype: linuxbuild
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: master
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
@@ -740,7 +740,7 @@
           buildtype: linuxbuild
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: stable-2.14
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
@@ -789,7 +789,7 @@
           buildtype: linuxbuild
           cctype: clangbuild
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: stable-2.13
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
@@ -857,7 +857,7 @@
     github_user: lttng
     github_name: lttng-ust
     liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     jobs:
       ## master ##
       - 'dev_review_lttng-ust_{version}_{buildtype}':
@@ -898,7 +898,7 @@
       - 'dev_review_lttng-ust_{version}_{cctype}':
           cctype: clangbuild
           ccs: ['clang-13', 'clang-14', 'clang-15', 'clang-16', 'clang-17', 'clang-18', 'clang-19']
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: master
           buildtype: linuxbuild
           builds: !!python/tuple [std, oot, dist, oot-dist]
@@ -944,7 +944,7 @@
       - 'dev_review_lttng-ust_{version}_{cctype}':
           cctype: clangbuild
           ccs: ['clang-13', 'clang-14', 'clang-15', 'clang-16', 'clang-17', 'clang-18', 'clang-19']
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: stable-2.14
           buildtype: linuxbuild
           builds: !!python/tuple [std, oot, dist, oot-dist]
@@ -1032,7 +1032,7 @@
     jobs:
       - 'dev_review_lttng-ust-java-tests_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
       - 'dev_review_lttng-ust-java-tests_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]

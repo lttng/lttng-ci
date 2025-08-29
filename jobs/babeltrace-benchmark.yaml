@@ -16,7 +16,7 @@
 
       <p>Job is managed by Jenkins Job Builder.</p>
 
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     wrappers:
       - ansicolor

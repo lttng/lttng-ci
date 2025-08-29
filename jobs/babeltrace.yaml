@@ -141,7 +141,7 @@
           properties-content: |
             LD_LIBRARY_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib
             PKG_CONFIG_PATH=$WORKSPACE/glib-2.28.6/BUILD_RESULT/lib/pkgconfig
-            platform=deb12-amd64
+            platform=deb13-amd64
             conf=std
             build=std
             PYTHON={python}
@@ -366,7 +366,7 @@
     triggers:
       - gerrit: *babeltrace_trigger_gerrit_defaults
 
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     builders:
       - shell:
@@ -442,7 +442,7 @@
     triggers:
       - gerrit: *babeltrace_trigger_gerrit_smoke
 
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     builders:
       - shell:
@@ -465,7 +465,7 @@
 - job-template:
     name: babeltrace_{version}_release
     defaults: babeltrace
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -495,7 +495,7 @@
 - job-template:
     name: babeltrace_{version}_scan-build
     defaults: babeltrace
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -516,7 +516,7 @@
 - job-template:
     name: babeltrace_{version}_coverity
     defaults: babeltrace
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -547,7 +547,7 @@
 - job-template:
     name: babeltrace_{version}_lint
     defaults: babeltrace
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -570,7 +570,7 @@
 - job-template:
     name: '{job_prefix}babeltrace_{version}_glib-2.28.6'
     defaults: babeltrace
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     <<: *babeltrace_builders_glib-2-28-6
     <<: *babeltrace_publishers_defaults
@@ -607,7 +607,7 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min, doc, asan]
           filter: '(build=="std") || (conf=="std") || (conf=="doc")'
@@ -662,11 +662,11 @@
           confs: !!python/tuple [std]
       - 'babeltrace_{version}_{cctype}':
           cctype: clangbuild
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, prod]
           ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - 'babeltrace_{version}_release':
           version: v2.1
       - 'babeltrace_{version}_release':
@@ -693,7 +693,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: master
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           warnings_status: FAILED
@@ -731,7 +731,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.1
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           warnings_status: WARNING
@@ -769,7 +769,7 @@
       - 'dev_review_babeltrace_{version}_{buildtype}':
           version: stable-2.0
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
           warnings_status: WARNING
@@ -805,7 +805,7 @@
 
       ## ALL ##
       - 'dev_review_babeltrace_{version}_smokebuild':
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [oot-dist]
           confs: !!python/tuple [std]
       - 'dev_review_babeltrace_{version}_check-format'
@@ -824,7 +824,7 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, python-bindings]
           touchstone: '(build == "std") && (conf == "std")'
@@ -860,7 +860,7 @@
     jobs:
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, python-bindings]
       - '{job_prefix}babeltrace_{version}_{buildtype}':
@@ -888,7 +888,7 @@
             - master-staging
       - '{job_prefix}babeltrace_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist, oot-dist]
           confs: !!python/tuple [std, static, prod, min]
       - '{job_prefix}babeltrace_{version}_{buildtype}':

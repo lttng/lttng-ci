@@ -945,7 +945,7 @@
 - job-template:
     name: lttng-modules_{mversion}_coverity
     defaults: lttng-modules
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -1227,11 +1227,11 @@
 
       # Parametrized kernel and modules build jobs
       - 'lttng-modules_PARAM_build':
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
       - 'lttng-modules_PARAM_build_el':
           platforms: !!python/tuple [el8-amd64]
       - 'lttng-modules_PARAM_crossbuild':
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el, riscv64]
 
       # Misc jobs
@@ -1273,9 +1273,9 @@
     github_user: mjeanson
     jobs:
       - 'dev_mjeanson_lttng-modules_PARAM_build':
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
       - 'dev_mjeanson_lttng-modules_PARAM_crossbuild':
-          platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
       - 'dev_mjeanson_lttng-modules_{mversion}_{buildtype}-vanilla':
           mversion:

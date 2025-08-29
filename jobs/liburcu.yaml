@@ -283,7 +283,7 @@
 - job-template:
     name: liburcu_{version}_scan-build
     defaults: liburcu
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -304,7 +304,7 @@
 - job-template:
     name: liburcu_{version}_coverity
     defaults: liburcu
-    node: 'deb12-amd64'
+    node: 'deb13-amd64'
 
     triggers:
       - pollscm:
@@ -369,7 +369,7 @@
       - stable-0.14
       - stable-0.15
       - master
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
           version: master
@@ -483,7 +483,7 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, atomic-builtins, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
-          filter: '(platform == "deb12-amd64" && cc ==~ /clang-1[3-6]/) || (platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
+          filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
           version: master
@@ -503,7 +503,7 @@
     jobs:
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: linuxbuild
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std, oot, dist]
           confs: !!python/tuple [std, static, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
@@ -531,7 +531,7 @@
     name: review-liburcu
     github_user: urcu
     github_name: userspace-rcu
-    platforms: !!python/tuple [deb12-amd64, deb13-amd64]
+    platforms: !!python/tuple [deb13-amd64]
     version:
       - stable-0.13
       - stable-0.14
