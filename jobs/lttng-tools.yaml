@@ -1034,6 +1034,11 @@
     name: 'dev_review_lttng-modules_with_lttng-tools_{version}_root_{buildtype}'
     defaults: lttng-tools-review
 
+    # Check out lttng-tools from github, not lttng-tools from gerrit
+    scm:
+      - git:
+          <<: *lttng-tools_scm_git_default
+
     triggers:
       - gerrit:
           trigger-on:
