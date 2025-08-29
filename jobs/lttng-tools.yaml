@@ -1831,7 +1831,7 @@
           nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master"))) || ((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
-          modules_branch_pattern: 'master|stable-2.13'
+          modules_branch_pattern: 'master|stable-2.14'
           modules_aligned_access: !!python/tuple ['default', 'force']
           # This job is triggered by lttng-ust which doesn't use the same CI-Build levels
           gerrit_approval_values: !!python/tuple [1]
@@ -1900,7 +1900,7 @@
           nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-amd64-rootnode" && platform=="deb12-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14"))) || ((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
-          modules_branch_pattern: 'stable-2.14|stable-2.13'
+          modules_branch_pattern: 'stable-2.14'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - 'dev_review_lttng-tools_{version}_{buildtype}':
           <<: *job_lttng-tools_smokebuild
@@ -1955,7 +1955,7 @@
           nodes: !!python/tuple [deb12-amd64-rootnode, deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64") || (node=="deb13-amd64-rootnode" && platform=="deb13-amd64")'
-          modules_branch_pattern: 'master|stable-2.13'
+          modules_branch_pattern: 'stable-2.13'
 
 - project:
     name: review-lttng-tools-stable-2.12
@@ -1979,7 +1979,7 @@
           nodes: !!python/tuple [deb12-amd64-rootnode-linux5]
           confs: !!python/tuple [agents]
           filter: '(node=="deb12-amd64-rootnode" && platform=="deb12-amd64")'
-          modules_branch_pattern: 'stable-2.12|stable-2.13'
+          modules_branch_pattern: 'stable-2.12'
       - 'dev_review_lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
