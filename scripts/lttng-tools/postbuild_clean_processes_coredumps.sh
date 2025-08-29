@@ -55,6 +55,12 @@ fi
 while read -r core_file; do
     sleep_count=0
 
+    if ! test -r "${core_file}"; then
+        echo "Skipping unreadable core file: '${core_file}'" >&2
+        stat "${core_file}" >&2
+        continue
+    fi
+
     # Make sure the coredump is finished using fuser
     while fuser "$core_file"; do
         sleep 1
