@@ -109,6 +109,12 @@
           name: 'GERRIT_NAME'
           default: 'review.lttng.org'
       - string:
+          name: 'GERRIT_HOST'
+          default: 'review.lttng.org'
+      - string:
+          name: 'GERRIT_PATCHSET_REVISION'
+          default: ''
+      - string:
           name: 'GERRIT_PROJECT'
           default: 'lttng-tools'
     scm:
