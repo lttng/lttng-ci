@@ -1927,6 +1927,20 @@ containers:
         alias: yocto/hardknott/arm64/incus
         type: image
   - meta:
+      address: 172.18.16.179
+    jenkins:
+      label: 'el8-amd64'
+      node_name: 'ci-node-el8-amd64-1b-02'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+  - meta:
+      address: 172.18.16.180
+    jenkins:
+      label: 'el8-amd64'
+      node_name: 'ci-node-el8-amd64-1b-03'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+  - meta:
       address: 'ci-node-deb13-arm64-osuosl-01'
     jenkins:
       label: 'deb13-arm64'
