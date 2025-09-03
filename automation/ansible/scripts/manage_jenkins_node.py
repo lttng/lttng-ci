@@ -85,6 +85,22 @@ def get_info(server, nodes, args):
     _print_data(args.format, data)
 
 
+def delete_nodes(server, nodes, args):
+    if not nodes:
+        print("No nodes to delete")
+        return
+
+    if not args.yes:
+        print("The following nodes will be deleted")
+        print([n["name"] for n in nodes])
+        confirm = input("Continue with operation? [y/yes]: ")
+        if confirm != "y" and confirm != "yes":
+            print("Cancelled by user")
+            return
+    for node in nodes:
+        server.delete_node(node["name"])
+
+
 def toggle_nodes(server, nodes, args, want_offline=True):
     changed = []
     for node in nodes:
@@ -257,6 +273,18 @@ def get_argument_parser():
     )
     disable_parser.add_argument(
         "node", default="", help="A python regex to filter nodes by", nargs="?"
+    )
+
+    delete_node_parser = subparsers.add_parser("delete", help="Delete jenkins node")
+    delete_node_parser.set_defaults(callback=delete_nodes)
+    delete_node_parser.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="Skip confirmation and proceed with deletion",
+    )
+    delete_node_parser.add_argument(
+        "node", default="", help="A pytho nregex to filter nodes by", nargs="?"
     )
 
     getcloud_parser = subparsers.add_parser(
