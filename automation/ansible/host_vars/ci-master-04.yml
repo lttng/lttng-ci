@@ -2,7 +2,7 @@
 
 jenkins_systemd_service_override: |
   [Service]
-  Environment="JAVA_OPTS=-XX:+ExitOnOutOfMemoryError -Djava.awt.headless=true -Xms64G -Xmx128G -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self' 'unsafe-inline';\" -Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000 -Dpermissive-script-security.enabled=no_security -Dorg.jenkinsci.plugins.pipeline.modeldefinition.parser.RuntimeASTTransformer.SCRIPT_SPLITiTING_TRANSFORMATION=true -XX:+UnlockDiagnosticVMOptions"
+  Environment="JAVA_OPTS=-Djava.util.logging.config.file=/var/lib/jenkins/logging.properties -XX:+ExitOnOutOfMemoryError -Djava.awt.headless=true -Xms64G -Xmx128G -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self' 'unsafe-inline';\" -Dorg.eclipse.jetty.server.Request.maxFormContentSize=1000000 -Dpermissive-script-security.enabled=no_security -Dorg.jenkinsci.plugins.pipeline.modeldefinition.parser.RuntimeASTTransformer.SCRIPT_SPLITiTING_TRANSFORMATION=true -XX:+UnlockDiagnosticVMOptions"
   TimeoutStartSec=5m
 
 jenkins_url_username: "{{lookup('community.general.bitwarden', '5b6f7c60-26ec-4066-8bd0-b05000de8c24', search='id', field='username')[0]}}"
