@@ -479,7 +479,7 @@
       - '{job_prefix}liburcu_{version}_{cctype}':
           buildtype: linuxbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, atomic-builtins, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'

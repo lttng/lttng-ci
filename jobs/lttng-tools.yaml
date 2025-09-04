@@ -1345,7 +1345,7 @@
           modules_aligned_access: !!python/tuple ['default', 'force']
       - '{job_prefix}lttng-tools_{version}_root_{cctype}': &job_lttng-tools_master_root_clangbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-16, clang-19]
+          ccs: !!python/tuple [clang-19]
           builds: !!python/tuple [std]
           nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1598,7 +1598,7 @@
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{cctype}': &job_lttng-tools_stable-2-13_root_clangbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-16, clang-19]
+          ccs: !!python/tuple [clang-19]
           builds: !!python/tuple [std]
           nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]

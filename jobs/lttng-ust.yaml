@@ -682,7 +682,7 @@
       - '{job_prefix}lttng-ust_{version}_{cctype}':
           buildtype: linuxbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
           filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: master
           builds: !!python/tuple [std]
@@ -739,7 +739,7 @@
       - '{job_prefix}lttng-ust_{version}_{cctype}':
           buildtype: linuxbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
           filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: stable-2.14
           builds: !!python/tuple [std]
@@ -788,7 +788,7 @@
       - '{job_prefix}lttng-ust_{version}_{cctype}':
           buildtype: linuxbuild
           cctype: clangbuild
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
           filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: stable-2.13
           builds: !!python/tuple [std]
@@ -897,7 +897,7 @@
           confs: !!python/tuple [agents]
       - 'dev_review_lttng-ust_{version}_{cctype}':
           cctype: clangbuild
-          ccs: ['clang-13', 'clang-14', 'clang-15', 'clang-16', 'clang-17', 'clang-18', 'clang-19']
+          ccs: ['clang-17', 'clang-18', 'clang-19']
           filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: master
           buildtype: linuxbuild
@@ -943,7 +943,7 @@
           confs: !!python/tuple [agents]
       - 'dev_review_lttng-ust_{version}_{cctype}':
           cctype: clangbuild
-          ccs: ['clang-13', 'clang-14', 'clang-15', 'clang-16', 'clang-17', 'clang-18', 'clang-19']
+          ccs: ['clang-17', 'clang-18', 'clang-19']
           filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
           version: stable-2.14
           buildtype: linuxbuild

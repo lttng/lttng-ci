@@ -665,7 +665,7 @@
           platforms: !!python/tuple [deb13-amd64]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, static, prod]
-          ccs: !!python/tuple [clang-13, clang-14, clang-15, clang-16, clang-17, clang-18, clang-19]
+          ccs: !!python/tuple [clang-17, clang-18, clang-19]
           filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
       - 'babeltrace_{version}_release':
           version: v2.1
