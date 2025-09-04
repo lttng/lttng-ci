@@ -63,7 +63,7 @@ else
 fi
 
 if [[ -f tools/format-cpp.sh ]]; then
-    FORMATTER="clang-format-16 -i" tools/format-cpp.sh
+    FORMATTER="clang-format-19 -i" tools/format-cpp.sh
     git diff --exit-code | tee ../../clang-format.out || exit_code=1
 fi
 
