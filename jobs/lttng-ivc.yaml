@@ -1,4 +1,4 @@
-- defaults:
+- defaults: &lttng-ivc-defaults
     name: lttng-ivc
     description: |
       LTTng Inter Version Compatibility test suite.
@@ -33,9 +33,63 @@
       - github:
           url: https://github.com/{github_user}/{github_name}
 
+- defaults:
+    <<: *lttng-ivc-defaults
+    name: lttng-ivc-review
+    concurrent: true
+    parameters:
+      - string:
+          name: 'GERRIT_BRANCH'
+          default: 'master'
+      - string:
+          name: 'GERRIT_REFSPEC'
+          default: ''
+          description: 'The refspec to fetch. E.g. `refs/changes/15/14715/2`. You may find it in the gerrit interface for downloading a specific revision of patch'
+      - string:
+          name: 'GERRIT_NAME'
+          default: 'review.lttng.org'
+      - string:
+          name: 'GERRIT_HOST'
+          default: 'review.lttng.org'
+      - string:
+          name: 'GERRIT_PATCHSET_REVISION'
+          default: ''
+      - string:
+          name: 'GERRIT_PROJECT'
+          default: 'lttng-ivc'
+    scm:
+      - git: &lttng-tools_scm_git_review
+          url: https://review.lttng.org/lttng-ivc
+          refspec: 'refs/changes/*:refs/changes/*'
+          branches:
+            - '$GERRIT_REFSPEC'
+          basedir: src
+          skip-tag: true
+    triggers: !j2-yaml: |
+      {% if enable_gerrit_trigger %}
+      - gerrit:
+          {% if gerrit_approval_values %}
+          trigger-on:
+            {% for value in gerrit_approval_values %}
+            - comment-added-event:
+                approval-category: 'CI-Build'
+                approval-value: '{{ value }}'
+            {% endfor %}
+          {% endif %}
+          projects:
+            - project-compare-type: 'PLAIN'
+              project-pattern: 'lttng-ivc'
+              branches:
+                - branch-compare-type: 'PLAIN'
+                  branch-pattern: '{version}'
+      {% else %}[]{% endif %}
+
+    # Job variables
+    enable_gerrit_trigger: true
+    gerrit_approval_values: !!python/tuple [1]
 
 ## Templates
-- job-template:
+- job-template: &lttng-ivc-version-template
     name: lttng-ivc-{version}
     defaults: lttng-ivc
 
@@ -87,6 +141,11 @@
             - recipients
 
 - job-template:
+    <<: *lttng-ivc-version-template
+    name: 'dev_review_lttng-ivc-{version}'
+    defaults: lttng-ivc-review
+
+- job-template: &lttng-ivc-version-modules-template
     name: lttng-ivc-{version}-modules
     defaults: lttng-ivc
 
@@ -141,6 +200,11 @@
           send-to:
             - recipients
 
+- job-template:
+    <<: *lttng-ivc-version-modules-template
+    name: 'dev_review-lttng-ivc-{version}-modules'
+    defaults: lttng-ivc-review
+
 ## Project
 - project:
     name: lttng-ivc
@@ -151,10 +215,13 @@
       - staging
       - master
     jobs:
-      - 'lttng-ivc-{version}':
+      - 'lttng-ivc-{version}': &job-lttng-ivc-master
           version: master
           platforms: !!python/tuple [deb13-amd64]
           liburcu_version: !!python/tuple [master]
+      - 'dev_review_lttng-ivc-{version}':
+          <<: *job-lttng-ivc-master
+          email_to: ''
       - 'lttng-ivc-{version}':
           version: staging
           platforms: !!python/tuple [deb13-amd64]
@@ -164,4 +231,3 @@
          platforms: !!python/tuple [deb12-amd64]
          slave: !!python/tuple [amd64-rootnode-linux5]
          liburcu_version: !!python/tuple [master]
-
