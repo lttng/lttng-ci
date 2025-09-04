@@ -153,11 +153,11 @@
     jobs:
       - 'lttng-ivc-{version}':
           version: master
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ivc-{version}':
           version: staging
-          platforms: !!python/tuple [deb12-amd64]
+          platforms: !!python/tuple [deb13-amd64]
           liburcu_version: !!python/tuple [master]
       - 'lttng-ivc-{version}-modules':
          version: master
