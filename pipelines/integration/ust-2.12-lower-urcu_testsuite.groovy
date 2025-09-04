@@ -26,7 +26,7 @@ pipeline {
 
     /* First level stage */
     stage('Prepare targets') {
-      agent { label 'deb12-amd64' }
+      agent { label 'deb13-amd64' }
 
       stages {
         stage('Checkout sources') {
@@ -197,7 +197,7 @@ pipeline {
       parallel {
         // Parallel stage for tools 2.12
         stage('Test tools 2.12') {
-          agent { label 'deb12-amd64' }
+          agent { label 'deb13-amd64' }
 
           environment {
             TARGETS = "${WORKSPACE}/targets"
@@ -317,7 +317,7 @@ pipeline {
 
         // Parallel stage for tools 2.13
         stage('Test tools 2.13') {
-          agent { label 'deb12-amd64' }
+          agent { label 'deb13-amd64' }
 
           environment {
             TARGETS = "${WORKSPACE}/targets"
