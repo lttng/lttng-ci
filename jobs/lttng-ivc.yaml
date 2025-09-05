@@ -226,8 +226,11 @@
           version: staging
           platforms: !!python/tuple [deb13-amd64]
           liburcu_version: !!python/tuple [master]
-      - 'lttng-ivc-{version}-modules':
-         version: master
-         platforms: !!python/tuple [deb12-amd64]
-         slave: !!python/tuple [amd64-rootnode-linux5]
-         liburcu_version: !!python/tuple [master]
+      - 'lttng-ivc-{version}-modules': &job-lttng-ivc-master-modules
+          version: master
+          platforms: !!python/tuple [deb13-amd64]
+          slave: !!python/tuple [deb13-amd64-rootnode]
+          liburcu_version: !!python/tuple [master]
+      - 'dev_review-lttng-ivc-{version}-modules':
+          <<: *job-lttng-ivc-master-modules
+          email_to: ''
