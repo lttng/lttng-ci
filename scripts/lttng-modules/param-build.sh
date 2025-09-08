@@ -420,7 +420,7 @@ fetch_ubuntu_versions() {
         fi
 
         curl -o "${output_file}" "${endpoint}"
-        ret=$!
+        ret=$?
     done
 
     if [[ "${ret}" != "0" ]]; then
