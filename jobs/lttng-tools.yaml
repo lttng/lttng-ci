@@ -1276,7 +1276,7 @@
 - project:
     name: lttng-tools-master
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
-    urcuversions: !!python/tuple [stable-0.14, stable-0.15, master]
+    urcuversions: !!python/tuple [stable-0.15, master]
     babelversions: !!python/tuple [stable-2.1]
     platforms: !!python/tuple [deb13-amd64]
     version: 'master'
