@@ -1261,7 +1261,7 @@
 - view-template:
     name: 'LTTng-tools'
     view-type: categorized
-    regex: 'lttng-(docs|tools)[-_].*'
+    regex: 'lttng-(docs|ivc|tools)[-_].*'
     categorization_criteria:
       - group_regex: 'lttng-tools_master_.*'
         naming_rule: 'Master'
