@@ -49,8 +49,10 @@ deactivate
 rm -rf "$PYENV_HOME"
 
 # Save
-cp -r "$TOXWORKDIR" "${WORKSPACE}/artifacts"
+LOG_TMPDIR="$(mktemp -d)"
+rsync -r --include="**/log/**" "${TOXWORKDIR}/" "${LOG_TMPDIR}/"
+mkdir "${WORKSPACE}/artifacts/"
+tar czf "${WORKSPACE}/artifacts/log.tgz" -C "${LOG_TMPDIR}" ./
 rm -rf "$TOXWORKDIR"
 
 # EOF
-

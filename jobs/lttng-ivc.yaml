@@ -111,7 +111,7 @@
 
     publishers:
       - archive:
-          artifacts: 'artifacts/**, src/lttng_ivc/runtime/projects_cache/**/log/**'
+          artifacts: 'artifacts/**'
           follow-symlinks: true
           allow-empty: false
       - junit:
@@ -171,7 +171,7 @@
 
     publishers:
       - archive:
-          artifacts: 'artifacts/**, src/lttng_ivc/runtime/projects_cache/**/log/**'
+          artifacts: 'artifacts/**'
           follow-symlinks: true
           allow-empty: false
       - junit:
