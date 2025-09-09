@@ -42,7 +42,7 @@ cd src/ || exit 1
 export CFLAGS="-fcommon"
 
 # Run test suite via tox
-tox -v -e babeltrace -- --junit-xml="${WORKSPACE}/result.xml"
+tox -v -- --junit-xml="${WORKSPACE}/result.xml"
 
 # Remove base venv
 deactivate
