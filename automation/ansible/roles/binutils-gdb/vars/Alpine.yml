@@ -1,3 +1,4 @@
 ---
 binutils_gdb_packages:
   - libgmp-dev
+  - tcl

@@ -11,3 +11,4 @@ binutils_gdb_packages:
   - libgmp-dev
   - libreadline-dev
   - systemtap-sdt-dev
+  - tcl
