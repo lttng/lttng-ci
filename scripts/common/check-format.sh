@@ -28,7 +28,7 @@ print_header() {
 cd "src/$PROJECT_NAME"
 
 # Check if the topmost patch is properly formatted
-git diff -U0 --no-color --relative HEAD^ | clang-format-diff-14 -p1 -i
+git diff -U0 --no-color --relative HEAD^ | clang-format-diff -p1 -i
 
 # If the tree has local changes, the formatting was incorrect
 GIT_DIFF_OUTPUT=$(git diff)
