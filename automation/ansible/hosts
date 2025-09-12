@@ -219,12 +219,6 @@ ci-rootnode-yocto33-amd64-2c-01
 ci-rootnode-yocto33-amd64-2d-01
 
 [node_sles]
-# While ci-node-sles12sp5-amd64-1b-01 has python 3.4, more recent
-# versions of ansible require python 3.5. Therefore python2 is used.
-ci-node-sles12sp5-amd64-1b-01 ansible_python_interpreter=python2
-ci-node-sles12sp5-amd64-2a-01 ansible_python_interpreter=python2
-ci-node-sles12sp5-amd64-2b-01 ansible_python_interpreter=python2
-ci-node-sles12sp5-amd64-2c-01 ansible_python_interpreter=python2
 ci-node-sles15sp5-amd64-1b-01
 ci-node-sles15sp5-amd64-2a-01
 ci-node-sles15sp5-amd64-2b-01
