@@ -109,15 +109,7 @@ ci-node-deb13-amd64-2c-[01:10]
 ci-node-deb13-amd64-2d-01
 
 [node_standalone]
-ci-rootnode-deb12-amd64-1a-01
-ci-rootnode-deb12-amd64-1b-01
-ci-rootnode-deb12-amd64-1c-01
 ci-rootnode-deb12-amd64-1c-02
-ci-rootnode-deb12-amd64-1d-01
-ci-rootnode-deb12-amd64-2a-01
-ci-rootnode-deb12-amd64-2b-01
-ci-rootnode-deb12-amd64-2c-01
-ci-rootnode-deb12-amd64-2d-01
 ci-rootnode-deb13-amd64-1a-01
 ci-rootnode-deb13-amd64-1b-01
 ci-rootnode-deb13-amd64-1c-01
