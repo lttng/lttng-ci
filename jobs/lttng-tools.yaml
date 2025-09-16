@@ -1305,6 +1305,9 @@
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-arm64]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
+          job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
@@ -1334,7 +1337,7 @@
           ust_buildtype: linuxbuild
           job_properties:
             - name: LTTNG_TOOLS_PARALLEL_TESTS
-              value: 'yes'
+              value: 'no'
             - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
               value: 'yes'
           timeout: '45'
@@ -1364,6 +1367,9 @@
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
           timeout: '90'
+          job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
@@ -1406,6 +1412,9 @@
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-arm64]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
+          job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-14_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
@@ -1446,6 +1455,8 @@
           job_properties:
             - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
               value: 'yes'
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_linuxbuild
           nodes: !!python/tuple [deb13-amd64-rootnode]
@@ -1459,6 +1470,9 @@
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
           timeout: '90'
+          job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
@@ -1519,6 +1533,9 @@
           confs: !!python/tuple [std, no-ust, agents]
           urcuversions: !!python/tuple [stable-0.13]
           timeout: '45'
+          job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_stable-2-13_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
@@ -1561,6 +1578,8 @@
           job_properties:
             - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
               value: 'yes'
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_linuxbuild
           nodes: !!python/tuple [deb13-amd64-rootnode]
@@ -1573,6 +1592,9 @@
           confs: !!python/tuple [agents]
           filter: '((node=="deb12-i386-rootnode" && platform=="deb12-i386") || (node=="deb12-armhf-rootnode" && platform=="deb12-armhf") || (node=="deb12-arm64-rootnode" && platform=="deb12-arm64"))'
           timeout: '90'
+          job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_slesbuild
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
@@ -1630,6 +1652,9 @@
           platforms: !!python/tuple [deb12-armhf, deb12-arm64, deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-arm64]
           confs: !!python/tuple [std, no-ust, agents]
           timeout: '45'
+          job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
       - '{job_prefix}lttng-tools_{version}_{buildtype}':
           buildtype: slesbuild
           platforms: !!python/tuple [sles15sp5-amd64]
@@ -1674,6 +1699,8 @@
           job_properties:
             - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
               value: 'yes'
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
           timeout: '45'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode-linux5]
