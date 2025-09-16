@@ -40,7 +40,7 @@ environment:
 #
 source:
   downloader: rootfs-http
-  url: https://obj.internal.efficios.com/jenkins/rootfs_amd64_sles15sp5.tar.gz
+  url: https://obj-pub.internal.efficios.com/rootfs/rootfs_amd64_sles15sp5.tar.gz
 
 targets:
   lxc:

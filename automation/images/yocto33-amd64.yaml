@@ -7,7 +7,7 @@ image:
 
 source:
   downloader: rootfs-http
-  url: https://obj.internal.efficios.com/jenkins/rootfs_amd64_yocto33.tar.bz2
+  url: https://obj-pub.internal.efficios.com/rootfs/rootfs_amd64_yocto33.tar.bz2
 
 targets:
   lxc:
