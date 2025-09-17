@@ -17,6 +17,7 @@ FAIL: gdb.threads/clone-attach-detach.exp: bg attach 2: attach (timeout)
       failures_re = /
       /
       break
+
     case 'native-gdbserver':
       failures = '''
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
@@ -134,6 +135,7 @@ FAIL: gdb.trace/unavailable.exp: unavailable locals: static locals: tfile: info 
 KPASS: gdb.threads/process-dies-while-detaching.exp: single-process: continue: watchpoint:sw: continue (PRMS gdb/28375)
 '''
       break
+
     case 'native-extended-gdbserver':
       failures = '''
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
@@ -307,6 +309,1546 @@ FAIL: gdb.trace/unavailable.exp: unavailable locals: static locals: tfile: info 
 KPASS: gdb.threads/process-dies-while-detaching.exp: single-process: continue: watchpoint:sw: continue (PRMS gdb/28375)
       '''
       failures_re = /FAIL: gdb.threads\/attach-many-short-lived-threads.exp: .*/
+      break
+
+    case 'cc-with-debug-names':
+      failures = '''
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
+      '''
+      failures_re = /
+      /
+      break
+
+    case 'cc-with-gdb-index':
+      failures = '''
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=1: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: set complaints 0
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
+UNRESOLVED: gdb.dwarf2/fission-reread.exp: break -q main
+UNRESOLVED: gdb.dwarf2/fission-reread.exp: file
+UNRESOLVED: gdb.dwarf2/fission-reread.exp: ptype baz
+UNRESOLVED: gdb.dwarf2/fission-reread.exp: set complaints 0
+      '''
+      failures_re = /
+      /
+      break
+
+    case 'debug-types':
+      failures = '''
+FAIL: gdb.ada/array_of_symbolic_length.exp: scenario=all: compilation foo.adb
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
+FAIL: gdb.ada/rec_ptype.exp: scenario=minimal: compilation main.adb
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
+FAIL: gdb.ada/uninitialized_vars.exp: compilation parse.adb
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.base/volatile.exp: ptype cavern
+FAIL: gdb.base/volatile.exp: ptype cavity
+FAIL: gdb.base/volatile.exp: ptype cove
+FAIL: gdb.base/volatile.exp: ptype coverlet
+FAIL: gdb.base/volatile.exp: ptype vagary
+FAIL: gdb.base/volatile.exp: ptype vanadium
+FAIL: gdb.base/volatile.exp: ptype vegetation
+FAIL: gdb.base/volatile.exp: ptype vendor
+FAIL: gdb.base/volatile.exp: ptype vicar
+FAIL: gdb.base/volatile.exp: ptype vicarage
+FAIL: gdb.base/volatile.exp: ptype victor
+FAIL: gdb.base/volatile.exp: ptype victory
+FAIL: gdb.base/volatile.exp: ptype vindictive
+FAIL: gdb.base/volatile.exp: ptype vizier
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method() const volatile'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method() volatile const'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method(void) const volatile'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method(void) volatile const'
+FAIL: gdb.cp/local-static.exp: c++: print S::method(void) const volatile
+FAIL: gdb.cp/local-static.exp: c++: print S::method(void) volatile const
+FAIL: gdb.cp/method.exp: ptype A
+FAIL: gdb.cp/oranking.exp: gdb-command<p foo15 (vc)>
+FAIL: gdb.cp/pass-by-ref-2.exp: call cbvFourCCtor, c1v1
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v2_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v2_volatile_const_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: whatis v2_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: whatis v2_volatile_const_my_int
+FAIL: gdb.guile/scm-symtab.exp: test simple_struct in static symbols
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
+FAIL: gdb.python/lib-types.exp: python print (str (const_volatile_class1_obj.type))
+FAIL: gdb.python/py-symtab.exp: test simple_struct in static symbols
+FAIL: gdb.python/py-xmethods.exp: before: g_mul 2
+FAIL: gdb.python/py-xmethods.exp: before: g_size_diff 2
+FAIL: gdb.python/py-xmethods.exp: before: g_size_mul 2
+FAIL: gdb.python/py-xmethods.exp: before: g.mul<double>(2.0)
+      '''
+      failures_re = /
+      /
+      break
+
+    case 'cc-with-dwz':
+      failures = '''
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.cp/breakpoint-locs.exp: break N1::C1::baz
+FAIL: gdb.guile/scm-ports.exp: buffered=1: test byte at sp, before flush
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
+FAIL: gdb.server/server-kill.exp: test_tstatus: tstatus
+      '''
+      failures_re = /
+      /
+      break
+
+case 'cc-with-dwz-m':
+      failures = '''
+DUPLICATE: gdb.dwarf2/dw2-inline-header-1.exp: failed to prepare
+DUPLICATE: gdb.dwarf2/dw2-unusual-field-names.exp: failed to prepare
+FAIL: gdb.base/gdb-index-err.exp: flag=-dwarf-5: add index to executable
+FAIL: gdb.base/gdb-index-err.exp: flag=-dwarf-5: try to generate an index from a binary with an index
+FAIL: gdb.base/gdb-index-err.exp: flag=: add index to executable
+FAIL: gdb.base/gdb-index-err.exp: flag=: try to generate an index from a binary with an index
+FAIL: gdb.base/info-types-c.exp: info types
+FAIL: gdb.base/info-types-c++.exp: info types
+FAIL: gdb.base/maint.exp: maint currently expandedinfo currently expandedline-table currently expandedwith currently expandedfilename currently expandedof currently expandedsymtab currently expandedthat currently expandedis currently expandednot
+FAIL: gdb.base/maint.exp: mt expand-symtabs
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.cp/breakpoint-locs.exp: break N1::C1::baz
+FAIL: gdb.fortran/info-types.exp: info types: check for entry 'info-types.f90', '', 'integer\\(kind=4\\)'
+FAIL: gdb.fortran/info-types.exp: info types: check for entry 'info-types.f90', '', 'logical\\(kind=4\\)'
+FAIL: gdb.fortran/info-types.exp: info types: check for entry 'info-types.f90', '', 'real\\(kind=4\\)'
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
+FAIL: gdb.server/server-kill.exp: test_tstatus: tstatus
+      '''
+      failures_re = /
+      /
+      break
+
+case 'cc-with-dwz-5':
+      failures = '''
+DUPLICATE: gdb.dwarf2/dw2-inline-header-1.exp: failed to prepare
+DUPLICATE: gdb.dwarf2/dw2-unusual-field-names.exp: failed to prepare
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
+FAIL: gdb.base/gdb-index-err.exp: flag=-dwarf-5: try to generate an index from a binary with an index
+FAIL: gdb.base/gdb-index-err.exp: flag=: try to generate an index from a binary with an index
+FAIL: gdb.base/index-cache.exp: couldn't remove files in temporary cache dir
+FAIL: gdb.base/index-cache.exp: test_cache_enabled_hit: check index-cache stats
+FAIL: gdb.base/index-cache.exp: test_cache_enabled_miss: at least one file was created
+FAIL: gdb.base/index-cache.exp: test_cache_enabled_miss: expected file is there
+FAIL: gdb.base/info-types-c.exp: info types
+FAIL: gdb.base/info-types-c++.exp: info types
+FAIL: gdb.base/maint.exp: maint currently expandedinfo currently expandedline-table currently expandedwith currently expandedfilename currently expandedof currently expandedsymtab currently expandedthat currently expandedis currently expandednot
+FAIL: gdb.base/maint.exp: mt expand-symtabs
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.cp/breakpoint-locs.exp: break N1::C1::baz
+FAIL: gdb.dwarf2/gdb-add-index-symlink.exp: index used
+FAIL: gdb.dwarf2/gdb-add-index.exp: index used
+FAIL: gdb.dwarf2/per-bfd-sharing.exp: couldn't remove files in temporary cache dir
+FAIL: gdb.fortran/info-types.exp: info types: check for entry 'info-types.f90', '', 'integer\\(kind=4\\)'
+FAIL: gdb.fortran/info-types.exp: info types: check for entry 'info-types.f90', '', 'logical\\(kind=4\\)'
+FAIL: gdb.fortran/info-types.exp: info types: check for entry 'info-types.f90', '', 'real\\(kind=4\\)'
+FAIL: gdb.guile/scm-ports.exp: buffered=1: test byte at sp, before flush
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
+FAIL: gdb.server/server-kill.exp: test_tstatus: tstatus
+      '''
+      failures_re = /
+      /
+      break
+
+
+case 'fission':
+      failures = '''
+FAIL: gdb.ada/array_of_symbolic_length.exp: scenario=all: compilation foo.adb
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print entire array
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print first array element
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print first array slice
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print second array element
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print second array slice
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print array
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print first array element
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print second array element
+FAIL: gdb.ada/finish-var-size.exp: finish
+FAIL: gdb.ada/finish-var-size.exp: print pck.get(True) (GDB internal error)
+FAIL: gdb.ada/mi_variant.exp: scenario=minimal: create r varobj (unexpected output)
+FAIL: gdb.ada/mi_variant.exp: scenario=minimal: update r varobj (unexpected output)
+FAIL: gdb.ada/mi_variant.exp: scenario=none: create r varobj (unexpected output)
+FAIL: gdb.ada/mi_variant.exp: scenario=none: update r varobj (unexpected output)
+FAIL: gdb.ada/O2_float_param.exp: scenario=all: frame
+FAIL: gdb.ada/O2_float_param.exp: scenario=minimal: frame
+FAIL: gdb.ada/rec_ptype.exp: scenario=minimal: compilation main.adb
+FAIL: gdb.ada/recursive-variant.exp: print *instance
+FAIL: gdb.ada/sub_variant.exp: print q
+FAIL: gdb.ada/sub_variant.exp: print r
+FAIL: gdb.ada/sub_variant.exp: print s
+FAIL: gdb.ada/tagged-lookup.exp: only one CU expanded
+FAIL: gdb.ada/uninitialized_vars.exp: compilation parse.adb
+FAIL: gdb.ada/uninitialized-variable-record.exp: p y2
+FAIL: gdb.ada/uninitialized-variable-record.exp: print &y2.d - &y2
+FAIL: gdb.ada/variant_record_field.exp: print p_record
+FAIL: gdb.ada/variant.exp: scenario=minimal: print nav1
+FAIL: gdb.ada/variant.exp: scenario=minimal: print nav2
+FAIL: gdb.ada/variant.exp: scenario=minimal: print nav3
+FAIL: gdb.ada/variant.exp: scenario=minimal: print q
+FAIL: gdb.ada/variant.exp: scenario=minimal: print r
+FAIL: gdb.ada/variant.exp: scenario=none: print nav1
+FAIL: gdb.ada/variant.exp: scenario=none: print nav2
+FAIL: gdb.ada/variant.exp: scenario=none: print nav3
+FAIL: gdb.ada/variant.exp: scenario=none: print q
+FAIL: gdb.ada/variant.exp: scenario=none: print r
+FAIL: gdb.ada/vla.exp: print r00
+FAIL: gdb.ada/vla.exp: print r01
+FAIL: gdb.ada/vla.exp: print r10
+FAIL: gdb.ada/vla.exp: print r22
+FAIL: gdb.base/c-linkage-name.exp: print symada__cS after partial symtab expansion
+FAIL: gdb.base/c-linkage-name.exp: print symada__cS before partial symtab expansion
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=false: scenario_1: print aaa
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=false: scenario_1: print ccc
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=false: scenario_2: print aaa
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=false: scenario_2: print ccc
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=true: scenario_1: print aaa
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=true: scenario_1: print ccc
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=true: scenario_2: print aaa
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=true: scenario_2: print ccc
+FAIL: gdb.base/ctxobj.exp: print libctxobj1's this_version_num from partial symtab
+FAIL: gdb.base/ctxobj.exp: print libctxobj1's this_version_num from symtab
+FAIL: gdb.base/dlmopen.exp: attach: dlmopen 2: print gdb_dlmopen_glob
+FAIL: gdb.base/dlmopen.exp: attach: dlmopen 3: print gdb_dlmopen_glob
+FAIL: gdb.base/dlmopen.exp: dlmopen 2: print gdb_dlmopen_glob
+FAIL: gdb.base/dlmopen.exp: dlmopen 3: print gdb_dlmopen_glob
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: info macro FIRST
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: info macro FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: info macro SECOND
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: info macro THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: p FIRST
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: p FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: p SECOND
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: p THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=1: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: info macro FIRST
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: info macro FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: info macro SECOND
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: info macro THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: p FIRST
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: p FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: p SECOND
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: p THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: set complaints 0
+FAIL: gdb.base/info-types-c.exp: info types
+FAIL: gdb.base/jit-bfd-name.exp: info function ^jit_function
+FAIL: gdb.base/macro-source-path.exp: absolute-cwd: print ONE
+FAIL: gdb.base/macro-source-path.exp: absolute-cwd: print TWO
+FAIL: gdb.base/macro-source-path.exp: absolute-other: print ONE
+FAIL: gdb.base/macro-source-path.exp: absolute-other: print TWO
+FAIL: gdb.base/macro-source-path.exp: dot-dot-filename: print ONE
+FAIL: gdb.base/macro-source-path.exp: dot-dot-filename: print TWO
+FAIL: gdb.base/macro-source-path.exp: dot-dot-other: print ONE
+FAIL: gdb.base/macro-source-path.exp: dot-dot-other: print TWO
+FAIL: gdb.base/macro-source-path.exp: dot-filename: print ONE
+FAIL: gdb.base/macro-source-path.exp: dot-filename: print TWO
+FAIL: gdb.base/macro-source-path.exp: filename: print ONE
+FAIL: gdb.base/macro-source-path.exp: filename: print TWO
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.base/style.exp: all styles enabled: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style address: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style command: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style file: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style function: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style highlight: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style metadata: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style title: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style variable: info macro SOME_MACRO
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-10: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-2: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-3: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-4: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-5: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-6: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-7: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-8: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-9: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-9: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-9: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-9: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-9: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-9: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-9: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: at main-breakpoint-9: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: before assignments: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=false: core file: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-10: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-2: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-3: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-4: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-5: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-6: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-7: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-8: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-9: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-9: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-9: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-9: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-9: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-9: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-9: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: at main-breakpoint-9: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib1_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib1_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib1_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib1_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib2_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib2_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib2_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib2_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: before assignments: print tls_lib4_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib10_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib10_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib10_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib10_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib3_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib3_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib3_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib3_tdata_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib4_tbss_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib4_tbss_2
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib4_tdata_1
+FAIL: gdb.base/tls-dlobj.exp: force_internal_tls=true: core file: print tls_lib4_tdata_2
+FAIL: gdb.base/volatile.exp: ptype cavern
+FAIL: gdb.base/volatile.exp: ptype cavity
+FAIL: gdb.base/volatile.exp: ptype cove
+FAIL: gdb.base/volatile.exp: ptype coverlet
+FAIL: gdb.base/volatile.exp: ptype vagary
+FAIL: gdb.base/volatile.exp: ptype vanadium
+FAIL: gdb.base/volatile.exp: ptype vegetation
+FAIL: gdb.base/volatile.exp: ptype vendor
+FAIL: gdb.base/volatile.exp: ptype vicar
+FAIL: gdb.base/volatile.exp: ptype vicarage
+FAIL: gdb.base/volatile.exp: ptype victor
+FAIL: gdb.base/volatile.exp: ptype victory
+FAIL: gdb.base/volatile.exp: ptype vindictive
+FAIL: gdb.base/volatile.exp: ptype vizier
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<base, operation_1<base> >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<base, operation_1<base> >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<char, operation_1<char> >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<char, operation_1<char> >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<int, operation_1<int> >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<int, operation_1<int> >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<long, operation_1<long> >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<long, operation_1<long> >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<tclass<int>, operation_1<tclass<int> > >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<tclass<int>, operation_1<tclass<int> > >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd1::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd1::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd2::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd2::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd3::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd3::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd4::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd4::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd5::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd5::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<base, operation_1<base> >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<base, operation_1<base> >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<char, operation_1<char> >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<char, operation_1<char> >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<int, operation_1<int> >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<int, operation_1<int> >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<long, operation_1<long> >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<long, operation_1<long> >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<tclass<int>, operation_1<tclass<int> > >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<tclass<int>, operation_1<tclass<int> > >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd1::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd1::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd2::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd2::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd3::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd3::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd4::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd4::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd5::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd5::policyd
+FAIL: gdb.cp/derivation.exp: at marker1: p (A2::value_type) 0
+FAIL: gdb.cp/derivation.exp: at marker1: p (D2::value_type) 0
+FAIL: gdb.cp/derivation.exp: at marker1: ptype A2::value_type
+FAIL: gdb.cp/derivation.exp: at marker1: ptype D2::value_type
+FAIL: gdb.cp/derivation.exp: at marker1: whatis A2::value_type
+FAIL: gdb.cp/derivation.exp: at marker1: whatis D2::value_type
+FAIL: gdb.cp/derivation.exp: before run: p (A::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (A2::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (D::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (D2::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (E::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (F::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (Z::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (ZZ::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: ptype A::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype A2::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype D::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype D2::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype E::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype F::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype Z::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype ZZ::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis A::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis A2::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis D::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis D2::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis E::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis F::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis Z::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis ZZ::value_type
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method() const volatile'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method() volatile const'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method(void) const volatile'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method(void) volatile const'
+FAIL: gdb.cp/local-static.exp: c++: print S::method(void) const volatile
+FAIL: gdb.cp/local-static.exp: c++: print S::method(void) volatile const
+FAIL: gdb.cp/m-static.exp: static const int initialized in class definition
+FAIL: gdb.cp/method.exp: ptype A
+FAIL: gdb.cp/namespace.exp: print ::C::OtherFileClass::cOtherFileClassVar
+FAIL: gdb.cp/namespace.exp: print C::OtherFileClass::cOtherFileClassVar
+FAIL: gdb.cp/namespace.exp: whatis ::C::CClass::NestedClass *
+FAIL: gdb.cp/namespace.exp: whatis ::C::OtherFileClass::cOtherFileClassType
+FAIL: gdb.cp/namespace.exp: whatis C::OtherFileClass::cOtherFileClassType
+FAIL: gdb.cp/oranking.exp: gdb-command<p foo15 (vc)>
+FAIL: gdb.cp/pass-by-ref-2.exp: call cbvFourCCtor, c1v1
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v2_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v2_volatile_const_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: whatis v2_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: whatis v2_volatile_const_my_int
+FAIL: gdb.cp/subtypes.exp: ptype Outer::Inner
+FAIL: gdb.cp/subtypes.exp: ptype Outer::Inner::InnerInner
+FAIL: gdb.cp/subtypes.exp: ptype Outer::Oenum
+FAIL: gdb.dwarf2/dw2-const.exp: print twelve
+FAIL: gdb.dwarf2/dw2-const.exp: print/x val8
+FAIL: gdb.dwarf2/dw2-cu-size.exp: ptype noloc
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_low_high_bounds_with_entry_offset: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_low_high_bounds_with_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_low_high_bounds_without_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_ranges_with_entry_offset: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_ranges_with_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_ranges_without_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_low_high_bounds_with_entry_offset: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_low_high_bounds_with_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_low_high_bounds_without_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_ranges_with_entry_offset: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_ranges_with_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_ranges_without_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-intercu.exp: p two
+FAIL: gdb.dwarf2/dw2-intercu.exp: ptype int2
+FAIL: gdb.dwarf2/dw2-intercu.exp: ptype two
+FAIL: gdb.dwarf2/dw2-strp.exp: p a_string
+FAIL: gdb.dwarf2/dw2-strp.exp: p a_string2
+FAIL: gdb.dwarf2/dw2-strp.exp: ptype a_string
+FAIL: gdb.dwarf2/dw2-strp.exp: ptype a_string2
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: entry_label=foo_2: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: entry_label=foo_3: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: entry_label=foo_4: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: entry_label=foo_6: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: entry_label=foo_2: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: entry_label=foo_3: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: entry_label=foo_4: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: entry_label=foo_6: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: maint info blocks
+FAIL: gdb.dwarf2/local-var.exp: ptype test::local_var
+FAIL: gdb.dwarf2/utf-rust.exp: print cvalue
+FAIL: gdb.dwarf2/variant.exp: print as Defaulted
+FAIL: gdb.dwarf2/variant.exp: print as Negative
+FAIL: gdb.dwarf2/variant.exp: print as Simple
+FAIL: gdb.dwarf2/variant.exp: print as Univariant
+FAIL: gdb.fortran/backtrace.exp: bt
+FAIL: gdb.fortran/info-main.exp: info main post start
+FAIL: gdb.fortran/info-main.exp: info main prior to start
+FAIL: gdb.fortran/info-modules.exp: info module functions -m mod1 (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module functions -m mod1: check for entry 'info-types.f90', '25', 'void mod1::sub_m1_a\\(integer\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -m mod1: check for entry 'info-types.f90', '31', 'integer\\(kind=4\\) mod1::sub_m1_b\\(void\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -m mod1: check header
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer: check for entry 'info-types-2.f90', '22', 'void mod2::sub_m2_a\\(integer\\(kind=4\\), logical\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer: check for entry 'info-types.f90', '25', 'void mod1::sub_m1_a\\(integer\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer: check for entry 'info-types.f90', '31', 'integer\\(kind=4\\) mod1::sub_m1_b\\(void\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer: check header
+FAIL: gdb.fortran/info-modules.exp: info module functions (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module functions: check for entry 'info-types-2.f90', '22', 'void mod2::sub_m2_a\\(integer\\(kind=4\\), logical\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions: check for entry 'info-types-2.f90', '30', 'logical\\(kind=4\\) mod2::sub_m2_b\\(real\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions: check for entry 'info-types.f90', '25', 'void mod1::sub_m1_a\\(integer\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions: check for entry 'info-types.f90', '31', 'integer\\(kind=4\\) mod1::sub_m1_b\\(void\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables _1 (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables _1: check for entry 'info-types-2.f90', '19', 'integer\\(kind=4\\) mod2::mod2_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables _1: check for entry 'info-types.f90', '21', 'real\\(kind=4\\) mod1::mod1_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables _1: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2 -t real (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2 -t real: check for entry 'info-types-2.f90', '20', 'real\\(kind=4\\) mod2::mod2_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2 -t real: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2 (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2: check for entry 'info-types-2.f90', '19', 'integer\\(kind=4\\) mod2::mod2_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2: check for entry 'info-types-2.f90', '20', 'real\\(kind=4\\) mod2::mod2_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables -t real (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables -t real: check for entry 'info-types-2.f90', '20', 'real\\(kind=4\\) mod2::mod2_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -t real: check for entry 'info-types.f90', '21', 'real\\(kind=4\\) mod1::mod1_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -t real: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables: check for entry 'info-types-2.f90', '19', 'integer\\(kind=4\\) mod2::mod2_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables: check for entry 'info-types-2.f90', '20', 'real\\(kind=4\\) mod2::mod2_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables: check for entry 'info-types.f90', '21', 'real\\(kind=4\\) mod1::mod1_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables: check for entry 'info-types.f90', '22', 'integer\\(kind=4\\) mod1::mod1_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables: check header
+FAIL: gdb.fortran/info-modules.exp: info modules 2 (timeout)
+FAIL: gdb.fortran/info-modules.exp: info modules 2: check for entry 'info-types-2.f90', '18', 'mod2'
+FAIL: gdb.fortran/info-modules.exp: info modules mod (timeout)
+FAIL: gdb.fortran/info-modules.exp: info modules mod: check for entry 'info-types-2.f90', '18', 'mod2'
+FAIL: gdb.fortran/info-modules.exp: info modules mod: check for entry 'info-types.f90', '16', 'mod1'
+FAIL: gdb.fortran/info-modules.exp: info modules mod: check header
+FAIL: gdb.fortran/info-modules.exp: info modules: check for entry 'info-types-2.f90', '18', 'mod2'
+FAIL: gdb.fortran/library-module.exp: print var_i in main
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=auto: bt -frame-arguments all
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=auto: info args in frame #7
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=auto: interpreter-exec mi '-stack-list-arguments --no-frame-filters --all-values 7 7'
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c: bt -frame-arguments all
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c: info args in frame #7
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c: interpreter-exec mi '-stack-list-arguments --no-frame-filters --all-values 7 7'
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c++: bt -frame-arguments all
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c++: info args in frame #7
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c++: interpreter-exec mi '-stack-list-arguments --no-frame-filters --all-values 7 7'
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=fortran: bt -frame-arguments all
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=fortran: info args in frame #7
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=fortran: interpreter-exec mi '-stack-list-arguments --no-frame-filters --all-values 7 7'
+FAIL: gdb.fortran/module.exp: complete modm
+FAIL: gdb.fortran/module.exp: complete modmany
+FAIL: gdb.fortran/module.exp: complete modmany::
+FAIL: gdb.fortran/module.exp: complete modmany::var
+FAIL: gdb.fortran/module.exp: fully qualified name of DW_TAG_constant
+FAIL: gdb.fortran/module.exp: stopped language detection
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: before start: gdb_breakpoint: set breakpoint at hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: before start: gdb_breakpoint: set breakpoint at increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: before start: gdb_breakpoint: set breakpoint at increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: increment (the program exited)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: post_hidden (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: post_increment (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: post_increment_global (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: pre_step (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: gdb_breakpoint: set breakpoint at increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment_program_global: info symbol increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment_program_global: ptype increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment_program_global: whatis increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment: info symbol increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment: ptype increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment: whatis increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: info args
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: info locals
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: no argument subroutine has no arguments
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: printing hidden global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: printing outer scoped variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: step into the correct place (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: gdb_breakpoint: set breakpoint at contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: gdb_breakpoint: set breakpoint at contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: gdb_breakpoint: set breakpoint at contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: info symbol contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: info symbol contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: info symbol contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: print contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: print contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: print contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: ptype contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: ptype contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: ptype contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: whatis contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: whatis contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: whatis contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: increment (the program exited)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: post_hidden (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: post_increment (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: post_increment_global (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: pre_step (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: gdb_breakpoint: set breakpoint at contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: info args
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: info locals
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: no argument subroutine has no arguments
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: printing hidden global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: printing outer scoped variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: step into the correct place (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: info symbol contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: info symbol contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: info symbol contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: print contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: print contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: print contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: ptype contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: ptype contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: ptype contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: whatis contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: whatis contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: whatis contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: ! BP_inner (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: ! BP_main (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: ! BP_outer (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: ! BP_outer_2 (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: mod1::sub_nested_outer (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: sub_nested_outer (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: sub_with_sub_nested_outer::sub_nested_outer (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: testnestedfuncs::sub_nested_inner (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: testnestedfuncs::sub_nested_outer (the program exited)
+FAIL: gdb.fortran/nested-funcs.exp: gdb_breakpoint: set breakpoint at mod1::sub_nested_outer
+FAIL: gdb.fortran/nested-funcs.exp: gdb_breakpoint: set breakpoint at sub_with_sub_nested_outer::sub_nested_outer
+FAIL: gdb.fortran/nested-funcs.exp: gdb_breakpoint: set breakpoint at testnestedfuncs::sub_nested_inner
+FAIL: gdb.fortran/nested-funcs.exp: gdb_breakpoint: set breakpoint at testnestedfuncs::sub_nested_outer
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP_inner
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP_main
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP_outer
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP_outer, manipulated
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP1, one frame up
+FAIL: gdb.fortran/nested-funcs.exp: print local_int in inner function
+FAIL: gdb.fortran/nested-funcs.exp: print local_int in outer function
+FAIL: gdb.fortran/nested-funcs.exp: print local_int in outer function, after sub_nested_inner
+FAIL: gdb.fortran/nested-funcs.exp: print v_state%code at BP_inner
+FAIL: gdb.fortran/nested-funcs.exp: print v_state%code at BP_main
+FAIL: gdb.fortran/nested-funcs.exp: set variable index = 42
+FAIL: gdb.mi/mi-fortran-modules.exp: -symbol-info-module-functions
+FAIL: gdb.mi/mi-fortran-modules.exp: -symbol-info-modules --name mod[123] (unexpected output)
+FAIL: gdb.mi/mi-fortran-modules.exp: -symbol-info-modules (unexpected output)
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
+FAIL: gdb.python/lib-types.exp: python print (str (const_volatile_class1_obj.type))
+FAIL: gdb.python/py-xmethods.exp: before: g_mul 2
+FAIL: gdb.python/py-xmethods.exp: before: g_size_diff 2
+FAIL: gdb.python/py-xmethods.exp: before: g_size_mul 2
+FAIL: gdb.python/py-xmethods.exp: before: g.mul<double>(2.0)
+FAIL: gdb.threads/tls-var.exp: print tls_var
+UNRESOLVED: gdb.fortran/assumedrank.exp: test 0: continue
+      '''
+      failures_re = /
+FAIL: gdb.ada\/uninitialized-variable-record.exp: [0-9]+: gdb-command<print sizeof \(y2\)>
+      /
+      break
+
+case 'fission-dwp':
+      failures = '''
+FAIL: gdb.ada/array_of_symbolic_length.exp: scenario=all: compilation foo.adb
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print entire array
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print first array element
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print first array slice
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print second array element
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print second array slice
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print array
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print first array element
+FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print second array element
+FAIL: gdb.ada/finish-var-size.exp: finish
+FAIL: gdb.ada/finish-var-size.exp: print pck.get(True) (GDB internal error)
+FAIL: gdb.ada/mi_variant.exp: scenario=minimal: create r varobj (unexpected output)
+FAIL: gdb.ada/mi_variant.exp: scenario=minimal: update r varobj (unexpected output)
+FAIL: gdb.ada/mi_variant.exp: scenario=none: create r varobj (unexpected output)
+FAIL: gdb.ada/mi_variant.exp: scenario=none: update r varobj (unexpected output)
+FAIL: gdb.ada/O2_float_param.exp: scenario=all: frame
+FAIL: gdb.ada/O2_float_param.exp: scenario=minimal: frame
+FAIL: gdb.ada/rec_ptype.exp: scenario=minimal: compilation main.adb
+FAIL: gdb.ada/recursive-variant.exp: print *instance
+FAIL: gdb.ada/sub_variant.exp: print q
+FAIL: gdb.ada/sub_variant.exp: print r
+FAIL: gdb.ada/sub_variant.exp: print s
+FAIL: gdb.ada/uninitialized_vars.exp: compilation parse.adb
+FAIL: gdb.ada/uninitialized-variable-record.exp: p y2
+FAIL: gdb.ada/uninitialized-variable-record.exp: print &y2.d - &y2
+FAIL: gdb.ada/variant_record_field.exp: print p_record
+FAIL: gdb.ada/variant.exp: scenario=minimal: print nav1
+FAIL: gdb.ada/variant.exp: scenario=minimal: print nav2
+FAIL: gdb.ada/variant.exp: scenario=minimal: print nav3
+FAIL: gdb.ada/variant.exp: scenario=minimal: print q
+FAIL: gdb.ada/variant.exp: scenario=minimal: print r
+FAIL: gdb.ada/variant.exp: scenario=none: print nav1
+FAIL: gdb.ada/variant.exp: scenario=none: print nav2
+FAIL: gdb.ada/variant.exp: scenario=none: print nav3
+FAIL: gdb.ada/variant.exp: scenario=none: print q
+FAIL: gdb.ada/variant.exp: scenario=none: print r
+FAIL: gdb.ada/vla.exp: print r00
+FAIL: gdb.ada/vla.exp: print r01
+FAIL: gdb.ada/vla.exp: print r10
+FAIL: gdb.ada/vla.exp: print r22
+FAIL: gdb.base/c-linkage-name.exp: print symada__cS after partial symtab expansion
+FAIL: gdb.base/c-linkage-name.exp: print symada__cS before partial symtab expansion
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=false: scenario_1: print aaa
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=false: scenario_1: print ccc
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=false: scenario_2: print aaa
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=false: scenario_2: print ccc
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=true: scenario_1: print aaa
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=true: scenario_1: print ccc
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=true: scenario_2: print aaa
+FAIL: gdb.base/condbreak-multi-context.exp: start_before=true: scenario_2: print ccc
+FAIL: gdb.base/dlmopen.exp: attach: dlmopen 2: print gdb_dlmopen_glob
+FAIL: gdb.base/dlmopen.exp: attach: dlmopen 3: print gdb_dlmopen_glob
+FAIL: gdb.base/dlmopen.exp: dlmopen 2: print gdb_dlmopen_glob
+FAIL: gdb.base/dlmopen.exp: dlmopen 3: print gdb_dlmopen_glob
+FAIL: gdb.base/enumval.exp: p ZERO
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: info macro FIRST
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: info macro FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: info macro SECOND
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: info macro THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: p FIRST
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: p FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: p SECOND
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: p THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=0: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=32: strict_dwarf=1: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: info macro FIRST
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: info macro FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: info macro SECOND
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: info macro THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: p FIRST
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: p FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: p SECOND
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: p THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=0: set complaints 0
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: continue to breakpoint: foo
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: gdb_breakpoint: set breakpoint at foo
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: info macro FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: info macro THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: p FOURTH
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: p THIRD
+FAIL: gdb.base/fission-macro.exp: dwarf_version=5: dwarf_bits=64: strict_dwarf=1: set complaints 0
+FAIL: gdb.base/info-types-c.exp: info types
+FAIL: gdb.base/jit-bfd-name.exp: info function ^jit_function
+FAIL: gdb.base/macro-source-path.exp: absolute-cwd: could not compile
+FAIL: gdb.base/macro-source-path.exp: absolute-other: could not compile
+FAIL: gdb.base/macro-source-path.exp: dot-dot-filename: could not compile
+FAIL: gdb.base/macro-source-path.exp: dot-dot-other: could not compile
+FAIL: gdb.base/macro-source-path.exp: dot-filename: could not compile
+FAIL: gdb.base/macro-source-path.exp: filename: could not compile
+FAIL: gdb.base/sepdebug.exp: debuglink: run until breakpoint set at small function, optimized file
+FAIL: gdb.base/sepdebug.exp: debuglink: run until function breakpoint, optimized file
+FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
+FAIL: gdb.base/style.exp: all styles enabled: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style address: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style command: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style file: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style function: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style highlight: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style metadata: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style title: info macro SOME_MACRO
+FAIL: gdb.base/style.exp: disable style variable: info macro SOME_MACRO
+FAIL: gdb.base/volatile.exp: ptype cavern
+FAIL: gdb.base/volatile.exp: ptype cavity
+FAIL: gdb.base/volatile.exp: ptype cove
+FAIL: gdb.base/volatile.exp: ptype coverlet
+FAIL: gdb.base/volatile.exp: ptype vagary
+FAIL: gdb.base/volatile.exp: ptype vanadium
+FAIL: gdb.base/volatile.exp: ptype vegetation
+FAIL: gdb.base/volatile.exp: ptype vendor
+FAIL: gdb.base/volatile.exp: ptype vicar
+FAIL: gdb.base/volatile.exp: ptype vicarage
+FAIL: gdb.base/volatile.exp: ptype victor
+FAIL: gdb.base/volatile.exp: ptype victory
+FAIL: gdb.base/volatile.exp: ptype vindictive
+FAIL: gdb.base/volatile.exp: ptype vizier
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<base, operation_1<base> >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<base, operation_1<base> >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<char, operation_1<char> >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<char, operation_1<char> >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<int, operation_1<int> >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<int, operation_1<int> >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<long, operation_1<long> >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<long, operation_1<long> >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<tclass<int>, operation_1<tclass<int> > >::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd<tclass<int>, operation_1<tclass<int> > >::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd1::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd1::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd2::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd2::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd3::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd3::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd4::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd4::policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd5::~policyd
+FAIL: gdb.cp/cpexprs-debug-types.exp: print policyd5::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<base, operation_1<base> >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<base, operation_1<base> >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<char, operation_1<char> >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<char, operation_1<char> >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<int, operation_1<int> >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<int, operation_1<int> >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<long, operation_1<long> >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<long, operation_1<long> >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<tclass<int>, operation_1<tclass<int> > >::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd<tclass<int>, operation_1<tclass<int> > >::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd1::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd1::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd2::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd2::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd3::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd3::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd4::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd4::policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd5::~policyd
+FAIL: gdb.cp/cpexprs.exp: print policyd5::policyd
+FAIL: gdb.cp/derivation.exp: at marker1: p (A2::value_type) 0
+FAIL: gdb.cp/derivation.exp: at marker1: p (D2::value_type) 0
+FAIL: gdb.cp/derivation.exp: at marker1: ptype A2::value_type
+FAIL: gdb.cp/derivation.exp: at marker1: ptype D2::value_type
+FAIL: gdb.cp/derivation.exp: at marker1: whatis A2::value_type
+FAIL: gdb.cp/derivation.exp: at marker1: whatis D2::value_type
+FAIL: gdb.cp/derivation.exp: before run: p (A::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (A2::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (D::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (D2::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (E::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (F::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (Z::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: p (ZZ::value_type) 0
+FAIL: gdb.cp/derivation.exp: before run: ptype A::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype A2::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype D::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype D2::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype E::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype F::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype Z::value_type
+FAIL: gdb.cp/derivation.exp: before run: ptype ZZ::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis A::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis A2::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis D::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis D2::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis E::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis F::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis Z::value_type
+FAIL: gdb.cp/derivation.exp: before run: whatis ZZ::value_type
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method() const volatile'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method() volatile const'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method(void) const volatile'
+FAIL: gdb.cp/local-static.exp: c++: print 'S::method(void) volatile const'
+FAIL: gdb.cp/local-static.exp: c++: print S::method(void) const volatile
+FAIL: gdb.cp/local-static.exp: c++: print S::method(void) volatile const
+FAIL: gdb.cp/m-static.exp: static const int initialized in class definition
+FAIL: gdb.cp/method.exp: ptype A
+FAIL: gdb.cp/namespace.exp: print ::C::OtherFileClass::cOtherFileClassVar
+FAIL: gdb.cp/namespace.exp: print C::OtherFileClass::cOtherFileClassVar
+FAIL: gdb.cp/namespace.exp: whatis ::C::CClass::NestedClass *
+FAIL: gdb.cp/namespace.exp: whatis ::C::OtherFileClass::cOtherFileClassType
+FAIL: gdb.cp/namespace.exp: whatis C::OtherFileClass::cOtherFileClassType
+FAIL: gdb.cp/oranking.exp: gdb-command<p foo15 (vc)>
+FAIL: gdb.cp/pass-by-ref-2.exp: call cbvFourCCtor, c1v1
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v2_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: ptype v2_volatile_const_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: whatis v2_const_volatile_my_int
+FAIL: gdb.cp/ptype-cv-cp.exp: whatis v2_volatile_const_my_int
+FAIL: gdb.cp/subtypes.exp: ptype Outer::Inner
+FAIL: gdb.cp/subtypes.exp: ptype Outer::Inner::InnerInner
+FAIL: gdb.cp/subtypes.exp: ptype Outer::Oenum
+FAIL: gdb.cp/typed-enum.exp: print (int)byte_val
+FAIL: gdb.cp/typed-enum.exp: print (int)uchar_val
+FAIL: gdb.dwarf2/dw2-const.exp: print twelve
+FAIL: gdb.dwarf2/dw2-const.exp: print/x val8
+FAIL: gdb.dwarf2/dw2-cu-size.exp: ptype noloc
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_low_high_bounds_with_entry_offset: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_low_high_bounds_with_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_low_high_bounds_without_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_ranges_with_entry_offset: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_ranges_with_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=4: use_ranges_without_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_low_high_bounds_with_entry_offset: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_low_high_bounds_with_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_low_high_bounds_without_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_ranges_with_entry_offset: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_ranges_with_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-entry-pc.exp: dwarf_version=5: use_ranges_without_entry_pc: maint info blocks foo_middle
+FAIL: gdb.dwarf2/dw2-intercu.exp: p two
+FAIL: gdb.dwarf2/dw2-intercu.exp: ptype int2
+FAIL: gdb.dwarf2/dw2-intercu.exp: ptype two
+FAIL: gdb.dwarf2/dw2-strp.exp: p a_string
+FAIL: gdb.dwarf2/dw2-strp.exp: p a_string2
+FAIL: gdb.dwarf2/dw2-strp.exp: ptype a_string
+FAIL: gdb.dwarf2/dw2-strp.exp: ptype a_string2
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: entry_label=foo_2: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: entry_label=foo_3: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: entry_label=foo_4: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: entry_label=foo_6: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=4: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: entry_label=foo_2: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: entry_label=foo_3: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: entry_label=foo_4: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: entry_label=foo_6: maint info blocks
+FAIL: gdb.dwarf2/dw2-unexpected-entry-pc.exp: dwarf_version=5: maint info blocks
+FAIL: gdb.dwarf2/local-var.exp: ptype test::local_var
+FAIL: gdb.dwarf2/utf-rust.exp: print cvalue
+FAIL: gdb.dwarf2/variant.exp: print as Defaulted
+FAIL: gdb.dwarf2/variant.exp: print as Negative
+FAIL: gdb.dwarf2/variant.exp: print as Simple
+FAIL: gdb.dwarf2/variant.exp: print as Univariant
+FAIL: gdb.fortran/backtrace.exp: bt
+FAIL: gdb.fortran/info-main.exp: info main post start
+FAIL: gdb.fortran/info-main.exp: info main prior to start
+FAIL: gdb.fortran/info-modules.exp: info module functions -m mod1 (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module functions -m mod1: check for entry 'info-types.f90', '25', 'void mod1::sub_m1_a\\(integer\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -m mod1: check for entry 'info-types.f90', '31', 'integer\\(kind=4\\) mod1::sub_m1_b\\(void\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -m mod1: check header
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer: check for entry 'info-types-2.f90', '22', 'void mod2::sub_m2_a\\(integer\\(kind=4\\), logical\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer: check for entry 'info-types.f90', '25', 'void mod1::sub_m1_a\\(integer\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer: check for entry 'info-types.f90', '31', 'integer\\(kind=4\\) mod1::sub_m1_b\\(void\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions -t integer: check header
+FAIL: gdb.fortran/info-modules.exp: info module functions (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module functions: check for entry 'info-types-2.f90', '22', 'void mod2::sub_m2_a\\(integer\\(kind=4\\), logical\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions: check for entry 'info-types-2.f90', '30', 'logical\\(kind=4\\) mod2::sub_m2_b\\(real\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions: check for entry 'info-types.f90', '25', 'void mod1::sub_m1_a\\(integer\\(kind=4\\)\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions: check for entry 'info-types.f90', '31', 'integer\\(kind=4\\) mod1::sub_m1_b\\(void\\);'
+FAIL: gdb.fortran/info-modules.exp: info module functions: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables _1 (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables _1: check for entry 'info-types-2.f90', '19', 'integer\\(kind=4\\) mod2::mod2_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables _1: check for entry 'info-types.f90', '21', 'real\\(kind=4\\) mod1::mod1_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables _1: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2 -t real (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2 -t real: check for entry 'info-types-2.f90', '20', 'real\\(kind=4\\) mod2::mod2_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2 -t real: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2 (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2: check for entry 'info-types-2.f90', '19', 'integer\\(kind=4\\) mod2::mod2_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2: check for entry 'info-types-2.f90', '20', 'real\\(kind=4\\) mod2::mod2_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -m mod2: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables -t real (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables -t real: check for entry 'info-types-2.f90', '20', 'real\\(kind=4\\) mod2::mod2_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -t real: check for entry 'info-types.f90', '21', 'real\\(kind=4\\) mod1::mod1_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables -t real: check header
+FAIL: gdb.fortran/info-modules.exp: info module variables (timeout)
+FAIL: gdb.fortran/info-modules.exp: info module variables: check for entry 'info-types-2.f90', '19', 'integer\\(kind=4\\) mod2::mod2_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables: check for entry 'info-types-2.f90', '20', 'real\\(kind=4\\) mod2::mod2_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables: check for entry 'info-types.f90', '21', 'real\\(kind=4\\) mod1::mod1_var_1;'
+FAIL: gdb.fortran/info-modules.exp: info module variables: check for entry 'info-types.f90', '22', 'integer\\(kind=4\\) mod1::mod1_var_2;'
+FAIL: gdb.fortran/info-modules.exp: info module variables: check header
+FAIL: gdb.fortran/info-modules.exp: info modules 2 (timeout)
+FAIL: gdb.fortran/info-modules.exp: info modules 2: check for entry 'info-types-2.f90', '18', 'mod2'
+FAIL: gdb.fortran/info-modules.exp: info modules mod (timeout)
+FAIL: gdb.fortran/info-modules.exp: info modules mod: check for entry 'info-types-2.f90', '18', 'mod2'
+FAIL: gdb.fortran/info-modules.exp: info modules mod: check for entry 'info-types.f90', '16', 'mod1'
+FAIL: gdb.fortran/info-modules.exp: info modules mod: check header
+FAIL: gdb.fortran/info-modules.exp: info modules: check for entry 'info-types-2.f90', '18', 'mod2'
+FAIL: gdb.fortran/library-module.exp: print var_i in main
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=auto: bt -frame-arguments all
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=auto: info args in frame #7
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=auto: interpreter-exec mi '-stack-list-arguments --no-frame-filters --all-values 7 7'
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c: bt -frame-arguments all
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c: info args in frame #7
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c: interpreter-exec mi '-stack-list-arguments --no-frame-filters --all-values 7 7'
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c++: bt -frame-arguments all
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c++: info args in frame #7
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=c++: interpreter-exec mi '-stack-list-arguments --no-frame-filters --all-values 7 7'
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=fortran: bt -frame-arguments all
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=fortran: info args in frame #7
+FAIL: gdb.fortran/mixed-lang-stack.exp: lang=fortran: interpreter-exec mi '-stack-list-arguments --no-frame-filters --all-values 7 7'
+FAIL: gdb.fortran/module.exp: complete modm
+FAIL: gdb.fortran/module.exp: complete modmany
+FAIL: gdb.fortran/module.exp: complete modmany::
+FAIL: gdb.fortran/module.exp: complete modmany::var
+FAIL: gdb.fortran/module.exp: fully qualified name of DW_TAG_constant
+FAIL: gdb.fortran/module.exp: stopped language detection
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: before start: gdb_breakpoint: set breakpoint at hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: before start: gdb_breakpoint: set breakpoint at increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: before start: gdb_breakpoint: set breakpoint at increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: increment (the program exited)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: post_hidden (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: post_increment (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: post_increment_global (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: continue to breakpoint: pre_step (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: gdb_breakpoint: set breakpoint at increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment_program_global: info symbol increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment_program_global: ptype increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment_program_global: whatis increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment: info symbol increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment: ptype increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: increment: whatis increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: info args
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: info locals
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: no argument subroutine has no arguments
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: printing hidden global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: printing outer scoped variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=0: step into the correct place (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: gdb_breakpoint: set breakpoint at contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: gdb_breakpoint: set breakpoint at contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: gdb_breakpoint: set breakpoint at contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: info symbol contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: info symbol contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: info symbol contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: print contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: print contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: print contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: ptype contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: ptype contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: ptype contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: whatis contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: whatis contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: before start: whatis contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: increment (the program exited)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: post_hidden (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: post_increment (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: post_increment_global (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: continue to breakpoint: pre_step (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: gdb_breakpoint: set breakpoint at contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: info args
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: info locals
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: no argument subroutine has no arguments
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: printing hidden global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: printing outer scoped variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=0: nest_prefix=1: step into the correct place (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: info symbol contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: info symbol contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: info symbol contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: print contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: print contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: print contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: ptype contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: ptype contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: ptype contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: whatis contains_keyword::hidden_variable
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: whatis contains_keyword::increment
+FAIL: gdb.fortran/nested-funcs-2.exp: src_prefix=1: nest_prefix=1: before start: whatis contains_keyword::increment_program_global
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: ! BP_inner (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: ! BP_main (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: ! BP_outer (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: ! BP_outer_2 (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: mod1::sub_nested_outer (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: sub_nested_outer (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: sub_with_sub_nested_outer::sub_nested_outer (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: testnestedfuncs::sub_nested_inner (the program is no longer running)
+FAIL: gdb.fortran/nested-funcs.exp: continue to breakpoint: testnestedfuncs::sub_nested_outer (the program exited)
+FAIL: gdb.fortran/nested-funcs.exp: gdb_breakpoint: set breakpoint at mod1::sub_nested_outer
+FAIL: gdb.fortran/nested-funcs.exp: gdb_breakpoint: set breakpoint at sub_with_sub_nested_outer::sub_nested_outer
+FAIL: gdb.fortran/nested-funcs.exp: gdb_breakpoint: set breakpoint at testnestedfuncs::sub_nested_inner
+FAIL: gdb.fortran/nested-funcs.exp: gdb_breakpoint: set breakpoint at testnestedfuncs::sub_nested_outer
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP_inner
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP_main
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP_outer
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP_outer, manipulated
+FAIL: gdb.fortran/nested-funcs.exp: print index at BP1, one frame up
+FAIL: gdb.fortran/nested-funcs.exp: print local_int in inner function
+FAIL: gdb.fortran/nested-funcs.exp: print local_int in outer function
+FAIL: gdb.fortran/nested-funcs.exp: print local_int in outer function, after sub_nested_inner
+FAIL: gdb.fortran/nested-funcs.exp: print v_state%code at BP_inner
+FAIL: gdb.fortran/nested-funcs.exp: print v_state%code at BP_main
+FAIL: gdb.fortran/nested-funcs.exp: set variable index = 42
+FAIL: gdb.guile/scm-ports.exp: buffered=1: test byte at sp, before flush
+FAIL: gdb.mi/mi-fortran-modules.exp: -symbol-info-module-functions
+FAIL: gdb.mi/mi-fortran-modules.exp: -symbol-info-modules --name mod[123] (unexpected output)
+FAIL: gdb.mi/mi-fortran-modules.exp: -symbol-info-modules (unexpected output)
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
+FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
+FAIL: gdb.python/lib-types.exp: python print (str (const_volatile_class1_obj.type))
+FAIL: gdb.python/py-objfile.exp: print main with debug info
+FAIL: gdb.python/py-xmethods.exp: before: g_mul 2
+FAIL: gdb.python/py-xmethods.exp: before: g_size_diff 2
+FAIL: gdb.python/py-xmethods.exp: before: g_size_mul 2
+FAIL: gdb.python/py-xmethods.exp: before: g.mul<double>(2.0)
+FAIL: gdb.threads/tls-var.exp: print tls_var
+UNRESOLVED: gdb.fortran/assumedrank.exp: test 0: continue
+      '''
+      failures_re = /
+FAIL: gdb.ada\/uninitialized-variable-record.exp: [0-9]+: gdb-command<print sizeof \(y2\)>
+      /
       break
   }
 
