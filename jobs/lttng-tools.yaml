@@ -680,9 +680,15 @@
           allow-empty-results: true
 
       - archive: &lttng-tools_publisher_archive_defaults
-          artifacts: 'build/**,deps/**,tap/**,log/**,core.tar.xz'
+          artifacts: 'build/**,coverage/**,deps/**,log/**,tap/**,core.tar.xz'
           follow-symlinks: true
           allow-empty: false
+
+      - html-publisher: &lttng-tools_publisher_html_code_coverage_defaults
+          name: 'Code Coverage'
+          dir: 'coverage/'
+          allow-missing: true
+          files: 'index.html'
 
       - workspace-cleanup: &lttng-tools_publisher_workspace-cleanup_defaults
           clean-if:
@@ -736,6 +742,7 @@
       - tap: *lttng-tools_publisher_tap_defaults
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - archive: *lttng-tools_publisher_archive_defaults
+      - html-publisher: *lttng-tools_publisher_html_code_coverage_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
       - ircbot: *lttng-tools_publisher_ircbot_defaults
       - email-ext: *lttng-tools_publisher_email-ext_defaults
@@ -746,6 +753,7 @@
       - tap: *lttng-tools_publisher_tap_defaults
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - archive: *lttng-tools_publisher_archive_defaults
+      - html-publisher: *lttng-tools_publisher_html_code_coverage_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
       - raw: *lttng-tools_publisher_proc-cleaner_defaults
       - ircbot: *lttng-tools_publisher_ircbot_defaults
@@ -915,6 +923,7 @@
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - junit: *lttng-tools_publisher_junit_defaults
       - archive: *lttng-tools_publisher_archive_defaults
+      - html-publisher: *lttng-tools_publisher_html_code_coverage_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
       - raw: *lttng-tools_publisher_proc-cleaner_defaults
 
@@ -1080,6 +1089,7 @@
       - tap: *lttng-tools_publisher_tap_defaults
       - raw: *lttng-tools_publisher_warnings-ng_defaults
       - archive: *lttng-tools_publisher_archive_defaults
+      - html-publisher: *lttng-tools_publisher_html_code_coverage_defaults
       - workspace-cleanup: *lttng-tools_publisher_workspace-cleanup_defaults
 
 - job-template:
@@ -1393,6 +1403,22 @@
           urcuversion: master
           ustversion: master
           babelversion: master
+      - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_linuxbuild_coverage
+          buildtype: linuxbuild_coverage
+          babeltrace_buildtype: linuxbuild
+          urcu_buildtype: linuxbuild
+          ust_buildtype: linuxbuild
+          job_properties:
+            - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
+              value: 'yes'
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
+            - name: LTTNG_TOOLS_COVERAGE
+              value: 'yes'
+          nodes: !!python/tuple [deb13-amd64-rootnode]
+          confs: !!python/tuple [agents]
+          urcuversions: !!python/tuple [master]
+          filter: '(node=="deb13-amd64-rootnode" && platform=="deb13-amd64")'
 
 - project:
     name: lttng-tools-stable-2.14

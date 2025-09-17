@@ -158,6 +158,7 @@ build=${build:-}
 cc=${cc:-}
 
 # Build steps that can be overriden by the environment
+LTTNG_TOOLS_COVERAGE="${LTTNG_TOOLS_COVERAGE:-no}"
 LTTNG_TOOLS_MAKE_INSTALL="${LTTNG_TOOLS_MAKE_INSTALL:-yes}"
 LTTNG_TOOLS_MAKE_CLEAN="${LTTNG_TOOLS_MAKE_CLEAN:-yes}"
 LTTNG_TOOLS_GEN_COMPILE_COMMANDS="${LTTNG_TOOLS_GEN_COMPILE_COMMANDS:-no}"
@@ -425,10 +426,15 @@ debug-rcu)
     ;;
 esac
 
+if [[ "${LTTNG_TOOLS_COVERAGE}" == "yes" ]]; then
+    CONF_OPTS+=("--enable-code-coverage")
+fi
+
 # Java configuration
 if [[ -z "${JAVA_HOME:-}" ]] ; then
     export JAVA_HOME="/usr/lib/jvm/default-java"
 fi
+
 export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
 case "${java_preferred_jdk}" in
     'default')
@@ -615,9 +621,15 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         systemctl stop systemd-timesyncd.service || true
     fi
 
-    MAKE_ARGS=('--keep-going' 'check')
+    MAKE_ARGS=('--keep-going')
     if [[ "${LTTNG_TOOLS_PARALLEL_TESTS}" == "yes" ]]; then
         MAKE_ARGS+=("-j$(${NPROC})")
+    fi
+
+    if [[ "${LTTNG_TOOLS_COVERAGE}" == "yes" ]]; then
+        MAKE_ARGS+=("check-code-coverage")
+    else
+        MAKE_ARGS+=("check")
     fi
 
     make "${MAKE_ARGS[@]}" || exit_status=1
@@ -627,6 +639,10 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
 
     # Copy the test suites top-level log which includes all tests failures
     rsync -a --include 'test-suite.log' --include '*/' --exclude='*' tests/ "$WORKSPACE/log"
+
+    if [[ "${LTTNG_TOOLS_COVERAGE}" == "yes" ]]; then
+        rsync -a coverage/ "${WORKSPACE}/coverage/"
+    fi
 
     if [ "$LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION" = "yes" ] && [ -f "tests/long_regression" ]; then
         # Newer versions (2.15+) of lttng-tools don't have a `long_regression` file, and the long regression
