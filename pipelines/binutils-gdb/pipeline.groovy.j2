@@ -656,7 +656,7 @@ while read -r line ; do
 if [ -s "\$line" ] ; then
   exit 1
 fi
-done < <(ls -1 results/*/gdb.sum)
+done < <(ls -1 results/*/gdb.fail.sum)
 """
           )
         }
