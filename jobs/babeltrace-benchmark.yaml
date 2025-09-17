@@ -55,7 +55,7 @@
           description: "Maximum number of batches to run before ending job. 0 is all jobs"
       - string:
           name: 'NFS_ROOT_URL'
-          default: 'https://obj.internal.efficios.com/lava/rootfs_amd64_bookworm_2024-01-15.tar.gz'
+          default: 'https://obj-pub.internal.efficios.com/rootfs/lava/rootfs_amd64_bookworm_2024-01-15.tar.gz'
 
     publishers:
       - archive:

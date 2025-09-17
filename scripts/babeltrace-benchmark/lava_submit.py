@@ -58,7 +58,7 @@ def submit(
     wait_for_completion=True,
     script_repo="https://github.com/lttng/lttng-ci",
     script_branch="master",
-    nfsrootfs="https://obj.internal.efficios.com/lava/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz",
+    nfsrootfs="https://obj-pub.internal.efficios.com/rootfs/lava/rootfs_amd64_xenial_2018-12-05.tar.gz",
 ):
     kernel_url = (
         "https://obj.internal.efficios.com/lava/kernel/{}.baremetal.bzImage".format(

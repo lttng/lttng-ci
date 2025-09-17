@@ -209,7 +209,7 @@ def main():
         "-r",
         "--rootfs-url",
         required=False,
-        default="https://obj.internal.efficios.com/lava/rootfs_amd64_bookworm_2024-01-15.tar.gz",
+        default="https://obj-pub.internal.efficios.com/rootfs/lava/rootfs_amd64_bookworm_2024-01-15.tar.gz",
     )
     parser.add_argument(
         "--ci-repo", required=False, default="https://github.com/lttng/lttng-ci.git"
