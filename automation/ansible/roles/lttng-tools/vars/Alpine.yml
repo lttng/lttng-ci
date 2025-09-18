@@ -2,6 +2,7 @@
 lttng_tools_packages:
   - asciidoc
   - bash-completion
+  - lcov
   - libxml2-dev
   - popt-dev
   - xmlto

@@ -1,6 +1,7 @@
 ---
 lttng_tools_packages:
   - bash-completion
+  - lcov
   - libmsgpack-dev
   - libpopt-dev
   - libxml2-dev

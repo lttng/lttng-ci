@@ -1,4 +1,12 @@
 ---
+- name: Activate SLES Products
+  when: ansible_distribution == 'SLES'
+  include_role:
+    name: suse
+    tasks_from: product
+  with_items:
+    - PackageHub
+
 - name: Ensure lttng-tools build dependencies are installed.
   zypper: "name={{ lttng_tools_packages }} state=installed update_cache=yes"
 
