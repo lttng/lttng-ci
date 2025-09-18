@@ -2,7 +2,7 @@
     name: babeltrace-www
     project-type: freestyle
     defaults: global
-    node: amd64-rootnode
+    node: deb13-amd64-rootnode
 
     description: |
       This job is responsible for updating the babeltrace website.

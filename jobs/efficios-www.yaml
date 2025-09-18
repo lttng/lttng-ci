@@ -1,7 +1,7 @@
 - defaults:
     name: efficios-www
     project-type: freestyle
-    node: amd64-rootnode
+    node: deb13-amd64-rootnode
 
     builders:
       - shell:

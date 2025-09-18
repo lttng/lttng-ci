@@ -1,7 +1,7 @@
 - defaults:
     name: lttng-www
     project-type: freestyle
-    node: amd64-rootnode
+    node: deb13-amd64-rootnode
 
     description: |
       This job is responsible for updating the lttng website.
