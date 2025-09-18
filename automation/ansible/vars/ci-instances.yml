@@ -176,7 +176,7 @@ containers:
   - meta:
       address: 172.18.16.100
     lxd:
-      name: ci-node-deb12-arm64-2a-01
+      name: ci-node-deb13-arm64-2a-01
       target: ci-host-arm64-2a
       profiles:
         - ci-node
@@ -186,13 +186,13 @@ containers:
         server: https://images.linuxcontainers.org
         protocol: simplestreams
         mode: pull
-        alias: debian/bookworm/cloud/arm64
+        alias: debian/trixie/cloud/arm64
     jenkins:
-      label: 'deb12-arm64 deb12'
+      label: 'deb13-arm64 deb13'
   - meta:
       address: 172.18.16.101
     lxd:
-      name: ci-node-deb12-armhf-2a-01
+      name: ci-node-deb13-armhf-2a-01
       target: ci-host-arm64-2a
       profiles:
         - ci-node
@@ -202,14 +202,14 @@ containers:
         server: https://images.linuxcontainers.org
         protocol: simplestreams
         mode: pull
-        alias: debian/bookworm/cloud/armhf
+        alias: debian/trixie/cloud/armhf
     jenkins:
-      label: 'deb12-armhf deb12'
+      label: 'deb13-armhf deb13'
   # ci-host-arm64-2b
   - meta:
       address: 172.18.16.102
     lxd:
-      name: ci-node-deb12-arm64-2b-01
+      name: ci-node-deb13-arm64-2b-01
       target: ci-host-arm64-2b
       profiles:
         - ci-node
@@ -219,13 +219,13 @@ containers:
         server: https://images.linuxcontainers.org
         protocol: simplestreams
         mode: pull
-        alias: debian/bookworm/cloud/arm64
+        alias: debian/trixie/cloud/arm64
     jenkins:
-      label: 'deb12-arm64 deb12'
+      label: 'deb13-arm64 deb13'
   - meta:
       address: 172.18.16.103
     lxd:
-      name: ci-node-deb12-armhf-2b-01
+      name: ci-node-deb13-armhf-2b-01
       target: ci-host-arm64-2b
       profiles:
         - ci-node
@@ -235,9 +235,9 @@ containers:
         server: https://images.linuxcontainers.org
         protocol: simplestreams
         mode: pull
-        alias: debian/bookworm/cloud/armhf
+        alias: debian/trixie/cloud/armhf
     jenkins:
-      label: 'deb12-armhf deb12'
+      label: 'deb13-armhf deb13'
   - meta:
       address: 172.18.18.1
     lxd:
