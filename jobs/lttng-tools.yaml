@@ -685,10 +685,13 @@
           allow-empty: false
 
       - html-publisher: &lttng-tools_publisher_html_code_coverage_defaults
-          name: 'Code Coverage'
+          name: 'code-coverage'
           dir: 'coverage/'
           allow-missing: true
           files: 'index.html'
+          # keep for past builds too
+          keep-all: true
+          link-to-last-build: true
 
       - workspace-cleanup: &lttng-tools_publisher_workspace-cleanup_defaults
           clean-if:
