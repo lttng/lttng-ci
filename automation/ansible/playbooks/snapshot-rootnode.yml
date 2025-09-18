@@ -38,6 +38,7 @@
     - ansible.builtin.set_fact:
         rootnode_host: "{{get_hypervisor.stdout|trim}}"
     - name: Disable {{target_rootnode}} in Jenkins
+      throttle: 1
       ansible.builtin.command:
         argv: "{{command_args | reject('equalto', '') | list}}"
       vars:
@@ -143,6 +144,7 @@
         argv: ['virsh', 'start', "{{target_rootnode}}"]
       delegate_to: "{{rootnode_host}}"
     - name: Enable {{target_rootnode}} in Jenkins
+      throttle: 1
       ansible.builtin.command:
         argv: "{{command_args | list}}"
       vars:
