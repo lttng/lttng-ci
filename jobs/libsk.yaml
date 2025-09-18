@@ -37,7 +37,7 @@
       - master
     builds: !!python/tuple [std]
     confs: !!python/tuple [std]
-    platforms: !!python/tuple [deb13-amd64, deb12-i386, deb12-arm64, deb12-armhf, deb13-ppc64el, deb13-arm64, deb13-riscv64, deb13-s390x, yocto40-ppc64, yocto40-powerpc]
+    platforms: !!python/tuple [deb13-amd64, deb12-i386, deb12-arm64, deb12-armhf, deb13-ppc64el, deb13-armhf, deb13-arm64, deb13-riscv64, deb13-s390x, yocto40-ppc64, yocto40-powerpc]
     libsk_git_url: ssh://git@git.internal.efficios.com/odion/libsk.git
     filter: ''
     email_to: ''
@@ -93,7 +93,7 @@
           cctype: clang
           ccs:
             - clang
-          platforms: !!python/tuple [deb13-amd64, deb12-i386, deb12-arm64, deb12-armhf, deb13-ppc64el, deb13-arm64, deb13-riscv64, deb13-s390x]
+          platforms: !!python/tuple [deb13-amd64, deb12-i386, deb12-arm64, deb12-armhf, deb13-ppc64el, deb13-armhf, deb13-arm64, deb13-riscv64, deb13-s390x]
 
 - project:
     name: libsk-views
