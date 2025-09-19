@@ -2119,23 +2119,24 @@ cp -t \$WORKSPACE/results/${TARGET_BOARD} gdb/testsuite/gdb.log gdb/testsuite/gd
               catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                 script {
                   def failures = known_failures(target_board)
-                  writeFile(file: 'known_failures', text: failures[0])
-                  writeFile(file: 'known_failures_re', text: failures[1])
+                  writeFile(file: "${WORKSPACE}/results/${TARGET_BOARD}/known_failures", text: failures[0])
+                  writeFile(file: "${WORKSPACE}/results/${TARGET_BOARD}/known_failures_re", text: failures[1])
                   sh(
                     label: 'filter results',
                     script: """#!/usr/bin/bash -x
-grep --invert-match --fixed-strings --file=known_failures \$WORKSPACE/results/${TARGET_BOARD}/gdb.sum | \
-grep --invert-match --extended-regexp --file=known_failures_re > \$WORKSPACE/results/${TARGET_BOARD}/gdb.filtered.sum
-grep --extended-regexp --regexp="^(FAIL|XPASS|UNRESOLVED|DUPLICATE|ERROR):" \$WORKSPACE/results/${TARGET_BOARD}/gdb.filtered.sum >\$WORKSPACE/results/${TARGET_BOARD}/gdb.fail.sum
+results_dir="\$WORKSPACE/results/${TARGET_BOARD}"
+grep --invert-match --fixed-strings --file=\$results_dir/known_failures \$results_dir/gdb.sum | \
+grep --invert-match --extended-regexp --file=\$results_dir/known_failures_re > \$results_dir/gdb.filtered.sum
+grep --extended-regexp --regexp="^(FAIL|XPASS|UNRESOLVED|DUPLICATE|ERROR):" \$results_dir/gdb.filtered.sum >\$results_dir/gdb.fail.sum
 
 echo "Known failures that don't appear in gdb.sum:"
 while read -r line; do
-    if ! grep --silent --fixed-strings "\$line" "\${WORKSPACE}/results/${TARGET_BOARD}/gdb.sum"; then
+    if ! grep --silent --fixed-strings "\$line" "\$results_dir/gdb.sum"; then
         echo "\$line"
     fi
-done < "known_failures" > "\${WORKSPACE}/results/${TARGET_BOARD}/known-failures-not-found.sum"
+done < "\$results_dir/known_failures" > "\$results_dir/known-failures-not-found.sum"
 
-if [ -s "\$WORKSPACE/results/${TARGET_BOARD}/gdb.fail.sum" ]; then
+if [ -s "\$results_dir/gdb.fail.sum" ]; then
   exit 1
 fi
 exit 0
