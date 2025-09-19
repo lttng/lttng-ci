@@ -2097,6 +2097,31 @@ exit \$failed
               unstash('binutils-gdb-source')
               unstash('binutils-gdb-build')
               sh('tar xzf build.tgz')
+
+              // Write known failures files
+              script {
+                def failures = known_failures(target_board)
+                writeFile(file: "${WORKSPACE}/results/${TARGET_BOARD}/known_failures", text: failures[0])
+                writeFile(file: "${WORKSPACE}/results/${TARGET_BOARD}/known_failures_re", text: failures[1])
+              }
+
+              // Print known_failures
+              sh(
+                label: 'known_failures',
+                script: """#!/usr/bin/bash
+cat "\${WORKSPACE}/results/${TARGET_BOARD}/known_failures"
+"""
+              )
+
+              // Print known_failures_re
+              sh(
+                label: 'known_failures_re',
+                script: """#!/usr/bin/bash
+cat "\${WORKSPACE}/results/${TARGET_BOARD}/known_failures_re"
+"""
+              )
+
+              // Run "make check"
               dir('build') {
                 sh(
                   label: 'make',
@@ -2113,20 +2138,14 @@ cp -t \$WORKSPACE/results/${TARGET_BOARD} gdb/testsuite/gdb.log gdb/testsuite/gd
 
               // Filter out known results from gdb.sum, produce gdb.fail.sum (and known-failures-not-found.sum)
               catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                script {
-                  def failures = known_failures(target_board)
-                  writeFile(file: "${WORKSPACE}/results/${TARGET_BOARD}/known_failures", text: failures[0])
-                  writeFile(file: "${WORKSPACE}/results/${TARGET_BOARD}/known_failures_re", text: failures[1])
-
-                  sh(
-                    label: 'filter results',
-                    script: """#!/usr/bin/bash -x
+                sh(
+                  label: 'filter results',
+                  script: """#!/usr/bin/bash -x
 results_dir="\$WORKSPACE/results/${TARGET_BOARD}"
 grep --invert-match --fixed-strings --file=\$results_dir/known_failures \$results_dir/gdb.sum | \
-grep --invert-match --extended-regexp --file=\$results_dir/known_failures_re > \$results_dir/gdb.filtered.sum
+    grep --invert-match --extended-regexp --file=\$results_dir/known_failures_re > \$results_dir/gdb.filtered.sum
 grep --extended-regexp --regexp="^(FAIL|XPASS|UNRESOLVED|DUPLICATE|ERROR):" \$results_dir/gdb.filtered.sum >\$results_dir/gdb.fail.sum
 
-echo "Known failures that don't appear in gdb.sum:"
 while read -r line; do
     if ! grep --silent --fixed-strings "\$line" "\$results_dir/gdb.sum"; then
         echo "\$line"
@@ -2138,8 +2157,7 @@ if [ -s "\$results_dir/gdb.fail.sum" ]; then
 fi
 exit 0
 """
-                  )
-                }
+                )
               }
 
               // Print gdb.fail.sum
