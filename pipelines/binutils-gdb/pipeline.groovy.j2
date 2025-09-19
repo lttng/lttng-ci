@@ -2087,8 +2087,13 @@ exit \$failed
         stages {
           stage('Test') {
             steps {
+              // Clean
               cleanWs()
+
+              // Create results dir
               sh("mkdir -p \$WORKSPACE/results/${TARGET_BOARD}")
+
+              // Extract build artifacts needed to test
               unstash('binutils-gdb-source')
               unstash('binutils-gdb-build')
               sh('tar xzf build.tgz')
@@ -2102,14 +2107,17 @@ make -C gdb --keep-going check RUNTESTFLAGS='--target_board=${TARGET_BOARD}' || 
 cp -t \$WORKSPACE/results/${TARGET_BOARD} gdb/testsuite/gdb.log gdb/testsuite/gdb.sum
 """
                 )
+
                 sh('make clean')
               }
 
+              // Filter out known results from gdb.sum, produce gdb.fail.sum (and known-failures-not-found.sum)
               catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                 script {
                   def failures = known_failures(target_board)
                   writeFile(file: "${WORKSPACE}/results/${TARGET_BOARD}/known_failures", text: failures[0])
                   writeFile(file: "${WORKSPACE}/results/${TARGET_BOARD}/known_failures_re", text: failures[1])
+
                   sh(
                     label: 'filter results',
                     script: """#!/usr/bin/bash -x
@@ -2134,6 +2142,7 @@ exit 0
                 }
               }
 
+              // Print gdb.fail.sum
               sh(
                 label: 'gdb.fail.sum',
                 script: """#!/usr/bin/bash
@@ -2141,6 +2150,7 @@ cat "\${WORKSPACE}/results/${TARGET_BOARD}/gdb.fail.sum"
 """
               )
 
+              // Print known-failures-not-found.sum
               sh(
                 label: 'known-failures-not-found.sum',
                 script: """#!/usr/bin/bash
@@ -2148,6 +2158,7 @@ cat "\${WORKSPACE}/results/${TARGET_BOARD}/known-failures-not-found.sum"
 """
               )
 
+              // Archive everything in the results directory
               stash(name: "binutils-gdb-results-${TARGET_BOARD}", includes: 'results/**')
             }
           }
