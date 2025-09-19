@@ -7,19 +7,18 @@ def known_failures(target_board) {
   def failures_re = ''
   switch(target_board) {
     case 'unix':
-      failures = '''
+      failures = '''\
 FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
 FAIL: gdb.cp/step-and-next-inline.exp: no_header: next step 2
 FAIL: gdb.cp/step-and-next-inline.exp: no_header: next step 3
 FAIL: gdb.cp/step-and-next-inline.exp: no_header: next step 4
 FAIL: gdb.threads/clone-attach-detach.exp: bg attach 2: attach (timeout)
 '''
-      failures_re = /
-      /
+      failures_re = ''
       break
 
     case 'native-gdbserver':
-      failures = '''
+      failures = '''\
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
 FAIL: gdb.base/compare-sections.exp: after reload: compare-sections
 FAIL: gdb.base/compare-sections.exp: after reload: compare-sections -r
@@ -137,7 +136,7 @@ KPASS: gdb.threads/process-dies-while-detaching.exp: single-process: continue: w
       break
 
     case 'native-extended-gdbserver':
-      failures = '''
+      failures = '''\
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
 FAIL: gdb.base/a2-run.exp: run "a2-run" with shell (timeout)
 FAIL: gdb.base/attach.exp: do_command_attach_tests: gdb_spawn_attach_cmdline: info thread (no thread)
@@ -307,12 +306,12 @@ FAIL: gdb.trace/unavailable.exp: unavailable locals: register locals: tfile: pri
 FAIL: gdb.trace/unavailable.exp: unavailable locals: static locals: info locals
 FAIL: gdb.trace/unavailable.exp: unavailable locals: static locals: tfile: info locals
 KPASS: gdb.threads/process-dies-while-detaching.exp: single-process: continue: watchpoint:sw: continue (PRMS gdb/28375)
-      '''
+'''
       failures_re = /FAIL: gdb.threads\/attach-many-short-lived-threads.exp: .*/
       break
 
     case 'cc-with-debug-names':
-      failures = '''
+      failures = '''\
 FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
 FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
 FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
@@ -364,13 +363,12 @@ FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
 FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
 FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
 FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
-      '''
-      failures_re = /
-      /
+'''
+      failures_re = ''
       break
 
     case 'cc-with-gdb-index':
-      failures = '''
+      failures = '''\
 FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
 FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
 FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
@@ -430,13 +428,12 @@ UNRESOLVED: gdb.dwarf2/fission-reread.exp: break -q main
 UNRESOLVED: gdb.dwarf2/fission-reread.exp: file
 UNRESOLVED: gdb.dwarf2/fission-reread.exp: ptype baz
 UNRESOLVED: gdb.dwarf2/fission-reread.exp: set complaints 0
-      '''
-      failures_re = /
-      /
+'''
+      failures_re = ''
       break
 
     case 'debug-types':
-      failures = '''
+      failures = '''\
 FAIL: gdb.ada/array_of_symbolic_length.exp: scenario=all: compilation foo.adb
 FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
 FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
@@ -526,13 +523,12 @@ FAIL: gdb.python/py-xmethods.exp: before: g_mul 2
 FAIL: gdb.python/py-xmethods.exp: before: g_size_diff 2
 FAIL: gdb.python/py-xmethods.exp: before: g_size_mul 2
 FAIL: gdb.python/py-xmethods.exp: before: g.mul<double>(2.0)
-      '''
-      failures_re = /
-      /
+'''
+      failures_re = ''
       break
 
     case 'cc-with-dwz':
-      failures = '''
+      failures = '''\
 FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
 FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
 FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
@@ -587,13 +583,12 @@ FAIL: gdb.guile/scm-ports.exp: buffered=1: test byte at sp, before flush
 FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
 FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
 FAIL: gdb.server/server-kill.exp: test_tstatus: tstatus
-      '''
-      failures_re = /
-      /
+'''
+      failures_re = ''
       break
 
     case 'cc-with-dwz-m':
-      failures = '''
+      failures = '''\
 DUPLICATE: gdb.dwarf2/dw2-inline-header-1.exp: failed to prepare
 DUPLICATE: gdb.dwarf2/dw2-unusual-field-names.exp: failed to prepare
 FAIL: gdb.base/gdb-index-err.exp: flag=-dwarf-5: add index to executable
@@ -612,13 +607,12 @@ FAIL: gdb.fortran/info-types.exp: info types: check for entry 'info-types.f90', 
 FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
 FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
 FAIL: gdb.server/server-kill.exp: test_tstatus: tstatus
-      '''
-      failures_re = /
-      /
+'''
+      failures_re = ''
       break
 
     case 'cc-with-dwz-5':
-      failures = '''
+      failures = '''\
 DUPLICATE: gdb.dwarf2/dw2-inline-header-1.exp: failed to prepare
 DUPLICATE: gdb.dwarf2/dw2-unusual-field-names.exp: failed to prepare
 FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
@@ -691,14 +685,13 @@ FAIL: gdb.guile/scm-ports.exp: buffered=1: test byte at sp, before flush
 FAIL: gdb.multi/checkpoint-multi.exp: background execution: after restart 2.1: info checkpoints
 FAIL: gdb.multi/checkpoint-multi.exp: background execution: switch to inferior 2: info checkpoints
 FAIL: gdb.server/server-kill.exp: test_tstatus: tstatus
-      '''
-      failures_re = /
-      /
+'''
+      failures_re = ''
       break
 
 
     case 'fission':
-      failures = '''
+      failures = '''\
 FAIL: gdb.ada/array_of_symbolic_length.exp: scenario=all: compilation foo.adb
 FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print entire array
 FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print first array element
@@ -1426,14 +1419,12 @@ FAIL: gdb.python/py-xmethods.exp: before: g_size_mul 2
 FAIL: gdb.python/py-xmethods.exp: before: g.mul<double>(2.0)
 FAIL: gdb.threads/tls-var.exp: print tls_var
 UNRESOLVED: gdb.fortran/assumedrank.exp: test 0: continue
-      '''
-      failures_re = /
-FAIL: gdb.ada\/uninitialized-variable-record.exp: [0-9]+: gdb-command<print sizeof \(y2\)>
-      /
+'''
+      failures_re = /FAIL: gdb.ada\/uninitialized-variable-record.exp: [0-9]+: gdb-command<print sizeof \(y2\)>/
       break
 
     case 'fission-dwp':
-      failures = '''
+      failures = '''\
 FAIL: gdb.ada/array_of_symbolic_length.exp: scenario=all: compilation foo.adb
 FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print entire array
 FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print first array element
@@ -1845,10 +1836,8 @@ FAIL: gdb.python/py-xmethods.exp: before: g_size_mul 2
 FAIL: gdb.python/py-xmethods.exp: before: g.mul<double>(2.0)
 FAIL: gdb.threads/tls-var.exp: print tls_var
 UNRESOLVED: gdb.fortran/assumedrank.exp: test 0: continue
-      '''
-      failures_re = /
-FAIL: gdb.ada\/uninitialized-variable-record.exp: [0-9]+: gdb-command<print sizeof \(y2\)>
-      /
+'''
+      failures_re = /FAIL: gdb.ada\/uninitialized-variable-record.exp: [0-9]+: gdb-command<print sizeof \(y2\)>/
       break
   }
 
