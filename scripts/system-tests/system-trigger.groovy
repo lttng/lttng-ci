@@ -1,18 +1,6 @@
 /**
- * Copyright (C) 2017 - Francis Deslauriers <francis.deslauriers@efficios.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-FileCopyrightText: 2017 Francis Deslauriers <francis.deslauriers@efficios.com>
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import hudson.console.HyperlinkNote
@@ -300,29 +288,34 @@ def LaunchJob = { jobName, jobInfo ->
 final String toolsRepo = "https://github.com/lttng/lttng-tools.git"
 final String modulesRepo = "https://github.com/lttng/lttng-modules.git"
 final String ustRepo = "https://github.com/lttng/lttng-ust.git"
-final String linuxRepo = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
+final String linuxRepo = "git://git-mirror.internal.efficios.com/kernel/stable/linux.git"
 
 final String pastJobsPath = build.getEnvironment(listener).get('WORKSPACE') + "/pastjobs";
 
-def recentLttngBranchesOfInterest = ['master',
+def recentLttngBranchesOfInterest = [
+  'master',
+  'stable-2.14',
   'stable-2.13',
-  'stable-2.12']
-def recentLinuxBranchesOfInterest = ['master',
+]
+
+def recentLinuxBranchesOfInterest = [
+  'master',
+  'linux-6.12.y',
   'linux-6.6.y',
   'linux-6.1.y',
   'linux-5.15.y',
   'linux-5.10.y',
-  'linux-5.4.y',
-  'linux-4.19.y',
-  'linux-4.14.y',
+  'linux-4.4.y',
 ]
 
-def legacyLttngBranchesOfInterest = []
+def legacyLttngBranchesOfInterest = [
+  'stable-2.12',
+]
+
 def legacyLinuxBranchesOfInterest = [
-    'linux-5.14.y',
-    'linux-4.18.y',
-    'linux-4.12.y',
-    'linux-4.9.y',
+    'linux-5.15.y',
+    'linux-5.10.y',
+    'linux-4.4.y',
 ]
 
 def vmLinuxBranchesOfInterest = []
@@ -391,7 +384,7 @@ configurationOfInterest.each { lttngBr, linuxBr  ->
   currentJobs[jobName] = CraftConfig(linuxBr, lttngBr);
 }
 
-//Add canary job
+// Add canary job
 def jobNameCanary = jobType + "_kcanary_lcanary";
 currentJobs[jobNameCanary] = [:];
 currentJobs[jobNameCanary]['config'] = [:];
