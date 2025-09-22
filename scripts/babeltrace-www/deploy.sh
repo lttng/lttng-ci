@@ -80,11 +80,7 @@ chown nobody "${OUTPUT_DIR}"
 
 # @Note: Only internal links are checked by default
 LINKCHECKER_ARGS=(
-    '-q' '-F' "csv/utf-8/${OUTPUT_FILE}"
-    # This file contains references to resources like "../tab-a.png" for external
-    # search pages that create false positives.
-    # @see https://github.com/doxygen/doxygen/blame/b4437b34779f8e8eafa2a12972aeba956809b6c3/templates/html/search_common.css#L258
-    '--ignore-url=doxygen.css'
+    '-q' '-F' "csv/utf-8/${OUTPUT_FILE}" '-f' '.linkcheckerrc'
     http://localhost:10000/
 )
 if ! linkchecker "${LINKCHECKER_ARGS[@]}" ; then
