@@ -107,6 +107,7 @@ print_header() {
 # Use all CPU cores
 NPROC=$(nproc)
 
+LINUX_GIT_REF_REPO_DIR="$HOME/gitcache/linux-stable.git/"
 LINUX_GIT_DIR="$WORKSPACE/src/linux"
 MODULES_GIT_DIR="$WORKSPACE/src/lttng-modules"
 
@@ -150,7 +151,7 @@ mkdir -p "$OUTPUTDIR"
 if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
     print_header "Checkout linux sources from git"
 
-    git clone --quiet --no-tags --depth=1 "$KGITREPO" "$LINUX_GIT_DIR"
+    git clone --quiet --no-tags --depth=1 --reference-if-able "$LINUX_GIT_REF_REPO_DIR" "$KGITREPO" "$LINUX_GIT_DIR"
     git -C "$LINUX_GIT_DIR" fetch origin "$KERNEL_COMMIT_ID"
     git -C "$LINUX_GIT_DIR" checkout FETCH_HEAD
 
