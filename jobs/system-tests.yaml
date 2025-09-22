@@ -242,18 +242,6 @@
           name: 'KGITREPO'
           description: 'The kernel git repo to fetch from'
       - string:
-          name: 'STORAGE_KERNEL_FOLDER'
-          description: 'Path to store the Kernel image'
-      - string:
-          name: 'STORAGE_KERNEL_IMAGE'
-          description: 'Path to store the Kernel IMAGE'
-      - string:
-          name: 'STORAGE_LINUX_MODULES'
-          description: 'Path to store the Kernel Modules'
-      - string:
-          name: 'STORAGE_LTTNG_MODULES'
-          description: 'Path to store the LTTng Modules'
-      - string:
           name: 'BUILD_DEVICE'
           description: 'The target device. (kvm or baremetal)'
       - string:
@@ -279,16 +267,17 @@
 
     properties:
       - build-discarder:
-          num-to-keep: 100
+          days-to-keep: 2
 
     wrappers:
       - workspace-cleanup
       - timestamps
       - ansicolor
       - credentials-binding:
-          - file:
-              credential-id: system_tests_storage_key
-              variable: identity_file
+          - username-password-separated:
+              credential-id: s3_obj_lava_key
+              username: S3_OBJ_LAVA_ACCESS
+              password: S3_OBJ_LAVA_SECRET
 
     scm:
       - git:
@@ -298,27 +287,7 @@
             - "${{LTTNG_CI_BRANCH}}"
 
     builders:
-      - shell: !include-raw-verbatim: scripts/system-tests/checkout-modules.sh
-      - shell: !include-raw-verbatim: scripts/system-tests/generate-properties-slave.sh
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-verbatim: scripts/system-tests/check-build-needs.sh
-      - conditional-step:
-          condition-kind: not
-          condition-operand:
-              condition-kind: file-exists
-              condition-filename: kernel-built.txt
-              condition-basedir: workspace
-          steps:
-              - shell: !include-raw-verbatim: scripts/system-tests/build-kernel.sh
-      - conditional-step:
-          condition-kind: not
-          condition-operand:
-              condition-kind: file-exists
-              condition-filename: modules-built.txt
-              condition-basedir: workspace
-          steps:
-              - shell: !include-raw-verbatim: scripts/system-tests/build-modules.sh
+      - shell: !include-raw-verbatim: scripts/system-tests/build-kernel-param.sh
 
     publishers:
       - workspace-cleanup
