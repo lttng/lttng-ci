@@ -26,6 +26,10 @@
           - text:
               credential-id: jenkins_lava2_key
               variable: LAVA2_JENKINS_TOKEN
+          - username-password-separated:
+              credential-id: s3_obj_lava_key
+              username: S3_ACCESS_KEY
+              password: S3_SECRET_KEY
 
     triggers:
       - timed: '@daily'
@@ -36,11 +40,13 @@
 
     parameters:
       - string:
-          name: 'BENCHMARK_REPO_URL'
-          default: 'https://github.com/lttng/lttng-ci'
+          name: 'LTTNG_CI_REPO'
+          default: 'https://github.com/lttng/lttng-ci.git'
+          description: 'LTTng-ci git repo to checkout the CI scripts'
       - string:
-          name: 'BENCHMARK_REPO_BRANCH'
+          name: 'LTTNG_CI_BRANCH'
           default: 'master'
+          description: 'The branch of the CI repository to clone for job scripts'
       - bool:
           name: 'BENCHMARK_FORCE'
           default: false
@@ -55,7 +61,37 @@
           description: "Maximum number of batches to run before ending job. 0 is all jobs"
       - string:
           name: 'NFS_ROOT_URL'
-          default: 'https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_bookworm_2024-01-15.tar.gz'
+          default: 'https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_trixie_2025-09-25.tar.xz'
+      - string:
+          name: 'LAVA_USERNAME'
+          default: 'lava-jenkins'
+          description: 'The username to authenticate with the LAVA instance'
+      - string:
+          name: 'LAVA_HOST'
+          default: 'lava-master-03.internal.efficios.com'
+          description: 'The hostname of the LAVA instance'
+      - choice:
+          name: 'LAVA_PROTO'
+          choices:
+            - 'http'
+            - 'https'
+          description: 'The protocol to use with the LAVA host'
+      - string:
+          name: 'S3_HOST'
+          description: 'Host for the s3 object storage'
+          default: 'obj2.internal.efficios.com'
+      - string:
+          name: 'S3_BUCKET'
+          description: 'Bucket for the s3 object storage'
+          default: 'lava'
+      - string:
+          name: 'S3_BASE_DIR'
+          description: 'Base directory for the s3 object storage'
+          default: 'system-tests'
+      - string:
+          name: 'S3_HTTP_BUCKET_URL'
+          description: 'Base url to access the s3 bucket over unauthenticated HTTP'
+          default: 'https://obj-lava.internal.efficios.com'
 
     publishers:
       - archive:

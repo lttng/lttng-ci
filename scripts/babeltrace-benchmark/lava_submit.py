@@ -1,18 +1,6 @@
 #!/usr/bin/python3
-# Copyright (C) 2019 - Jonathan Rajotte Julien <jonathan.rajotte-julien@efficios.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# SPDX-FileCopyrightText: 2019 Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 import argparse
 import math
@@ -23,9 +11,25 @@ import xmlrpc.client
 
 from jinja2 import Environment, FileSystemLoader
 
-USERNAME = "lava-jenkins"
-HOSTNAME = "lava-master-03.internal.efficios.com"
+# 4.4.194
 DEFAULT_KERNEL_COMMIT = "a227f8436f2b21146fc024d84e6875907475ace2"
+
+LAVA_USERNAME = os.environ.get("LAVA_USERNAME")
+LAVA_HOST = os.environ.get("LAVA_HOST")
+LAVA_PROTO = os.environ.get("LAVA_PROTO")
+
+S3_ACCESS_KEY = os.environ.get("S3_ACCESS_KEY")
+S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY")
+
+S3_HOST = os.environ.get("S3_HOST")
+S3_BUCKET = os.environ.get("S3_BUCKET")
+S3_BASE_DIR = os.environ.get("S3_BASE_DIR")
+
+S3_HTTP_BUCKET_URL = os.environ.get("S3_HTTP_BUCKET_URL")
+
+TRACE_DEFAULT_LOCATION = "https://obj-lava.internal.efficios.com/traces/benchmark/babeltrace/babeltrace_benchmark_trace.tar.gz"
+TRACE_TOOLS_2_10_LOCATION = "https://obj-lava.internal.efficios.com/traces/benchmark/babeltrace/babeltrace_benchmark_trace-tools-2.10.tar.gz"
+TRACE_TOOLS_2_14_LOCATION = "https://obj-lava.internal.efficios.com/traces/benchmark/babeltrace/babeltrace_benchmark_trace-tools-2.14.tar.gz"
 
 
 def wait_on(server, jobid):
@@ -53,22 +57,22 @@ def wait_on(server, jobid):
 
 def submit(
     commits,
+    bt_repo,
+    ci_repo,
+    ci_branch,
+    nfsrootfs,
     debug=False,
     kernel_commit=DEFAULT_KERNEL_COMMIT,
     wait_for_completion=True,
-    script_repo="https://github.com/lttng/lttng-ci",
-    script_branch="master",
-    nfsrootfs="https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_xenial_2018-12-05.tar.gz",
 ):
     kernel_url = (
-        "https://obj.internal.efficios.com/lava/kernel/{}.baremetal.bzImage".format(
+        "{}/system-tests/kernel/{}.baremetal.bzImage".format(
+            S3_HTTP_BUCKET_URL,
             kernel_commit
         )
     )
-    modules_url = "https://obj.internal.efficios.com/lava/modules/linux/{}.baremetal.linux.modules.tar.gz".format(
-        kernel_commit
-    )
 
+    # Get the S3 secret from the environment
     lava_api_key = None
     if not debug:
         try:
@@ -80,18 +84,33 @@ def submit(
             )
             return -1
 
-    jinja_loader = FileSystemLoader(os.path.dirname(os.path.realpath(__file__)))
-    jinja_env = Environment(loader=jinja_loader, trim_blocks=True, lstrip_blocks=True)
-    jinja_template = jinja_env.get_template("template_lava_job_bt_benchmark.jinja2")
-
+    # Context for the lava job template
     context = dict()
     context["kernel_url"] = kernel_url
     context["nfsrootfs_url"] = nfsrootfs
     context["commit_hashes"] = " ".join(commits)
-    context["script_repo"] = script_repo
-    context["script_branch"] = script_branch
-    context["job_timeout_hours"] = max(3, math.ceil(len(commits) * 1.5))
 
+    context["ci_repo"] = ci_repo
+    context["ci_branch"] = ci_branch
+
+    context["job_timeout_hours"] = max(3, math.ceil(len(commits) * 1.5))
+    context["bt_repo"] = bt_repo
+
+    context["trace_default_location"] = TRACE_DEFAULT_LOCATION
+    context["trace_tools_2_10_location"] = TRACE_TOOLS_2_10_LOCATION
+    context["trace_tools_2_14_location"] = TRACE_TOOLS_2_14_LOCATION
+
+    context["s3_access_key"] = S3_ACCESS_KEY
+    context["s3_secret_key"] = S3_SECRET_KEY
+
+    context["s3_host"] = S3_HOST
+    context["s3_bucket"] = S3_BUCKET
+    context["s3_base_dir"] = S3_BASE_DIR
+
+    # Render the lava job template
+    jinja_loader = FileSystemLoader(os.path.dirname(os.path.realpath(__file__)))
+    jinja_env = Environment(loader=jinja_loader, trim_blocks=True, lstrip_blocks=True)
+    jinja_template = jinja_env.get_template("template_lava_job_bt_benchmark.yml.jinja2")
     render = jinja_template.render(context)
 
     print("Job to be submitted:", flush=True)
@@ -102,7 +121,7 @@ def submit(
         return 0
 
     server = xmlrpc.client.ServerProxy(
-        "https://%s:%s@%s/RPC2" % (USERNAME, lava_api_key, HOSTNAME)
+        "%s://%s:%s@%s/RPC2" % (LAVA_PROTO, LAVA_USERNAME, lava_api_key, LAVA_HOST)
     )
 
     for attempt in range(10):
@@ -122,7 +141,7 @@ def submit(
 
     print("Lava jobid:{}".format(jobid), flush=True)
     print(
-        "Lava job URL: https://{}/scheduler/job/{}".format(HOSTNAME, jobid),
+        "Lava job URL: https://{}/scheduler/job/{}".format(LAVA_HOST, jobid),
         flush=True,
     )
 
@@ -142,4 +161,5 @@ if __name__ == "__main__":
     )
     parser.add_argument("-d", "--debug", required=False, action="store_true")
     args = parser.parse_args()
+
     sys.exit(submit(args.commits, kernel_commit=args.kernel_commit, debug=args.debug))

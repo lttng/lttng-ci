@@ -1,0 +1,8 @@
+metadata:
+  format: Lava-Test Test Definition 1.0
+  name: babeltrace 2.0 benchmark
+  description: "Run benchmark for babeltrace"
+
+run:
+  steps:
+    - lava/babeltrace-benchmark/benchmark.sh

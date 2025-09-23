@@ -1,18 +1,6 @@
 #!/usr/bin/python3
-# Copyright (C) 2019 - Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# SPDX-FileCopyrightText: 2019 Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 import argparse
 import json
@@ -41,7 +29,12 @@ BENCHMARK_TYPES = [
     "dummy-tools_2_14",
     "text-tools_2_14",
 ]
-DEFAULT_BUCKET = "lava"
+
+# Get S3 config from environment
+S3_HOST = os.getenv("S3_HOST")
+S3_BUCKET = os.getenv("S3_BUCKET")
+S3_ACCESS_KEY = os.getenv("S3_ACCESS_KEY")
+S3_SECRET_KEY = os.getenv("S3_SECRET_KEY")
 
 invalid_commits = {
     "ec9a9794af488a9accce7708a8b0d8188b498789",  # Does not build
@@ -137,7 +130,7 @@ def get_client():
     Return minio client configured.
     """
     return Minio(
-        "obj.internal.efficios.com", access_key="jenkins", secret_key="echo123456"
+        S3_HOST, access_key=S3_ACCESS_KEY, secret_key=S3_SECRET_KEY
     )
 
 
@@ -149,7 +142,7 @@ def get_file(client, prefix, file_name, workdir_name):
     destination = os.path.join(workdir_name, file_name)
     object_name = "{}/{}".format(prefix, file_name)
     try:
-        client.fget_object(DEFAULT_BUCKET, object_name, destination)
+        client.fget_object(S3_BUCKET, object_name, destination)
     except NoSuchKey:
         return None
 
@@ -162,19 +155,19 @@ def delete_file(client, prefix, file_name):
     """
     object_name = "{}/{}".format(prefix, file_name)
     try:
-        client.remove_object(DEFAULT_BUCKET, object_name)
+        client.remove_object(S3_BUCKET, object_name)
     except ResponseError as err:
         print(err)
     except NoSuchKey:
         pass
 
 
-def get_git_log(bt_version, cutoff, repo_path):
+def get_git_log(bt_version, cutoff, bt_repo_path):
     """
     Return an ordered (older to newer) list of commits for the bt_version and
     cutoff. WARNING: This changes the git repo HEAD.
     """
-    repo = git.Repo(repo_path)
+    repo = git.Repo(bt_repo_path)
     repo.git.fetch()
     return repo.git.log(
         "{}..origin/{}".format(cutoff, bt_version), "--pretty=format:%H", "--reverse"
@@ -446,14 +439,15 @@ def generate_graph(branches, report_name, git_path):
 
 def launch_jobs(
     branches,
-    git_path,
+    bt_repo_path,
     wait_for_completion,
     debug,
     force,
     batch_size,
     max_batches,
-    script_repo,
-    script_branch,
+    bt_repo,
+    ci_repo,
+    ci_branch,
     nfs_root_url,
 ):
     """
@@ -463,7 +457,7 @@ def launch_jobs(
     commits_to_test = set()
     for branch, cutoff in branches.items():
         commits = [
-            x for x in get_git_log(branch, cutoff, git_path) if x not in invalid_commits
+            x for x in get_git_log(branch, cutoff, bt_repo_path) if x not in invalid_commits
         ]
         with tempfile.TemporaryDirectory() as workdir:
             for commit in commits:
@@ -489,11 +483,12 @@ def launch_jobs(
         print("Job {}/{}".format(index + 1, max(len(chunks), max_batches)))
         lava_submit.submit(
             commits,
+            bt_repo,
+            ci_repo,
+            ci_branch,
+            nfs_root_url,
             wait_for_completion=wait_for_completion,
             debug=debug,
-            script_repo=script_repo,
-            script_branch=script_branch,
-            nfsrootfs=nfs_root_url,
         )
         batches_run += 1
         if max_batches > 0 and batches_run >= max_batches:
@@ -549,7 +544,7 @@ def main():
         "--debug", action="store_true", default=False, help="Do not send jobs to lava."
     )
     parser.add_argument(
-        "--repo-path", help="The location of the git repo to use.", required=True
+        "--bt-repo-path", help="The location of the babeltrace git repo to use.", required=True
     )
     parser.add_argument(
         "--overwrite-branches-cutoff",
@@ -560,10 +555,14 @@ def main():
         type=json_type,
     )
     parser.add_argument(
-        "--script-repo",
+        "--bt-repo",
+        default="https://github.com/efficios/babeltrace.git",
+    )
+    parser.add_argument(
+        "--ci-repo",
         default="https://github.com/lttng/lttng-ci.git",
     )
-    parser.add_argument("--script-branch", default="master")
+    parser.add_argument("--ci-branch", default="master")
     parser.add_argument("--nfs-root-url", default=os.getenv("NFS_ROOT_URL"))
 
     args = parser.parse_args()
@@ -574,7 +573,7 @@ def main():
     if args.overwrite_branches_cutoff:
         bt_branches = args.overwrite_branches_cutoff
 
-    if not os.path.exists(args.repo_path):
+    if not os.path.exists(args.bt_repo_path):
         print("Repository location does not exists.")
         return 1
 
@@ -586,14 +585,15 @@ def main():
 
         launch_jobs(
             bt_branches,
-            args.repo_path,
+            args.bt_repo_path,
             not args.do_not_wait_on_completion,
             args.debug,
             args.force_jobs,
             args.batch_size,
             args.max_batches,
-            args.script_repo,
-            args.script_branch,
+            args.bt_repo,
+            args.ci_repo,
+            args.ci_branch,
             args.nfs_root_url,
         )
 
@@ -601,7 +601,7 @@ def main():
         print("Generating pdf report ({}) for:".format(args.report_name))
         for branch, cutoff in bt_branches.items():
             print("\t Branch {} with cutoff {}".format(branch, cutoff))
-        generate_graph(bt_branches, args.report_name, args.repo_path)
+        generate_graph(bt_branches, args.report_name, args.bt_repo_path)
 
     return 0
 

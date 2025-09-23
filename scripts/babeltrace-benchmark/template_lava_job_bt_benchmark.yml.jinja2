@@ -1,0 +1,95 @@
+# Lava system-tests job template
+
+device_type: x86
+job_name: babeltrace_benchmark
+
+secrets:
+  S3_ACCESS_KEY: {{ s3_access_key }}
+  S3_SECRET_KEY: {{ s3_secret_key }}
+
+timeouts:
+  job:
+    hours: {{job_timeout_hours}}
+  action:
+    hours: {{job_timeout_hours}}
+  connection:
+    minutes: 4
+  connections:
+    lava-test-shell:
+      minutes: 4
+
+priority: medium
+visibility: public
+
+context:
+  extra_kernel_args: "cpuidle.off=1 idle=poll cpufreq.off=1 numa_balancing=disable TERM=dumb"
+  extra_nfsroot_args: ",nfsvers=3 nfsrootdebug"
+
+tags:
+  - dev-sda1
+
+environment:
+  SHELL: "/bin/bash"
+  TERM: "dumb"
+  NO_COLOR: "1"
+  TMPDIR: "/tmp"
+  SCRATCH_DIR: "/scratch"
+  WORKSPACE: "/scratch/workspace"
+  CI_REPO: "{{ ci_repo }}"
+  CI_BRANCH: "{{ ci_branch }}"
+  S3_HOST: "{{ s3_host }}"
+  S3_BUCKET: "{{ s3_bucket }}"
+  S3_BASE_DIR: "{{ s3_base_dir }}"
+  BT_REPO: "{{ bt_repo }}"
+  BT_COMMITS: "{{ commit_hashes }}"
+  TRACE_DEFAULT_LOCATION: "{{ trace_default_location }}"
+  TRACE_TOOLS_2_10_LOCATION: "{{ trace_tools_2_10_location }}"
+  TRACE_TOOLS_2_14_LOCATION: "{{ trace_tools_2_14_location }}"
+  SCRATCH_DEVICE: "/dev/sda1"
+
+actions:
+    - deploy:
+        timeout:
+          minutes: 10
+        to: tftp
+        kernel:
+          url: "{{ kernel_url }}"
+          type: zimage
+        nfsrootfs:
+          url: "{{ nfsrootfs_url }}"
+          compression: xz
+
+    - boot:
+        timeout:
+          minutes: 10
+        method: ipxe
+        commands: nfs
+        auto_login:
+          login_prompt: 'login:'
+          username: root
+          password_prompt: 'Password:'
+          password: root
+        prompts:
+          - 'root@linaro-server:~#'
+
+    - test:
+        definitions:
+            # Smoke tests #
+            - repository: {{ ci_repo }}
+              from: git
+              branch: {{ ci_branch }}
+              path: lava/system-tests/smoke-tests.yml
+              name: smoke-tests
+
+            # Base setup of environment #
+            - repository: {{ci_repo}}
+              revision: {{ci_branch}}
+              from: git
+              path: lava/babeltrace-benchmark/setup-base.yml
+              name: setup-base
+
+            - repository: {{ci_repo}}
+              revision: {{ci_branch}}
+              from: git
+              path: lava/babeltrace-benchmark/benchmark.yml
+              name: benchmark

@@ -77,6 +77,7 @@ packages = [
     "swig",
     "systemd-timesyncd",
     "systemtap-sdt-dev",
+    "time",
     "texinfo",
     "tree",
     "uuid-dev",
