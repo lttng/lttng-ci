@@ -273,7 +273,7 @@ def LaunchJob = { jobName, jobInfo ->
   params.add(new StringParameterValue('LTTNG_TOOLS_COMMIT_ID', jobInfo['config']['toolsCommit']))
   params.add(new StringParameterValue('LTTNG_MODULES_COMMIT_ID', jobInfo['config']['modulesCommit']))
   params.add(new StringParameterValue('LTTNG_UST_COMMIT_ID', jobInfo['config']['ustCommit']))
-  params.add(new StringParameterValue('KERNEL_TAG_ID', jobInfo['config']['linuxTagID']))
+  params.add(new StringParameterValue('KERNEL_COMMIT_ID', jobInfo['config']['linuxCommit']))
   def currBuild = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(params))
 
   if (currBuild != null ) {
@@ -351,7 +351,7 @@ def CraftConfig = { linuxBr, lttngBr ->
   job['config'] = [:];
   job['config']['linuxBranch'] = linuxBr;
   job['config']['lttngBranch'] = lttngBr;
-  job['config']['linuxTagID'] = linuxLastTagIds[linuxBr];
+  job['config']['linuxCommit'] = linuxLastTagIds[linuxBr];
   job['config']['toolsCommit'] = toolsHeadCommits[lttngBr];
   job['config']['modulesCommit'] = modulesHeadCommits[lttngBr];
   job['config']['ustCommit'] = ustHeadCommits[lttngBr];
@@ -390,7 +390,7 @@ currentJobs[jobNameCanary] = [:];
 currentJobs[jobNameCanary]['config'] = [:];
 currentJobs[jobNameCanary]['config']['linuxBranch'] = 'v5.15.112';
 currentJobs[jobNameCanary]['config']['lttngBranch'] = 'v2.13.9';
-currentJobs[jobNameCanary]['config']['linuxTagID'] ='9d6bde853685609a631871d7c12be94fdf8d912e'; // v5.15.112
+currentJobs[jobNameCanary]['config']['linuxCommit'] ='9d6bde853685609a631871d7c12be94fdf8d912e'; // v5.15.112
 currentJobs[jobNameCanary]['config']['toolsCommit'] = '2ff0385718ff894b3d0e06f3961334c20c5436f8' // v2.13.9
 currentJobs[jobNameCanary]['config']['modulesCommit'] = 'da1f5a264fff33fc5a9518e519fb0084bf1074af' // v2.13.9
 currentJobs[jobNameCanary]['config']['ustCommit'] = 'de624c20694f69702b42c5d47b5bcf692293a238' // v2.13.5

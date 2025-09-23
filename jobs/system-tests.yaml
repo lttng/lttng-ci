@@ -16,9 +16,9 @@
           default: ''
           description: 'The lttng-ust commit id to build.'
       - string:
-          name: 'KERNEL_TAG_ID'
+          name: 'KERNEL_COMMIT_ID'
           default: ''
-          description: 'The linux kernel git tag to build against.'
+          description: 'The linux kernel commit id to build against.'
       - string:
           name: 'KERNEL_REPO'
           default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
@@ -48,6 +48,10 @@
           default: 'master'
           description: 'The branch of the CI repository to clone for job scripts'
       - string:
+          name: 'LAVA_USERNAME'
+          default: 'lava-jenkins'
+          description: 'The username to authenticate with the LAVA instance'
+      - string:
           name: 'LAVA_HOST'
           default: 'lava-master-03.internal.efficios.com'
           description: 'The hostname of the LAVA instance'
@@ -57,6 +61,22 @@
             - 'http'
             - 'https'
           description: 'The protocol to use with the LAVA host'
+      - string:
+          name: 'S3_HOST'
+          description: 'Host for the s3 object storage'
+          default: 'obj2.internal.efficios.com'
+      - string:
+          name: 'S3_BUCKET'
+          description: 'Bucket for the s3 object storage'
+          default: 'lava'
+      - string:
+          name: 'S3_BASE_DIR'
+          description: 'Base directory for the s3 object storage'
+          default: 'system-tests'
+      - string:
+          name: 'S3_HTTP_BUCKET_URL'
+          description: 'Base url to access the s3 bucket over unauthenticated HTTP'
+          default: 'https://obj-lava.internal.efficios.com'
 
 - publisher:
     name: 'system_tests_email_ext_default'
@@ -107,19 +127,12 @@
       - ansicolor
       - credentials-binding:
           - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_JENKINS_TOKEN
-          - text:
               credential-id: jenkins_lava2_key
               variable: LAVA2_JENKINS_TOKEN
       - inject:
           properties-content: |
             BUILD_DEVICE=kvm
             LTTNG_VERSION={lttngversion}
-            LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
-            LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
-            LAVA_HOST=${{LAVA_HOST}}
-            LAVA_PROTO=${{LAVA_PROTO}}
 
     scm:
       - git:
@@ -129,14 +142,23 @@
             - "${{LTTNG_CI_BRANCH}}"
 
     builders:
-      - shell: !include-raw-verbatim: scripts/system-tests/generate-properties-master.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
-          property-file: 'properties.txt'
           block: true
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-verbatim: scripts/system-tests/run-kvm-tests.sh
+          predefined-parameters: |
+            BUILD_DEVICE=kvm
+            LTTNG_MODULES_COMMIT_ID=${{LTTNG_MODULES_COMMIT_ID}}
+            LTTNG_MODULES_REPO=${{LTTNG_MODULES_REPO}}
+            KERNEL_COMMIT_ID=${{KERNEL_COMMIT_ID}}
+            KERNEL_REPO=${{KERNEL_REPO}}
+            BUILD_DEVICE=kvm
+            LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
+            LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
+            S3_HOST=${{S3_HOST}}
+            S3_BUCKET=${{S3_BUCKET}}
+            S3_BASE_DIR=${{S3_BASE_DIR}}
+            S3_HTTP_BUCKET_URL=${{S3_HTTP_BUCKET_URL}}
+      - shell: !include-raw-verbatim: scripts/system-tests/run-lava-tests.sh
 
     publishers:
       - workspace-cleanup
@@ -187,19 +209,13 @@
       - ansicolor
       - credentials-binding:
           - text:
-              credential-id: jenkins_lava_key
-              variable: LAVA_JENKINS_TOKEN
-          - text:
               credential-id: jenkins_lava2_key
               variable: LAVA2_JENKINS_TOKEN
       - inject:
           properties-content: |
             BUILD_DEVICE=baremetal
             LTTNG_VERSION={lttngversion}
-            LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
-            LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
-            LAVA_HOST=${{LAVA_HOST}}
-            LAVA_PROTO=${{LAVA_PROTO}}
+
     scm:
       - git:
           url: "${{LTTNG_CI_REPO}}"
@@ -208,14 +224,23 @@
             - "${{LTTNG_CI_BRANCH}}"
 
     builders:
-      - shell: !include-raw-verbatim: scripts/system-tests/generate-properties-master.sh
       - trigger-builds:
         - project: "build_kernel_PARAM"
-          property-file: 'properties.txt'
           block: true
-      - inject:
-          properties-file: properties.txt
-      - shell: !include-raw-verbatim: scripts/system-tests/run-baremetal-tests.sh
+          predefined-parameters: |
+            BUILD_DEVICE=baremetal
+            LTTNG_MODULES_COMMIT_ID=${{LTTNG_MODULES_COMMIT_ID}}
+            LTTNG_MODULES_REPO=${{LTTNG_MODULES_REPO}}
+            KERNEL_COMMIT_ID=${{KERNEL_COMMIT_ID}}
+            KERNEL_REPO=${{KERNEL_REPO}}
+            BUILD_DEVICE=baremetal
+            LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
+            LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
+            S3_HOST=${{S3_HOST}}
+            S3_BUCKET=${{S3_BUCKET}}
+            S3_BASE_DIR=${{S3_BASE_DIR}}
+            S3_HTTP_BUCKET_URL=${{S3_HTTP_BUCKET_URL}}
+      - shell: !include-raw-verbatim: scripts/system-tests/run-lava-tests.sh
 
     publishers:
       - workspace-cleanup
@@ -239,23 +264,11 @@
           name: 'KERNEL_COMMIT_ID'
           description: 'The kernel commit to build.'
       - string:
-          name: 'KGITREPO'
+          name: 'KERNEL_REPO'
           description: 'The kernel git repo to fetch from'
       - string:
           name: 'BUILD_DEVICE'
           description: 'The target device. (kvm or baremetal)'
-      - string:
-          name: 'S3_STORAGE_KERNEL_FOLDER'
-          description: 'Path to store the Kernel image'
-      - string:
-          name: 'S3_STORAGE_KERNEL_IMAGE'
-          description: 'Path to store the Kernel IMAGE'
-      - string:
-          name: 'S3_STORAGE_LINUX_MODULES'
-          description: 'Path to store the Kernel Modules'
-      - string:
-          name: 'S3_STORAGE_LTTNG_MODULES'
-          description: 'Path to store the LTTng Modules'
       - string:
           name: 'LTTNG_CI_REPO'
           default: 'https://github.com/lttng/lttng-ci.git'
@@ -264,6 +277,19 @@
           name: 'LTTNG_CI_BRANCH'
           default: 'master'
           description: 'The branch of the CI repository to clone for job scripts'
+      - string:
+          name: 'S3_HOST'
+          description: 'Host for the s3 object storage'
+      - string:
+          name: 'S3_BUCKET'
+          description: 'Bucket for the s3 object storage'
+      - string:
+          name: 'S3_BASE_DIR'
+          description: 'Base directory for the s3 object storage'
+      - string:
+          name: 'S3_HTTP_BUCKET_URL'
+          description: 'Base url to access the s3 bucket over unauthenticated HTTP'
+          default: 'https://obj-lava.internal.efficios.com'
 
     properties:
       - build-discarder:
@@ -276,8 +302,8 @@
       - credentials-binding:
           - username-password-separated:
               credential-id: s3_obj_lava_key
-              username: S3_OBJ_LAVA_ACCESS
-              password: S3_OBJ_LAVA_SECRET
+              username: S3_ACCESS_KEY
+              password: S3_SECRET_KEY
 
     scm:
       - git:

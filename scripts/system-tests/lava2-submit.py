@@ -1,18 +1,6 @@
 #!/usr/bin/python3
-# Copyright (C) 2016 - Francis Deslauriers <francis.deslauriers@efficios.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# SPDX-FileCopyrightText: 2016 Francis Deslauriers <francis.deslauriers@efficios.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 import argparse
 import json
@@ -28,15 +16,14 @@ from urllib.request import urlretrieve
 import yaml
 from jinja2 import Environment, FileSystemLoader
 
-USERNAME = "lava-jenkins"
-HOSTNAME = os.environ.get("LAVA_HOST", "lava-master-03.internal.efficios.com")
-PROTO = os.environ.get("LAVA_PROTO", "https")
-OBJSTORE_URL = "https://obj.internal.efficios.com/lava/results/"
+LAVA_USERNAME = os.environ.get("LAVA_USERNAME")
+LAVA_HOST = os.environ.get("LAVA_URL")
+LAVA_PROTO = os.environ.get("LAVA_PROTO")
 
 
 def parse_stable_version(stable_version_string):
     # Get the major and minor version numbers from the lttng version string.
-    version_match = re.search("stable-(\d).(\d\d)", stable_version_string)
+    version_match = re.search(r"stable-(\d).(\d\d)", stable_version_string)
 
     if version_match is not None:
         major_version = int(version_match.group(1))
@@ -93,7 +80,7 @@ def check_job_all_test_cases_state_count(server, job):
         if testcase["result"] != "pass":
             print(
                 "\tFAILED {}\n\t\t See {}://{}{}".format(
-                    testcase["name"], PROTO, HOSTNAME, testcase["url"]
+                    testcase["name"], LAVA_PROTO, LAVA_HOST, testcase["url"]
                 )
             )
             failed_tests += 1
@@ -297,7 +284,7 @@ def main():
         return 0
 
     server = xmlrpc.client.ServerProxy(
-        "%s://%s:%s@%s/RPC2" % (PROTO, USERNAME, lava_api_key, HOSTNAME)
+        "%s://%s:%s@%s/RPC2" % (LAVA_PROTO, LAVA_USERNAME, lava_api_key, LAVA_HOST)
     )
 
     for attempt in range(1, send_retry_limit + 1):
@@ -323,7 +310,7 @@ def main():
         return -1
 
     print("Lava jobid:{}".format(jobid))
-    print("Lava job URL: {}://{}/scheduler/job/{}".format(PROTO, HOSTNAME, jobid))
+    print("Lava job URL: {}://{}/scheduler/job/{}".format(LAVA_PROTO, LAVA_HOST, jobid))
 
     # Check the status of the job every 30 seconds
     jobstatus = server.scheduler.job_state(jobid)["job_state"]
