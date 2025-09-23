@@ -73,8 +73,18 @@ OUTPUT_FILE="${OUTPUT_DIR}/linkchecker-out.csv"
 # linkchecker drops privileges to 'nobody' when run as root
 chown nobody "${OUTPUT_DIR}"
 
+LINKCHECKER_ARGS=(
+    '-q' '-F' "csv/utf-8/${OUTPUT_FILE}"
+    http://localhost:10000/
+)
+if test -f .linkcheckerrc ; then
+    LINKCHECKER_ARGS+=(
+        '-f' '.linkcheckerrc'
+    )
+fi
+
 # @Note: Only internal links are checked by default
-if ! linkchecker -q -F "csv/utf-8/${OUTPUT_FILE}" http://localhost:10000/ ; then
+if ! linkchecker "${LINKCHECKER_ARGS[@]}" ; then
     echo "Linkchecker failed or found broken links"
     cat "${OUTPUT_FILE}"
     kill "${SERVER_PID}"
