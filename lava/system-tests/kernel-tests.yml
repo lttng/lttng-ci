@@ -7,7 +7,7 @@ params:
     LTTNG_VERSION_STRING: "invalid_version_string"
 run:
         steps:
-                - git clone "${CI_REPO}" --branch="${CI_BRANCH}" ci
+                - git clone --quiet "${CI_REPO}" --branch="${CI_BRANCH}" ci
                 - export TMPDIR="/tmp"
                 - mkdir -p /tmp/coredump
                 - echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern

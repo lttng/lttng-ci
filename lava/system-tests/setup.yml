@@ -21,7 +21,7 @@ run:
     - source /root/python-venv/bin/activate
     - pip3 install vlttng
     - hash -r
-    - git clone "${CI_REPO}" --branch="${CI_BRANCH}" ci
+    - git clone --quiet "${CI_REPO}" --branch="${CI_BRANCH}" ci
     - mkdir -p /root/.ssh
     - chmod 700 /root/.ssh
     - cp lava/system-tests/authorized_keys /root/.ssh/authorized_keys
