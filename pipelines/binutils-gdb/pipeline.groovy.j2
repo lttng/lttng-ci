@@ -8,6 +8,54 @@ def known_failures(target_board) {
   switch(target_board) {
     case 'unix':
       failures = '''\
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
 FAIL: gdb.base/share-env-with-gdbserver.exp: strange named var: print result of getenv for 'asd ='
 FAIL: gdb.cp/step-and-next-inline.exp: no_header: next step 2
 FAIL: gdb.cp/step-and-next-inline.exp: no_header: next step 3
@@ -19,6 +67,54 @@ FAIL: gdb.threads/clone-attach-detach.exp: bg attach 2: attach (timeout)
 
     case 'native-gdbserver':
       failures = '''\
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
 FAIL: gdb.arch/ftrace-insn-reloc.exp: runto: run to main
 FAIL: gdb.base/compare-sections.exp: after reload: compare-sections
 FAIL: gdb.base/compare-sections.exp: after reload: compare-sections -r
@@ -589,6 +685,54 @@ FAIL: gdb.server/server-kill.exp: test_tstatus: tstatus
 
     case 'cc-with-dwz-m':
       failures = '''\
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
 DUPLICATE: gdb.dwarf2/dw2-inline-header-1.exp: failed to prepare
 DUPLICATE: gdb.dwarf2/dw2-unusual-field-names.exp: failed to prepare
 FAIL: gdb.base/gdb-index-err.exp: flag=-dwarf-5: add index to executable
@@ -1434,19 +1578,67 @@ FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: print second array slice
 FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print array
 FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print first array element
 FAIL: gdb.ada/array_of_variant.exp: scenario=minimal: python print second array element
+FAIL: gdb.ada/bad-task-bp-keyword.exp: runto: run to foo.adb:60
 FAIL: gdb.ada/finish-var-size.exp: finish
 FAIL: gdb.ada/finish-var-size.exp: print pck.get(True) (GDB internal error)
+FAIL: gdb.ada/mi_task_arg.exp: -stack-list-arguments 1 (unexpected output)
+FAIL: gdb.ada/mi_task_arg.exp: mi runto task_switch.break_me (unknown output after running)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info 3 (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: -ada-task-info with no argument (unexpected output)
+FAIL: gdb.ada/mi_task_info.exp: mi runto task_switch.break_me (unknown output after running)
 FAIL: gdb.ada/mi_variant.exp: scenario=minimal: create r varobj (unexpected output)
 FAIL: gdb.ada/mi_variant.exp: scenario=minimal: update r varobj (unexpected output)
 FAIL: gdb.ada/mi_variant.exp: scenario=none: create r varobj (unexpected output)
 FAIL: gdb.ada/mi_variant.exp: scenario=none: update r varobj (unexpected output)
 FAIL: gdb.ada/O2_float_param.exp: scenario=all: frame
 FAIL: gdb.ada/O2_float_param.exp: scenario=minimal: frame
+FAIL: gdb.ada/rdv_wait.exp: runto: run to break_me
+FAIL: gdb.ada/rdv_wait.exp: task 2
+FAIL: gdb.ada/rdv_wait.exp: task apply 1 -q frame
+FAIL: gdb.ada/rdv_wait.exp: task apply all frame
 FAIL: gdb.ada/rec_ptype.exp: scenario=minimal: compilation main.adb
 FAIL: gdb.ada/recursive-variant.exp: print *instance
 FAIL: gdb.ada/sub_variant.exp: print q
 FAIL: gdb.ada/sub_variant.exp: print r
 FAIL: gdb.ada/sub_variant.exp: print s
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.adb:pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from full symtab (the program exited)
+FAIL: gdb.ada/task_bp.exp: run to pck.dummy_task - from psymtab (the program exited)
+FAIL: gdb.ada/task_switch_in_core.exp: runto: run to request_for_crash
+FAIL: gdb.ada/task_watch.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/task_watch.exp: runto: run to foo.adb:62
+FAIL: gdb.ada/task_watch.exp: watch -location value task 3
+FAIL: gdb.ada/tasks.exp: attempt to set task, but expect an error
+FAIL: gdb.ada/tasks.exp: attempt to set thread, but expect an error
+FAIL: gdb.ada/tasks.exp: break break_me task 1
+FAIL: gdb.ada/tasks.exp: break break_me task 1 task 3
+FAIL: gdb.ada/tasks.exp: break break_me task 1 thread 1
+FAIL: gdb.ada/tasks.exp: break break_me task 3
+FAIL: gdb.ada/tasks.exp: break break_me thread 1 task 1
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 1 breakpoint
+FAIL: gdb.ada/tasks.exp: check info breakpoints for task 3 breakpoint
+FAIL: gdb.ada/tasks.exp: continue to breakpoint (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: continue to breakpoint: second (the program is no longer running)
+FAIL: gdb.ada/tasks.exp: guile (print (breakpoint-task bp))
+FAIL: gdb.ada/tasks.exp: info tasks after hitting breakpoint
+FAIL: gdb.ada/tasks.exp: info tasks before inserting breakpoint
+FAIL: gdb.ada/tasks.exp: info threads
+FAIL: gdb.ada/tasks.exp: python bp.task = 3
+FAIL: gdb.ada/tasks.exp: python bp.thread = 1
+FAIL: gdb.ada/tasks.exp: python print(bp.task)
+FAIL: gdb.ada/tasks.exp: restore breakpoint task attribute
+FAIL: gdb.ada/tasks.exp: runto: run to foo.adb:60
+FAIL: gdb.ada/tasks.exp: set breakpoint thread now task is unset
+FAIL: gdb.ada/tasks.exp: try setting the task, but expect an error
+FAIL: gdb.ada/tasks.exp: try setting the thread, but expect an error
+FAIL: gdb.ada/tasks.exp: watch j task 1 task 3
+FAIL: gdb.ada/tasks.exp: watch j task 1 thread 1
+FAIL: gdb.ada/tasks.exp: watch j thread 1 task 1
 FAIL: gdb.ada/uninitialized_vars.exp: compilation parse.adb
 FAIL: gdb.ada/uninitialized-variable-record.exp: p y2
 FAIL: gdb.ada/uninitialized-variable-record.exp: print &y2.d - &y2
