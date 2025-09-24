@@ -25,19 +25,19 @@
           description: 'Linux kernel git repo to checkout the kernel id'
       - string:
           name: 'LTTNG_TOOLS_REPO'
-          default: 'https://github.com/lttng/lttng-tools.git'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-tools.git'
           description: 'LTTng-Tools git repo to checkout the tools id'
       - string:
           name: 'LTTNG_MODULES_REPO'
-          default: 'https://github.com/lttng/lttng-modules.git'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
           description: 'LTTng-Modules git repo to checkout the Modules id'
       - string:
           name: 'LTTNG_UST_REPO'
-          default: 'https://github.com/lttng/lttng-ust.git'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-ust.git'
           description: 'LTTng-UST git repo to checkout the UST id'
       - string:
           name: 'ROOTFS_URL'
-          default: 'https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_bookworm_2024-01-15.tar.gz'
+          default: 'https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_trixie_2025-09-25.tar.xz'
           description: 'The URL at which the system root FS can be downloaded'
       - string:
           name: 'LTTNG_CI_REPO'
@@ -129,6 +129,10 @@
           - text:
               credential-id: jenkins_lava2_key
               variable: LAVA2_JENKINS_TOKEN
+          - username-password-separated:
+              credential-id: s3_obj_lava_key
+              username: S3_ACCESS_KEY
+              password: S3_SECRET_KEY
       - inject:
           properties-content: |
             BUILD_DEVICE=kvm
@@ -211,6 +215,10 @@
           - text:
               credential-id: jenkins_lava2_key
               variable: LAVA2_JENKINS_TOKEN
+          - username-password-separated:
+              credential-id: s3_obj_lava_key
+              username: S3_ACCESS_KEY
+              password: S3_SECRET_KEY
       - inject:
           properties-content: |
             BUILD_DEVICE=baremetal

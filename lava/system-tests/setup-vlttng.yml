@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2021 Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+# SPDX-FileCopyrightText: 2025 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+metadata:
+    format: Lava-Test Test Definition 1.0
+    name: setup-vlttng
+    description: "Configure virtualenv for vlttng"
+    os:
+      - debian
+    devices:
+      - x86
+      - kvm
+
+run:
+  steps:
+    - lava/system-tests/setup-vlttng.sh || lava-test-raise "setup-vlttng"

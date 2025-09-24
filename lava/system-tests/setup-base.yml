@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2021 Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+# SPDX-FileCopyrightText: 2025 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+metadata:
+    format: Lava-Test Test Definition 1.0
+    name: setup-base
+    description: "Basic environment setup for x86 board"
+    os:
+      - debian
+    devices:
+      - x86
+
+run:
+  steps:
+    - lava/system-tests/setup-base.sh || lava-test-raise "setup-base"

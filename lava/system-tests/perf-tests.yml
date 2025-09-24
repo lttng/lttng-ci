@@ -1,22 +1,12 @@
+# SPDX-FileCopyrightText: 2021 Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+# SPDX-FileCopyrightText: 2025 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 metadata:
-        format: Lava-Test Test Definition 1.0
-        name: lttng-perf-tests
-        description: "Run perf regression test suite"
-params:
-    JENKINS_BUILD_ID: "invalid_jenkins_build_id"
-    LTTNG_VERSION_STRING: "invalid_version_string"
+  format: Lava-Test Test Definition 1.0
+  name: lttng-perf-tests
+  description: "Run perf regression test suite"
+
 run:
-        steps:
-                - git clone --quiet "${CI_REPO}" --branch="${CI_BRANCH}" ci
-                - export TMPDIR="/tmp"
-                - mkdir -p /tmp/coredump
-                - echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
-                - ulimit -c unlimited
-                - source /root/python-venv/bin/activate
-                - source /root/lttngvenv/activate
-                - pushd /root/lttngvenv/src/lttng-tools
-                - lava-test-case build-test-suite --shell "make"
-                - cd tests
-                #Need to check if the file is present for branches where the testcase was not backported
-                - lava-test-case run-tests --shell "if [ -e perf_regression ]; then prove --nocolor --verbose --merge --exec '' - < perf_regression; else echo 'perf_regression not found'; fi"
-                - popd
+  steps:
+    - lava/system-tests/perf-tests.sh || lava-test-raise "perf-tests"

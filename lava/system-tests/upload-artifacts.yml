@@ -1,11 +1,12 @@
+# SPDX-FileCopyrightText: 2021 Jonathan Rajotte <jonathan.rajotte-julien@efficios.com>
+# SPDX-FileCopyrightText: 2025 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 metadata:
   format: Lava-Test Test Definition 1.0
-  name: lttng-upload-artifacts
+  name: upload-artifacts
   description: "Upload build artifacts"
-params:
-  JENKINS_BUILD_ID: "invalid_jenkins_build_id"
+
 run:
   steps:
-    - git clone --quiet "${CI_REPO}" --branch="${CI_BRANCH}" ci
-    - tar czf coredump.tar.gz /tmp/coredump
-    - ./ci/lava/upload_artifact.sh coredump.tar.gz "results/${JENKINS_BUILD_ID}/${TESTRUN_ID}-coredump.tar.gz"
+    - lava/system-tests/upload-artifacts.sh || lava-test-raise "upload-artifacts"

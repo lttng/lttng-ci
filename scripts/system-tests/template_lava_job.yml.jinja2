@@ -1,0 +1,125 @@
+# Lava system-tests job template
+
+device_type: x86
+job_name: {{ job_name }}
+
+secrets:
+  S3_ACCESS_KEY: {{ s3_access_key }}
+  S3_SECRET_KEY: {{ s3_secret_key }}
+
+timeouts:
+  job:
+    hours: 5
+  action:
+    hours: 5
+  connection:
+    minutes: 4
+  connections:
+    lava-test-shell:
+      minutes: 4
+
+priority: medium
+visibility: public
+
+context:
+  extra_kernel_args: cpuidle.off=1
+  extra_nfsroot_args: ",nfsvers=3 nfsrootdebug TERM=dumb"
+
+environment:
+  SHELL: "/bin/bash"
+  TERM: "dumb"
+  NO_COLOR: "1"
+  CI_REPO: "{{ ci_repo }}"
+  CI_BRANCH: "{{ ci_branch }}"
+  VLTTNG_OPTS: "{{ vlttng_opts }}"
+  LTTNG_VERSION_STRING: "{{ lttng_version_string }}"
+  JENKINS_BUILD_ID: "{{ jenkins_build_id }}"
+  S3_HOST: "{{ s3_host }}"
+  S3_BUCKET: "{{s3_bucket }}"
+  S3_BASE_DIR: "{{s3_base_dir }}"
+{% if device_type == DeviceType.x86 %}
+  TEMP_DEVICE: "/dev/sda1"
+{% elif device_type == DeviceType.kvm %}
+  TEMP_DEVICE: "/dev/sda"
+{% endif %}
+
+tags:
+{% if device_type == DeviceType.kvm %}
+  - qemu
+{% endif %}
+{% if device_type == DeviceType.x86 %}
+  - dev-sda1
+{% endif %}
+
+metadata:
+  jenkins_jobname: {{ job_name }}
+
+actions:
+    - deploy:
+        timeout:
+          minutes: 10
+        to: tftp
+        kernel:
+          url: {{ kernel_url }}
+          type: zimage
+        modules:
+          url: {{ lttng_modules_url }}
+          compression: xz
+        nfsrootfs:
+          url: {{ nfsrootfs_url }}
+          compression: xz
+
+    - boot:
+        timeout:
+          minutes: 10
+        method: ipxe
+        commands: nfs
+        auto_login:
+          login_prompt: 'login:'
+          username: root
+          password_prompt: 'Password:'
+          password: root
+        prompts:
+          - 'root@linaro-server:~#'
+
+    - test:
+        definitions:
+            # Smoke tests #
+            - repository: {{ ci_repo }}
+              from: git
+              branch: {{ ci_branch }}
+              path: lava/system-tests/smoke-tests.yml
+              name: smoke-tests
+
+            # Base setup #
+            - repository: {{ ci_repo }}
+              from: git
+              branch: {{ ci_branch }}
+              path: lava/system-tests/setup-base.yml
+              name: setup-base
+
+            # vlttng setup #
+            - repository: {{ ci_repo }}
+              from: git
+              branch: {{ ci_branch }}
+              path: lava/system-tests/setup-vlttng.yml
+              name: setup-vlttng
+
+            # Run the tests
+            - repository: {{ ci_repo }}
+              from: git
+              branch: {{ ci_branch }}
+{% if test_type == TestType.baremetal_tests %}
+              path: lava/system-tests/perf-tests.yml
+              name: perf-tests
+{% elif test_type == TestType.kvm_tests %}
+              path: lava/system-tests/kernel-tests.yml
+              name: kernel-tests
+{% endif %}
+
+            # Last step to upload the test artifacts to object storage
+            - repository: {{ ci_repo }}
+              from: git
+              branch: {{ ci_branch }}
+              path: lava/system-tests/upload-artifacts.yml
+              name: upload-artifacts

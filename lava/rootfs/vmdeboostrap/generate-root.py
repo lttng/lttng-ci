@@ -24,7 +24,7 @@ from datetime import datetime
 
 
 def compress(filename):
-    command = ["tar", "-c", "-z", "-f", filename + ".tar.gz", "-C", filename, "./"]
+    command = ["tar", "-c", "-J", "-f", filename + ".tar.xz", "-C", filename, "./"]
     subprocess.run(command, check=True)
     shutil.rmtree(filename)
 
@@ -50,6 +50,7 @@ packages = [
     "libelf-dev",
     "libffi-dev",
     "libglib2.0-dev",
+    "libkmod-dev",
     "libmount-dev",
     "libnuma-dev",
     "libpfm4-dev",
@@ -58,7 +59,6 @@ packages = [
     "libtool",
     "libxml2",
     "libxml2-dev",
-    "locales",
     "netcat-traditional",
     "openssh-server",
     "psmisc",
@@ -81,13 +81,14 @@ packages = [
     "uuid-dev",
     "vim",
     "wget",
+    "xz-utils",
 ]
 
 
 def main():
     parser = argparse.ArgumentParser(description="Generate lava lttng rootfs")
     parser.add_argument("--arch", default="amd64")
-    parser.add_argument("--distribution", default="bookworm")
+    parser.add_argument("--distribution", default="trixie")
     parser.add_argument("--mirror", default="https://deb.debian.org/debian")
     parser.add_argument("--component", default="main")
     args = parser.parse_args()
@@ -111,7 +112,30 @@ def main():
     ]
     completed_command = subprocess.run(command, check=True)
 
-    # packages
+    # Install locales
+    command = [
+        "chroot",
+        name,
+        "apt-get",
+        "install",
+        "-y",
+        "locales",
+    ]
+    completed_command = subprocess.run(command, check=True)
+
+    # Configure the locales
+    with open(os.path.join(name, "etc", "locale.gen"), "w", encoding="utf-8") as f:
+        f.write("en_US.UTF-8 UTF-8\nen_CA.UTF-8 UTF-8\n")
+
+    # Generate locales
+    command = [
+        "chroot",
+        name,
+        "locale-gen",
+    ]
+    completed_command = subprocess.run(command, check=True)
+
+    # Install other packages
     command = [
         "chroot",
         name,
@@ -121,11 +145,20 @@ def main():
     ] + packages
     completed_command = subprocess.run(command, check=True)
 
-    # hostname
+    # Clean the package cache
+    command = [
+        "chroot",
+        name,
+        "apt",
+        "clean",
+    ]
+    completed_command = subprocess.run(command, check=True)
+
+    # Set the hostname
     with open(os.path.join(name, "etc", "hostname"), "w", encoding="utf-8") as f:
         f.write(hostname + "\n")
 
-    # user
+    # Create the linaro user
     command = [
         "chroot",
         name,

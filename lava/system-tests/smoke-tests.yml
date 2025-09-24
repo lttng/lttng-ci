@@ -1,0 +1,15 @@
+metadata:
+  format: Lava-Test Test Definition 1.0
+  name: smoke-tests-basic
+  description: "Basic system test command for POSIX images. The test runs basic commands
+                like pwd, uname, vmstat, ifconfig, lscpu, lsusb and lsb_release."
+
+run:
+  steps:
+    - lava-test-case linux-posix-pwd --shell pwd
+    - lava-test-case linux-posix-uname --shell uname -a
+    - lava-test-case linux-posix-vmstat --shell vmstat
+    - lava-test-case linux-posix-ifconfig --shell ip a
+    - lava-test-case linux-posix-lscpu --shell lscpu
+    - lava-test-case linux-posix-ls --shell ls -alh
+    - lava-test-case linux-posix-ps --shell ps fauxwww

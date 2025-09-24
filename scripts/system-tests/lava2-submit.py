@@ -17,9 +17,15 @@ import yaml
 from jinja2 import Environment, FileSystemLoader
 
 LAVA_USERNAME = os.environ.get("LAVA_USERNAME")
-LAVA_HOST = os.environ.get("LAVA_URL")
+LAVA_HOST = os.environ.get("LAVA_HOST")
 LAVA_PROTO = os.environ.get("LAVA_PROTO")
 
+S3_ACCESS_KEY = os.environ.get("S3_ACCESS_KEY")
+S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY")
+
+S3_HOST = os.environ.get("S3_HOST")
+S3_BUCKET = os.environ.get("S3_BUCKET")
+S3_BASE_DIR = os.environ.get("S3_BASE_DIR")
 
 def parse_stable_version(stable_version_string):
     # Get the major and minor version numbers from the lttng version string.
@@ -111,7 +117,7 @@ def print_test_output(server, job):
             print("{} {}".format(line["dt"], line["msg"]))
 
 
-def get_vlttng_cmd(
+def get_vlttng_opts(
     lttng_version,
     lttng_tools_url,
     lttng_tools_commit,
@@ -119,16 +125,16 @@ def get_vlttng_cmd(
     lttng_ust_commit=None,
 ):
     """
-    Return vlttng cmd to be used in the job template for setup.
+    Return vlttng command options to be used in the job template for setup.
     """
 
     major_version, minor_version = parse_stable_version(lttng_version)
 
     urcu_profile = ""
     if lttng_version == "master" or (major_version >= 2 and minor_version >= 11):
-        urcu_profile = "urcu-master"
+        urcu_profile = " --profile urcu-master"
     else:
-        urcu_profile = "urcu-stable-0.12"
+        urcu_profile = " --profile urcu-stable-0.12"
 
     # Starting with 2.14, babeltrace2 is the reader for testing.
     if lttng_version == "master" or (major_version >= 2 and minor_version >= 14):
@@ -142,39 +148,36 @@ def get_vlttng_cmd(
         )
         babeltrace_overrides = " --override projects.babeltrace.build-env.PYTHON=python3 --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config"
 
-    vlttng_cmd = (
-        "vlttng --jobs=$(nproc) --profile "
-        + urcu_profile
+    vlttng_opts = (
+        urcu_profile
         + babeltrace_profile
         + babeltrace_overrides
         + " --profile lttng-tools-master"
-        " --override projects.lttng-tools.source="
-        + lttng_tools_url
-        + " --override projects.lttng-tools.checkout="
-        + lttng_tools_commit
+        + " --override projects.lttng-tools.source=" + lttng_tools_url
+        + " --override projects.lttng-tools.checkout=" + lttng_tools_commit
         + " --profile lttng-tools-no-man-pages"
     )
 
+    # Current vlttng has defunct git urls for urcu and babeltrace
+    vlttng_opts += (
+        " --override projects.urcu.source=git://git-mirror.internal.efficios.com/lttng/userspace-rcu.git"
+        " --override projects.babeltrace2.source=git://git-mirror.internal.efficios.com/efficios/babeltrace.git"
+        )
+
     if lttng_ust_commit is not None:
-        vlttng_cmd += (
+        vlttng_opts += (
             " --profile lttng-ust-master "
-            " --override projects.lttng-ust.source="
-            + lttng_ust_url
-            + " --override projects.lttng-ust.checkout="
-            + lttng_ust_commit
+            " --override projects.lttng-ust.source=" + lttng_ust_url
+            + " --override projects.lttng-ust.checkout=" + lttng_ust_commit
             + " --profile lttng-ust-no-man-pages"
         )
 
     if lttng_version == "master" or (major_version >= 2 and minor_version >= 11):
-        vlttng_cmd += (
+        vlttng_opts += (
             " --override projects.lttng-tools.configure+=--enable-test-sdt-uprobe"
         )
 
-    vlttng_path = "/tmp/virtenv"
-
-    vlttng_cmd += " " + vlttng_path
-
-    return vlttng_cmd
+    return vlttng_opts
 
 
 def main():
@@ -196,7 +199,7 @@ def main():
         "-r",
         "--rootfs-url",
         required=False,
-        default="https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_bookworm_2024-01-15.tar.gz",
+        default="https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_trixie_2025-09-25.tar.xz",
     )
     parser.add_argument(
         "--ci-repo", required=False, default="https://github.com/lttng/lttng-ci.git"
@@ -224,7 +227,7 @@ def main():
 
     jinja_loader = FileSystemLoader(os.path.dirname(os.path.realpath(__file__)))
     jinja_env = Environment(loader=jinja_loader, trim_blocks=True, lstrip_blocks=True)
-    jinja_template = jinja_env.get_template("template_lava_job.jinja2")
+    jinja_template = jinja_env.get_template("template_lava_job.yml.jinja2")
 
     test_type = TestType.values[args.type]
 
@@ -233,9 +236,7 @@ def main():
     else:
         device_type = DeviceType.kvm
 
-    vlttng_path = "/tmp/virtenv"
-
-    vlttng_cmd = get_vlttng_cmd(
+    vlttng_opts = get_vlttng_opts(
         args.lttng_version,
         args.tools_url,
         args.tools_commit,
@@ -260,8 +261,7 @@ def main():
     context["random_seed"] = random.randint(0, 1000000)
     context["device_type"] = device_type
 
-    context["vlttng_cmd"] = vlttng_cmd
-    context["vlttng_path"] = vlttng_path
+    context["vlttng_opts"] = vlttng_opts
     context["lttng_version_string"] = lttng_version_string
 
     context["kernel_url"] = args.kernel
@@ -273,6 +273,13 @@ def main():
 
     context["ci_repo"] = args.ci_repo
     context["ci_branch"] = args.ci_branch
+
+    context["s3_access_key"] = S3_ACCESS_KEY
+    context["s3_secret_key"] = S3_SECRET_KEY
+
+    context["s3_host"] = S3_HOST
+    context["s3_bucket"] = S3_BUCKET
+    context["s3_base_dir"] = S3_BASE_DIR
 
     render = jinja_template.render(context)
 

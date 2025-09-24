@@ -115,11 +115,11 @@ OUTPUTDIR="$WORKSPACE/out"
 MODULES_INSTALL_DIR="$OUTPUTDIR/modules"
 BUILD_NAME="$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID"
 
-S3_KERNEL_MODULE_SYMVERS=$S3_BUCKET/$S3_BASE_DIR/kernel/symvers/$KERNEL_COMMIT_ID.$BUILD_DEVICE.symvers
-S3_KERNEL_CONFIG=$S3_BUCKET/$S3_BASE_DIR/kernel/config/$KERNEL_COMMIT_ID.$BUILD_DEVICE.config
+S3_KERNEL_MODULE_SYMVERS=$S3_BUCKET/$S3_BASE_DIR/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.symvers
+S3_KERNEL_CONFIG=$S3_BUCKET/$S3_BASE_DIR/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.config
 S3_KERNEL_IMAGE=$S3_BUCKET/$S3_BASE_DIR/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage
-S3_LINUX_MODULES=$S3_BUCKET/$S3_BASE_DIR/modules/linux/$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.gz
-S3_LTTNG_MODULES=$S3_BUCKET/$S3_BASE_DIR/modules/lttng/$BUILD_NAME.$BUILD_DEVICE.lttng.modules.tar.gz
+S3_LINUX_MODULES=$S3_BUCKET/$S3_BASE_DIR/modules/$KERNEL_COMMIT_ID.$BUILD_DEVICE.linux.modules.tar.xz
+S3_LTTNG_MODULES=$S3_BUCKET/$S3_BASE_DIR/modules/$BUILD_NAME.$BUILD_DEVICE.lttng.modules.tar.xz
 
 S3CMD_CONFIG="${WORKSPACE}/s3cfg"
 
@@ -138,6 +138,8 @@ secret_key = $S3_SECRET_KEY
 
 # Enable S3 v4 signature APIs
 signature_v2 = False" > "$S3CMD_CONFIG"
+
+print_header "Check for pre-built artifacts"
 
 if ! s3cmd -c "$S3CMD_CONFIG" info "s3://$S3_KERNEL_IMAGE"; then
   NEED_KERNEL_BUILD=1
@@ -193,13 +195,13 @@ if [ $NEED_KERNEL_BUILD -eq 1 ] ; then
     cp "$LINUX_GIT_DIR"/arch/x86/boot/bzImage "$OUTPUTDIR"/"$KERNEL_COMMIT_ID".bzImage
     cp "$LINUX_GIT_DIR"/.config "$OUTPUTDIR"/"$KERNEL_COMMIT_ID".config
 
-    tar -czf "$OUTPUTDIR/$KERNEL_COMMIT_ID.linux.modules.tar.gz" -C "$MODULES_INSTALL_DIR/" lib/
+    tar -cJf "$OUTPUTDIR/$KERNEL_COMMIT_ID.linux.modules.tar.xz" -C "$MODULES_INSTALL_DIR/" lib/
 
     print_header "Upload the kernel to object storage"
 
     s3cmd -c "$S3CMD_CONFIG" put "$OUTPUTDIR/$KERNEL_COMMIT_ID.bzImage" s3://"$S3_KERNEL_IMAGE"
     s3cmd -c "$S3CMD_CONFIG" put "$OUTPUTDIR/$KERNEL_COMMIT_ID.config" s3://"$S3_KERNEL_CONFIG"
-    s3cmd -c "$S3CMD_CONFIG" put "$OUTPUTDIR/$KERNEL_COMMIT_ID.linux.modules.tar.gz" s3://"$S3_LINUX_MODULES"
+    s3cmd -c "$S3CMD_CONFIG" put "$OUTPUTDIR/$KERNEL_COMMIT_ID.linux.modules.tar.xz" s3://"$S3_LINUX_MODULES"
     s3cmd -c "$S3CMD_CONFIG" put "$LINUX_GIT_DIR/Module.symvers" s3://"$S3_KERNEL_MODULE_SYMVERS"
 fi
 
@@ -223,12 +225,12 @@ if [ $NEED_MODULES_BUILD -eq 1 ] ; then
     # The resulting tarball will contain both lttng-modules and linux modules needed
     # for testing
     s3cmd -c "$S3CMD_CONFIG" get "s3://$S3_LINUX_MODULES"
-    tar -xvzf "$(basename "$S3_LINUX_MODULES")" -C "$MODULES_INSTALL_DIR"
+    tar -xvf "$(basename "$S3_LINUX_MODULES")" -C "$MODULES_INSTALL_DIR"
 
-    tar -czf "$OUTPUTDIR/$BUILD_NAME.lttng.modules.tar.gz" -C "$MODULES_INSTALL_DIR/" lib/
+    tar -cJf "$OUTPUTDIR/$BUILD_NAME.lttng.modules.tar.xz" -C "$MODULES_INSTALL_DIR/" lib/
 
     # Push the combined upstream kernel and lttng modules to object storage
-    s3cmd -c "$S3CMD_CONFIG" put "$OUTPUTDIR/$BUILD_NAME.lttng.modules.tar.gz" s3://"$S3_LTTNG_MODULES"
+    s3cmd -c "$S3CMD_CONFIG" put "$OUTPUTDIR/$BUILD_NAME.lttng.modules.tar.xz" s3://"$S3_LTTNG_MODULES"
 fi
 
 # Clean the temporary output dir
