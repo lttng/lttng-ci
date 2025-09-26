@@ -1329,6 +1329,9 @@
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_yoctobuild
           buildtype: yoctobuild
           platforms: !!python/tuple [yocto23-powerpc, yocto40-powerpc, yocto40-ppc64]
+          job_properties:
+            - name: LTTNG_TOOLS_PARALLEL_TESTS
+              value: 'no'
       - '{job_prefix}lttng-tools_{version}_{buildtype}': &job_lttng-tools_master_yoctobuild_extended
           buildtype: yoctobuild_extended
           babeltrace_buildtype: yoctobuild
