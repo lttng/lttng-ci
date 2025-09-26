@@ -1,0 +1,29 @@
+---
+common_node_packages:
+  - autoconf
+  - automake
+  - bison
+  - clang
+  - curl
+  - flex
+  - gcc
+  - gcc-c++
+  - gdb
+  - gettext
+  - git
+  - htop
+  - java-21-openjdk-devel
+  - java-21-openjdk-headless
+  - jq
+  - libtool
+  - lzop
+  - make
+  - openssh-server
+  - openssl-devel
+  - perl-Test-Harness
+  - psmisc
+  - python3-virtualenv
+  - rsync
+  - sudo
+  - tree
+  - vim
