@@ -1,19 +1,21 @@
 ---
 - name: Enable epel-release
   # This provides some extra packages, eg. htop, python3-virtualenv
-  dnf:
+  ansible.builtin.package:
     name: epel-release
 
-- name: Enable rocky devel repository
-  yum_repository:
+- name: Enable devel repository
+  ansible.builtin.yum_repository:
     name: devel
     description: "Rocky Linux $releasever - Devel"
     mirrorlist: "https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=Devel-$releasever"
     enabled: true
     gpgcheck: true
+    # Use existing file, to avoid deploying twice
+    file: rocky-devel
   when: ansible_distribution == 'Rocky'
 
-- name: Enable rocky powertools repository
+- name: Enable PowerTools repository
   # This provides developer orientated packages, eg. python3-sphinx
   when: ansible_distribution == 'Rocky' and ansible_distribution_major_version == '8'
   ansible.builtin.yum_repository:
@@ -23,8 +25,19 @@
     enabled: true
     gpgcheck: true
 
+- name: Enable CRB repository
+  when: ansible_distribution == 'Rocky' and ansible_distribution_major_version is version('9', '>=')
+  ansible.builtin.yum_repository:
+    name: crb
+    description: 'Rocky Linux $releasever - CRB'
+    mirrorlist: 'https://mirrors.rockylinux.org/mirrorlist?arch=$basearch&repo=CRB-$releasever$rltype'
+    enabled: true
+    gpgcheck: true
+    gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-10'
+    file: rocky
+
 - name: Ensure common packages are installed.
-  dnf:
+  ansible.builtin.package:
     name: "{{ common_packages }}"
     state: installed
     install_weak_deps: false
