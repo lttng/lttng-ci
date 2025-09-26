@@ -15,4 +15,5 @@
 # Install libs from the default package manager
 - ansible.builtin.package:
     name: "{{libs_i386_packages|default([])}}"
-  when: ansible_userspace_architecture|default('') == 'x86_64'
+  # RedHat 10+ has removed .i386 packages
+  when: ansible_userspace_architecture|default('') == 'x86_64' and ( ansible_os_family != 'RedHat' or (ansible_os_family == 'RedHat' and ansible_distribution_version is version('10', '<')))
