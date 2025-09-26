@@ -82,6 +82,11 @@ if [ "${IMAGE_TYPE}" == "vm" ] ; then
     VM_ARG=("--vm")
 fi
 
+INCUS_ARGS=(incus -q launch "${VM_ARG[@]}" -p default -p "${INCUS_INSTANCE_PROFILE}")
+if [[ "${OS}" == "rockylinux" ]] && [[ "${IMAGE_TYPE}" == "vm" ]]; then
+    INCUS_ARGS+=(-p vm-agent)
+fi
+
 set +e
 # Test
 # It's possible that concurrent image creation when running parallel jobs causes
@@ -92,9 +97,9 @@ set +e
 TRIES_MAX=3
 TRIES=0
 while [[ "${TRIES}" -lt "${TRIES_MAX}" ]] ; do
-    if ! INSTANCE_NAME=$(incus -q launch "${VM_ARG[@]}" -p default -p "${INCUS_INSTANCE_PROFILE}" "${SOURCE_IMAGE_NAME}/${IMAGE_TYPE}") ; then
+    if ! INSTANCE_NAME=$(${INCUS_ARGS[@]} "${SOURCE_IMAGE_NAME}/${IMAGE_TYPE}") ; then
         # Try from images
-        if ! INSTANCE_NAME=$(incus -q launch "${VM_ARG[@]}" -p default -p "${INCUS_INSTANCE_PROFILE}" images:"${SOURCE_IMAGE_NAME}") ; then
+        if ! INSTANCE_NAME=$(${INCUS_ARGS[@]} images:"${SOURCE_IMAGE_NAME}") ; then
             TRIES=$((TRIES + 1))
             echo "Failed to deployed ephemereal instance attempt ${TRIES}/${TRIES_MAX}"
             if [[ "${TRIES}" -lt  "${TRIES_MAX}" ]] ; then
@@ -139,61 +144,13 @@ if [[ "${VARIANT}" == "cloud" ]] ; then
     # package available.
     incus exec "${INSTANCE_NAME}" -- cloud-init status -w || true
 fi
-
-# Wait for instance to have an ip address (@TODO: is there a better approach?)
 sleep "${NETWORK_SLEEP}"
 
-# @TODO: Handle case when iputils2 is not installed
-INSTANCE_IP=''
-POTENTIAL_INTERFACES=(eth0 enp5s0)
-incus exec "${INSTANCE_NAME}" -- ip a
-set +e
-for interface in "${POTENTIAL_INTERFACES[@]}" ; do
-    if ! DEV_INFO="$(incus exec "${INSTANCE_NAME}" -- ip a show dev "${interface}")" ; then
-        continue
-    fi
-    INSTANCE_IP="$(echo "${DEV_INFO}" | grep -Eo 'inet [^ ]* ' | cut -d' ' -f2 | cut -d'/' -f1)"
-    if [[ "${INSTANCE_IP}" != "" ]] ; then
-        break
-    fi
-done
-set -e
-if [[ "${INSTANCE_IP}" == "" ]] ; then
-    fail 1 "Failed to determine instance IP address"
+if [[ "${OS}" == "rockylinux" ]] && [ "${RELEASE}" -le "8" ]; then
+    incus exec "${INSTANCE_NAME}" -- ip a
+    incus exec "${INSTANCE_NAME}" -- dnf install -y python3.12 python3.12-pip python3.12-setuptools python3-virtualenv
+    ANSIBLE_PYTHON_INTERPRETER=python3.12
 fi
-
-ssh-keyscan "${INSTANCE_IP}" >> ~/.ssh/known_hosts2
-#incus exec "${INSTANCE_NAME}" -- bash -c 'for i in /etc/ssh/ssh_host_*_key ; do ssh-keygen -l -f "$i" ; done' >> "${HOME}/.ssh/known_hosts"
-CLEANUP+=(
-    "rm -f ${HOME}/.ssh/known_hosts2"
-)
-cp "${SSH_PRIVATE_KEY}" ~/.ssh/id_rsa
-ssh-keygen -f ~/.ssh/id_rsa -y > ~/.ssh/id_rsa.pub
-CLEANUP+=(
-    "rm -f ${HOME}/.ssh/id_rsa.pub"
-    "rm -f ${HOME}/.ssh/id_rsa"
-)
-incus exec "ci:${INSTANCE_NAME}" -- mkdir -p /root/.ssh
-incus file push ~/.ssh/id_rsa.pub "ci:${INSTANCE_NAME}/root/.ssh/authorized_keys2"
-# Some distros, eg. Rocky Linux, don't enable the use of authorized_keys2
-# by default
-incus exec "ci:${INSTANCE_NAME}" -- bash -c 'if test -f /etc/redhat-release ; then sed -i "s#^AuthorizedKeysFile.*#AuthorizedKeysFile .ssh/authorized_keys .ssh/authorized_keys2#" /etc/ssh/sshd_config ; systemctl restart sshd ; fi'
-
-
-# Confirm working SSH connection
-if ! ssh "${INSTANCE_IP}" hostname ; then
-    fail 1 "Unable to reach ephemereal instance over SSH"
-fi
-
-# Run playbook
-cat > fake-inventory <<EOF
-[${PROFILE/-/_}]
-${INSTANCE_IP}
-EOF
-cat fake-inventory
-CLEANUP+=(
-    "rm -f $(pwd)/fake-inventory"
-)
 
 # There's a wide-array of potential targets and hosts, so try to find a version
 # of ansible that can be used. E.g., ansible as shipped with Debian bookworm won't
@@ -201,7 +158,8 @@ CLEANUP+=(
 #
 # Ref: https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html#ansible-core-support-matrix
 #
-TARGET_PYTHON_VERSION="$(incus exec "${INSTANCE_NAME}" -- python3 --version | cut -d' ' -f2 | cut -d'.' -f1,2)"
+ANSIBLE_PYTHON_INTERPRETER="${ANSIBLE_PYTHON_INTERPRETER:-python3}"
+TARGET_PYTHON_VERSION="$(incus exec "${INSTANCE_NAME}" -- ${ANSIBLE_PYTHON_INTERPRETER} --version | cut -d' ' -f2 | cut -d'.' -f1,2)"
 ANSIBLE_VERSION="$(ansible --version | head -n1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | cut -d'.' -f1,2)"
 case "${TARGET_PYTHON_VERSION}" in
     "3.13")
@@ -217,17 +175,27 @@ case "${TARGET_PYTHON_VERSION}" in
         fi
         ;;
 esac
-ansible-playbook --version
-ansible-galaxy install -r roles/requirements.yml
+LANG=C.UTF-8 ansible-playbook --version
+LANG=C.UTF-8 ansible-galaxy install -r roles/requirements.yml
 
-LANG=C ANSIBLE_STRATEGY=linear ansible-playbook site.yml \
+# Run playbook
+cat > fake-inventory <<EOF
+[${PROFILE/-/_}]
+${INSTANCE_NAME} ansible_connection=community.general.incus ansible_incus_remote=ci ansible_python_interpreter=${ANSIBLE_PYTHON_INTERPRETER}
+EOF
+cat fake-inventory
+CLEANUP+=(
+    "rm -f $(pwd)/fake-inventory"
+)
+
+LANG=C.UTF-8 ANSIBLE_STRATEGY=linear ansible-playbook site.yml \
     -e '{"lttng_modules_checkout_repo": false}' \
-    -l "${INSTANCE_IP}" -i fake-inventory
+    -l "${INSTANCE_NAME}" -i fake-inventory
 
 # Cleanup instance side
-LANG=C ANSIBLE_STRATEGY=linear ansible-playbook \
+LANG=C.UTF-8 ANSIBLE_STRATEGY=linear ansible-playbook \
        playbooks/post-imagebuild-clean.yml \
-       -l "${INSTANCE_IP}" -i fake-inventory
+       -l "${INSTANCE_NAME}" -i fake-inventory
 
 # Graceful shutdown
 incus stop "${INSTANCE_NAME}"
