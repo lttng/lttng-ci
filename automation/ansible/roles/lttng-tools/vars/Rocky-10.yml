@@ -1,0 +1,13 @@
+---
+lttng_tools_packages:
+  - asciidoc
+  - bash-completion
+  # lcov is available in epel 10.1+, but not epel 10
+  # when rocky 10.1 becomes available, this file can be removed.
+  # or,
+  # have to convince rocky to look at epel 10 ALL
+  # - lcov
+  - libxml2-devel
+  - popt-devel
+  - systemtap-sdt-devel
+  - xmlto
