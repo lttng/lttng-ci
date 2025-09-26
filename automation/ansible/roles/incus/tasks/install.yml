@@ -17,6 +17,7 @@
 - name: Install packages
   ansible.builtin.package:
     name:
+      - genisoimage  # used for agent:config vm disks
       - incus
       - incus-base
       - incus-extras
