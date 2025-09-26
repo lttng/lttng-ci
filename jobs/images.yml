@@ -11,7 +11,7 @@
       - string: &images_parameters_RELEASE
           name: 'RELEASE'
           description: 'OS release number or name'
-          default: 'bookworm'
+          default: 'trixie'
           required: true
       - choice: &images_parameters_ARCH
           name: 'ARCH'
@@ -203,7 +203,6 @@
       - armhf
       - arm64
     RELEASES:
-      - bullseye
       - bookworm
       - trixie
       - sid
@@ -240,7 +239,6 @@
           name: 'RELEASE_FILTER'
           choices:
             - all
-            - bullseye
             - bookworm
             - trixie
             - sid
