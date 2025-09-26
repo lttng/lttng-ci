@@ -14,9 +14,14 @@ c.removeAll({
         (params.RELEASE_FILTER != 'all' && it[0] != params.RELEASE_FILTER)
 })
 
-// Skip i386 Vms
+// Skip i386 and armhf VMs
 c.removeAll({
-    it[1] == 'i386' && it[2] == 'vm'
+  (it[1] == 'i386' || it[1] == 'armhf') && it[2] == 'vm'
+})
+
+// Remove i386 for Debian 10+
+c.removeAll({
+  OS == 'debian' && it[1] == 'i386' && it[0] in ['trixie', 'forky', 'sid']
 })
 
 def base_image_tasks = [:]
