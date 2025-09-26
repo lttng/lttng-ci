@@ -338,7 +338,6 @@
     ARCHES:
       - amd64
     RELEASES:
-      - focal
       - jammy
       - noble
     parameters:
@@ -359,7 +358,6 @@
           name: 'RELEASE_FILTER'
           choices:
             - 'all'
-            - 'focal'
             - 'jammy'
             - 'noble'
       - string:
