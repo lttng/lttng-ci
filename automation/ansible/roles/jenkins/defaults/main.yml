@@ -38,6 +38,7 @@ jenkins_plugins:
   - matrix-project
   - metrics
   - monitoring
+  - nodelabelparameter
   - parameterized-trigger
   - permissive-script-security
   - pipeline-agent-build-history
