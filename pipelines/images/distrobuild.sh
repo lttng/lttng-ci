@@ -56,6 +56,10 @@ INSTANCE_START_TIMEOUT="${INSTANCE_START_TIMEOUT:-120}"
 VM_ARG=()
 
 # Install incus-client
+if [[ "$(uname -m)" == "aarch64" ]] && [[ "$(lsb_release -s -r)" == 12 ]]; then
+    echo 'deb http://deb.debian.org/debian/ bookworm-backports main' > /etc/apt/sources.list.d/bookwork-backports.list
+fi
+
 apt-get update
 apt-get install -y incus-client
 mkdir -p ~/.config/incus
@@ -81,7 +85,17 @@ fi
 
 # Get go
 apt-get install -y wget
-wget -q "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O - | tar -C /usr/local -xzf -
+GO_ARCH='amd64'
+case "$(uname -m)" in
+    x86_64)
+        GO_ARCH='amd64'
+        ;;
+    aarch64)
+        GO_ARCH='arm64'
+        ;;
+esac
+
+wget -q "https://go.dev/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" -O - | tar -C /usr/local -xzf -
 export PATH="${PATH}:/usr/local/go/bin"
 
 # Install distrobuilder

@@ -35,8 +35,12 @@ for(int index = 0; index < c.size(); index++) {
   def image_name = "${OS}/${envMap.RELEASE}/${envMap.ARCH}/${envMap.IMAGE_TYPE}"
   base_image_tasks[image_name] = { ->
     def job_ids = []
+    def node_label = 'deb13-amd64-rootnode'
+    if (envMap.ARCH in ['armhf', 'arm64']) {
+      node_label = 'deb12-arm64-rootnode'
+    }
+
     stage("base:${image_name}") {
-      print(envMap)
       build(
         job: 'images_distrobuilder',
         parameters: [
@@ -45,8 +49,9 @@ for(int index = 0; index < c.size(); index++) {
           string(name: 'ARCH', value: envMap.ARCH),
           string(name: 'IMAGE_TYPE', value: envMap.IMAGE_TYPE),
           string(name: 'GIT_URL', value: params.GIT_URL),
-          string(name: 'GIT_BRANCH', value: params.GIT_BRANCH)
-        ]
+          string(name: 'GIT_BRANCH', value: params.GIT_BRANCH),
+          [$class:'LabelParameterValue', name: 'label', label: node_label, allNodesMatchingLabel: true, nodeEligibility: [$class:'AllNodeEligibility']],
+        ],
       )
     }
   }
@@ -58,7 +63,6 @@ for(int index = 0; index < c.size(); index++) {
     envMap2.PROFILE = PROFILES[profile_index]
     if (env.PROFILE_FILTER == 'all' || env.PROFILE_FILTER == PROFILES[profile_index]) {
       profile_image_tasks["${PROFILES[profile_index]}:${image_name}"] = { ->
-        print(envMap2)
         build(
           job: 'images_imagebuilder',
           parameters: [
