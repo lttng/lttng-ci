@@ -1126,7 +1126,6 @@
             - stable-2.14
             - stable-2.13
           uversion:
-            - focal
             - jammy
             - noble
           buildtype: build
@@ -1139,7 +1138,6 @@
           mversion:
             - stable-2.12
           uversion:
-            - focal
             - jammy
           buildtype: build
           parambuildtype: build
@@ -1204,7 +1202,6 @@
             - stable-2.14
             - stable-2.13
           uversion:
-            - focal
             - jammy
             - noble
           buildtype: crossbuild
@@ -1217,7 +1214,6 @@
           mversion:
             - stable-2.12
           uversion:
-            - focal
             - jammy
           buildtype: crossbuild
           parambuildtype: crossbuild
