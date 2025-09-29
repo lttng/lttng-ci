@@ -54,14 +54,14 @@ lava-master-03.internal.efficios.com
 [node_armhf]
 ci-node-deb12-armhf-1a-01
 ci-node-deb12-armhf-1b-01
-ci-node-deb12-armhf-2a-01
-ci-node-deb12-armhf-2b-01
+ci-node-deb13-armhf-2a-01
+ci-node-deb13-armhf-2b-01
 
 [node_arm64]
 ci-node-deb12-arm64-1a-01
 ci-node-deb12-arm64-1b-01
-ci-node-deb12-arm64-2a-01
-ci-node-deb12-arm64-2b-01
+ci-node-deb13-arm64-2a-01
+ci-node-deb13-arm64-2b-01
 ci-node-deb13-arm64-osuosl-01
 ci-node-deb13-arm64-osuosl-02
 ci-node-deb13-arm64-osuosl-03
