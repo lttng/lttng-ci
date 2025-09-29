@@ -26,6 +26,7 @@ function cleanup {
 
 trap cleanup EXIT
 PYTHON3="python3"
+PYTEST_FILTER="${pytest_filter:-}"
 
 # Create tmp directory
 TMPDIR="$WORKSPACE/tmp"
@@ -65,8 +66,17 @@ cd src/ || exit 1
 # Required to build tools < 2.11 with GCC >= 10
 export CFLAGS="-fcommon"
 
+PYTEST_ARGS=(
+    "--junit-xml=${WORKSPACE}/result.xml"
+)
+if [[ "${PYTEST_FILTER}" != "" ]]; then
+    PYTEST_ARGS+=(
+        "-k" "${PYTEST_FILTER}"
+    )
+fi
+
 # Run test suite via tox
-tox -v -- --junit-xml="${WORKSPACE}/result.xml"
+tox -v -- "${PYTEST_ARGS[@]}"
 
 # Remove base venv
 deactivate

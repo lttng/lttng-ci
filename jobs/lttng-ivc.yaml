@@ -26,6 +26,12 @@
     triggers:
       - timed: "@daily"
 
+    parameters:
+      - string: &lttng-ivc-parameter-pytest_filter
+          name: 'pytest_filter'
+          default: '{pytest_filter}'
+          description: 'Enter an optional filter for the pytest tests to execute'
+
     properties:
       - build-discarder:
           num-to-keep: 10
@@ -33,11 +39,20 @@
       - github:
           url: https://github.com/{github_user}/{github_name}
 
+    # job variables
+    email_to: ''
+    github_user: lttng
+    github_name: lttng-ivc
+    job_suffix: ''
+    pytest_filter: ''
+
 - defaults:
     <<: *lttng-ivc-defaults
     name: lttng-ivc-review
     concurrent: true
     parameters:
+      - string:
+          <<: *lttng-ivc-parameter-pytest_filter
       - string:
           name: 'GERRIT_BRANCH'
           default: 'master'
@@ -85,12 +100,13 @@
       {% else %}[]{% endif %}
 
     # Job variables
+    email_to: 'ci-notification@lists.lttng.org'
     enable_gerrit_trigger: true
     gerrit_approval_values: !!python/tuple [1]
 
 ## Templates
 - job-template: &lttng-ivc-version-template
-    name: lttng-ivc-{version}
+    name: 'lttng-ivc-{version}{job_suffix}'
     defaults: lttng-ivc
 
     project-type: matrix
@@ -100,10 +116,6 @@
          type: slave
          name: platform
          values: '{obj:platforms}'
-      - axis:
-         type: user-defined
-         name: liburcu_version
-         values: '{obj:liburcu_version}'
 
     builders:
       - shell:
@@ -142,11 +154,11 @@
 
 - job-template:
     <<: *lttng-ivc-version-template
-    name: 'dev_review_lttng-ivc-{version}'
+    name: 'dev_review_lttng-ivc-{version}{job_suffix}'
     defaults: lttng-ivc-review
 
 - job-template: &lttng-ivc-version-modules-template
-    name: lttng-ivc-{version}-modules
+    name: 'lttng-ivc-{version}-modules{job_suffix}'
     defaults: lttng-ivc
 
     project-type: matrix
@@ -160,10 +172,6 @@
          type: user-defined
          name: platform
          values: '{obj:platforms}'
-      - axis:
-         type: user-defined
-         name: liburcu_version
-         values: '{obj:liburcu_version}'
 
     builders:
       - shell:
@@ -202,28 +210,33 @@
 
 - job-template:
     <<: *lttng-ivc-version-modules-template
-    name: 'dev_review-lttng-ivc-{version}-modules'
+    name: 'dev_review_lttng-ivc-{version}-modules{job_suffix}'
     defaults: lttng-ivc-review
 
 ## Project
 - project:
     name: lttng-ivc
-    github_user: lttng
-    github_name: lttng-ivc
-    email_to: "ci-notification@lists.lttng.org"
+    platforms: !!python/tuple [deb13-amd64]
+    slave: !!python/tuple [deb13-amd64-rootnode]
     version:
       - master
     jobs:
-      - 'lttng-ivc-{version}': &job-lttng-ivc-master
-          platforms: !!python/tuple [deb13-amd64]
-          liburcu_version: !!python/tuple [master]
-      - 'dev_review_lttng-ivc-{version}':
-          <<: *job-lttng-ivc-master
-          email_to: ''
-      - 'lttng-ivc-{version}-modules': &job-lttng-ivc-master-modules
-          platforms: !!python/tuple [deb13-amd64]
-          slave: !!python/tuple [deb13-amd64-rootnode]
-          liburcu_version: !!python/tuple [master]
-      - 'dev_review-lttng-ivc-{version}-modules':
-          <<: *job-lttng-ivc-master-modules
-          email_to: ''
+      # Run all tests
+      - 'lttng-ivc-{version}-modules{job_suffix}': &job-lttng-ivc-master-tools-master
+          job_suffix: '_lttng-tools-master'
+      - 'dev_review_lttng-ivc-{version}-modules{job_suffix}':
+          <<: *job-lttng-ivc-master-tools-master
+      # Only stable-2.14
+      - 'lttng-ivc-{version}-modules{job_suffix}': &job-lttng-ivc-master-tools-stable-2-14
+          job_suffix: '_lttng-tools-stable-2.14'
+          pytest_filter: 'stable-2.14 and not master'
+      - 'dev_review_lttng-ivc-{version}-modules{job_suffix}':
+          <<: *job-lttng-ivc-master-tools-stable-2-14
+          enable_gerrit_trigger: false
+      # Only stable-2.13
+      - 'lttng-ivc-{version}-modules{job_suffix}': &job-lttng-ivc-master-tools-stable-2-13
+          job_suffix: '_lttng-tools-stable-2.13'
+          pytest_filter: 'stable-2.13 and not master'
+      - 'dev_review_lttng-ivc-{version}-modules{job_suffix}':
+          <<: *job-lttng-ivc-master-tools-stable-2-13
+          enable_gerrit_trigger: false
