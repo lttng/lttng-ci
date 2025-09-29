@@ -56,39 +56,23 @@ ci-node-deb13-armhf-[1:2][a:b]-01
 
 [node_arm64]
 ci-node-deb13-arm64-[1:2][a:b]-01
-ci-node-deb13-arm64-osuosl-01
-ci-node-deb13-arm64-osuosl-02
-ci-node-deb13-arm64-osuosl-03
-ci-node-deb13-arm64-osuosl-04
-ci-node-el8-arm64-01
-ci-node-el9-arm64-01
+ci-node-deb13-arm64-osuosl-[01:04]
+ci-node-el[8:9]-arm64-01
 
 [node_arm64:vars]
 ansible_python_interpreter=python3
 
 [node_ppc64el]
-ci-node-deb13-ppc64el-01
-ci-node-deb13-ppc64el-02
+ci-node-deb13-ppc64el-[01:02]
 
 [node_riscv64]
-ci-node-deb13-riscv64-01
-ci-node-deb13-riscv64-02
-ci-node-deb13-riscv64-03
-ci-node-deb13-riscv64-04
+ci-node-deb13-riscv64-[01:04]
 
 [node_s390x]
-ci-node-deb13-s390x-01
-ci-node-deb13-s390x-02
+ci-node-deb13-s390x-[01:02]
 
 [node_i386]
-ci-node-deb12-i386-1a-01
-ci-node-deb12-i386-1b-01
-ci-node-deb12-i386-1c-01
-ci-node-deb12-i386-1d-01
-ci-node-deb12-i386-2a-01
-ci-node-deb12-i386-2b-01
-ci-node-deb12-i386-2c-01
-ci-node-deb12-i386-2d-01
+ci-node-deb12-i386-[1:2][a:d]-01
 
 [node_amd64]
 ci-node-deb12-amd64-2c-[01:04]
@@ -104,17 +88,8 @@ ci-node-deb13-amd64-2d-01
 
 [node_standalone]
 ci-rootnode-deb12-amd64-1c-02
-ci-rootnode-deb13-amd64-1a-01
-ci-rootnode-deb13-amd64-1b-01
-ci-rootnode-deb13-amd64-1c-01
-ci-rootnode-deb13-amd64-1d-01
-ci-rootnode-deb13-amd64-2a-01
-ci-rootnode-deb13-amd64-2b-01
-ci-rootnode-deb13-amd64-2c-01
-ci-rootnode-deb13-amd64-2d-01
-ci-rootnode-deb12-i386-1a-01
-ci-rootnode-deb12-i386-1b-01
-ci-rootnode-deb12-i386-1c-01
+ci-rootnode-deb13-amd64-[1:2][a:d]-01
+ci-rootnode-deb12-i386-1[a:c]-01
 ci-rootnode-deb12-arm64-1a-01
 ci-rootnode-deb12-arm64-1b-01
 ci-rootnode-deb13-arm64-2a-01
@@ -131,16 +106,12 @@ ci-rootnode-yocto33-amd64-2d-01
 
 [node_sles]
 ci-node-sles15sp5-amd64-1b-01
-ci-node-sles15sp5-amd64-2a-01
-ci-node-sles15sp5-amd64-2b-01
-ci-node-sles15sp5-amd64-2c-01
+ci-node-sles15sp5-amd64-2[a:c]-01
 ci-rootnode-sles15sp5-amd64-1d-01
 ci-rootnode-sles15sp5-amd64-2a-01
 
 [node_el]
-ci-node-el8-amd64-1b-01 ansible_python_interpreter=python3.12
-ci-node-el8-amd64-1b-02 ansible_python_interpreter=python3.12
-ci-node-el8-amd64-1b-03 ansible_python_interpreter=python3.12
+ci-node-el8-amd64-1b-[01:03] ansible_python_interpreter=python3.12
 ci-node-el9-amd64-1b-01
 ci-node-el8-arm64-01    ansible_python_interpreter=python3.12
 ci-node-el9-arm64-01
@@ -149,10 +120,8 @@ ci-rootnode-el8-amd64-1d-01
 [node_yocto]
 ci-node-yocto33-amd64-2a-01 ansible_host=172.18.16.104
 ci-node-yocto33-amd64-2b-01 ansible_host=172.18.16.105
-ci-node-yocto33-arm64-2a-01
-ci-node-yocto33-arm64-2b-01
-ci-rootnode-yocto33-amd64-2c-01
-ci-rootnode-yocto33-amd64-2d-01
+ci-node-yocto33-arm64-2[a:b]-01
+ci-rootnode-yocto33-amd64-2[c:d]-01
 
 [node:children]
 node_i386
