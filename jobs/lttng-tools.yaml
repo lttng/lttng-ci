@@ -1356,7 +1356,10 @@
               value: 'no'
             - name: LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION
               value: 'yes'
-          timeout: '45'
+            - name: LTTNG_TEST_SERIAL_TEST_TIMEOUT_MINUTES
+              value: '270'
+          # ust/stall-buffer/test_stall_buffer_complex.py has a _long_ run-time
+          timeout: '300'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_linuxbuild
           nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
@@ -1421,10 +1424,14 @@
               value: 'no'
             - name: LTTNG_TOOLS_COVERAGE
               value: 'yes'
+            - name: LTTNG_TEST_SERIAL_TEST_TIMEOUT_MINUTES
+              value: '270'
           nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
           urcuversions: !!python/tuple [master]
           filter: '(node=="deb13-amd64-rootnode" && platform=="deb13-amd64")'
+          # ust/stall-buffer/test_stall_buffer_complex.py has a _long_ run-time
+          timeout: '300'
 
 - project:
     name: lttng-tools-stable-2.14
