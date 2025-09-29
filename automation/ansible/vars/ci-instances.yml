@@ -110,7 +110,7 @@ containers:
   - meta:
       address: 172.18.16.87
     lxd:
-      name: ci-node-deb12-arm64-1a-01
+      name: ci-node-deb13-arm64-1a-01
       target: ci-host-arm64-1a
       profiles:
         - ci-node
@@ -120,13 +120,13 @@ containers:
         server: https://images.linuxcontainers.org
         protocol: simplestreams
         mode: pull
-        alias: debian/bookworm/cloud/arm64
+        alias: debian/trixie/cloud/arm64
     jenkins:
-      label: 'deb12-arm64 deb12'
+      label: 'deb13-arm64 deb13'
   - meta:
       address: 172.18.16.88
     lxd:
-      name: ci-node-deb12-armhf-1a-01
+      name: ci-node-deb13-armhf-1a-01
       target: ci-host-arm64-1a
       profiles:
         - ci-node
@@ -136,14 +136,14 @@ containers:
         server: https://images.linuxcontainers.org
         protocol: simplestreams
         mode: pull
-        alias: debian/bookworm/cloud/armhf
+        alias: debian/trixie/cloud/armhf
     jenkins:
-      label: 'deb12-armhf deb12'
+      label: 'deb13-armhf deb13'
   # ci-host-arm64-1b
   - meta:
       address: 172.18.16.89
     lxd:
-      name: ci-node-deb12-arm64-1b-01
+      name: ci-node-deb13-arm64-1b-01
       target: ci-host-arm64-1b
       profiles:
         - ci-node
@@ -153,13 +153,13 @@ containers:
         server: https://images.linuxcontainers.org
         protocol: simplestreams
         mode: pull
-        alias: debian/bookworm/cloud/arm64
+        alias: debian/trixie/cloud/arm64
     jenkins:
-      label: 'deb12-arm64 deb12'
+      label: 'deb13-arm64 deb13'
   - meta:
       address: 172.18.16.90
     lxd:
-      name: ci-node-deb12-armhf-1b-01
+      name: ci-node-deb13-armhf-1b-01
       target: ci-host-arm64-1b
       profiles:
         - ci-node
@@ -169,9 +169,9 @@ containers:
         server: https://images.linuxcontainers.org
         protocol: simplestreams
         mode: pull
-        alias: debian/bookworm/cloud/armhf
+        alias: debian/trixie/cloud/armhf
     jenkins:
-      label: 'deb12-armhf deb12'
+      label: 'deb13-armhf deb13'
   # ci-host-arm64-2a
   - meta:
       address: 172.18.16.100
