@@ -5,29 +5,29 @@
 
 set -exu
 
-# Move the home directory to the local disk so we don't run the test suite on NFS
-cp -pr /root /tmp/
-export HOME=/tmp/root
-
 export TMPDIR="/tmp"
 
+# Move the home directory to the local disk so we don't run the test suite on NFS
+cp -pr /root "$TMPDIR/"
+export HOME="$TMPDIR/root"
+
 # Setup coredumps
-mkdir -p /tmp/coredump
-echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+mkdir -p "$TMPDIR/coredump"
+echo "$TMPDIR/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 ulimit -c unlimited
 
 set +ux
 # Active the python venv for vlttng
 # shellcheck disable=SC1091
-source /tmp/python-venv/bin/activate
+. "$TMPDIR/python-venv/bin/activate"
 
 # Activate the vlttng env
 # shellcheck disable=SC1091
-source /tmp/vlttng-venv/activate
+. "$TMPDIR/vlttng-venv/activate"
 set -ux
 
 # Enter the lttng-tools source directory
-cd /tmp/vlttng-venv/src/lttng-tools
+cd $TMPDIR/vlttng-venv/src/lttng-tools
 
 # Enter the lttng-tools source directory
 lava-test-case build-test-suite --shell make -j "$(nproc)"

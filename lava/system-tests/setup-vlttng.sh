@@ -4,10 +4,12 @@
 
 set -exu
 
+export TMPDIR=/tmp
+
 # shellcheck disable=SC1091
-. /tmp/python-venv/bin/activate
+. "$TMPDIR/python-venv/bin/activate"
 
 # shellcheck disable=SC2086
-vlttng --jobs="$(nproc)" $VLTTNG_OPTS /tmp/vlttng-venv
+vlttng --jobs="$(nproc)" $VLTTNG_OPTS "$TMPDIR/vlttng-venv"
 
 sync

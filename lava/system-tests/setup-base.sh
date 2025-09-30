@@ -5,13 +5,13 @@
 
 set -exu
 
+export TMPDIR="/tmp"
+
 chmod 755 /
 
-# Mount the local drive on /tmp
-mount "$TEMP_DEVICE" /tmp
-
-# Reset the content of the local drive
-rm -rf /tmp/*
+# Reset and mount the local drive on /tmp
+mkfs.ext4 -q -F "$TEMP_DEVICE"
+mount "$TEMP_DEVICE" "$TMPDIR"
 
 # Get the nameserver address from the in-kernel dhcp client
 grep ^nameserver /proc/net/pnp > /etc/resolv.conf
@@ -23,10 +23,10 @@ groupadd tracing
 depmod -a
 
 # Create a python virtual env to install vlttng
-python3 -m venv /tmp/python-venv
+python3 -m venv "$TMPDIR/python-venv"
 set +ux
 # shellcheck disable=SC1091
-. /tmp/python-venv/bin/activate
+. "$TMPDIR/python-venv/bin/activate"
 set -ux
 
 pip3 install --quiet vlttng

@@ -50,7 +50,7 @@ function test_timeout
                 OUTFILE=$(mktemp -t "backtrace-${P}.XXXXXX")
                 ps -f "${P}" | tee -a "${OUTFILE}"
                 gdb -p "${P}" --batch -ex 'thread apply all bt' 2>&1 | tee -a "${OUTFILE}"
-                mv "${OUTFILE}" /tmp/coredump/
+                mv "${OUTFILE}" "$COREDUMP_DIR"
             done
 
             # Send sigterm to make
@@ -67,25 +67,30 @@ function test_timeout
     return "${?}"
 }
 
-# Move the home directory to the local disk so we don't run the test suite on NFS
-cp -pr /root /tmp/
-export HOME=/tmp/root
-
 export TMPDIR="/tmp"
+export COREDUMP_DIR="$TMPDIR/coredump"
+export LOG_DIR="$TMPDIR/log"
+
+# Move the home directory to the local disk so we don't run the test suite on NFS
+cp -pr /root $TMPDIR/
+export HOME=$TMPDIR/root
 
 # Setup coredumps
-mkdir -p /tmp/coredump
-echo "/tmp/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+mkdir -p "$COREDUMP_DIR"
+echo "$COREDUMP_DIR/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 ulimit -c unlimited
+
+# Create log directory
+mkdir -p "$LOG_DIR"
 
 set +ux
 # Active the python venv for vlttng
 # shellcheck disable=SC1091
-. /tmp/python-venv/bin/activate
+. "$TMPDIR/python-venv/bin/activate"
 
 # Activate the vlttng env
 # shellcheck disable=SC1091
-. /tmp/vlttng-venv/activate
+. "$TMPDIR/vlttng-venv/activate"
 set -ux
 
 # Allow the destructive tests to run
@@ -95,7 +100,7 @@ export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 timedatectl set-ntp false
 
 # Enter the lttng-tools source directory
-cd /tmp/vlttng-venv/src/lttng-tools
+cd "$TMPDIR/vlttng-venv/src/lttng-tools"
 
 # Build the test suite
 lava-test-case build-test-suite --shell make -j "$(nproc)"
@@ -109,7 +114,7 @@ lava-test-case run-test-suite --result $test_result
 
 # Archive the test logs produced by 'make check'
 if [ "${test_result}" == "fail" ] ; then
-    find tests/ -iname '*.trs' -print0 -or -iname '*.log' -print0 | tar cJf /tmp/coredump/logs.tar.xz --null -T -
+    find tests/ -iname '*.trs' -print0 -or -iname '*.log' -print0 | tar cJf $LOG_DIR/logs.tar.xz --null -T -
 fi
 
 # This was removed in stable-2.15
