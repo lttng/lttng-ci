@@ -170,7 +170,7 @@ if [ $NEED_MODULES_BUILD -eq 1 ] || [ $NEED_KERNEL_BUILD -eq 1 ] ; then
     kversion=${kversion%%"-"*}
 
     # Configure the kernel
-    cp src/lttng-ci/lava/kernel/vanilla/x86_64_server.config "$LINUX_GIT_DIR/.config"
+    s3cmd -c "$S3CMD_CONFIG" get "s3://$S3_BUCKET/$S3_BASE_DIR/config/x86_64_server.config" "$LINUX_GIT_DIR/.config"
     make --directory="$LINUX_GIT_DIR" olddefconfig
 
     # Add the kvm_guest fragment when running on kvm

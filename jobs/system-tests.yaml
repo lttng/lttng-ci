@@ -313,12 +313,9 @@
               username: S3_ACCESS_KEY
               password: S3_SECRET_KEY
 
-    scm:
-      - git:
-          url: "${{LTTNG_CI_REPO}}"
-          basedir: src/lttng-ci/
-          branches:
-            - "${{LTTNG_CI_BRANCH}}"
+    scm: []
+
+    triggers: []
 
     builders:
       - shell: !include-raw-verbatim: scripts/system-tests/build-kernel-param.sh
