@@ -21,42 +21,54 @@ trap cleanup EXIT SIGINT SIGTERM
 
 function test_timeout
 {
-    local TIMEOUT=0
-    local TIMEOUT_MINUTES="${1:-90}"
+    local timeout_minutes="${1:-90}"
     shift 1
 
+    local elapsed_minutes=0
+    local wait_on_pid
+    local pids_to_dump
+    local pid
+    local outfile
+
+    set +x
+
     "${@}" &
-    PID="${!}"
+    wait_on_pid="${!}"
 
     while true; do
+        echo "LAVA: Waiting for timeout of pid: $wait_on_pid ($elapsed_minutes / $timeout_minutes min)"
         sleep 1m
 
-        if ! ps -q "${PID}" > /dev/null ; then
+        if ! ps -q "${wait_on_pid}" > /dev/null ; then
             # The process ID doesn't exist anymore
+            echo "LAVA: Done waiting, pid ${wait_on_pid} exited"
             break
         fi
 
-        TIMEOUT=$((TIMEOUT+1))
-        if [[ "${TIMEOUT}" -ge "${TIMEOUT_MINUTES}" ]]; then
-            echo "Command '${*}' timed out (${TIMEOUT} minutes) " \
+        elapsed_minutes=$((elapsed_minutes+1))
+        if [[ "${elapsed_minutes}" -ge "${timeout_minutes}" ]]; then
+            echo "LAVA: Command '${*}' timed out (${elapsed_minutes} minutes) " \
                  "attempting to get backtraces for lttng/babeltrace binaries"
 
+            set -x
             # Abort all lttng-sessiond, lttng, lttng-relayd, lttng-consumerd,
             # and babeltrace process so there are coredumps available.
-            PIDS=$(pgrep 'babeltrace*|[l]ttng*')
-            for P in ${PIDS}; do
-                OUTFILE=$(mktemp -t "backtrace-${P}.XXXXXX")
-                ps -f "${P}" | tee -a "${OUTFILE}"
-                gdb -p "${P}" --batch -ex 'thread apply all bt' 2>&1 | tee -a "${OUTFILE}"
-                mv "${OUTFILE}" "$COREDUMP_DIR"
+            pids_to_dump=$(pgrep 'babeltrace*|[l]ttng*')
+            for pid in ${pids_to_dump}; do
+                outfile=$(mktemp -t "backtrace-${pid}.XXXXXX")
+                ps -f "${pid}" | tee -a "${outfile}"
+                gdb -p "${pid}" --batch -ex 'thread apply all bt' 2>&1 | tee -a "${outfile}"
+                mv "${outfile}" "$COREDUMP_DIR"
             done
 
             # Send sigterm to make
-            kill "${PID}"
+            kill "${wait_on_pid}"
         fi
     done
 
-    wait "${PID}"
+    set -x
+
+    wait "${wait_on_pid}"
 
     return "${?}"
 }
