@@ -93,7 +93,7 @@ failed_configure() {
 os_field() {
     field=$1
     if [ -f /etc/os-release ]; then
-        echo $(source /etc/os-release; echo ${!field})
+        echo "$(source /etc/os-release; echo "${!field}")"
     fi
 }
 
@@ -127,9 +127,10 @@ LTTNG_UST_CLANG_TIDY="${LTTNG_UST_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/lttng-ust"
 TMPDIR="$WORKSPACE/tmp"
-PREFIX="/build"
+PREFIX="${PREFIX:-/build}"
 LIBDIR="lib"
 LIBDIR_ARCH="$LIBDIR"
+DEPSDIR="$WORKSPACE/deps"
 
 # RHEL and SLES both use lib64 but don't bother shipping a default autoconf
 # site config that matches this.
@@ -140,16 +141,19 @@ if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-
     fi
 fi
 
-DEPS_INC="$WORKSPACE/deps/build/include"
-DEPS_LIB="$WORKSPACE/deps/build/$LIBDIR_ARCH"
-DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
-#DEPS_BIN="$WORKSPACE/deps/build/bin"
-#DEPS_JAVA="$WORKSPACE/deps/build/share/java"
+# When dependencies are present, adjust the environment
+if [ -d "$DEPSDIR" ]; then
+    DEPS_INC="$DEPSDIR/$PREFIX/include"
+    DEPS_LIB="$DEPSDIR/$PREFIX/$LIBDIR_ARCH"
+    DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
+    #DEPS_BIN="$DEPSDIR/$PREFIX/bin"
+    #DEPS_JAVA="$DEPSDIR/$PREFIX/share/java"
 
-export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
-export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
-export CPPFLAGS="-I$DEPS_INC"
-export LDFLAGS="-L$DEPS_LIB"
+    export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
+    export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
+    export CPPFLAGS="-I$DEPS_INC"
+    export LDFLAGS="-L$DEPS_LIB"
+fi
 
 exit_status=0
 
@@ -307,6 +311,12 @@ debug-rcu)
     export CPPFLAGS="${CPPFLAGS} -DDEBUG_RCU"
     ;;
 
+system-tests)
+    print_header "Conf: System tests config"
+
+    CONF_OPTS+=("--disable-man-pages")
+    ;;
+
 *)
     print_header "Conf: Standard"
     ;;
@@ -395,14 +405,14 @@ $BEAR ${BEAR:+--} $MAKE -j "$($NPROC)" V=1
 if [ "$LTTNG_UST_MAKE_INSTALL" = "yes" ]; then
     print_header "Install"
 
-    $MAKE install V=1 DESTDIR="$WORKSPACE"
+    $MAKE install V=1 DESTDIR="${DESTDIR:-$WORKSPACE}"
 
     # Cleanup rpath in executables and shared libraries
-    #find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
+    #find "${DESTDIR:-$WORKSPACE}/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+    find "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
 
     # Remove libtool .la files
-    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
+    find "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
 fi
 
 # Run clang-tidy on the topmost commit

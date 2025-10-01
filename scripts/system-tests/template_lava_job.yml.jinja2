@@ -22,25 +22,35 @@ priority: medium
 visibility: public
 
 context:
-  extra_kernel_args: cpuidle.off=1
-  extra_nfsroot_args: ",nfsvers=3 nfsrootdebug TERM=dumb"
+  extra_kernel_args: "cpuidle.off=1 TERM=dumb"
+  extra_nfsroot_args: ",nfsvers=3 nfsrootdebug"
 
 environment:
   SHELL: "/bin/bash"
   TERM: "dumb"
   NO_COLOR: "1"
+  TMPDIR: "/tmp"
+  SCRATCH_DIR: "/scratch"
+  WORKSPACE: "/scratch/workspace"
   CI_REPO: "{{ ci_repo }}"
   CI_BRANCH: "{{ ci_branch }}"
-  VLTTNG_OPTS: "{{ vlttng_opts }}"
   LTTNG_VERSION_STRING: "{{ lttng_version_string }}"
   JENKINS_BUILD_ID: "{{ jenkins_build_id }}"
   S3_HOST: "{{ s3_host }}"
-  S3_BUCKET: "{{s3_bucket }}"
-  S3_BASE_DIR: "{{s3_base_dir }}"
+  S3_BUCKET: "{{ s3_bucket }}"
+  S3_BASE_DIR: "{{ s3_base_dir }}"
+  UST_REPO: "{{ ust_repo }}"
+  UST_COMMIT: "{{ ust_commit }}"
+  TOOLS_REPO: "{{ tools_repo }}"
+  TOOLS_COMMIT: "{{ tools_commit }}"
+  URCU_REPO: "{{ urcu_repo }}"
+  URCU_BRANCH: "{{ urcu_branch }}"
+  BT_REPO: "{{ bt_repo }}"
+  BT_BRANCH: "{{ bt_branch }}"
 {% if device_type == DeviceType.x86 %}
-  TEMP_DEVICE: "/dev/sda1"
+  SCRATCH_DEVICE: "/dev/sda1"
 {% elif device_type == DeviceType.kvm %}
-  TEMP_DEVICE: "/dev/sda"
+  SCRATCH_DEVICE: "/dev/sda"
 {% endif %}
 
 tags:
@@ -63,10 +73,10 @@ actions:
           url: {{ kernel_url }}
           type: zimage
         modules:
-          url: {{ lttng_modules_url }}
+          url: {{ modules_url }}
           compression: xz
         nfsrootfs:
-          url: {{ nfsrootfs_url }}
+          url: {{ rootfs_url }}
           compression: xz
 
     - boot:
@@ -98,12 +108,12 @@ actions:
               path: lava/system-tests/setup-base.yml
               name: setup-base
 
-            # vlttng setup #
+            # build lttng #
             - repository: {{ ci_repo }}
               from: git
               branch: {{ ci_branch }}
-              path: lava/system-tests/setup-vlttng.yml
-              name: setup-vlttng
+              path: lava/system-tests/build-lttng.yml
+              name: build-lttng
 
             # Run the tests
             - repository: {{ ci_repo }}

@@ -22,19 +22,33 @@
       - string:
           name: 'KERNEL_REPO'
           default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
-          description: 'Linux kernel git repo to checkout the kernel id'
+          description: 'Linux kernel git repo to checkout'
       - string:
           name: 'LTTNG_TOOLS_REPO'
           default: 'git://git-mirror.internal.efficios.com/lttng/lttng-tools.git'
-          description: 'LTTng-Tools git repo to checkout the tools id'
+          description: 'LTTng-Tools git repo to checkout'
       - string:
           name: 'LTTNG_MODULES_REPO'
           default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
-          description: 'LTTng-Modules git repo to checkout the Modules id'
+          description: 'LTTng-Modules git repo to checkout'
       - string:
           name: 'LTTNG_UST_REPO'
           default: 'git://git-mirror.internal.efficios.com/lttng/lttng-ust.git'
-          description: 'LTTng-UST git repo to checkout the UST id'
+          description: 'LTTng-UST git repo to checkout'
+      - string:
+          name: 'URCU_REPO'
+          default: 'git://git-mirror.internal.efficios.com/lttng/userspace-rcu.git'
+          description: 'UserspaceRCU git repo to checkout'
+      - string:
+          name: 'URCU_BRANCH'
+          default: 'master'
+      - string:
+          name: 'BT_REPO'
+          default: 'git://git-mirror.internal.efficios.com/efficios/babeltrace.git'
+          description: 'Babeltrace git repo to checkout'
+      - string:
+          name: 'BT_BRANCH'
+          default: 'master'
       - string:
           name: 'ROOTFS_URL'
           default: 'https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_trixie_2025-09-25.tar.xz'
@@ -332,6 +346,22 @@
     project-type: freestyle
     node: 'master'
     parameters:
+      - string:
+          name: 'LTTNG_MODULES_REPO'
+          description: 'The LTTng Modules git repo to fetch from'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
+      - string:
+          name: 'LTTNG_TOOLS_REPO'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-tools.git'
+          description: 'LTTng-Tools git repo to checkout the tools id'
+      - string:
+          name: 'LTTNG_UST_REPO'
+          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-ust.git'
+          description: 'LTTng-UST git repo to checkout the UST id'
+      - string:
+          name: 'KERNEL_REPO'
+          default: 'git://git-mirror.internal.efficios.com/kernel/stable/linux-stable.git'
+          description: 'Linux kernel git repo to checkout the kernel id'
       - bool:
           name: 'FORCE_JOB_RUN'
           default: false

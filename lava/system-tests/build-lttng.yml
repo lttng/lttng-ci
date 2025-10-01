@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2025 Michael Jeanson <mjeanson@efficios.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+metadata:
+    format: Lava-Test Test Definition 1.0
+    name: build-lttng
+    description: "Build lttng"
+    os:
+      - debian
+
+run:
+  steps:
+    - lava/system-tests/build-lttng.sh || lava-test-raise "build-lttng"

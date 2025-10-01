@@ -5,7 +5,6 @@
 import argparse
 import json
 import os
-import random
 import re
 import sys
 import time
@@ -117,96 +116,33 @@ def print_test_output(server, job):
             print("{} {}".format(line["dt"], line["msg"]))
 
 
-def get_vlttng_opts(
-    lttng_version,
-    lttng_tools_url,
-    lttng_tools_commit,
-    lttng_ust_url=None,
-    lttng_ust_commit=None,
-):
-    """
-    Return vlttng command options to be used in the job template for setup.
-    """
-
-    major_version, minor_version = parse_stable_version(lttng_version)
-
-    urcu_profile = ""
-    if lttng_version == "master" or (major_version >= 2 and minor_version >= 11):
-        urcu_profile = " --profile urcu-master"
-    else:
-        urcu_profile = " --profile urcu-stable-0.12"
-
-    # Starting with 2.14, babeltrace2 is the reader for testing.
-    if lttng_version == "master" or (major_version >= 2 and minor_version >= 14):
-        babeltrace_profile = (
-            " --profile babeltrace2-stable-2.0 --profile babeltrace2-python"
-        )
-        babeltrace_overrides = " --override projects.babeltrace2.build-env.PYTHON=python3 --override projects.babeltrace2.build-env.PYTHON_CONFIG=python3-config -o projects.babeltrace2.configure+=--disable-man-pages"
-    else:
-        babeltrace_profile = (
-            " --profile babeltrace-stable-1.5 --profile babeltrace-python"
-        )
-        babeltrace_overrides = " --override projects.babeltrace.build-env.PYTHON=python3 --override projects.babeltrace.build-env.PYTHON_CONFIG=python3-config"
-
-    vlttng_opts = (
-        urcu_profile
-        + babeltrace_profile
-        + babeltrace_overrides
-        + " --profile lttng-tools-master"
-        + " --override projects.lttng-tools.source=" + lttng_tools_url
-        + " --override projects.lttng-tools.checkout=" + lttng_tools_commit
-        + " --profile lttng-tools-no-man-pages"
-    )
-
-    # Current vlttng has defunct git urls for urcu and babeltrace
-    vlttng_opts += (
-        " --override projects.urcu.source=git://git-mirror.internal.efficios.com/lttng/userspace-rcu.git"
-        " --override projects.babeltrace2.source=git://git-mirror.internal.efficios.com/efficios/babeltrace.git"
-        )
-
-    if lttng_ust_commit is not None:
-        vlttng_opts += (
-            " --profile lttng-ust-master "
-            " --override projects.lttng-ust.source=" + lttng_ust_url
-            + " --override projects.lttng-ust.checkout=" + lttng_ust_commit
-            + " --profile lttng-ust-no-man-pages"
-        )
-
-    if lttng_version == "master" or (major_version >= 2 and minor_version >= 11):
-        vlttng_opts += (
-            " --override projects.lttng-tools.configure+=--enable-test-sdt-uprobe"
-        )
-
-    return vlttng_opts
-
-
 def main():
     send_retry_limit = 10
-    test_type = None
+
     parser = argparse.ArgumentParser(description="Launch baremetal test using Lava")
-    parser.add_argument("-t", "--type", required=True)
-    parser.add_argument("-lv", "--lttng-version", required=True)
-    parser.add_argument("-j", "--jobname", required=True)
-    parser.add_argument("-k", "--kernel", required=True)
-    parser.add_argument("-lm", "--lmodule", required=True)
-    parser.add_argument("-tu", "--tools-url", required=True)
-    parser.add_argument("-tc", "--tools-commit", required=True)
-    parser.add_argument("-id", "--build-id", required=True)
-    parser.add_argument("-uu", "--ust-url", required=False)
-    parser.add_argument("-uc", "--ust-commit", required=False)
-    parser.add_argument("-d", "--debug", required=False, action="store_true")
-    parser.add_argument(
-        "-r",
-        "--rootfs-url",
-        required=False,
-        default="https://obj-lava.internal.efficios.com/rootfs/rootfs_amd64_trixie_2025-09-25.tar.xz",
-    )
-    parser.add_argument(
-        "--ci-repo", required=False, default="https://github.com/lttng/lttng-ci.git"
-    )
+
+    parser.add_argument("--type", required=True)
+    parser.add_argument("--lttng-version", required=True)
+    parser.add_argument("--jobname", required=True)
+    parser.add_argument("--jenkins-build-id", required=True)
+    parser.add_argument("--kernel-url", required=True)
+    parser.add_argument("--modules-url", required=True)
+    parser.add_argument("--rootfs-url", required=True)
+    parser.add_argument("--tools-repo", required=True)
+    parser.add_argument("--tools-commit", required=True)
+    parser.add_argument("--ust-repo", required=True)
+    parser.add_argument("--ust-commit", required=True)
+    parser.add_argument("--urcu-repo", required=True)
+    parser.add_argument("--urcu-branch", required=True)
+    parser.add_argument("--bt-repo", required=True)
+    parser.add_argument("--bt-branch", required=True)
+    parser.add_argument("--ci-repo", required=True)
     parser.add_argument("--ci-branch", required=False, default="master")
+    parser.add_argument("--debug", action="store_true")
+
     args = parser.parse_args()
 
+    # Parse test type
     if args.type not in TestType.values:
         print("argument -t/--type {} unrecognized.".format(args.type))
         print("Possible values are:")
@@ -214,6 +150,14 @@ def main():
             print("\t {}".format(k))
         return -1
 
+    test_type = TestType.values[args.type]
+
+    if test_type is TestType.baremetal_tests:
+        device_type = DeviceType.x86
+    else:
+        device_type = DeviceType.kvm
+
+    # Get the S3 secret from the environment
     lava_api_key = None
     if not args.debug:
         try:
@@ -225,25 +169,7 @@ def main():
             )
             return -1
 
-    jinja_loader = FileSystemLoader(os.path.dirname(os.path.realpath(__file__)))
-    jinja_env = Environment(loader=jinja_loader, trim_blocks=True, lstrip_blocks=True)
-    jinja_template = jinja_env.get_template("template_lava_job.yml.jinja2")
-
-    test_type = TestType.values[args.type]
-
-    if test_type is TestType.baremetal_tests:
-        device_type = DeviceType.x86
-    else:
-        device_type = DeviceType.kvm
-
-    vlttng_opts = get_vlttng_opts(
-        args.lttng_version,
-        args.tools_url,
-        args.tools_commit,
-        args.ust_url,
-        args.ust_commit,
-    )
-
+    # Parse the lttng version string
     if args.lttng_version == "master":
         lttng_version_string = "master"
     elif args.lttng_version == "canary":
@@ -252,24 +178,33 @@ def main():
         major, minor = parse_stable_version(args.lttng_version)
         lttng_version_string = str(major) + "." + str(minor)
 
+    # Context for the lava job template
     context = dict()
     context["DeviceType"] = DeviceType
     context["TestType"] = TestType
 
     context["job_name"] = args.jobname
     context["test_type"] = test_type
-    context["random_seed"] = random.randint(0, 1000000)
     context["device_type"] = device_type
 
-    context["vlttng_opts"] = vlttng_opts
+    context["tools_repo"] = args.tools_repo
+    context["tools_commit"] = args.tools_commit
+
+    context["ust_repo"] = args.ust_repo
+    context["ust_commit"] = args.ust_commit
+
+    context["urcu_repo"] = args.urcu_repo
+    context["urcu_branch"] = args.urcu_branch
+
+    context["bt_repo"] = args.bt_repo
+    context["bt_branch"] = args.bt_branch
+
     context["lttng_version_string"] = lttng_version_string
 
-    context["kernel_url"] = args.kernel
-    context["nfsrootfs_url"] = args.rootfs_url
-    context["lttng_modules_url"] = args.lmodule
-    context["jenkins_build_id"] = args.build_id
-
-    context["kprobe_round_nb"] = 10
+    context["kernel_url"] = args.kernel_url
+    context["rootfs_url"] = args.rootfs_url
+    context["modules_url"] = args.modules_url
+    context["jenkins_build_id"] = args.jenkins_build_id
 
     context["ci_repo"] = args.ci_repo
     context["ci_branch"] = args.ci_branch
@@ -281,6 +216,10 @@ def main():
     context["s3_bucket"] = S3_BUCKET
     context["s3_base_dir"] = S3_BASE_DIR
 
+    # Render the lava job template
+    jinja_loader = FileSystemLoader(os.path.dirname(os.path.realpath(__file__)))
+    jinja_env = Environment(loader=jinja_loader, trim_blocks=True, lstrip_blocks=True)
+    jinja_template = jinja_env.get_template("template_lava_job.yml.jinja2")
     render = jinja_template.render(context)
 
     print("Job to be submitted:")
@@ -294,6 +233,7 @@ def main():
         "%s://%s:%s@%s/RPC2" % (LAVA_PROTO, LAVA_USERNAME, lava_api_key, LAVA_HOST)
     )
 
+    # Submit the job to lava
     for attempt in range(1, send_retry_limit + 1):
         try:
             jobid = server.scheduler.submit_job(render)

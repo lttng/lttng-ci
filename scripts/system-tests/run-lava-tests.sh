@@ -39,17 +39,21 @@ set -eu
 pip install pyyaml Jinja2
 
 python -u "$WORKSPACE/src/lttng-ci/scripts/system-tests/lava2-submit.py" \
-                          -t "$BUILD_DEVICE-tests" \
-                          -lv "$LTTNG_VERSION" \
-                          -j "$JOB_NAME" \
-                          -k "$S3_HTTP_URL_KERNEL_IMAGE" \
-                          -lm "$S3_HTTP_URL_LTTNG_MODULES" \
-                          -tu "$LTTNG_TOOLS_REPO" \
-                          -uu "$LTTNG_UST_REPO" \
-                          -tc "$LTTNG_TOOLS_COMMIT_ID" \
-                          -uc "$LTTNG_UST_COMMIT_ID" \
-                          -id "$BUILD_TAG" \
-                          -r "$ROOTFS_URL" \
+                          --type "$BUILD_DEVICE-tests" \
+                          --lttng-version "$LTTNG_VERSION" \
+                          --job "$JOB_NAME" \
+                          --jenkins-build-id "$BUILD_TAG" \
+                          --kernel-url "$S3_HTTP_URL_KERNEL_IMAGE" \
+                          --modules-url "$S3_HTTP_URL_LTTNG_MODULES" \
+                          --rootfs-url "$ROOTFS_URL" \
+                          --tools-repo "$LTTNG_TOOLS_REPO" \
+                          --tools-commit "$LTTNG_TOOLS_COMMIT_ID" \
+                          --ust-repo "$LTTNG_UST_REPO" \
+                          --ust-commit "$LTTNG_UST_COMMIT_ID" \
+                          --urcu-repo "$URCU_REPO" \
+                          --urcu-branch "$URCU_BRANCH" \
+                          --bt-repo "$BT_REPO" \
+                          --bt-branch "$BT_BRANCH" \
                           --ci-repo "$LTTNG_CI_REPO" \
                           --ci-branch "$LTTNG_CI_BRANCH"
 

@@ -5,32 +5,17 @@
 
 set -exu
 
-export TMPDIR="/tmp"
-
 # Move the home directory to the local disk so we don't run the test suite on NFS
-cp -pr /root "$TMPDIR/"
-export HOME="$TMPDIR/root"
+cp -pr /root "$SCRATCH_DIR/"
+export HOME="$SCRATCH_DIR/root"
 
 # Setup coredumps
-mkdir -p "$TMPDIR/coredump"
-echo "$TMPDIR/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
+mkdir -p "$SCRATCH_DIR/coredump"
+echo "$SCRATCH_DIR/coredump/core.%e.%p.%h.%t" > /proc/sys/kernel/core_pattern
 ulimit -c unlimited
 
-set +ux
-# Active the python venv for vlttng
-# shellcheck disable=SC1091
-. "$TMPDIR/python-venv/bin/activate"
-
-# Activate the vlttng env
-# shellcheck disable=SC1091
-. "$TMPDIR/vlttng-venv/activate"
-set -ux
-
-# Enter the lttng-tools source directory
-cd $TMPDIR/vlttng-venv/src/lttng-tools
-
-# Enter the lttng-tools source directory
-lava-test-case build-test-suite --shell make -j "$(nproc)"
+# FIXME: Enter the lttng-tools source directory
+cd "$WORKSPACE/src/lttng-tools"
 
 # Need to check if the file is present for branches where the testcase was not backported
 if [ -f "./tests/perf_regression" ]; then

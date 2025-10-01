@@ -112,7 +112,7 @@ failed_configure() {
 os_field() {
     field=$1
     if [ -f /etc/os-release ]; then
-        echo $(source /etc/os-release; echo ${!field})
+        echo "$(source /etc/os-release; echo "${!field}")"
     fi
 }
 
@@ -144,7 +144,7 @@ USERSPACE_RCU_CLANG_TIDY="${USERSPACE_RCU_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/liburcu"
 TMPDIR="$WORKSPACE/tmp"
-PREFIX="/build"
+PREFIX="${PREFIX:-/build}"
 LIBDIR="lib"
 LIBDIR_ARCH="$LIBDIR"
 
@@ -384,14 +384,14 @@ $BEAR ${BEAR:+--} $MAKE -j "$($NPROC)" V=1
 if [ "$USERSPACE_RCU_MAKE_INSTALL" = "yes" ]; then
     print_header "Install"
 
-    $MAKE install V=1 DESTDIR="$WORKSPACE"
+    $MAKE install V=1 DESTDIR="${DESTDIR:-$WORKSPACE}"
 
     # Cleanup rpath in executables and shared libraries
     #find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
+    find "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
 
     # Remove libtool .la files
-    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
+    find "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
 fi
 
 # Run clang-tidy on the topmost commit

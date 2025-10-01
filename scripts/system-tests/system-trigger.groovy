@@ -261,6 +261,7 @@ def LaunchJob = { jobName, jobInfo ->
     println(String.format("Failed to find job by name '%s'", jobName))
     return null;
   }
+
   def params = []
   for (paramdef in job.getProperty(ParametersDefinitionProperty.class).getParameterDefinitions()) {
     // If there is a default value for this parameter, use it. Don't use empty
@@ -274,6 +275,9 @@ def LaunchJob = { jobName, jobInfo ->
   params.add(new StringParameterValue('LTTNG_MODULES_COMMIT_ID', jobInfo['config']['modulesCommit']))
   params.add(new StringParameterValue('LTTNG_UST_COMMIT_ID', jobInfo['config']['ustCommit']))
   params.add(new StringParameterValue('KERNEL_COMMIT_ID', jobInfo['config']['linuxCommit']))
+  params.add(new StringParameterValue('URCU_BRANCH', jobInfo['config']['urcuBranch']))
+  params.add(new StringParameterValue('BT_BRANCH', jobInfo['config']['btBranch']))
+
   def currBuild = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(params))
 
   if (currBuild != null ) {
@@ -285,10 +289,11 @@ def LaunchJob = { jobName, jobInfo ->
   return currBuild
 }
 
-final String toolsRepo = "https://github.com/lttng/lttng-tools.git"
-final String modulesRepo = "https://github.com/lttng/lttng-modules.git"
-final String ustRepo = "https://github.com/lttng/lttng-ust.git"
-final String linuxRepo = "git://git-mirror.internal.efficios.com/kernel/stable/linux.git"
+// Retrieve parameters of the current build
+def toolsRepo = build.buildVariableResolver.resolve('LTTNG_TOOLS_REPO')
+def modulesRepo = build.buildVariableResolver.resolve('LTTNG_MODULES_REPO')
+def ustRepo = build.buildVariableResolver.resolve('LTTNG_UST_REPO')
+def linuxRepo = build.buildVariableResolver.resolve('KERNEL_REPO')
 
 final String pastJobsPath = build.getEnvironment(listener).get('WORKSPACE') + "/pastjobs";
 
@@ -346,17 +351,36 @@ def ustHeadCommits = GetHeadCommits(ustRepo, lttngBranchesOfInterest)
 // For Linux branches, we look for new non-RC tags.
 def linuxLastTagIds = GetLastTagIds(linuxRepo, linuxBranchesOfInterest)
 
-def CraftConfig = { linuxBr, lttngBr ->
+def CraftConfig = { linuxBranch, lttngBranch ->
   def job = [:];
   job['config'] = [:];
-  job['config']['linuxBranch'] = linuxBr;
-  job['config']['lttngBranch'] = lttngBr;
-  job['config']['linuxCommit'] = linuxLastTagIds[linuxBr];
-  job['config']['toolsCommit'] = toolsHeadCommits[lttngBr];
-  job['config']['modulesCommit'] = modulesHeadCommits[lttngBr];
-  job['config']['ustCommit'] = ustHeadCommits[lttngBr];
+  job['config']['linuxBranch'] = linuxBranch;
+  job['config']['lttngBranch'] = lttngBranch;
+  job['config']['linuxCommit'] = linuxLastTagIds[linuxBranch];
+  job['config']['toolsCommit'] = toolsHeadCommits[lttngBranch];
+  job['config']['modulesCommit'] = modulesHeadCommits[lttngBranch];
+  job['config']['ustCommit'] = ustHeadCommits[lttngBranch];
   job['status'] = 'NOT_SET';
   job['build'] = null;
+
+  // Select the userspace-rcu branch
+  if (lttngBranch == "master") {
+    job['config']['urcuBranch'] = "master";
+  } else if (lttngBranch == "stable-2.14") {
+    job['config']['urcuBranch'] = "stable-0.15";
+  } else {
+    job['config']['urcuBranch'] = "stable-0.14";
+  }
+
+  // Select the babeltrace branch
+  if (lttngBranch == "master") {
+    job['config']['btBranch'] = "master";
+  } else if (lttngBranch == "stable-2.14") {
+    job['config']['btBranch'] = "stable-2.1";
+  } else {
+    job['config']['btBranch'] = "stable-1.5";
+  }
+
   return job;
 }
 
@@ -364,6 +388,8 @@ def CraftConfig = { linuxBr, lttngBr ->
 triggerJobName = build.project.getFullDisplayName();
 if (triggerJobName.contains("vm_tests")) {
   jobType = 'vm_tests';
+
+  // Add VM specific kernel branches to the configurations
   recentLttngBranchesOfInterest.each { lttngBranch ->
     vmLinuxBranchesOfInterest.each { linuxBranch ->
       configurationOfInterest.add([lttngBranch, linuxBranch])
@@ -394,6 +420,8 @@ currentJobs[jobNameCanary]['config']['linuxCommit'] ='9d6bde853685609a631871d7c1
 currentJobs[jobNameCanary]['config']['toolsCommit'] = '2ff0385718ff894b3d0e06f3961334c20c5436f8' // v2.13.9
 currentJobs[jobNameCanary]['config']['modulesCommit'] = 'da1f5a264fff33fc5a9518e519fb0084bf1074af' // v2.13.9
 currentJobs[jobNameCanary]['config']['ustCommit'] = 'de624c20694f69702b42c5d47b5bcf692293a238' // v2.13.5
+currentJobs[jobNameCanary]['config']['urcuBranch'] = 'v0.14.1';
+currentJobs[jobNameCanary]['config']['btBranch'] = 'v1.5.11';
 currentJobs[jobNameCanary]['status'] = 'NOT_SET';
 currentJobs[jobNameCanary]['build'] = null;
 

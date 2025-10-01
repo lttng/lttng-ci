@@ -73,13 +73,12 @@ function test_timeout
     return "${?}"
 }
 
-export TMPDIR="/tmp"
-export COREDUMP_DIR="$TMPDIR/coredump"
-export LOG_DIR="$TMPDIR/log"
+export COREDUMP_DIR="$SCRATCH_DIR/coredump"
+export LOG_DIR="$SCRATCH_DIR/log"
 
 # Move the home directory to the local disk so we don't run the test suite on NFS
-cp -pr /root $TMPDIR/
-export HOME=$TMPDIR/root
+cp -pr /root "$SCRATCH_DIR/"
+export HOME=$SCRATCH_DIR/root
 
 # Setup coredumps
 mkdir -p "$COREDUMP_DIR"
@@ -89,15 +88,14 @@ ulimit -c unlimited
 # Create log directory
 mkdir -p "$LOG_DIR"
 
-set +ux
-# Active the python venv for vlttng
-# shellcheck disable=SC1091
-. "$TMPDIR/python-venv/bin/activate"
+# Set the environment
+export PREFIX="$SCRATCH_DIR/opt"
+export LD_LIBRARY_PATH="$PREFIX/lib"
+export PATH="$PREFIX/bin:$PATH"
+export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 
-# Activate the vlttng env
-# shellcheck disable=SC1091
-. "$TMPDIR/vlttng-venv/activate"
-set -ux
+P3_VERSION=$(python3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
+export PYTHONPATH="$PREFIX/lib/python$P3_VERSION/site-packages"
 
 # Allow the destructive tests to run
 export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
@@ -106,10 +104,7 @@ export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 timedatectl set-ntp false
 
 # Enter the lttng-tools source directory
-cd "$TMPDIR/vlttng-venv/src/lttng-tools"
-
-# Build the test suite
-lava-test-case build-test-suite --shell make -j "$(nproc)"
+cd "$WORKSPACE/src/lttng-tools"
 
 # When make check is interrupted, the default test driver
 # (`config/test-driver`) will still delete the log and trs
@@ -120,7 +115,7 @@ lava-test-case run-test-suite --result $test_result
 
 # Archive the test logs produced by 'make check'
 if [ "${test_result}" == "fail" ] ; then
-    find tests/ -iname '*.trs' -print0 -or -iname '*.log' -print0 | tar cJf $LOG_DIR/logs.tar.xz --null -T -
+    find tests/ -iname '*.trs' -print0 -or -iname '*.log' -print0 | tar cJf "$LOG_DIR/logs.tar.xz" --null -T -
 fi
 
 # This was removed in stable-2.15

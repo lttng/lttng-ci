@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -exu
+set -o pipefail
 
 function upload_artifact()
 {
@@ -21,8 +22,6 @@ function upload_artifact()
         "https://${S3_HOST}/${S3_BUCKET}/${S3_BASE_DIR}/results/${JENKINS_BUILD_ID}/$filename"
 }
 
-export TMPDIR="/tmp"
-
 # Fetch the S3 keys stored in secrets
 set +x
 # shellcheck disable=SC1091
@@ -31,12 +30,12 @@ echo "user = \"$S3_ACCESS_KEY:$S3_SECRET_KEY\"" > s3curlrc
 set -x
 
 # Upload the log files
-if [ -f "$TMPDIR/log/logs.tar.xz" ]; then
-    upload_artifact "$TMPDIR/log/logs.tar.xz"
+if [ -f "$SCRATCH_DIR/log/logs.tar.xz" ]; then
+    upload_artifact "$SCRATCH_DIR/log/logs.tar.xz"
 fi
 
 # Upload the coredumps
-if [ -z "$(find $TMPDIR/coredump -maxdepth 0 -type d -empty)" ]; then
-    tar cJf "$TMPDIR/coredump.tar.xz" $TMPDIR/coredump
-    upload_artifact "$TMPDIR/coredump.tar.xz"
+if [ -z "$(find "$SCRATCH_DIR/coredump" -maxdepth 0 -type d -empty)" ]; then
+    tar cJf "$SCRATCH_DIR/coredump.tar.xz" "$SCRATCH_DIR/coredump"
+    upload_artifact "$SCRATCH_DIR/coredump.tar.xz"
 fi

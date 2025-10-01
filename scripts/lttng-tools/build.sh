@@ -133,7 +133,7 @@ set_execute_traversal_bit()
 os_field() {
     field=$1
     if [ -f /etc/os-release ]; then
-        echo $(source /etc/os-release; echo ${!field})
+        echo "$(source /etc/os-release; echo "${!field}")"
     fi
 }
 
@@ -170,9 +170,10 @@ LTTNG_TOOLS_CLANG_TIDY="${LTTNG_TOOLS_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
 TAPDIR="$WORKSPACE/tap"
-PREFIX="/build"
+PREFIX="${PREFIX:-/build}"
 LIBDIR="lib"
 LIBDIR_ARCH="$LIBDIR"
+DEPSDIR="$WORKSPACE/deps"
 
 # RHEL and SLES both use lib64 but don't bother shipping a default autoconf
 # site config that matches this.
@@ -183,17 +184,35 @@ if [[ ( -f /etc/redhat-release || -f /etc/products.d/SLES.prod || -f /etc/yocto-
     fi
 fi
 
-DEPS_INC="$WORKSPACE/deps/build/include"
-DEPS_LIB="$WORKSPACE/deps/build/$LIBDIR_ARCH"
-DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
-DEPS_BIN="$WORKSPACE/deps/build/bin"
-DEPS_JAVA="$WORKSPACE/deps/build/share/java"
+# When dependencies are present, adjust the environment
+if [ -d "$DEPSDIR" ]; then
+    DEPS_INC="$DEPSDIR/$PREFIX/include"
+    DEPS_LIB="$DEPSDIR/$PREFIX/$LIBDIR_ARCH"
+    DEPS_PKGCONFIG="$DEPS_LIB/pkgconfig"
+    DEPS_BIN="$DEPSDIR/$PREFIX/bin"
+    DEPS_JAVA="$DEPSDIR/$PREFIX/share/java"
 
-export PATH="$DEPS_BIN:$PATH"
-export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
-export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
-export CPPFLAGS="-I$DEPS_INC"
-export LDFLAGS="-L$DEPS_LIB"
+    export PATH="$DEPS_BIN:$PATH"
+    export LD_LIBRARY_PATH="$DEPS_LIB:${LD_LIBRARY_PATH:-}"
+    export PKG_CONFIG_PATH="$DEPS_PKGCONFIG"
+    export JAVA_PATH="$DEPS_JAVA"
+
+    export CPPFLAGS="-I$DEPS_INC"
+    export LDFLAGS="-L$DEPS_LIB"
+
+    # Create a symlink to "babeltrace" when the "babeltrace2" executable is found.
+    # This is a temporary workaround until lttng-tools either allows the override of
+    # the trace reader in its test suite or that we move to only supporting
+    # babeltrace2
+    if [ -x "$DEPS_BIN/babeltrace2" ]; then
+        ln -s "$DEPS_BIN/babeltrace2" "$DEPS_BIN/babeltrace"
+    fi
+
+    # When using babeltrace2 make sure that it finds its plugins and
+    # plugin-providers.
+    export BABELTRACE_PLUGIN_PATH="$DEPS_LIB/babeltrace2/plugins/"
+    export LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="$DEPS_LIB/babeltrace2/plugin-providers/"
+fi
 
 exit_status=0
 
@@ -213,19 +232,6 @@ mkdir -p "$TMPDIR"
 tmpdir="$(mktemp)"
 ln -sf "$TMPDIR" "$tmpdir"
 export TMPDIR="$tmpdir"
-
-# Create a symlink to "babeltrace" when the "babeltrace2" executable is found.
-# This is a temporary workaround until lttng-tools either allows the override of
-# the trace reader in its test suite or that we move to only supporting
-# babeltrace2
-if [ -x "$DEPS_BIN/babeltrace2" ]; then
-    ln -s "$DEPS_BIN/babeltrace2" "$DEPS_BIN/babeltrace"
-fi
-
-# When using babeltrace2 make sure that it finds its plugins and
-# plugin-providers.
-export BABELTRACE_PLUGIN_PATH="$DEPS_LIB/babeltrace2/plugins/"
-export LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="$DEPS_LIB/babeltrace2/plugin-providers/"
 
 export CFLAGS="-g -O2"
 export CXXFLAGS="-g -O2"
@@ -284,25 +290,27 @@ cygwin|cygwin64|msys32|msys64)
     export PYTHON="${PYTHON:-python3}"
     export PYTHON_CONFIG="${PYTHON:-python3}-config"
 
-    if command -v $PYTHON2 >/dev/null 2>&1; then
-        P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
-        DEPS_PYTHON2="$WORKSPACE/deps/build/$LIBDIR/python$P2_VERSION/site-packages"
-        if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
-            DEPS_PYTHON2="$DEPS_PYTHON2:$WORKSPACE/deps/build/$LIBDIR_ARCH/python$P2_VERSION/site-packages"
+    if [ -d "$DEPSDIR" ]; then
+        if command -v $PYTHON2 >/dev/null 2>&1; then
+            P2_VERSION=$($PYTHON2 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
+            DEPS_PYTHON2="$WORKSPACE/deps/build/$LIBDIR/python$P2_VERSION/site-packages"
+            if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
+                DEPS_PYTHON2="$DEPS_PYTHON2:$WORKSPACE/deps/build/$LIBDIR_ARCH/python$P2_VERSION/site-packages"
+            fi
         fi
+
+        P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
+
+        # Temporary fix for an issue on debian python >= 3.10, add the 'local' prefix
+        DEPS_PYTHON3="$WORKSPACE/deps/build/$LIBDIR/python$P3_VERSION/site-packages:$WORKSPACE/deps/build/local/$LIBDIR/python$P3_VERSION/dist-packages"
+        if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
+            DEPS_PYTHON3="$DEPS_PYTHON3:$WORKSPACE/deps/build/$LIBDIR_ARCH/python$P3_VERSION/site-packages"
+        fi
+
+        # Most build configs require access to the babeltrace 2 python bindings.
+        # This also makes the lttngust python agent available for `agents` builds.
+        export PYTHONPATH="${DEPS_PYTHON2:-}${DEPS_PYTHON2:+:}$DEPS_PYTHON3"
     fi
-
-    P3_VERSION=$($PYTHON3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
-
-    # Temporary fix for an issue on debian python >= 3.10, add the 'local' prefix
-    DEPS_PYTHON3="$WORKSPACE/deps/build/$LIBDIR/python$P3_VERSION/site-packages:$WORKSPACE/deps/build/local/$LIBDIR/python$P3_VERSION/dist-packages"
-    if [ "$LIBDIR" != "$LIBDIR_ARCH" ]; then
-        DEPS_PYTHON3="$DEPS_PYTHON3:$WORKSPACE/deps/build/$LIBDIR_ARCH/python$P3_VERSION/site-packages"
-    fi
-
-    # Most build configs require access to the babeltrace 2 python bindings.
-    # This also makes the lttngust python agent available for `agents` builds.
-    export PYTHONPATH="${DEPS_PYTHON2:-}${DEPS_PYTHON2:+:}$DEPS_PYTHON3"
     ;;
 esac
 
@@ -364,6 +372,7 @@ DIST_CONF_OPTS=("--disable-maintainer-mode")
 if [[ "$platform" = yocto* ]]; then
     CONF_OPTS+=("--disable-man-pages")
 fi
+
 # Set configure options and environment variables for each build
 # configuration.
 case "$conf" in
@@ -393,7 +402,7 @@ agents)
     fi
 
     # Some distros don't ship python2 anymore
-    if command -v $PYTHON2 >/dev/null 2>&1; then
+    if command -v "$PYTHON2" >/dev/null 2>&1; then
         CONF_OPTS+=("--enable-test-python-agent-all")
     else
         CONF_OPTS+=("--enable-test-python3-agent")
@@ -419,6 +428,12 @@ debug-rcu)
     export CPPFLAGS="$CPPFLAGS -DDEBUG_RCU"
     ;;
 
+system-tests)
+    print_header "Conf: System tests config"
+
+    CONF_OPTS+=("--enable-python-bindings" "--enable-test-sdt-uprobe" "--disable-man-pages")
+    ;;
+
 *)
     print_header "Conf: Standard"
 
@@ -435,7 +450,7 @@ if [[ -z "${JAVA_HOME:-}" ]] ; then
     export JAVA_HOME="/usr/lib/jvm/default-java"
 fi
 
-export CLASSPATH="$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
+export CLASSPATH="$JAVA_PATH/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
 case "${java_preferred_jdk}" in
     'default')
         ;;
@@ -446,7 +461,7 @@ case "${java_preferred_jdk}" in
                 export PATH="/usr/${LIBDIR_ARCH}/jvm/java-1.8.0-openjdk-1.8.0/bin:/usr/${LIBDIR_ARCH}/jvm/jre-1.8.0-openjdk/bin:${PATH}"
                 SLES_VERSION="$(grep -E '</version>' /etc/products.d/SLES.prod | grep -E -o '[0-9]+\.[0-9]+')"
                 if vergte "${SLES_VERSION}" "15.4" ; then
-                    export CLASSPATH="${DEPS_JAVA}/lttng-ust-agent-all.jar:/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar"
+                    export CLASSPATH="${JAVA_PATH}/lttng-ust-agent-all.jar:/usr/share/java/log4j/log4j-api.jar:/usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j12/log4j-12.jar"
                 fi
                 ;;
             'ci') # yocto
@@ -547,17 +562,17 @@ $BEAR ${BEAR:+--} $MAKE -j "$($NPROC)" V=1
 if [ "$LTTNG_TOOLS_MAKE_INSTALL" = "yes" ]; then
     print_header "Install"
 
-    $MAKE install V=1 DESTDIR="$WORKSPACE"
+    $MAKE install V=1 DESTDIR="${DESTDIR:-$WORKSPACE}"
 
     # Cleanup rpath in executables
-    find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+    find "${DESTDIR:-$WORKSPACE}/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
 
     # Some configs don't build liblttng-ctl
-    if [ -d "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" ]; then
+    if [ -d "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" ]; then
         # Cleanup rpath in shared libraries
-        find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
+        find "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
         # Remove libtool .la files
-        find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
+        find "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
     fi
 fi
 

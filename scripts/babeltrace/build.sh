@@ -152,7 +152,7 @@ BABELTRACE_CLANG_TIDY="${BABELTRACE_CLANG_TIDY:-no}"
 
 SRCDIR="$WORKSPACE/src/babeltrace"
 TMPDIR="$WORKSPACE/tmp"
-PREFIX="/build"
+PREFIX="${PREFIX:-/build}"
 LIBDIR="lib"
 LIBDIR_ARCH="$LIBDIR"
 
@@ -346,6 +346,10 @@ min)
     if [[ "$platform" = yocto* ]]; then
         CONF_OPTS+=("--disable-man-pages")
     fi
+
+    if [[ "$conf" = system-tests ]]; then
+        CONF_OPTS+=("--disable-man-pages")
+    fi
     ;;
 esac
 
@@ -431,14 +435,14 @@ $BEAR ${BEAR:+--} $MAKE -j "$($NPROC)" V=1
 if [ "$BABELTRACE_MAKE_INSTALL" = "yes" ]; then
     print_header "Install"
 
-    $MAKE install V=1 DESTDIR="$WORKSPACE"
+    $MAKE install V=1 DESTDIR="${DESTDIR:-$WORKSPACE}"
 
     # Cleanup rpath in executables and shared libraries
-    find "$WORKSPACE/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
-    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
+    find "${DESTDIR:-$WORKSPACE}/$PREFIX/bin" -type f -perm -0500 -exec chrpath --delete {} \;
+    find "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" -name "*.so" -exec chrpath --delete {} \;
 
     # Remove libtool .la files
-    find "$WORKSPACE/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
+    find "${DESTDIR:-$WORKSPACE}/$PREFIX/$LIBDIR_ARCH" -name "*.la" -delete
 fi
 
 # Run clang-tidy on the topmost commit
