@@ -41,8 +41,6 @@ function test_timeout
             echo "Command '${*}' timed out (${TIMEOUT} minutes) " \
                  "attempting to get backtraces for lttng/babeltrace binaries"
 
-            apt-get install -y --force-yes gdb
-
             # Abort all lttng-sessiond, lttng, lttng-relayd, lttng-consumerd,
             # and babeltrace process so there are coredumps available.
             PIDS=$(pgrep 'babeltrace*|[l]ttng*')
@@ -55,10 +53,6 @@ function test_timeout
 
             # Send sigterm to make
             kill "${PID}"
-
-            # Cleanup, to hopefully not interfere with future tests
-            apt-get purge -y gdb
-            apt-get autoremove -y
         fi
     done
 

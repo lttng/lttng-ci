@@ -41,6 +41,7 @@ packages = [
     "curl",
     "elfutils",
     "flex",
+    "gdb",
     "gettext",
     "git",
     "htop",
