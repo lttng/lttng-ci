@@ -1365,7 +1365,8 @@
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_master_root_linuxbuild
           nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master")))'
+          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
+          filter: '((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="master" && babeltrace_version=="stable-2.1")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - '{job_prefix}lttng-tools_{version}_root_{cctype}': &job_lttng-tools_master_root_clangbuild
           cctype: clangbuild
@@ -1502,7 +1503,8 @@
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_linuxbuild
           nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
-          filter: '((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-2.14")))'
+          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
+          filter: '((node=="deb13-amd64-rootnode" && platform=="deb13-amd64") && (modules_aligned_access=="default" || (modules_aligned_access="force" && liburcu_version=="stable-0.15" && babeltrace_version=="stable-2.1")))'
           modules_aligned_access: !!python/tuple ['default', 'force']
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-14_root_portbuild
           buildtype: portbuild
@@ -1625,6 +1627,7 @@
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_linuxbuild
           nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
+          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(node=="deb13-amd64-rootnode" && platform == "deb13-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}': &job_lttng-tools_stable-2-13_root_portbuild
           buildtype: portbuild
@@ -1746,6 +1749,7 @@
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           nodes: !!python/tuple [deb12-amd64-rootnode-linux5]
           confs: !!python/tuple [agents]
+          babelversions: !!python/tuple [stable-2.0, stable-2.1, master]
           filter: '(node=="deb12-amd64-rootnode-linux5" && platform=="deb12-amd64")'
       - '{job_prefix}lttng-tools_{version}_root_{buildtype}':
           buildtype: slesbuild
