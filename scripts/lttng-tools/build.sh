@@ -669,6 +669,11 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         cd ..
     fi
 
+    if [[ "${GERRIT_CI_BUILD_VALUE:-}" != "" ]] && [ "${GERRIT_CI_BUILD_VALUE:-3}" -lt "3" ]; then
+        echo "Disabling lttng-ust-java tests for CI-Build < 3" >&2
+        LTTNG_TOOLS_RUN_UST_JAVA_TESTS="no"
+    fi
+
     if [ "$LTTNG_TOOLS_RUN_UST_JAVA_TESTS" = "yes" ] && [ "$LTTNG_TOOLS_MAKE_INSTALL" = "yes" ] && [ "$conf" = "agents" ] ; then
         print_header "Run lttng-ust-java-tests"
         # Git Source
