@@ -28,17 +28,7 @@ set -exu
 S3_HTTP_URL_KERNEL_IMAGE="$S3_HTTP_BUCKET_URL/$S3_BASE_DIR/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage"
 S3_HTTP_URL_LTTNG_MODULES="$S3_HTTP_BUCKET_URL/$S3_BASE_DIR/modules/$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.xz"
 
-venv=$(mktemp -d)
-virtualenv -p python3 "$venv"
-
-set +eu
-# shellcheck disable=SC1091
-source "${venv}/bin/activate"
-set -eu
-
-pip install pyyaml Jinja2
-
-python -u "$WORKSPACE/src/lttng-ci/scripts/system-tests/lava2-submit.py" \
+python3 -u "$WORKSPACE/src/lttng-ci/scripts/system-tests/lava2-submit.py" \
                           --type "$BUILD_DEVICE-tests" \
                           --lttng-version "$LTTNG_VERSION" \
                           --job "$JOB_NAME" \
@@ -56,9 +46,3 @@ python -u "$WORKSPACE/src/lttng-ci/scripts/system-tests/lava2-submit.py" \
                           --bt-branch "$BT_BRANCH" \
                           --ci-repo "$LTTNG_CI_REPO" \
                           --ci-branch "$LTTNG_CI_BRANCH"
-
-set +eu
-deactivate
-set -eu
-
-rm -rf "$venv"
