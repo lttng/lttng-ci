@@ -16,7 +16,7 @@ lava_devices:
     vars:
       connection_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system console --force lava-node-amd64-02'
       hard_reset_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-02'
-      power_off_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset --force lava-node-amd64-02'
+      power_off_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-02'
       power_on_command: 'virsh --connect qemu+ssh://ci-host-amd64-2d.internal.efficios.com/system reset lava-node-amd64-02'
       boot_character_delay: '100'
   - name: 'lava-node-amd64-03'
