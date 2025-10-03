@@ -6,6 +6,25 @@
 set -exu
 set -o pipefail
 
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
+}
+
 function upload_artifact()
 {
     local filepath=$1
@@ -31,11 +50,13 @@ set -x
 
 # Upload the log files
 if [ -f "$SCRATCH_DIR/log/logs.tar.xz" ]; then
+    print_header "Upload tests logs to object storage"
     upload_artifact "$SCRATCH_DIR/log/logs.tar.xz"
 fi
 
 # Upload the coredumps
 if [ -z "$(find "$SCRATCH_DIR/coredump" -maxdepth 0 -type d -empty)" ]; then
+    print_header "Upload coredumps to object storage"
     tar cJf "$SCRATCH_DIR/coredump.tar.xz" "$SCRATCH_DIR/coredump"
     upload_artifact "$SCRATCH_DIR/coredump.tar.xz"
 fi

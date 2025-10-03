@@ -5,6 +5,25 @@
 
 set -exu
 
+print_header() {
+    set +x
+
+    local message=" $1 "
+    local message_len
+    local padding_len
+
+    message_len="${#message}"
+    padding_len=$(( (80 - (message_len)) / 2 ))
+
+    printf '\n'; printf -- '#%.0s' {1..80}; printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' $(seq 1 $padding_len); printf '%s' "$message"; printf -- '#%.0s' $(seq 1 $padding_len); printf '\n'
+    printf -- '-%.0s' {1..80}; printf '\n'
+    printf -- '#%.0s' {1..80}; printf '\n\n'
+
+    set -x
+}
+
 # shellcheck disable=SC2317
 function cleanup
 {
@@ -106,6 +125,8 @@ timedatectl set-ntp false
 # Enter the lttng-tools source directory
 cd "$WORKSPACE/src/lttng-tools"
 
+print_header "Run full test suite"
+
 # When make check is interrupted, the default test driver
 # (`config/test-driver`) will still delete the log and trs
 # files for the currently running test.
@@ -120,6 +141,7 @@ fi
 
 # This was removed in stable-2.15
 if [ -f "./tests/root_regression" ]; then
+    print_header "Run root_regression tests"
     cd "./tests"
     test_result="pass"
     prove --nocolor --verbose --merge --exec '' - < root_regression || test_result="fail"
@@ -129,6 +151,7 @@ fi
 
 # This was removed in stable-2.14
 if [ -f "./tests/root_destructive_tests" ]; then
+    print_header "Run root_destructive tests"
     cd "./tests"
     test_result="pass"
     prove --nocolor --verbose --merge --exec '' - < root_destructive_tests || test_result="fail"
