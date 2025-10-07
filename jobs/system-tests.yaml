@@ -417,6 +417,17 @@
     view-type: list
     regex: 'vm_tests_.*|baremetal_tests_.*|baremetal_benchmarks_.*|system_.*'
 
+- project:
+    name: system-tests-canary
+    email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
+    kversion:
+      - canary
+    lttngversion:
+      - canary
+    jobs:
+      - 'vm_tests_k{kversion}_l{lttngversion}'
+      - 'baremetal_tests_k{kversion}_l{lttngversion}'
+
 # Test against particular linux version.
 
 # Test against upstream Linux supported LTS branches and the SLTS v4.4
@@ -424,7 +435,6 @@
     name: system-tests
     email_to: 'ci-notification@lists.lttng.org, cc:jgalar@efficios.com'
     kversion:
-      - canary
       - linux-4.4.y
       - linux-5.10.y
       - linux-5.15.y
@@ -432,7 +442,6 @@
       - linux-6.6.y
       - linux-6.12.y
     lttngversion:
-      - canary
       - master
       - stable-2.14
       - stable-2.13

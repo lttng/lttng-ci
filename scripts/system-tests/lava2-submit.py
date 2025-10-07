@@ -26,19 +26,6 @@ S3_HOST = os.environ.get("S3_HOST")
 S3_BUCKET = os.environ.get("S3_BUCKET")
 S3_BASE_DIR = os.environ.get("S3_BASE_DIR")
 
-def parse_stable_version(stable_version_string):
-    # Get the major and minor version numbers from the lttng version string.
-    version_match = re.search(r"stable-(\d).(\d\d)", stable_version_string)
-
-    if version_match is not None:
-        major_version = int(version_match.group(1))
-        minor_version = int(version_match.group(2))
-    else:
-        # Setting to zero to make the comparison below easier.
-        major_version = 0
-        minor_version = 0
-    return major_version, minor_version
-
 
 class TestType:
     """Enum like for test type"""
@@ -169,15 +156,6 @@ def main():
             )
             return -1
 
-    # Parse the lttng version string
-    if args.lttng_version == "master":
-        lttng_version_string = "master"
-    elif args.lttng_version == "canary":
-        lttng_version_string = "2.13"
-    else:
-        major, minor = parse_stable_version(args.lttng_version)
-        lttng_version_string = str(major) + "." + str(minor)
-
     # Context for the lava job template
     context = dict()
     context["DeviceType"] = DeviceType
@@ -198,8 +176,6 @@ def main():
 
     context["bt_repo"] = args.bt_repo
     context["bt_branch"] = args.bt_branch
-
-    context["lttng_version_string"] = lttng_version_string
 
     context["kernel_url"] = args.kernel_url
     context["rootfs_url"] = args.rootfs_url
