@@ -272,6 +272,17 @@
 
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: s3_obj_jenkins_key
+              username: S3_ACCESS_KEY
+              password: S3_SECRET_KEY
+
     axes:
       - axis:
           type: slave
@@ -401,42 +412,6 @@
           cron: "@hourly"
 
     <<: *lttng-modules_build_parameters_defaults
-    <<: *lttng-modules_build_builders_defaults
-
-- job-template:
-    name: dev_mjeanson_lttng-modules_{mversion}_{buildtype}-vanilla
-    defaults: lttng-modules
-    description: |
-      The LTTng modules provide Linux kernel tracing capability to the LTTng
-      2.0 tracer toolset.
-
-      This job will build the {mversion} branch against stable vanilla
-      kernel tags.
-
-      <p>Job is managed by Jenkins Job Builder.</p>
-
-    node: 'master'
-
-    # This is a test job, no triggers
-    triggers: []
-
-    parameters:
-      - string:
-          <<: *lttng-modules_build_parameter_maxConcurrentBuild
-      - string:
-          <<: *lttng-modules_build_parameter_kverfloor
-      - string:
-          <<: *lttng-modules_build_parameter_kverceil
-      - string:
-          <<: *lttng-modules_build_parameter_kverfilter
-      - string:
-          <<: *lttng-modules_build_parameter_kverrc
-      - string:
-          <<: *lttng-modules_build_parameter_kgitrepo
-      - string:
-          <<: *lttng-modules_build_parameter_kbuildjob
-          default: 'dev_mjeanson_lttng-modules_PARAM_{parambuildtype}'
-
     <<: *lttng-modules_build_builders_defaults
 
 - job-template:
@@ -770,118 +745,6 @@
     defaults: lttng-modules_PARAM_build
 
 - job-template:
-    name: dev_mjeanson_lttng-modules_PARAM_build
-    defaults: lttng-modules
-    description: |
-      This is a parametrized job used by 'master' jobs to build any combinations
-      of lttng-modules and linux kernel versions.
-
-      <p>Job is managed by Jenkins Job Builder.</p>
-
-    project-type: matrix
-    node: 'master' # Applies only to matrix flyweight task
-    axes:
-      - axis:
-          type: slave
-          name: platforms
-          values: '{obj:platforms}'
-
-    properties:
-      - build-discarder:
-          days-to-keep: 2
-
-    parameters:
-      - string:
-          name: 'mversion'
-          default: 'master'
-          description: 'The lttng-modules branch to build.'
-      - string:
-          name: 'mgitrepo'
-          default: 'https://github.com/{github_user}/lttng-modules.git'
-          description: 'The lttng-modules git repository url.'
-      - string:
-          name: 'ktag'
-          default: ''
-          description: 'The linux kernel git tag to build against.'
-      - string:
-          name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
-          description: 'The linux kernel git repository url.'
-      - string:
-          <<: *lttng-modules_build_parameter_uversion
-          default: ''
-
-    concurrent: true
-
-    scm: []
-
-    triggers: []
-
-    builders:
-      - shell:
-          !include-raw-verbatim: scripts/lttng-modules/param-build.sh
-
-    publishers:
-      - workspace-cleanup
-
-
-- job-template:
-    name: dev_mjeanson_lttng-modules_PARAM_crossbuild
-    defaults: lttng-modules
-    description: |
-      This is a parametrized job used by 'master' jobs to build any combinations
-      of lttng-modules and linux kernel versions.
-
-      <p>Job is managed by Jenkins Job Builder.</p>
-
-    project-type: matrix
-    node: 'master' # Applies only to matrix flyweight task
-    axes:
-      - axis:
-          type: user-defined
-          name: cross_arch
-          values: '{obj:cross_arch}'
-      - axis:
-          type: slave
-          name: platforms
-          values: '{obj:platforms}'
-
-    properties:
-      - build-discarder:
-          days-to-keep: 2
-
-    parameters:
-      - string:
-          name: 'mversion'
-          default: 'master'
-          description: 'The lttng-modules branch to build.'
-      - string:
-          name: 'mgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
-          description: 'The lttng-modules git repository url.'
-      - string:
-          name: 'ktag'
-          default: ''
-          description: 'The linux kernel git tag to build against.'
-      - string:
-          name: 'kgitrepo'
-          default: 'git://git-mirror.internal.efficios.com/git/linux-all.git'
-          description: 'The linux kernel git repository url.'
-
-    concurrent: true
-
-    scm: []
-
-    triggers: []
-
-    builders:
-      - shell:
-          !include-raw-verbatim: scripts/lttng-modules/param-build.sh
-
-    publishers:
-      - workspace-cleanup
-
-- job-template:
     name: lttng-modules_PARAM_crossbuild
     defaults: lttng-modules
     description: |
@@ -892,6 +755,17 @@
 
     project-type: matrix
     node: 'master' # Applies only to matrix flyweight task
+
+    wrappers:
+      - workspace-cleanup
+      - timestamps
+      - ansicolor
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: s3_obj_jenkins_key
+              username: S3_ACCESS_KEY
+              password: S3_SECRET_KEY
+
     axes:
       - axis:
           type: user-defined
@@ -1263,32 +1137,6 @@
       - 'dev_review_lttng-modules_{mversion}_{buildtype}-{uversion}':
           <<: *job_lttng-modules_master_ubuntu_crossbuild
           enable_gerrit_trigger: false
-
-- project:
-    name: lttng-modules-dev-mjeanson
-    github_user: mjeanson
-    jobs:
-      - 'dev_mjeanson_lttng-modules_PARAM_build':
-          platforms: !!python/tuple [deb13-amd64]
-      - 'dev_mjeanson_lttng-modules_PARAM_crossbuild':
-          platforms: !!python/tuple [deb13-amd64]
-          cross_arch: !!python/tuple [armhf, arm64, powerpc, ppc64el]
-      - 'dev_mjeanson_lttng-modules_{mversion}_{buildtype}-vanilla':
-          mversion:
-            - master
-          buildtype: build
-          parambuildtype: build
-          kverfloor: v3.0
-          kverceil: ''
-          kverfilter: stable-head
-      - 'dev_mjeanson_lttng-modules_{mversion}_{buildtype}-vanilla':
-          mversion:
-            - master
-          buildtype: crossbuild
-          parambuildtype: crossbuild
-          kverfloor: v4.4
-          kverceil: ''
-          kverfilter: lts-head
 
 - view-template:
     name: LTTng-modules

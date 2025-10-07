@@ -1524,8 +1524,8 @@ host_bucket = obj2.internal.efficios.com
 use_https = True
 
 # Setup access keys
-access_key = GKe5a61b33d45c0b4b107d7f56
-secret_key = a886e12457cad34169acc7324f3304a73b5a7e922a3b8c6e761e7e0d3f7f8a86
+access_key = $S3_ACCESS_KEY
+secret_key = $S3_SECRET_KEY
 
 # Enable S3 v4 signature APIs
 signature_v2 = False" > "$WORKSPACE/.s3cfg"
