@@ -136,6 +136,9 @@ lava-test-case run-test-suite --result $test_result
 
 # Archive the test logs produced by 'make check'
 if [ "${test_result}" == "fail" ] ; then
+    # Fetch the kernel/system log
+    journalctl > tests/system.log
+
     find tests/ -iname '*.trs' -print0 -or -iname '*.log' -print0 | tar cJf "$LOG_DIR/logs.tar.xz" --null -T -
 fi
 
