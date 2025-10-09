@@ -46,6 +46,10 @@ export JAVA_PATH="$PREFIX/share/java"
 P3_VERSION=$(python3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 export PYTHONPATH="$PREFIX/lib/python$P3_VERSION/site-packages"
 
+# For stable-2.12 which doesn't use pkgconfig for userspace-rcu
+export CPPFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+
 # Configure the lttng-ust build
 export LTTNG_UST_MAKE_CLEAN=no
 export LTTNG_UST_RUN_TESTS=no
