@@ -262,23 +262,31 @@ def LaunchJob = { jobName, jobInfo ->
     return null;
   }
 
-  def params = []
-  for (paramdef in job.getProperty(ParametersDefinitionProperty.class).getParameterDefinitions()) {
-    // If there is a default value for this parameter, use it. Don't use empty
-    // default value parameters.
-    if (paramdef.getDefaultParameterValue() != null) {
-      params += paramdef.getDefaultParameterValue();
+  // Parameters to override from the job defaults
+  def paramOverrides = [
+    LTTNG_TOOLS_COMMIT_ID: jobInfo['config']['toolsCommit'],
+    LTTNG_MODULES_COMMIT_ID: jobInfo['config']['modulesCommit'],
+    LTTNG_UST_COMMIT_ID: jobInfo['config']['ustCommit'],
+    KERNEL_COMMIT_ID: jobInfo['config']['linuxCommit'],
+    URCU_BRANCH: jobInfo['config']['urcuBranch'],
+    BT_BRANCH: jobInfo['config']['btBranch']
+  ]
+
+  def paramValues = []
+  paramOverrides.each{ pname, pvalue ->
+    //println("Add job param override: ${pname}: ${pvalue}")
+    paramValues.add(new StringParameterValue(pname, pvalue))
+  }
+
+  for (paramDef in job.getProperty(ParametersDefinitionProperty.class).getParameterDefinitions()) {
+    // If there is a non-null default value for this parameter and no override, add it
+    if (paramDef.getDefaultParameterValue() != null && paramOverrides[paramDef.getName()] == null) {
+      //println("Add job param default: ${paramDef.getName()}: ${paramDef.getDefaultParameterValue().getValue()}")
+      paramValues += paramDef.getDefaultParameterValue();
     }
   }
 
-  params.add(new StringParameterValue('LTTNG_TOOLS_COMMIT_ID', jobInfo['config']['toolsCommit']))
-  params.add(new StringParameterValue('LTTNG_MODULES_COMMIT_ID', jobInfo['config']['modulesCommit']))
-  params.add(new StringParameterValue('LTTNG_UST_COMMIT_ID', jobInfo['config']['ustCommit']))
-  params.add(new StringParameterValue('KERNEL_COMMIT_ID', jobInfo['config']['linuxCommit']))
-  params.add(new StringParameterValue('URCU_BRANCH', jobInfo['config']['urcuBranch']))
-  params.add(new StringParameterValue('BT_BRANCH', jobInfo['config']['btBranch']))
-
-  def currBuild = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(params))
+  def currBuild = job.scheduleBuild2(0, new Cause.UpstreamCause(build), new ParametersAction(paramValues))
 
   if (currBuild != null ) {
     println("Launching job: ${HyperlinkNote.encodeTo('/' + job.url, job.fullDisplayName)}");
