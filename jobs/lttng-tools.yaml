@@ -358,10 +358,12 @@
           echo "LTTNG_TEST_SERIAL_TEST_TIMEOUT_MINUTES={timeout}" >> env.properties
 
           # If started with CI-Build, disable tests when the value == 1
-          ci_build_value="$(echo "$GERRIT_EVENT_UPDATED_APPROVALS" | jq -r '.["CI-Build"].value')"
-          if [[ "$ci_build_value" == "1" ]]; then
-            echo "Disabling tests"
-            echo "LTTNG_TOOLS_RUN_TESTS=no" >> env.properties
+          if [[ "$GERRIT_PROJECT" =~ "lttng-tools" ]]; then
+            ci_build_value="$(echo "$GERRIT_EVENT_UPDATED_APPROVALS" | jq -r '.["CI-Build"].value')"
+            if [[ "$ci_build_value" == "1" ]]; then
+              echo "Disabling tests for CI-Build=1"
+              echo "LTTNG_TOOLS_RUN_TESTS=no" >> env.properties
+            fi
           fi
 
       - inject:
