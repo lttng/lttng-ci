@@ -28,6 +28,22 @@ set -exu
 S3_HTTP_URL_KERNEL_IMAGE="$S3_HTTP_BUCKET_URL/$S3_BASE_DIR/kernel/$KERNEL_COMMIT_ID.$BUILD_DEVICE.bzImage"
 S3_HTTP_URL_LTTNG_MODULES="$S3_HTTP_BUCKET_URL/$S3_BASE_DIR/modules/$KERNEL_COMMIT_ID-$LTTNG_MODULES_COMMIT_ID.$BUILD_DEVICE.lttng.modules.tar.xz"
 
+S3CMD_CONFIG="${WORKSPACE}/s3cfg"
+
+# Create the credential file to access the object storage with s3cmd
+echo "# Setup endpoint
+host_base = $S3_HOST
+host_bucket = $S3_HOST
+use_https = True
+
+# Setup access keys
+access_key = $S3_ACCESS_KEY
+secret_key = $S3_SECRET_KEY
+
+# Enable S3 v4 signature APIs
+signature_v2 = False" > "$S3CMD_CONFIG"
+
+# Trigger the lava job and wait for completion
 python3 -u "$WORKSPACE/src/lttng-ci/scripts/system-tests/lava2-submit.py" \
                           --type "$BUILD_DEVICE-tests" \
                           --lttng-version "$LTTNG_VERSION" \
@@ -46,3 +62,9 @@ python3 -u "$WORKSPACE/src/lttng-ci/scripts/system-tests/lava2-submit.py" \
                           --bt-branch "$BT_BRANCH" \
                           --ci-repo "$LTTNG_CI_REPO" \
                           --ci-branch "$LTTNG_CI_BRANCH"
+
+mkdir results
+
+# Attempt to get the job result artifacts if they exist so they can be archived by jenkins for convenience
+s3cmd -c "$S3CMD_CONFIG" get "s3://$S3_BUCKET/$S3_BASE_DIR/results/${BUILD_TAG}/logs.tar.xz" results/ || true
+s3cmd -c "$S3CMD_CONFIG" get "s3://$S3_BUCKET/$S3_BASE_DIR/results/${BUILD_TAG}/coredump.tar.xz" results/ || true

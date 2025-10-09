@@ -5,19 +5,15 @@
     parameters:
       - string:
           name: 'LTTNG_TOOLS_COMMIT_ID'
-          default: ''
           description: 'The lttng-tools commit id to build.'
       - string:
           name: 'LTTNG_MODULES_COMMIT_ID'
-          default: ''
           description: 'The lttng-modules commit id to build.'
       - string:
           name: 'LTTNG_UST_COMMIT_ID'
-          default: ''
           description: 'The lttng-ust commit id to build.'
       - string:
           name: 'KERNEL_COMMIT_ID'
-          default: ''
           description: 'The linux kernel commit id to build against.'
       - string:
           name: 'KERNEL_REPO'
@@ -121,7 +117,7 @@
 - job-template:
     name: vm_tests_k{kversion}_l{lttngversion}
     description: |
-      Runs root_regression and root_destructive_tests on a virtual machine over different combinations of kernel and lttng configurations.
+      Runs root tests on a virtual machine over different combinations of kernel and lttng configurations.
     project-type: freestyle
     node: 'deb13-amd64'
     <<: *system_tests_parameters_defaults
@@ -129,6 +125,7 @@
     properties:
       - build-discarder:
           num-to-keep: 10
+          artifact-num-to-keep: 2
       - throttle:
           max-total: 4
           option: 'category'
@@ -160,47 +157,16 @@
             - "${{LTTNG_CI_BRANCH}}"
 
     builders:
-      - trigger-builds:
-        - project: "build_kernel_PARAM"
-          block: true
-          predefined-parameters: |
-            BUILD_DEVICE=kvm
-            LTTNG_MODULES_COMMIT_ID=${{LTTNG_MODULES_COMMIT_ID}}
-            LTTNG_MODULES_REPO=${{LTTNG_MODULES_REPO}}
-            KERNEL_COMMIT_ID=${{KERNEL_COMMIT_ID}}
-            KERNEL_REPO=${{KERNEL_REPO}}
-            BUILD_DEVICE=kvm
-            LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
-            LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
-            S3_HOST=${{S3_HOST}}
-            S3_BUCKET=${{S3_BUCKET}}
-            S3_BASE_DIR=${{S3_BASE_DIR}}
-            S3_HTTP_BUCKET_URL=${{S3_HTTP_BUCKET_URL}}
+      # First build the kernel and modules and upload to object storage
+      - shell: !include-raw-verbatim: scripts/system-tests/build-kernel-param.sh
+      # Then trigger the lava job to boot the kernel and run the tests
       - shell: !include-raw-verbatim: scripts/system-tests/run-lava-tests.sh
 
     publishers:
+      - archive:
+          artifacts: 'results/**'
+          allow-empty: true
       - workspace-cleanup
-      - email-ext:
-          recipients: '{obj:email_to}'
-          always: false
-          unstable: false
-          first-failure: true
-          first-unstable: true
-          not-built: false
-          aborted: false
-          regression: false
-          failure: false
-          second-failure: false
-          improvement: false
-          still-failing: true
-          success: false
-          fixed: false
-          fixed-unhealthy: true
-          still-unstable: false
-          pre-build: false
-          matrix-trigger: only-parent
-          send-to:
-            - recipients
 
 - job-template:
     name: baremetal_tests_k{kversion}_l{lttngversion}
@@ -246,95 +212,15 @@
             - "${{LTTNG_CI_BRANCH}}"
 
     builders:
-      - trigger-builds:
-        - project: "build_kernel_PARAM"
-          block: true
-          predefined-parameters: |
-            BUILD_DEVICE=baremetal
-            LTTNG_MODULES_COMMIT_ID=${{LTTNG_MODULES_COMMIT_ID}}
-            LTTNG_MODULES_REPO=${{LTTNG_MODULES_REPO}}
-            KERNEL_COMMIT_ID=${{KERNEL_COMMIT_ID}}
-            KERNEL_REPO=${{KERNEL_REPO}}
-            BUILD_DEVICE=baremetal
-            LTTNG_CI_REPO=${{LTTNG_CI_REPO}}
-            LTTNG_CI_BRANCH=${{LTTNG_CI_BRANCH}}
-            S3_HOST=${{S3_HOST}}
-            S3_BUCKET=${{S3_BUCKET}}
-            S3_BASE_DIR=${{S3_BASE_DIR}}
-            S3_HTTP_BUCKET_URL=${{S3_HTTP_BUCKET_URL}}
+      # First build the kernel and modules and upload to object storage
+      - shell: !include-raw-verbatim: scripts/system-tests/build-kernel-param.sh
+      # Then trigger the lava job to boot the kernel and run the tests
       - shell: !include-raw-verbatim: scripts/system-tests/run-lava-tests.sh
 
     publishers:
-      - workspace-cleanup
-
-- job-template:
-    name: build_kernel_PARAM
-    description: |
-      Builds a Linux Kernel and LTTng Modules if necessary
-    concurrent: true
-    node: 'deb13-amd64'
-
-    parameters:
-      - string:
-          name: 'LTTNG_MODULES_COMMIT_ID'
-          description: 'The lttng-modules commmit to build.'
-      - string:
-          name: 'LTTNG_MODULES_REPO'
-          description: 'The LTTng Modules git repo to fetch from'
-          default: 'git://git-mirror.internal.efficios.com/lttng/lttng-modules.git'
-      - string:
-          name: 'KERNEL_COMMIT_ID'
-          description: 'The kernel commit to build.'
-      - string:
-          name: 'KERNEL_REPO'
-          description: 'The kernel git repo to fetch from'
-      - string:
-          name: 'BUILD_DEVICE'
-          description: 'The target device. (kvm or baremetal)'
-      - string:
-          name: 'LTTNG_CI_REPO'
-          default: 'https://github.com/lttng/lttng-ci.git'
-          description: 'LTTng-ci git repo to checkout the CI scripts'
-      - string:
-          name: 'LTTNG_CI_BRANCH'
-          default: 'master'
-          description: 'The branch of the CI repository to clone for job scripts'
-      - string:
-          name: 'S3_HOST'
-          description: 'Host for the s3 object storage'
-      - string:
-          name: 'S3_BUCKET'
-          description: 'Bucket for the s3 object storage'
-      - string:
-          name: 'S3_BASE_DIR'
-          description: 'Base directory for the s3 object storage'
-      - string:
-          name: 'S3_HTTP_BUCKET_URL'
-          description: 'Base url to access the s3 bucket over unauthenticated HTTP'
-          default: 'https://obj-lava.internal.efficios.com'
-
-    properties:
-      - build-discarder:
-          days-to-keep: 2
-
-    wrappers:
-      - workspace-cleanup
-      - timestamps
-      - ansicolor
-      - credentials-binding:
-          - username-password-separated:
-              credential-id: s3_obj_lava_key
-              username: S3_ACCESS_KEY
-              password: S3_SECRET_KEY
-
-    scm: []
-
-    triggers: []
-
-    builders:
-      - shell: !include-raw-verbatim: scripts/system-tests/build-kernel-param.sh
-
-    publishers:
+      - archive:
+          artifacts: 'results/**'
+          allow-empty: true
       - workspace-cleanup
 
 - job-template:
@@ -469,7 +355,6 @@
       - vm_tests
       - baremetal_tests
     jobs:
-      - 'build_kernel_PARAM'
       - 'system_ALL_{test_type}_trigger'
 
 - project:
