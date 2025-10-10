@@ -9,6 +9,13 @@ lxd_host: ci-host-amd64-1a.internal.efficios.com
 libvirt_host: ci-host-amd64-1b.internal.efficios.com
 
 _anchors:
+  lxd:
+    source: &incus_source_default
+      type: image
+      # server: https://images.linuxcontainers.org
+      protocol: simplestreams
+      mode: pull
+      alias: debian/trixie/cloud/amd64/incus
   jenkins:
     config: &jenkins_ssh_agent_default_config
       launcher/launchTimeoutSeconds: '5'
