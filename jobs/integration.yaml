@@ -41,7 +41,7 @@
     jobs:
       - 'integration_lttng-tools-{version}-32-64_testsuite':
           version: master
-          babelversion: stable-2.0
+          babelversion: stable-2.1
           urcu_version: master
       - 'integration_lttng-tools-{version}-32-64_testsuite':
           version: stable-2.13
