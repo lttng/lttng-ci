@@ -20,10 +20,10 @@
     dsl:
       !include-jinja2: pipelines/integration/lttng-tools-_version_-32-64_testsuite.groovy.j2
     # Job variables
-    checkout_label: 'deb12-amd64'
-    build_label_amd64: 'deb12-amd64'
-    build_label_i386: 'deb12-i386'
-    test_label_amd64: 'deb12-amd64-rootnode'
+    checkout_label: 'deb13-amd64'
+    build_label_amd64: 'deb13-amd64'
+    build_label_i386: 'deb13-i386'
+    test_label_amd64: 'deb13-amd64-rootnode'
 
 
 ## Views
