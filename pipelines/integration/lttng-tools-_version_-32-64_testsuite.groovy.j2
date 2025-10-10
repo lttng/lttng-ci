@@ -92,6 +92,19 @@ pipeline {
             PKG_CONFIG_PATH = "$BASEDIR_BUILD_64/lib/pkgconfig"
             LD_LIBRARY_PATH = "$BASEDIR_BUILD_64/lib:$LD_LIBRARY_PATH"
             PATH = "$PATH:$BASEDIR_64/bin"
+
+            DEPS_JAVA = "$WORKSPACE/deps-64/build/share/java"
+            CLASSPATH = "$DEPS_JAVA/lttng-ust-agent-all.jar:/usr/share/java/log4j-api.jar:/usr/share/java/log4j-core.jar:/usr/share/java/log4j-1.2.jar"
+            P3_VERSION="""${sh(
+              returnStdout: true,
+              script: 'python3 -c \'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))\''
+            ).trim()}"""
+
+            /*
+             * Most build configs require access to the babeltrace 2 python bindings.
+             * This also makes the lttngust python agent available for `agents` builds.
+             */
+            PYTHONPATH = "$BASEDIR_BUILD_64/lib/python$P3_VERSION/site-packages"
           }
 
           stages {
@@ -99,7 +112,11 @@ pipeline {
               steps {
                 cleanWs()
 
+                /* Fetch the babeltrace artifacts */
+                copyArtifacts projectName: "babeltrace_{{ babelversion }}_linuxbuild/platform={{build_label_amd64}},conf=std,build=std", selector: lastCompleted(), filter: 'build/**', target: 'deps-64', fingerprintArtifacts: false
+
                 unstash name: 'dep-sources'
+                unstash name: 'tools-sources'
               }
             }
 
@@ -143,9 +160,36 @@ pipeline {
               }
             }
 
+            stage('Build amd64 lttng-tools') {
+              steps {
+                dir("src/lttng-tools") {
+                  sh './bootstrap'
+                  sh './configure --prefix="$PREFIX" --enable-test-java-agent-all --enable-test-python3-agent'
+                  // Deativate health test, simply because there is little value
+                  // for this integration testing and because the ld_preloaded
+                  // object is for both lttng-sessiond/consumer leading to
+                  // difficult ld_preloading Deactivate clock plugin test since
+                  // the app must load the correct bitness so and the sessiond its
+                  // bitness so, this is simply not feasible from outside the
+                  // script. There is little value for this test in this testing
+                  // context.
+                  dir("tests/regression") {
+                    sh 'sed -i "#tools/health/test_thread_ok#d" Makefile.am'
+                    sh 'sed -i "#ust/clock-override/test_clock_override#d" Makefile.am'
+                  }
+
+                  sh 'make -j$(nproc) V=1'
+                }
+              }
+            }
+
             stage('Stash amd64 artifacts') {
               steps {
                 stash name: "amd64-deps-lttng-tools", includes: 'deps-64/**'
+                // With the full tree, this stash takes too long and too much memory to
+                // create. Use a tar file and stash that instead.
+                sh 'tar -czf amd64-lttng-tools.tgz src/lttng-tools/'
+                stash name: "amd64-lttng-tools", includes: "amd64-lttng-tools.tgz"
               }
             }
           } /* stages */
@@ -212,7 +256,7 @@ pipeline {
                 dir("src/lttng-ust") {
                   sh './bootstrap'
                   sh './configure --prefix="$PREFIX"'
-                  sh 'make V=1'
+                  sh 'make -j$(nproc) V=1'
                   sh 'make install DESTDIR="$WORKSPACE"'
                   sh 'find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \\;'
                   sh 'find "$WORKSPACE/build/lib" -name "*.la" -exec rm -vf {} \\;'
@@ -229,7 +273,7 @@ pipeline {
                 dir("src/lttng-tools") {
                   sh './bootstrap'
                   sh './configure --prefix="$PREFIX"'
-                  sh 'make V=1'
+                  sh 'make -j$(nproc) V=1'
                   sh 'make install DESTDIR="$WORKSPACE"'
                   sh 'find "$WORKSPACE/build/bin" -type f -perm -0500 -exec chrpath --delete {} \\;'
                   sh 'find "$WORKSPACE/build/lib" -name "*.so" -exec chrpath --delete {} \\;'
@@ -326,9 +370,10 @@ pipeline {
                 copyArtifacts projectName: "babeltrace_{{ babelversion }}_linuxbuild/platform={{build_label_amd64}},conf=std,build=std", selector: lastCompleted(), filter: 'build/**', target: 'deps-64', fingerprintArtifacts: false
 
                 unstash name: 'modules-sources'
-                unstash name: 'tools-sources'
                 unstash name: "i386-deps-lttng-tools"
                 unstash name: "amd64-deps-lttng-tools"
+                unstash name: "amd64-lttng-tools"
+                sh 'tar xf amd64-lttng-tools.tgz'
 
                 {% if version != 'stable-2.12' %}
                 dir('testing-overlay/sessiond') {
@@ -339,6 +384,15 @@ pipeline {
 
                 /* Stable 2.12 and 2.13 still look for "babeltrace" */
                 sh 'ln -s "$BASEDIR_BUILD_64/bin/babeltrace2" "$BASEDIR_BUILD_64/bin/babeltrace"'
+
+                /*
+                 * Since lttng-tools is built on a non-root node, the CPPFLAGS
+                 * in the Makefile references /home/jenkins/workspace/x of
+                 * /root/workspace/x. Link the former to the latter for any
+                 * rebuilds that are required due to the tarred files ctimes
+                 * changing.
+                 */
+                sh 'mkdir -p /home/jenkins ; ln -s /root/workspace /home/jenkins/workspace'
               }
             }
 
@@ -348,34 +402,6 @@ pipeline {
                   sh 'make -j"$(nproc)" V=1'
                   sh 'make modules_install'
                   sh 'depmod -a'
-                }
-              }
-            }
-
-            stage('Build amd64 lttng-tools') {
-              steps {
-                /* Bootstrap and configure lttng-tools */
-                dir("src/lttng-tools") {
-                  sh './bootstrap'
-                  sh './configure --prefix="$PREFIX" --enable-test-java-agent-all --enable-test-python3-agent'
-                }
-
-                // Deativate health test, simply because there is little value
-                // for this integration testing and because the ld_preloaded
-                // object is for both lttng-sessiond/consumer leading to
-                // difficult ld_preloading Deactivate clock plugin test since
-                // the app must load the correct bitness so and the sessiond its
-                // bitness so, this is simply not feasible from outside the
-                // script. There is little value for this test in this testing
-                // context.
-                dir("src/lttng-tools/tests/regression") {
-                  sh 'sed -i "#tools/health/test_thread_ok#d" Makefile.am'
-                  sh 'sed -i "#ust/clock-override/test_clock_override#d" Makefile.am'
-                }
-
-                /* Build lttng-tools */
-                dir("src/lttng-tools") {
-                  sh 'make -j"$(nproc)" V=1'
                 }
               }
             }
@@ -423,7 +449,7 @@ pipeline {
 
                 /* Run the test suite */
                 dir("src/lttng-tools/tests") {
-		  /*
+                  /*
                    * This will mark the job as FAILED if the test suite is not
                    * successful but will continue the execution of the stages.
                    */
