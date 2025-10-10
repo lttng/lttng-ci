@@ -79,7 +79,7 @@
       - string:
           name: 'S3_HOST'
           description: 'Host for the s3 object storage'
-          default: 'obj2.internal.efficios.com'
+          default: 'obj.internal.efficios.com'
       - string:
           name: 'S3_BUCKET'
           description: 'Bucket for the s3 object storage'

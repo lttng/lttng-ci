@@ -1519,8 +1519,8 @@ fi
 
 set +x
 echo "# Setup endpoint
-host_base = obj2.internal.efficios.com
-host_bucket = obj2.internal.efficios.com
+host_base = obj.internal.efficios.com
+host_bucket = obj.internal.efficios.com
 use_https = True
 
 # Setup access keys
