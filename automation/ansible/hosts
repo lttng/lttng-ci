@@ -73,6 +73,7 @@ ci-node-deb13-s390x-[01:02]
 
 [node_i386]
 ci-node-deb12-i386-[1:2][a:d]-01
+ci-node-deb13-i386-[1:2][a:d]-01
 
 [node_amd64]
 ci-node-deb12-amd64-2c-[01:04]

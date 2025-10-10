@@ -1327,6 +1327,102 @@ containers:
       config:
         <<: *jenkins_ssh_agent_default_config
   - meta:
+      address: 172.18.16.181
+    jenkins:
+      label: 'deb13-i386'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+    lxd:
+      name: 'ci-node-deb13-i386-1a-01'
+      target: 'ci-host-amd64-1a'
+      source:
+        <<: *incus_source_default
+        alias: 'debian/trixie/cloud/i386/incus'
+  - meta:
+      address: 172.18.16.182
+    jenkins:
+      label: 'deb13-i386'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+    lxd:
+      name: 'ci-node-deb13-i386-1b-01'
+      target: 'ci-host-amd64-1b'
+      source:
+        <<: *incus_source_default
+        alias: 'debian/trixie/cloud/i386/incus'
+  - meta:
+      address: 172.18.16.183
+    jenkins:
+      label: 'deb13-i386'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+    lxd:
+      name: 'ci-node-deb13-i386-1c-01'
+      target: 'ci-host-amd64-1c'
+      source:
+        <<: *incus_source_default
+        alias: 'debian/trixie/cloud/i386/incus'
+  - meta:
+      address: 172.18.16.184
+    jenkins:
+      label: 'deb13-i386'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+    lxd:
+      name: 'ci-node-deb13-i386-1d-01'
+      target: 'ci-host-amd64-1d'
+      source:
+        <<: *incus_source_default
+        alias: 'debian/trixie/cloud/i386/incus'
+  - meta:
+      address: 172.18.16.185
+    jenkins:
+      label: 'deb13-i386'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+    lxd:
+      name: 'ci-node-deb13-i386-2a-01'
+      target: 'ci-host-amd64-2a'
+      source:
+        <<: *incus_source_default
+        alias: 'debian/trixie/cloud/i386/incus'
+  - meta:
+      address: 172.18.16.186
+    jenkins:
+      label: 'deb13-i386'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+    lxd:
+      name: 'ci-node-deb13-i386-2b-01'
+      target: 'ci-host-amd64-2b'
+      source:
+        <<: *incus_source_default
+        alias: 'debian/trixie/cloud/i386/incus'
+  - meta:
+      address: 172.18.16.187
+    jenkins:
+      label: 'deb13-i386'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+    lxd:
+      name: 'ci-node-deb13-i386-2c-01'
+      target: 'ci-host-amd64-2c'
+      source:
+        <<: *incus_source_default
+        alias: 'debian/trixie/cloud/i386/incus'
+  - meta:
+      address: 172.18.16.188
+    jenkins:
+      label: 'deb13-i386'
+      config:
+        <<: *jenkins_ssh_agent_default_config
+    lxd:
+      name: 'ci-node-deb13-i386-2d-01'
+      target: 'ci-host-amd64-2d'
+      source:
+        <<: *incus_source_default
+        alias: 'debian/trixie/cloud/i386/incus'
+  - meta:
       address: 'ci-node-deb13-arm64-osuosl-01'
     jenkins:
       label: 'deb13-arm64'
