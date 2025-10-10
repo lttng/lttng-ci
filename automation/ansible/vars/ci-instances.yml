@@ -1824,3 +1824,19 @@ containers:
         ./virtualMachineName: 'ci-rootnode-deb13-amd64-2d-01'
     meta:
       address: 172.18.17.33
+  - vm:
+      name: 'ci-rootnode-deb13-amd64-2a-02-linux5'
+      host: 'ci-host-amd64-2a.internal.efficios.com'
+      disk: '/var/lib/libvirt/images/ci-rootnode-deb13-amd64-2a-02-linux5.qcow'
+    jenkins:
+      name: 'ci-rootnode-deb13-amd64-2a-02-linux5'
+      label: 'deb13 deb13-amd64-rootnode-linux5'
+      config:
+        <<: *jenkins_ssh_agent_libvirt_default_config
+        launcher/hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2a.internal.efficios.com'
+        launcher/virtualMachineName: 'ci-rootnode-deb13-amd64-2a-02-linux5'
+        launcher/delegate/host: 'ci-rootnode-deb13-amd64-2a-02-linux5.internal.efficios.com'
+        ./hypervisorDescription: 'QEMU+ssh - ci-host-amd64-2a.internal.efficios.com'
+        ./virtualMachineName: 'ci-rootnode-deb13-amd64-2a-02-linux5'
+    meta:
+      address: 172.18.17.34
