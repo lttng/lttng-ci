@@ -49,7 +49,7 @@ pipeline {
      * not have this guarantee since we used 2 different jobs.
      */
     stage('Checkout all sources') {
-      agent { label 'deb12-amd64' }
+      agent { label '{{checkout_label}}' }
 
       steps {
         cleanWs()
@@ -80,7 +80,7 @@ pipeline {
       /* Build the i386 and amd64 artifacts in parallel */
       parallel {
         stage('Build amd64 artifacts') {
-          agent { label 'deb12-amd64' }
+          agent { label '{{build_label_amd64}}' }
 
           environment {
             BASEDIR_64 = "$WORKSPACE/deps-64"
@@ -158,7 +158,7 @@ pipeline {
         } /* stage('Build amd64 artifacts') */
 
         stage('Build i386 artifacts') {
-          agent { label 'deb12-i386' }
+          agent { label '{{build_label_i386}}' }
 
           environment {
             BASEDIR_32 = "$WORKSPACE/deps-32"
@@ -178,7 +178,7 @@ pipeline {
                 cleanWs()
 
                 /* Fetch the babeltrace artifacts */
-                copyArtifacts projectName: "babeltrace_{{ babelversion }}_portbuild/platform=deb12-i386,conf=std,build=std", selector: lastCompleted(), filter: 'build/**', target: 'deps-32', fingerprintArtifacts: false
+                copyArtifacts projectName: "babeltrace_{{ babelversion }}_portbuild/platform={{build_label_i386}},conf=std,build=std", selector: lastCompleted(), filter: 'build/**', target: 'deps-32', fingerprintArtifacts: false
 
                 unstash name: 'dep-sources'
                 unstash name: 'tools-sources'
@@ -268,9 +268,9 @@ pipeline {
         {% for test_type in ["64bit-canary", "32bit-sessiond", "32bit-relayd", "32bit-cli" ] %}
         stage('Testing {{ test_type }}') {
           {% if version == 'stable-2.12' %}
-          agent { label 'deb12-amd64-rootnode-linux5' }
+          agent { label '{{test_label_amd64}}-linux5' }
           {% else %}
-          agent { label 'deb12-amd64-rootnode' }
+          agent { label '{{test_label_amd64}}' }
           {% endif %}
 
           environment {
@@ -323,7 +323,7 @@ pipeline {
                 cleanWs()
 
                 /* Fetch the babeltrace artifacts */
-                copyArtifacts projectName: "babeltrace_{{ babelversion }}_linuxbuild/platform=deb12-amd64,conf=std,build=std", selector: lastCompleted(), filter: 'build/**', target: 'deps-64', fingerprintArtifacts: false
+                copyArtifacts projectName: "babeltrace_{{ babelversion }}_linuxbuild/platform={{build_label_amd64}},conf=std,build=std", selector: lastCompleted(), filter: 'build/**', target: 'deps-64', fingerprintArtifacts: false
 
                 unstash name: 'modules-sources'
                 unstash name: 'tools-sources'
