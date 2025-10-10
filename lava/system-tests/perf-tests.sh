@@ -48,6 +48,9 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 P3_VERSION=$(python3 -c 'import sys;v = sys.version.split()[0].split("."); print("{}.{}".format(v[0], v[1]))')
 export PYTHONPATH="$PREFIX/lib/python$P3_VERSION/site-packages"
 
+# Fail tests with missing optionnal dependencies
+export LTTNG_TEST_ABORT_ON_MISSING_PLATFORM_REQUIREMENTS=1
+
 # Allow the destructive tests to run
 export LTTNG_ENABLE_DESTRUCTIVE_TESTS="will-break-my-system"
 
