@@ -359,6 +359,11 @@ pipeline {
             LTTNG_CONSUMERD32_LIBDIR = "$BASEDIR_BUILD_32/lib"
             LTTNG_CONSUMERD64_BIN = "$BASEDIR_BUILD_64/lib/lttng/libexec/lttng-consumerd"
             LTTNG_CONSUMERD64_LIBDIR = "$BASEDIR_BUILD_64/lib/"
+
+            /*
+             * Run 'destructive' tests as well.
+             */
+            LTTNG_ENABLE_DESTRUCTIVE_TESTS = "will-break-my-system"
           }
 
           stages {
