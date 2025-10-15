@@ -635,7 +635,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: master
-          platforms: !!python/tuple [deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64]
+          platforms: !!python/tuple [deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64, deb13-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -707,7 +707,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.14
-          platforms: !!python/tuple [deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64]
+          platforms: !!python/tuple [deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64, deb13-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
@@ -766,7 +766,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.13
-          platforms: !!python/tuple [deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64]
+          platforms: !!python/tuple [deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64, deb13-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -813,7 +813,7 @@
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
           buildtype: portbuild
           version: stable-2.12
-          platforms: !!python/tuple [deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64]
+          platforms: !!python/tuple [deb13-ppc64el, deb13-riscv64, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64, deb13-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -889,7 +889,7 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: master
           buildtype: portbuild
-          platforms: !!python/tuple [deb13-ppc64el, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64]
+          platforms: !!python/tuple [deb13-ppc64el, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64, deb13-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           touchstone: '(platform == "deb12-i386")'
@@ -937,7 +937,7 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.14
           buildtype: portbuild
-          platforms: !!python/tuple [deb13-ppc64el, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64]
+          platforms: !!python/tuple [deb13-ppc64el, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64, deb13-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           touchstone: '(platform == "deb12-i386")'
@@ -978,7 +978,7 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.13
           buildtype: portbuild
-          platforms: !!python/tuple [deb13-ppc64el, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64]
+          platforms: !!python/tuple [deb13-ppc64el, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64, deb13-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           touchstone: '(platform == "deb12-i386")'
@@ -1011,7 +1011,7 @@
       - 'dev_review_lttng-ust_{version}_{buildtype}':
           version: stable-2.12
           buildtype: portbuild
-          platforms: !!python/tuple [deb13-ppc64el, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64]
+          platforms: !!python/tuple [deb13-ppc64el, deb13-s390x, deb12-i386, deb13-armhf, deb13-arm64, deb13-i386]
           builds: !!python/tuple [std]
           confs: !!python/tuple [agents]
           touchstone: '(platform == "deb12-i386")'
