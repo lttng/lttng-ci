@@ -41,7 +41,7 @@ pipeline {
             }
 
             dir("src/urcu/stable-0.9") {
-              checkout([$class: 'GitSCM', branches: [[name: 'stable-0.9']], extensions: [], gitTool: 'Default', userRemoteConfigs: [[url: 'https://git.lttng.org/userspace-rcu']]])
+              checkout([$class: 'GitSCM', branches: [[name: 'stable-0.9']], extensions: [], gitTool: 'Default', userRemoteConfigs: [[url: 'https://git.lttng.org/userspace-rcu.git']]])
             }
             dir("src/urcu/stable-0.12") {
               checkout([$class: 'GitSCM', branches: [[name: 'stable-0.12']], extensions: [], gitTool: 'Default', userRemoteConfigs: [[url: 'https://github.com/urcu/userspace-rcu']]])
