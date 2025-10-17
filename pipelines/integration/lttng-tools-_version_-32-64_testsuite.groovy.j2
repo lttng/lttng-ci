@@ -425,7 +425,7 @@ pipeline {
                 /* Replace the lttng-sessiond binary with the 32-bit version */
                 dir("src/lttng-tools/src/bin/lttng-sessiond") {
                   sh 'rm -f lttng-sessiond'
-                  sh 'ln -s "$BASEDIR_32/bin/lttng-sessiond" lttng-sessiond'
+                  sh 'ln -s "$BASEDIR_BUILD_32/bin/lttng-sessiond" lttng-sessiond'
                 }
 
                 {% if version != 'stable-2.12' %}
@@ -437,7 +437,7 @@ pipeline {
                 /* Replace the lttng-relayd binary with the 32-bit version */
                 dir("src/lttng-tools/src/bin/lttng-relayd") {
                   sh 'rm -f lttng-relayd'
-                  sh 'ln -s "$BASEDIR_32/bin/lttng-relayd" lttng-relayd'
+                  sh 'ln -s "$BASEDIR_BUILD_32/bin/lttng-relayd" lttng-relayd'
                 }
 
                 {% elif test_type == '32bit-cli' %}
@@ -445,7 +445,7 @@ pipeline {
                 /* Replace the lttng cli binary with the 32-bit version */
                 dir("src/lttng-tools/src/bin/lttng") {
                   sh 'rm lttng'
-                  sh 'ln -s "$BASEDIR_32/bin/lttng" lttng'
+                  sh 'ln -s "$BASEDIR_BUILD_32/bin/lttng" lttng'
                 }
 
                 {% else %}
