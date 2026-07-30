@@ -23,7 +23,6 @@ pipeline {
   options {
     preserveStashes()
     timeout(time: 2, activity: true, unit: 'HOURS')
-    disableConcurrentBuilds()
     timestamps()
     skipDefaultCheckout()
   }
