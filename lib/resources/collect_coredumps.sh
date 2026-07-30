@@ -62,15 +62,29 @@ while read -r core_file; do
     fi
 
     # Make sure the coredump is finished using fuser
-    while fuser "$core_file"; do
-        sleep 1
-        sleep_count=$((sleep_count + 1))
+    if ! grep -q FreeBSD /etc/os-release 2>/dev/null ; then
+        while fuser "$core_file"; do
+            sleep 1
+            sleep_count=$((sleep_count + 1))
 
-        # Skip the core file if it takes more than 30 seconds
-        if [ "$sleep_count" -ge 30 ]; then
-            continue
-        fi
-    done
+            # Skip the core file if it takes more than 30 seconds
+            if [ "$sleep_count" -ge 30 ]; then
+                break
+            fi
+        done
+    else
+        # FreeBSD fuser does not return non-zero if a file is opened
+        # by other processes.
+        while "$(fuser "${core_file}" | cut -d: -f2 | wc -c)" -ge "2" ; do
+            sleep 1
+            sleep_count=$((sleep_count + 1))
+
+            # Skip the core file if it takes more than 30 seconds
+            if [ "$sleep_count" -ge 30 ]; then
+                break
+            fi
+        done
+    fi
 
     # Print a full backtrace of all threads
     if command -v gdb >/dev/null 2>&1; then
