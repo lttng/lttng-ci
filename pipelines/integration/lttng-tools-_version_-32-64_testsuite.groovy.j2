@@ -90,6 +90,13 @@ pipeline {
           {% endif %}
         }
 
+        {% if review %}
+        sh(
+          label: "Handle depends-on",
+          script: libraryResource(resource: "gerrit_depends_on.py"),
+        )
+        {% endif %}
+
         stash name: 'dep-sources', includes: 'src/userspace-rcu/**,src/lttng-ust/**'
         stash name: 'modules-sources', includes: 'src/lttng-modules/**'
         stash name: 'tools-sources', includes: 'src/lttng-tools/**,'
