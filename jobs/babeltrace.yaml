@@ -398,8 +398,12 @@
           builders:
             - role: SLAVE
               build-steps:
-                - shell: |
-                    echo "Skipping core dump collection"
+                - conditional-step:
+                    condition-kind: never
+                    on-evaluation-failure: dont-run
+                    steps:
+                      - shell: |
+                          echo "Skipping core dump collection"
         {% endif %}
       - !j2-yaml: |
         {% if test_report_type == "tap" %}
