@@ -55,6 +55,7 @@
           url: https://github.com/{github_user}/{github_name}
 
     # Job variables
+    collect_core_dumps: true
     filter: ''
     review: false
     python: ''
@@ -102,6 +103,7 @@
                  - scripts/common/gerrit-fetch.sh
       {% endif %}
                  - scripts/common/print.sh
+                 - lib/resources/clean_coredumps.sh
                  - scripts/liburcu/build.sh
       {% else %}
       - shell:
@@ -110,12 +112,38 @@
            - scripts/common/gerrit-fetch.sh
       {% endif %}
            - scripts/common/print.sh
+           - lib/resources/clean_coredumps.sh
            - scripts/liburcu/build.sh
       {% endif %}
 
 - _liburcu_publishers_defaults: &liburcu_publishers_defaults
     name: 'liburcu_publishers_defaults'
     publishers:
+      - !j2-yaml: |
+        {% if collect_core_dumps|default(true) %}
+        postbuildscript:
+          mark-unstable-if-failed: true
+          builders:
+            - role: SLAVE
+              build-steps:
+                - shell:
+                    !include-raw-verbatim:
+                    {% if buildtype is defined and buildtype == 'macosbuild' %}
+                    - scripts/common/macos-shebang.sh
+                    {% endif %}
+                    - lib/resources/collect_coredumps.sh
+        {% else %}
+        postbuildscript:
+          builders:
+            - role: SLAVE
+              build-steps:
+                - conditional-step:
+                    condition-kind: never
+                    on-evaluation-failure: dont-run
+                    steps:
+                      - shell: |
+                          echo "Skipping core dump collection"
+        {% endif %}
       - tap: &liburcu_publisher_tap_defaults
           results: 'tap/**/*.log'
           fail-if-no-results: true
@@ -164,7 +192,7 @@
               <scm/>
             </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
       - archive: &liburcu_publisher_archive_defaults
-          artifacts: 'build/**,tap/**,log/**,src.tar.xz'
+          artifacts: 'build/**,tap/**,log/**,core.tar.xz,src.tar.xz'
           follow-symlinks: true
           allow-empty: false
       - workspace-cleanup: &liburcu_publisher_workspace_cleanup_defaults
@@ -272,6 +300,31 @@
     <<: *liburcu_builders_defaults
 
     publishers:
+      - !j2-yaml: |
+        {% if collect_core_dumps|default(true) %}
+        postbuildscript:
+          mark-unstable-if-failed: true
+          builders:
+            - role: SLAVE
+              build-steps:
+                - shell:
+                    !include-raw-verbatim:
+                    {% if buildtype is defined and buildtype == 'macosbuild' %}
+                    - scripts/common/macos-shebang.sh
+                    {% endif %}
+                    - lib/resources/collect_coredumps.sh
+        {% else %}
+        postbuildscript:
+          builders:
+            - role: SLAVE
+              build-steps:
+                - conditional-step:
+                    condition-kind: never
+                    on-evaluation-failure: dont-run
+                    steps:
+                      - shell: |
+                          echo "Skipping core dump collection"
+        {% endif %}
       - tap: *liburcu_publisher_tap_defaults
       - raw: *liburcu_publisher_warnings-ng_defaults
       - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
@@ -437,6 +490,7 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: '(build == "std")'
+          collect_core_dumps: false
       - '{job_prefix}liburcu_{version}_{buildtype}':
           buildtype: freebsdbuild
           platforms: !!python/tuple [freebsd-amd64]
@@ -484,6 +538,7 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std]
           touchstone: ''
+          collect_core_dumps: false
 
 
 - project:
