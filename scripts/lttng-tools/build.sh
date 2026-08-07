@@ -173,6 +173,7 @@ LTTNG_TOOLS_RUN_TESTS="${LTTNG_TOOLS_RUN_TESTS:-yes}"
 LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION="${LTTNG_TOOLS_RUN_TESTS_LONG_REGRESSION:-no}"
 LTTNG_TOOLS_RUN_UST_JAVA_TESTS="${LTTNG_TOOLS_RUN_UST_JAVA_TESTS:-yes}"
 LTTNG_TOOLS_CLANG_TIDY="${LTTNG_TOOLS_CLANG_TIDY:-no}"
+LTTNG_UST_JAVA_TESTS_TEST_FILTER="${LTTNG_UST_JAVA_TESTS_TEST_FILTER:-}"
 
 VERBOSE_BABELTRACE="${VERBOSE_BABELTRACE:-}"
 VERBOSE_LTTNG_CLIENT="${VERBOSE_LTTNG_CLIENT:-}"
@@ -750,6 +751,14 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         if verlt "${PACKAGE_VERSION}" "2.14" ; then
             LTTNG_UST_JAVA_TESTS_MAVEN_OPTS+=(
                 '-Dgroups=!domain:log4j2'
+            )
+        fi
+
+        if [[ "${LTTNG_UST_JAVA_TESTS_TEST_FILTER:-}" != "" ]]; then
+            LTTNG_UST_JAVA_TESTS_MAVEN_OPTS+=(
+                "-Dit.test=${LTTNG_UST_JAVA_TESTS_TEST_FILTER}"
+                "-DfailIfNoTests=false"
+                "-Dfailsafe.failIfNoSpecifiedTests=false"
             )
         fi
 

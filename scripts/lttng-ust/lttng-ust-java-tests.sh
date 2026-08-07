@@ -151,6 +151,14 @@ LTTNG_UST_JAVA_TESTS_MAVEN_OPTS=(
     "-Dmaven.test.redirectTestOutputToFile=true"
 )
 
+if [[ "${LTTNG_UST_JAVA_TESTS_TEST_FILTER:-}" != "" ]]; then
+    LTTNG_UST_JAVA_TESTS_MAVEN_OPTS+=(
+        "-Dit.test=${LTTNG_UST_JAVA_TESTS_TEST_FILTER}"
+        "-DfailIfNoTests=false"
+        "-Dfailsafe.failIfNoSpecifiedTests=false"
+    )
+fi
+
 # Check lttng-tools version
 # Merged into master ~ 47abf22b48023960069e1d3e23f42298ce4b3c2a
 LTTNG_VERSION="$(env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" lttng --version | cut -d ' ' -f 5)"

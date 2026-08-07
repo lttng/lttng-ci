@@ -19,6 +19,10 @@
         {% if review|default(false) %}
         {% include 'common/review_parameters.yaml.inc' %}
         {% endif %}
+        - string:
+            name: 'LTTNG_UST_JAVA_TESTS_TEST_FILTER'
+            default: ''
+            description: 'A filter to limit which tests are run, passed to `-Dit.test`. E.g., `*AppContext*`'
         - bool:
             name: 'VERBOSE_BABELTRACE'
             default: 'false'
