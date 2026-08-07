@@ -689,10 +689,10 @@
     publishers:
       - postbuildscript: *lttng-ust_publisher_collect_coredumps_defaults
       - archive:
-          artifacts: 'log/lttng-sessiond.log,core.tar.xz'
+          artifacts: 'log/lttng-sessiond.log,junit/**,core.tar.xz'
           allow-empty: false
       - junit:
-          results: 'src/lttng-ust-java-tests/**/target/failsafe-reports/*.xml'
+          results: 'junit/**/*.xml'
       - workspace-cleanup
 
 ## Views

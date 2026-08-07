@@ -167,4 +167,18 @@ env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" lttng-sessiond -b -vvv > "${WORKSPACE}/log/
 cd src/lttng-ust-java-tests
 env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn -version
 env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn "${LTTNG_UST_JAVA_TESTS_MAVEN_OPTS[@]}" clean verify
-exit "${?}"
+ret="${?}"
+
+# Copy test result XML files
+mkdir -p "${WORKSPACE}/junit"
+while read -r line ; do
+    project="$(echo "${line}" | cut -d '/' -f 2)"
+    if [[ "${project}" == "target" ]]; then
+        project="lttng-ust-java-tests"
+    fi
+
+    mkdir -p "${WORKSPACE}/junit/${project}"
+    cp -t "${WORKSPACE}/junit/${project}/" "${line}"
+done < <(find . -iname 'TEST-*.xml' -and -type f)
+
+exit "${ret}"

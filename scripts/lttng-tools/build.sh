@@ -759,6 +759,18 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn "${LTTNG_UST_JAVA_TESTS_MAVEN_OPTS[@]}" clean compile dependency:build-classpath dependency:tree verify || exit_status=1
         killall lttng-sessiond
 
+        # Copy test result XML files
+        mkdir -p "${WORKSPACE}/junit"
+        while read -r line ; do
+            project="$(echo "${line}" | cut -d '/' -f 2)"
+            if [[ "${project}" == "target" ]]; then
+                project="lttng-ust-java-tests"
+            fi
+
+            mkdir -p "${WORKSPACE}/junit/${project}"
+            cp -t "${WORKSPACE}/junit/${project}/" "${line}"
+        done < <(find . -iname 'TEST-*.xml' -and -type f)
+
         cd "${OWD}"
     fi
 else

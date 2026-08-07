@@ -695,11 +695,11 @@
             </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
 
       - junit: &lttng-tools_publisher_junit_defaults
-          results: 'src/lttng-ust-java-tests/**/target/failsafe-reports/*.xml'
+          results: 'junit/**/*.xml'
           allow-empty-results: true
 
       - archive: &lttng-tools_publisher_archive_defaults
-          artifacts: 'build/**,coverage/**,deps/**,log/**,tap/**,core.tar.xz,src.tar.xz'
+          artifacts: 'build/**,coverage/**,deps/**,junit/**,log/**,tap/**,core.tar.xz,src.tar.xz'
           follow-symlinks: true
           allow-empty: false
 
