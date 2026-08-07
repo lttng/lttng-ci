@@ -303,7 +303,7 @@ buildDevices.each { build_device ->
       'LTTNG_MODULES_COMMIT': "${modulesCommits[lttngBranch]}",
       'LTTNG_TOOLS_COMMIT': "${toolsCommits[lttngBranch]}",
       'LTTNG_UST_COMMIT': "${ustCommits[lttngBranch]}",
-      'URCU_COMMIT': "${urcuCommits[params.BT_BRANCH]}",
+      'URCU_COMMIT': "${urcuCommits[params.URCU_BRANCH]}",
     ]
     def parameter_key = parameter_keys.collect { key, value -> "${key}=${value}" }.join(';')
 
