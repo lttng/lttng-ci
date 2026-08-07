@@ -702,6 +702,8 @@
       - junit:
           results: 'junit/**/*.xml'
       - workspace-cleanup
+    wrappers:
+      - ansicolor: *lttng-ust_wrapper_ansicolor_defaults
 
 ## Views
 - view-template:
