@@ -555,6 +555,10 @@
       - string:
           name: 'GERRIT_PROJECT'
           default: 'lttng-ust-java-tests'
+      - bool:
+          name: 'VERBOSE_SESSIOND'
+          default: 'false'
+          description: 'Enable verbose sessiond and consumerd output'
     scm:
       - git:
           url: https://review.lttng.org/lttng-ust-java-tests

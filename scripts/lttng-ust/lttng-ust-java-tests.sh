@@ -163,7 +163,18 @@ fi
 
 # Start the lttng-sessiond
 mkdir -p "${WORKSPACE}/log"
-env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" lttng-sessiond -b -vvv > "${WORKSPACE}/log/lttng-sessiond.log" 2>&1
+SESSIOND_ARGS=(
+    '-b'
+)
+
+if [[ "${VERBOSE_SESSIOND:-}" == "true" ]]; then
+    SESSIOND_ARGS+=(
+        '-vvv'
+        '--verbose-consumer'
+    )
+fi
+
+env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" lttng-sessiond "${SESSIOND_ARGS[@]}" > "${WORKSPACE}/log/lttng-sessiond.log" 2>&1
 
 cd src/lttng-ust-java-tests
 env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" mvn -version
