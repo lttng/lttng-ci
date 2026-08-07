@@ -344,7 +344,7 @@
               <scm/>
             </io.jenkins.plugins.analysis.core.steps.IssuesRecorder>
       - archive: &babeltrace_publisher_archive_defaults
-          artifacts: 'build/**,tap/**,log/**,core.tar.xz,src.tar.xz'
+          artifacts: 'build/**,tap/**,log/**,results.xml,core.tar.xz,src.tar.xz'
           follow-symlinks: true
           allow-empty: false
       - workspace-cleanup: &babeltrace_publisher_workspace-cleanup_defaults
@@ -623,7 +623,7 @@
       - raw: *babeltrace_publisher_warnings-ng_defaults
       - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
       - archive:
-          artifacts: 'out/**,tap/**,core.tar.xz'
+          artifacts: 'out/**,tap/**,results.xml,core.tar.xz,src.tar.xz'
           allow-empty: false
           fingerprint: true
       - ircbot: *babeltrace_publisher_ircbot_defaults
