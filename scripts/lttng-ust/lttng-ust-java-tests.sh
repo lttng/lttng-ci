@@ -142,6 +142,7 @@ LTTNG_UST_JAVA_TESTS_ENV=(
     LIBBABELTRACE2_PLUGIN_PROVIDER_DIR="${WORKSPACE}/deps/build/${LIBDIR_ARCH}/babeltrace2/plugin-providers"
 )
 LTTNG_UST_JAVA_TESTS_MAVEN_OPTS=(
+    "--no-transfer-progress"  # mvn 3.6.1+
     "-Dmaven.test.failure.ignore=true"
     "-Dcommon-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-common.jar"
     "-Djul-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-jul.jar"
