@@ -140,7 +140,7 @@
                 - shell:
                     !include-raw-verbatim: lib/resources/collect_coredumps.sh
       - archive:
-          artifacts: 'artifacts/**,core.tar.xz'
+          artifacts: 'artifacts/**,results.xml,core.tar.xz'
           follow-symlinks: true
           allow-empty: false
       - junit:
@@ -205,7 +205,7 @@
                 - shell:
                     !include-raw-verbatim: lib/resources/collect_coredumps.sh
       - archive:
-          artifacts: 'artifacts/**,core.tar.xz'
+          artifacts: 'artifacts/**,results.xml,core.tar.xz'
           follow-symlinks: true
           allow-empty: false
       - junit:

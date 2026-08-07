@@ -67,7 +67,7 @@ cd src/ || exit 1
 export CFLAGS="-fcommon"
 
 PYTEST_ARGS=(
-    "--junit-xml=${WORKSPACE}/result.xml"
+    "--junit-xml=${WORKSPACE}/results.xml"
 )
 if [[ "${PYTEST_FILTER}" != "" ]]; then
     PYTEST_ARGS+=(
