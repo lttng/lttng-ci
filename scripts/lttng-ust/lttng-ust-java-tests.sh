@@ -148,6 +148,7 @@ LTTNG_UST_JAVA_TESTS_MAVEN_OPTS=(
     "-Dlog4j-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-log4j.jar"
     "-Dlog4j2-jar-location=${WORKSPACE}/deps/build/share/java/lttng-ust-agent-log4j2.jar"
     "-DargLine=-Djava.library.path=${WORKSPACE}/deps/build/${LIBDIR_ARCH}"
+    "-Dmaven.test.redirectTestOutputToFile=true"
 )
 
 # Check lttng-tools version
