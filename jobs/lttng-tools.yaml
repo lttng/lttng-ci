@@ -35,6 +35,10 @@
             name: 'VERBOSE_RELAYD'
             default: 'false'
             description: 'Enable verbose relayd output'
+        - bool:
+            name: 'VERBOSE_UST'
+            default: 'false'
+            description: 'Enable LTTNG_UST_DEBUG'
 
     wrappers:
       - ansicolor: &lttng-tools_wrapper_ansicolor_defaults

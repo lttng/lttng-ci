@@ -178,6 +178,7 @@ VERBOSE_BABELTRACE="${VERBOSE_BABELTRACE:-}"
 VERBOSE_LTTNG_CLIENT="${VERBOSE_LTTNG_CLIENT:-}"
 VERBOSE_RELAYD="${VERBOSE_RELAYD:-}"
 VERBOSE_SESSIOND="${VERBOSE_SESSIOND:-}"
+VERBOSE_UST="${VERBOSE_UST:-}"
 
 SRCDIR="$WORKSPACE/src/lttng-tools"
 TAPDIR="$WORKSPACE/tap"
@@ -648,6 +649,10 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
         export LTTNG_TEST_VERBOSE_SESSIOND=1
     fi
 
+    if [[ "${VERBOSE_UST}" == "true" ]]; then
+        export LTTNG_UST_DEBUG=1
+    fi
+
     # It is implied that tests depending on LTTNG_ENABLE_DESTRUCTIVE_TESTS
     # only run for the root user. Note that here `destructive` means that
     # operations are performed at the host level (add user etc.) that
@@ -723,7 +728,6 @@ if [ "$LTTNG_TOOLS_RUN_TESTS" = "yes" ] && [[ ! "$conf" =~ (no-ust|relayd-only) 
             # '/opt/apache/maven/bin'.
             PATH="${WORKSPACE}/build/bin/:$PATH:/opt/apache/maven/bin/"
             LD_LIBRARY_PATH="${WORKSPACE}/build/${LIBDIR}/:${WORKSPACE}/build/${LIBDIR_ARCH}:$LD_LIBRARY_PATH"
-            LTTNG_UST_DEBUG=1
             LTTNG_CONSUMERD32_BIN="${WORKSPACE}/build/${LIBDIR_ARCH}/lttng/libexec/lttng-consumerd"
             LTTNG_CONSUMERD64_BIN="${WORKSPACE}/build/${LIBDIR_ARCH}/lttng/libexec/lttng-consumerd"
             LTTNG_SESSION_CONFIG_XSD_PATH="${WORKSPACE}/build/share/xml/lttng"

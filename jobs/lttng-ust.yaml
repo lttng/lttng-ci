@@ -559,6 +559,10 @@
           name: 'VERBOSE_SESSIOND'
           default: 'false'
           description: 'Enable verbose sessiond and consumerd output'
+      - bool:
+          name: 'VERBOSE_UST'
+          default: 'false'
+          description: 'Enable LTTNG_UST_DEBUG'
     scm:
       - git:
           url: https://review.lttng.org/lttng-ust-java-tests

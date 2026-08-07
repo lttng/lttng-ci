@@ -133,7 +133,6 @@ LTTNG_UST_JAVA_TESTS_ENV=(
     # '/opt/apache/maven/bin'.
     PATH="${WORKSPACE}/deps/build/bin/:$PATH:/opt/apache/maven/bin/"
     LD_LIBRARY_PATH="${WORKSPACE}/deps/build/${LIBDIR}/:${WORKSPACE}/deps/build/${LIBDIR_ARCH}:$LD_LIBRARY_PATH"
-    LTTNG_UST_DEBUG=1
     LTTNG_CONSUMERD32_BIN="${WORKSPACE}/deps/build/${LIBDIR_ARCH}/lttng/libexec/lttng-consumerd"
     LTTNG_CONSUMERD64_BIN="${WORKSPACE}/deps/build/${LIBDIR_ARCH}/lttng/libexec/lttng-consumerd"
     LTTNG_SESSION_CONFIG_XSD_PATH="${WORKSPACE}/deps/build/share/xml/lttng"
@@ -172,6 +171,10 @@ if [[ "${VERBOSE_SESSIOND:-}" == "true" ]]; then
         '-vvv'
         '--verbose-consumer'
     )
+fi
+
+if [[ "${VERBOSE_UST:-}" == "true" ]]; then
+    export LTTNG_UST_DEBUG=1
 fi
 
 env "${LTTNG_UST_JAVA_TESTS_ENV[@]}" lttng-sessiond "${SESSIOND_ARGS[@]}" > "${WORKSPACE}/log/lttng-sessiond.log" 2>&1
