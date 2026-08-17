@@ -56,6 +56,8 @@ def target_cflags(target) {
   switch(target) {
     case 'xtensa':
       return '-mlongcalls'
+    case 'sh4':
+      return '-g -O0'
     default:
       return ''
   }
