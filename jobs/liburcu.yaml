@@ -330,27 +330,6 @@
       - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
 
 - job-template:
-    name: liburcu_{version}_scan-build
-    defaults: liburcu
-    node: 'deb13-amd64'
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell:
-          !include-raw-verbatim: scripts/common/scan-build.sh
-
-    publishers:
-      - html-publisher:
-          name: 'HTML Report'
-          dir: 'scan-build-archive/'
-          files: 'index.html'
-      - workspace-cleanup: *liburcu_publisher_workspace_cleanup_defaults
-      - ircbot: *liburcu_publisher_ircbot_defaults
-
-- job-template:
     name: liburcu_{version}_coverity
     defaults: liburcu
     node: 'deb13-amd64'
@@ -505,7 +484,6 @@
           confs: !!python/tuple [std, static, atomic-builtins, tls_fallback, debug-rcu]
           touchstone: '(build == "std") && (conf == "std")'
           filter: '(platform == "deb13-amd64" && cc ==~ /clang-1[7-9]/)'
-      - 'liburcu_{version}_scan-build'
       - 'liburcu_{version}_coverity':
           version: master
 

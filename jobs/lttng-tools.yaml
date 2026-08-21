@@ -1221,35 +1221,6 @@
       - ircbot: *lttng-tools_publisher_ircbot_defaults
 
 - job-template:
-    name: lttng-tools_{version}_scan-build
-    defaults: lttng-tools
-    node: 'deb13-amd64'
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - copyartifact:
-          <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'liburcu_{urcuversion}_linuxbuild/platform=deb13-amd64,conf=std,build=std'
-      - copyartifact:
-          <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'babeltrace_{babelversion}_linuxbuild/platform=deb13-amd64,conf=std,build=std'
-      - copyartifact:
-          <<: *lttng-tools_steps_copyartifact_defaults
-          project: 'lttng-ust_{ustversion}_linuxbuild/liburcu_version={urcuversion},platform=deb13-amd64,conf=std,build=std'
-      - shell:
-          !include-raw-verbatim: scripts/common/scan-build.sh
-
-    publishers:
-      - html-publisher:
-          name: 'HTML Report'
-          dir: 'scan-build-archive/'
-          files: 'index.html'
-      - ircbot: *lttng-tools_publisher_ircbot_defaults
-
-- job-template:
     name: lttng-tools_{version}_coverity
     defaults: lttng-tools
     node: 'deb13-amd64'
@@ -1424,9 +1395,6 @@
           nodes: !!python/tuple [yocto33-amd64-rootnode, yocto50-amd64-rootnode, yocto50-arm64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64" && conf == "agents") || (node == "yocto50-amd64-rootnode" && platform=="yocto50-amd64" && conf == "std") || (node == "yocto50-arm64-rootnode" && platform == "yocto50-arm64" && conf == "std")'
           timeout: '60'
-      - 'lttng-tools_{version}_scan-build': &job_lttng-tools_master_scan-build
-          urcuversion: master
-          babelversion: master
       - 'lttng-tools_{version}_coverity': &job_lttng-tools_master_coverity
           version: master
           urcuversion: master
@@ -1568,9 +1536,6 @@
           nodes: !!python/tuple [yocto33-amd64-rootnode, yocto50-amd64-rootnode, yocto50-arm64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64" && conf == "agents") || (node == "yocto50-amd64-rootnode" && platform=="yocto50-amd64" && conf == "std") || (node == "yocto50-arm64-rootnode" && platform == "yocto50-arm64" && conf == "std")'
           timeout: '60'
-      - 'lttng-tools_{version}_scan-build': &job_lttng-tools_stable-2-16_scan-build
-          urcuversion: master
-          babelversion: master
       - 'lttng-tools_{version}_release':
           version: v2.16
           ustversion: stable-2.16
@@ -1711,9 +1676,6 @@
           nodes: !!python/tuple [yocto33-amd64-rootnode, yocto50-amd64-rootnode, yocto50-arm64-rootnode]
           filter: '(node=="yocto33-amd64-rootnode" && platform=="yocto33-amd64" && conf == "agents") || (node == "yocto50-amd64-rootnode" && platform=="yocto50-amd64" && conf == "std") || (node == "yocto50-arm64-rootnode" && platform == "yocto50-arm64" && conf == "std")'
           timeout: '60'
-      - 'lttng-tools_{version}_scan-build': &job_lttng-tools_stable-2-15_scan-build
-          urcuversion: master
-          babelversion: master
       - 'lttng-tools_{version}_release':
           version: v2.15
           ustversion: stable-2.15
@@ -1854,9 +1816,6 @@
           nodes: !!python/tuple [deb13-amd64-rootnode]
           confs: !!python/tuple [agents]
           filter: '(node=="deb13-amd64-rootnode" && platform=="deb13-amd64" && cc == "clang-19")'
-      - 'lttng-tools_{version}_scan-build':
-          urcuversion: master
-          babelversion: master
       - 'lttng-tools_{version}_release':
           version: v2.14
           ustversion: stable-2.14

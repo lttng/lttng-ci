@@ -629,27 +629,6 @@
       - ircbot: *babeltrace_publisher_ircbot_defaults
 
 - job-template:
-    name: babeltrace_{version}_scan-build
-    defaults: babeltrace
-    node: 'deb13-amd64'
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell:
-          !include-raw-verbatim: scripts/common/scan-build.sh
-
-    publishers:
-      - workspace-cleanup: *babeltrace_publisher_workspace-cleanup_defaults
-      - html-publisher:
-          name: 'HTML Report'
-          dir: 'scan-build-archive/'
-          files: 'index.html'
-      - ircbot: *babeltrace_publisher_ircbot_defaults
-
-- job-template:
     name: babeltrace_{version}_coverity
     defaults: babeltrace
     node: 'deb13-amd64'
@@ -810,7 +789,6 @@
           version: v2.1
       - 'babeltrace_{version}_release':
           version: v2.0
-      - 'babeltrace_{version}_scan-build'
       - 'babeltrace_{version}_lint'
       - 'babeltrace_{version}_coverity':
           version: master

@@ -249,26 +249,6 @@
             - 'gerrit-{buildtype}'
 
 - job-template:
-    name: librseq_{version}_scan-build
-    defaults: librseq
-    node: 'deb13-amd64'
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - shell:
-          !include-raw-verbatim: scripts/common/scan-build.sh
-
-    publishers:
-      - html-publisher:
-          name: 'HTML Report'
-          dir: 'scan-build-archive/'
-          files: 'index.html'
-      - workspace-cleanup: *librseq_publisher_workspace-cleanup_defaults
-
-- job-template:
     name: librseq_{version}_coverity
     defaults: librseq
     node: 'deb13-amd64'

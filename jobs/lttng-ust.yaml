@@ -466,31 +466,6 @@
     <<: *lttng-ust_builders_review_lttng-tools
 
 - job-template:
-    name: lttng-ust_{version}_scan-build
-    defaults: lttng-ust
-    node: 'deb13-amd64'
-
-    triggers:
-      - pollscm:
-          cron: "@daily"
-
-    builders:
-      - copyartifact:
-          <<: *lttng-ust_steps_copyartifact_defaults
-          project: liburcu_master_linuxbuild/platform=deb13-amd64,conf=std,build=std
-      - shell:
-          !include-raw-verbatim: scripts/common/scan-build.sh
-
-    publishers:
-      - html-publisher:
-          name: 'HTML Report'
-          dir: 'scan-build-archive/'
-          files: 'index.html'
-      - workspace-cleanup: *lttng-ust_publisher_workspace-cleanup_defaults
-      - ircbot: *lttng-ust_publisher_ircbot_defaults
-
-
-- job-template:
     name: lttng-ust_{version}_coverity
     defaults: lttng-ust
     node: 'deb13-amd64'
@@ -804,8 +779,6 @@
           version: master
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
-      - 'lttng-ust_{version}_scan-build':
-          version: master
       - 'lttng-ust_{version}_coverity':
           version: master
 
@@ -865,8 +838,6 @@
           version: stable-2.16
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
-      - 'lttng-ust_{version}_scan-build':
-          version: stable-2.16
 
       ## stable-2.15 ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -924,8 +895,6 @@
           version: stable-2.15
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
-      - 'lttng-ust_{version}_scan-build':
-          version: stable-2.15
 
       ## Stable 2.14 ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
@@ -981,8 +950,6 @@
           builds: !!python/tuple [std]
           confs: !!python/tuple [std, agents]
           liburcu_versions: !!python/tuple [stable-0.14, stable-0.15, master]
-      - 'lttng-ust_{version}_scan-build':
-          version: stable-2.14
 
       ## Stable 2.13 ##
       - '{job_prefix}lttng-ust_{version}_{buildtype}':
