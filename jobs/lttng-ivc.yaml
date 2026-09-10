@@ -144,7 +144,7 @@
           follow-symlinks: true
           allow-empty: false
       - junit:
-          results: result.xml
+          results: results.xml
       - workspace-cleanup
       - email-ext:
           recipients: '{obj:email_to}'
